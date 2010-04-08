@@ -76,6 +76,7 @@
 		{
 			if(empty($input[1]))
 				return;
+			$input[1] = strtolower($input[1]);
 			foreach($this->actors as $actor)
 			{
 			
@@ -109,7 +110,7 @@
 						Server::out($actor, $actor_changed->getAlias(true) . ' ' . $actor_changed->getRace()->getMoveVerb() . ' ' . strtolower(substr($details, 8)) . '.');
 					
 					if($actor_changed instanceof User && $details == 'looking')
-						Server::out($actor_changed, $actor->getAlias(true) . ' is here.');
+						Server::out($actor_changed, ($actor instanceof Questmaster ? Tag::apply('Questmaster') : '') . $actor->getAlias(true) . ' is here.');
 				}
 			}
 		
@@ -216,6 +217,7 @@
 		
 		}
 	
+		public function getActors() { return $this->actors; }
 	}
 
 ?>

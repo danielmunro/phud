@@ -25,37 +25,30 @@
 	 *
 	 */
 
-	class Townsperson extends Mob
+	class Command_Unlock extends Command
 	{
 	
-		public function __construct($alias, $noun, $description, $area, $room_id, $level, $race, $movement_speed, $respawn_time)
+		public static function perform(&$actor, $args = null)
 		{
 		
-			$this->alias = $alias;
-			$this->noun = $noun;
-			$this->description = $description;
-			$this->level = $level;
-			$this->movement_speed = $movement_speed;
-			$this->hp = 10;
-			$this->max_hp = 10;
-			$this->mana = 100;
-			$this->max_mana = 100;
-			$this->movement = 100;
-			$this->max_movement = 100;
-			$this->setRace($race);
-			$this->kill_experience_min = 50;
-			$this->kill_experience_max = 100;
-			$this->auto_flee = true;
-			$this->respawn_time = $this->default_respawn_time = $respawn_time;
+			if(sizeof($args) < 2)
+				return Server::out($actor, 'Open what?');
+		
+			$door = Command::findObjectByArgs(
+									Door::findByRoomId($actor->getRoom()->getId()),
+									$args[1]);
 			
-			parent::__construct($area, $room_id);
+			if(!($door instanceof Door))
+				return Server::out($actor, 'Open what?');
+			
+			foreach($actor->getInventory()->getItems() as $item)
+				if($item->getDoorUnlockId() == $door->getId())
+				{
+					$door->setDisposition('closed');
+					return Server::out($actor, "You unlock " . $door->getShort() . " with " . $item->getShort() . ".");
+				}
+			
+			Server::out($actor, "You don't have the key!");
 		}
-		
-		public function describe()
-		{
-			return $this->description;
-		}
-	
 	}
-
 ?>

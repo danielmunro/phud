@@ -31,9 +31,8 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			if(sizeof($args) == 1)
+			if(sizeof($args) < 2)
 				return Server::out($actor, 'Open what?');
-			
 			
 			$door = Command::findObjectByArgs(
 									Door::findByRoomId($actor->getRoom()->getId()),
@@ -51,7 +50,7 @@
 					case Door::DISPOSITION_OPEN:
 						return Server::out($actor, ucfirst($door->getShort()) . ' is already open.');
 					case Door::DISPOSITION_LOCKED:
-						return Server::out($actor, uncfirst($door->getShort()) . ' is locked.');
+						return Server::out($actor, ucfirst($door->getShort()) . ' is locked.');
 				}					
 			
 			return Server::out($actor, "You can't open anything like that.");

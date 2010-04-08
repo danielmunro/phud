@@ -47,7 +47,7 @@
 			if(!($target instanceof Shopkeeper))
 				return Server::out($actor, "They are not selling anything.");
 			
-			Server::out($actor, $target->listItems());
+			Command_Say::perform($target, $target->getListItemMessage() . "\n" . $target->getInventory()->displayContents(true));
 		}
 	}
 ?>

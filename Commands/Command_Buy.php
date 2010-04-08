@@ -50,10 +50,10 @@
 			$item = $target->getInventory()->getItemByInput($args);
 			
 			if(!($item instanceof Item))
-				return Server::out($actor, $target->getAlias(true) . " says, \"" . $target->msgNoItem() . "\"");
+				return Command_Say::perform($target, $target->getNoItemMessage());
 			
 			if($actor->decreaseFunds($item->getValue()) === false)
-				return Server::out($actor, $target->getAlias(true) . " says, \"" . $target->msgNotEnoughMoney() . "\"");
+				return Command_Say::perform($target, $target->getNotEnoughMoneyMessage());
 			
 			$item->copyTo($actor);
 			

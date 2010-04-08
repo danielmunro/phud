@@ -213,7 +213,7 @@
 		
 		public function initializeEnvironment()
 		{
-			new Townsperson
+			new Mob
 			(
 				'A town crier',
 				'town crier',
@@ -223,9 +223,12 @@
 				1,
 				'human',
 				27,
-				1
+				1,
+				20,
+				100,
+				100
 			);
-			new Townsperson
+			new Mob
 			(
 				'The zombified remains of the mayor of Midgaard',
 				'zombie corpse mayor',
@@ -235,9 +238,35 @@
 				1,
 				'undead',
 				14,
-				5
+				5,
+				20,
+				100,
+				100
 			);
-			$shopkeep = new ShopkeeperArlen();
+			$m = new Mob
+			(
+				'a giant rat',
+				'giant rat',
+				'A behemoth of a rat scurries about before you.',
+				'temple_wine_cellar',
+				11,
+				3,
+				'human',
+				20,
+				5,
+				6,
+				100,
+				100
+			);
+			$m->getInventory()->add(new Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
+			//new Shopkeeper('Arlen'
+			new QuestmasterSid();
+			new Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
+			//$q = new Questmaster('Sid', 'sid gambler', 'A notorious gambler stands before you, fidgeting with poker chips.', 6, 1, 'human');
+			//$q->addQuestInfoDialog('message', "Drat! I figured the Temple would send a fresh recruit. You think they'd give me a little more respect than that.", 2);
+			//$q->addQuestInfoDialog('action', "Fidgeting the poker chips in one hand, Sid grabs a hankerchief and wipes his brow.", 1);
+			//$q->addQuestInfoDialog('message', "We've got no time to waste. The biggest rat I'd ever seen ran in from the wine cellar, swiped my poker chips he did!", 3);
+			//$q->addQuestInfoDialog('message', "I need you to follow the giant rat back into the wine cellar and get me those poker chips. I'll have a reward for you.", 1);
 		}
 		
 		public function getSocket()

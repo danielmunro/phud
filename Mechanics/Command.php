@@ -63,11 +63,12 @@
 		
 		public static function findObjectByArgs($objects, $args)
 		{
+			$args = strtolower($args);
 			foreach($objects as $object)
 			{
 				$nouns = explode(' ', $object->getNouns());
 				foreach($nouns as $noun)
-					if(strpos($noun, $args) === 0)
+					if(strpos(strtolower($noun), $args) === 0)
 						return $object;
 			}
 			return null;

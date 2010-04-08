@@ -84,7 +84,7 @@
 				else
 				{
 					$this->logged_in = true;
-					Command::find('Command_Look')->perform($this);
+					Command_Look::perform($this);
 				}
 				return;
 			}
@@ -281,7 +281,7 @@
 																$this->getRaceStr(),
 																$this->getRoom()->getId()
 															));
-				$this->id = Db::getInstance()->last_insert_id;
+				$this->id = Db::getInstance()->insert_id;
 				parent::__construct($this->getRoom()->getId());
 			}
 		}

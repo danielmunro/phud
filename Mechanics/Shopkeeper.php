@@ -25,20 +25,35 @@
 	 *
 	 */
 
-	abstract class Shopkeeper extends Mob
+	class Shopkeeper extends Actor
 	{
-		
-		abstract public function listItems();
-		
-		public function msgNoItem()
+	
+		private $list_item_message = "Here's what I have in stock now";
+		private $no_item_message = "I'm not selling that";
+		private $not_enough_money_message = "Come back when you have more money";
+	
+		public function __construct($alias, $noun, $description, $area, $room_id, $level, $race)
 		{
-			return "I just don't have anything like that!";
+			
+			$this->alias = $alias;
+			$this->noun = $noun;
+			$this->description = $description;
+			$this->area = $area;
+			$this->level = $level;
+			$this->setRace($race);
+			$this->fightable = false;
+			
+			parent::__construct($room_id);
 		}
 		
-		public function msgNotEnoughMoney()
-		{
-			return "Come back when you have more money.";
-		}
+		public function setListItemMessage($message) { $this->list_item_message = $message; }
+		public function getListItemMessage() { return $this->list_item_lessage; }
+		
+		public function setNoItemMessage($message) { $this->no_item_message = $message; }
+		public function getNoItemMessage() { return $this->no_item_message; }
+		
+		public function setNotEnoughMoneyMessage($message) { $this->not_enough_money_message = $message; }
+		public function getNotEnoughMoneyMessage() { return $this->not_enough_money_message; }
 		
 		public function getTable()
 		{

@@ -40,10 +40,11 @@
 		protected $equipment_position = '';
 		protected $verb = '';
 		protected $shop = false;
+		protected $door_unlock_id = 0;
 		
 		private static $instances = array();
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $condition, $type, $can_own = true, $verb = '', $equipment_position = null, $shop = false)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $condition, $type, $can_own = true, $verb = '', $equipment_position = null, $door_unlock_id = 0)
 		{
 		
 			$this->id = $id;
@@ -58,7 +59,7 @@
 			$this->verb = $verb;
 			$this->can_own = $can_own;
 			$this->equipment_position = $equipment_position;
-			$this->shop = $shop;
+			$this->door_unlock_id = $door_unlock_id;
 		}
 		
 		public static function getInstance($id)
@@ -89,7 +90,7 @@
 				self::$instances[$id] = 
 					new Item($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
 						$row->item_condition, $row->item_type, $row->can_own, $row->verb,
-						$row->equipment_position);
+						$row->equipment_position, $row->fk_door_unlock_id);
 			
 			return self::$instances[$id];
 		}
@@ -108,11 +109,13 @@
 						can_own = ?,
 						equipment_position = ?,
 						verb = ?,
-						fk_inv_inside_id = ?
+						fk_inv_inside_id = ?,
+						fk_door_unlock_id = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
 						$this->weight, $this->condition, $this->type, $this->can_own,
-						$this->equipment_position, $this->verb, $inv_inside_id, $this->id));
+						$this->equipment_position, $this->verb, $inv_inside_id,
+						$this->door_unlock_id, $this->id));
 			
 			Db::getInstance()->query(
 				'INSERT INTO items (
@@ -126,12 +129,13 @@
 					can_own,
 					equipment_position,
 					verb,
-					fk_inv_inside_id)
+					fk_inv_inside_id,
+					fk_door_unlock_id)
 				VALUES
 					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
 				$this->condition, $this->type, $this->can_own, $this->equipment_position,
-				$this->verb, $inv_inside_id));
+				$this->verb, $inv_inside_id, $this->door_unlock_id));
 			$this->id = Db::getInstance()->insert_id;
 		}
 		public function getShort() { return $this->short; }
@@ -141,6 +145,8 @@
 		public function getEquipmentPosition() { return $this->equipment_position; }
 		public function getCanOwn() { return $this->can_own; }
 		public function getValue() { return $this->value; }
+		public function getType() { return $this->type; }
+		public function getDoorUnlockId() { return $this->door_unlock_id; }
 		public function getId() { return $this->id; }
 		public function setId($id) { $this->id = $id; }
 		public function lookDescribe()

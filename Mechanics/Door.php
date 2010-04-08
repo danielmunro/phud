@@ -58,7 +58,6 @@
 			$this->short = $row->short_desc;
 			$this->long_room1 = $row->long_desc_room1;
 			$this->long_room2 = $row->long_desc_room2;
-			$this->unlock_item_id = $row->fk_unlock_item_id;
 			$this->room1_id = $row->fk_room1_id;
 			$this->room2_id = $row->fk_room2_id;
 			$this->direction1 = $row->direction1;
@@ -141,6 +140,7 @@
 		public function getRoom2Id() { return $this->room2_id; }
 		public function getDirection1() { return $this->direction1; }
 		public function getDirection2() { return $this->direction2; }
+		public function getId() { return $this->id; }
 		public function getShort() { return $this->short; }
 		public function getLong($room_id)
 		{

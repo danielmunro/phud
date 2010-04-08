@@ -98,6 +98,8 @@
 											dex = ?,
 											con = ?,
 											race = ?,
+											experience = ?,
+											exp_per_level = ?,
 											fk_room_id = ? WHERE id = ?', array(
 											$this->getAlias(),
 											$this->hp,
@@ -117,6 +119,8 @@
 											$this->dex,
 											$this->con,
 											$this->getRaceStr(),
+											$this->experience,
+											$this->exp_per_level,
 											$this->getRoom()->getId(),
 											$this->id));
 		}
@@ -128,12 +132,25 @@
 		public function getCon() { return $this->con; }
 		
 		public function getId() { return $this->id; }
-		public function getAlias($upper = false)
+		public function getAlias($upper = null)
 		{
-			if($this instanceof User || ($this instanceof Mob && $this->unique === true))
-				return ucfirst($this->alias);
+		
+			if($upper === null)
+				if($this instanceof User)
+					return ucfirst($this->alias);
+				else
+					return $this->alias;
 			
-			return $upper === true ? ucfirst($this->alias) : strtolower($this->alias);
+			if($upper)
+				return ucfirst($this->alias);
+			else
+				return $this->alias;
+			
+			
+			//if($this instanceof User || ($this instanceof Mob && $this->unique === true))
+			//	return ucfirst($this->alias);
+			//
+			//return $upper === true ? ucfirst($this->alias) : strtolower($this->alias);
 		}
 		public function getRaceStr() { return $this->race->getRaceStr(); }
 		public function getClassStr() { return $this->_class->getClassStr(); }
@@ -151,6 +168,7 @@
 		public function getRoom() { return $this->room; }
 		public function getCopper() { return $this->copper; }
 		public function getSilver() { return $this->silver; }
+		public function addSilver($silver) { $this->silver += $silver; }
 		public function getGold() { return $this->gold; }
 		public function setRoom($room)
 		{
@@ -211,6 +229,12 @@
 			return $descriptor;
 		
 		}
+		public function increaseCopper($amount) { $this->copper += $amount; }
+		public function decreaseCopper($amount) { $this->copper -= $amount; }
+		public function increaseSilver($amount) { $this->silver += $amount; }
+		public function decreaseSilver($amount) { $this->silver -= $amount; }
+		public function increaseGold($amount) { $this->gold += $amount; }
+		public function decreaseGold($amount) { $this->gold -= $amount; }
 		public function isAlive()
 		{
 			if($this->max_hp == 0)
@@ -253,6 +277,12 @@
 		public function setExperience($experience)
 		{
 			$this->experience = $experience;
+			if($this->experience <= 0)
+				$this->levelUp();
+		}
+		public function awardExperience($experience)
+		{
+			$this->experience -= $experience;
 			if($this->experience <= 0)
 				$this->levelUp();
 		}
@@ -525,7 +555,10 @@
 			return 300;
 		}
 		abstract public function getTable();
-	
+		public function getNoun()
+		{
+			return $this->alias;
+		}
 	}
 	
 	class Actor_Exception extends Exception

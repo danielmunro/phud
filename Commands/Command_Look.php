@@ -101,7 +101,7 @@
 				if($door->getHidden())
 					return Server::out($actor, Item::getInstance($door->getHiddenItemId())->getLong());
 				if($door->getDisposition() != Door::DISPOSITION_OPEN)
-					return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
+					return Server::out($actor, ucfirst($door->getLong()));
 			}
 			
 			// No north
