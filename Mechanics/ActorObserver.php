@@ -74,6 +74,7 @@
 		
 		public function getActorByRoomAndInput($room_id, $input)
 		{
+			print_r($this->actors);
 			if(empty($input[1]))
 				return;
 			$input[1] = strtolower($input[1]);
@@ -86,10 +87,10 @@
 				if(property_exists($actor, 'noun'))
 					$look_for = explode(' ', $actor->getNoun());
 				else
-					$look_for = array(strtolower($actor->getAlias()));
+					$look_for = array($actor->getAlias());
 				
 				foreach($look_for as $look)
-					if(strpos($look, $input[1]) === 0)
+					if(stripos($look, $input[1]) === 0)
 						return $actor;
 			}
 			return null;

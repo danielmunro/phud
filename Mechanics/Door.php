@@ -126,6 +126,7 @@
 		
 		public static function findByRoomAndDirection($room_id, $direction)
 		{
+
 			$doors = self::findByRoomId($room_id);
 			foreach($doors as $door)
 				if($door->getRoom1Id() == $room_id && $door->getDirection1() == $direction)

@@ -33,6 +33,7 @@
 		
 			if($args === null || sizeof($args) == 1) // The actor is looking
 			{
+				print $actor->getAlias() . ': ' . $actor->getRoom()->getId() . ': ';
 				$doors = Door::findByRoomId($actor->getRoom()->getId());
 				
 				Server::out($actor, $actor->getRoom()->getTitle());

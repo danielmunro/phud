@@ -28,9 +28,8 @@
 	class User extends Actor
 	{
 	
+		protected $id;
 		private $socket;
-		private $logged_in = false;
-		protected $id = 0;
 		protected $last_input = '';
 		protected $nourishment = 0;
 		protected $thirst = 0;
@@ -82,10 +81,8 @@
 					$this->login = array('alias' => false);
 				}
 				else
-				{
-					$this->logged_in = true;
 					Command_Look::perform($this);
-				}
+
 				return;
 			}
 			
@@ -254,34 +251,12 @@
 				$this->experience = 1000;
 				$this->exp_per_level = 1000;
 				$this->level = 1;
-				$this->logged_in = true;
 				$this->thirst = 5;
 				$this->nourishment = 5;
 				$this->setRoom(Room::find(1));
 				
-				Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
-																$this->getAlias(),
-																$this->hp,
-																$this->max_hp,
-																$this->mana,
-																$this->max_mana,
-																$this->movement,
-																$this->max_movement,
-																$this->level,
-																$this->copper,
-																$this->silver,
-																$this->gold,
-																$this->password,
-																$this->str,
-																$this->int,
-																$this->wis,
-																$this->dex,
-																$this->con,
-																$this->getRaceStr(),
-																$this->getRoom()->getId()
-															));
-				$this->id = Db::getInstance()->insert_id;
+				$this->save();
+				
 				parent::__construct($this->getRoom()->getId());
 			}
 		}
@@ -340,14 +315,8 @@
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }
 		public function getLastInput() { return $this->last_input; }
-		public function getLoggedIn() { return $this->logged_in; }
 		public function getSocket() { return $this->socket; }
 		public function __toString() { return $this->socket; }
-		public function save()
-		{
-			$this->inventory->save();
-			parent::save();
-		}
 		public function decreaseRacialNourishmentAndThirst()
 		{
 			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
@@ -368,6 +337,85 @@
 				$this->thirst = $thirst;
 			else
 				$this->thirst += $thirst;
+		}
+		
+		public function getId() { return $this->id; }
+		
+		public function save()
+		{
+			Debug::addDebugLine("Saving actor " . $this->getAlias(true));
+			$this->inventory->save();
+			if($this->id)
+				Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
+											alias = ?,
+											hp = ?,
+											max_hp = ?,
+											mana = ?,
+											max_mana = ?,
+											movement = ?,
+											max_movement = ?,
+											level = ?,
+											copper = ?,
+											silver = ?,
+											gold = ?,
+											pass = ?,
+											str = ?,
+											`int` = ?,
+											wis = ?,
+											dex = ?,
+											con = ?,
+											race = ?,
+											experience = ?,
+											exp_per_level = ?,
+											fk_room_id = ? WHERE id = ?', array(
+											$this->getAlias(),
+											$this->hp,
+											$this->max_hp,
+											$this->mana,
+											$this->max_mana,
+											$this->movement,
+											$this->max_movement,
+											$this->level,
+											$this->copper,
+											$this->silver,
+											$this->gold,
+											$this->password,
+											$this->str,
+											$this->int,
+											$this->wis,
+											$this->dex,
+											$this->con,
+											$this->getRaceStr(),
+											$this->experience,
+											$this->exp_per_level,
+											$this->getRoom()->getId(),
+											$this->id));
+			else
+			{
+				Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
+															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+																$this->getAlias(),
+																$this->hp,
+																$this->max_hp,
+																$this->mana,
+																$this->max_mana,
+																$this->movement,
+																$this->max_movement,
+																$this->level,
+																$this->copper,
+																$this->silver,
+																$this->gold,
+																$this->password,
+																$this->str,
+																$this->int,
+																$this->wis,
+																$this->dex,
+																$this->con,
+																$this->getRaceStr(),
+																$this->getRoom()->getId()
+															));
+				$this->id = Db::getInstance()->insert_id;
+			}
 		}
 	}
 

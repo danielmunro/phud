@@ -43,7 +43,7 @@
 				
 				if(!($target instanceof Actor))
 					return Server::out($actor, "They aren't here.");
-				print $currency;
+				
 				if(strpos('copper', $currency) === 0)
 					$currency_proper = 'copper';
 				else if(strpos('silver', $currency) === 0)

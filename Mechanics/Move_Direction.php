@@ -38,9 +38,9 @@
 			
 			if($door instanceof Door)
 			{
-				if($door->getHidden($actor->getRoom()->getId()))
+				if($door->getHidden($actor->getRoom()->getId()) > 0)
 					return Server::out($actor, 'Alas, you cannot go that way.');
-				if($door->getDisposition() == Door::DISPOSITION_CLOSED)
+				if($door->getDisposition() != Door::DISPOSITION_OPEN)
 					return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 			}
 			

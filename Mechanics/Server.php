@@ -158,7 +158,7 @@
 						
 						$args = explode(' ', trim($input));
 						$command = Command::find('Command_' . ucfirst($args[0]));
-						if(!$this->clients[$i]->getLoggedIn())
+						if(!$this->clients[$i]->getAlias())
 						{
 							$this->clients[$i]->handleLogin($args[0]);
 							continue;
@@ -215,7 +215,7 @@
 		{
 			new Mob
 			(
-				'A town crier',
+				'a town crier',
 				'town crier',
 				'You see a town crier before you.',
 				'temple midgaard',
@@ -230,7 +230,7 @@
 			);
 			new Mob
 			(
-				'The zombified remains of the mayor of Midgaard',
+				'the zombified remains of the mayor of Midgaard',
 				'zombie corpse mayor',
 				'The partially decomposed, moaning zombie corpse of the mayor of Midgaard stands before you.',
 				'temple midgaard',

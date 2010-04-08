@@ -28,10 +28,9 @@
 	abstract class Actor
 	{
 	
-		protected $id;
 		protected $alias;
 		protected $password = '';
-		protected $description;
+		protected $long = '';
 		protected $hp;
 		protected $max_hp;
 		protected $mana;
@@ -69,60 +68,15 @@
 		public function __construct($room_id)
 		{
 		
-			Debug::addDebugLine("Adding actor " . $this->getAlias(true) . " to observer list.");
+			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
 			$this->equipment = new Equipment();
 			$this->room = Room::find($room_id);
-			$this->inventory = Inventory::find($this->getTable(), $this->id);
-		}
-		
-		public function save()
-		{
-			Debug::addDebugLine("Saving actor " . $this->getAlias(true));
-			Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
-											alias = ?,
-											hp = ?,
-											max_hp = ?,
-											mana = ?,
-											max_mana = ?,
-											movement = ?,
-											max_movement = ?,
-											level = ?,
-											copper = ?,
-											silver = ?,
-											gold = ?,
-											pass = ?,
-											str = ?,
-											`int` = ?,
-											wis = ?,
-											dex = ?,
-											con = ?,
-											race = ?,
-											experience = ?,
-											exp_per_level = ?,
-											fk_room_id = ? WHERE id = ?', array(
-											$this->getAlias(),
-											$this->hp,
-											$this->max_hp,
-											$this->mana,
-											$this->max_mana,
-											$this->movement,
-											$this->max_movement,
-											$this->level,
-											$this->copper,
-											$this->silver,
-											$this->gold,
-											$this->password,
-											$this->str,
-											$this->int,
-											$this->wis,
-											$this->dex,
-											$this->con,
-											$this->getRaceStr(),
-											$this->experience,
-											$this->exp_per_level,
-											$this->getRoom()->getId(),
-											$this->id));
+			
+			if($this instanceof User)
+				$this->inventory = Inventory::find($this->getTable(), $this->id);
+			else
+				$this->inventory = new Inventory($this->getTable(), 0);
 		}
 		
 		public function getStr() { return $this->str; }
@@ -131,7 +85,6 @@
 		public function getDex() { return $this->dex; }
 		public function getCon() { return $this->con; }
 		
-		public function getId() { return $this->id; }
 		public function getAlias($upper = null)
 		{
 		
@@ -145,17 +98,12 @@
 				return ucfirst($this->alias);
 			else
 				return $this->alias;
-			
-			
-			//if($this instanceof User || ($this instanceof Mob && $this->unique === true))
-			//	return ucfirst($this->alias);
-			//
-			//return $upper === true ? ucfirst($this->alias) : strtolower($this->alias);
 		}
 		public function getRaceStr() { return $this->race->getRaceStr(); }
 		public function getClassStr() { return $this->_class->getClassStr(); }
 		public function getLevel() { return $this->level; }
 		
+		public function getLong() { return $this->long; }
 		public function getHp() { return $this->hp; }
 		public function getMaxHp() { return $this->max_hp; }
 		public function getMana() { return $this->mana; }
@@ -166,6 +114,7 @@
 		public function getEquipment() { return $this->equipment; }
 		public function getRoomId() { return $this->room->getId(); }
 		public function getRoom() { return $this->room; }
+		public function getDescription() { return $this->long; }
 		public function getCopper() { return $this->copper; }
 		public function getSilver() { return $this->silver; }
 		public function addSilver($silver) { $this->silver += $silver; }
@@ -525,7 +474,10 @@
 			if(!isset($sex))
 				$sex = 'it';
 			
-			return 'You see nothing special about ' . $sex . '.' . "\r\n" . 
+			if(!$this->long)
+				$this->long = 'You see nothing special about ' . $sex . '.';
+			
+			return  $this->long . "\r\n" . 
 					$this->getAlias(true) . ' the ' . strtolower($this->race->getRaceStr()) . ' ' . $this->getStatus() . '.';
 		
 		}

@@ -51,6 +51,7 @@
 		
 		public static function find($table, $table_id)
 		{
+			
 			if(!empty(self::$instances[$table][$table_id]) && self::$instances[$table][$table_id] instanceof Inventory)
 				return self::$instances[$table][$table_id];
 			

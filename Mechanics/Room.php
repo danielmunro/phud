@@ -89,6 +89,7 @@
 		public function getNorth()
 		{
 			$door = Door::findByRoomAndDirection($this->id, 'north');
+			
 			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
 				return 0;
 			return $this->north;

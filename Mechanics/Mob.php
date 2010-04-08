@@ -18,11 +18,11 @@
 		
 		const FLEE_PERCENT = 10;
 		
-		public function __construct($alias, $noun, $description, $area, $room_id, $level, $race, $movement_speed, $respawn_time, $hp, $mana, $movement)
+		public function __construct($alias, $noun, $long, $area, $room_id, $level, $race, $movement_speed, $respawn_time, $hp, $mana, $movement)
 		{
 			$this->alias = $alias;
 			$this->noun = $noun;
-			$this->description = $description;
+			$this->long = $long;
 			$this->level = $level;
 			$this->movement_speed = $movement_speed;
 			$this->setRace($race);
