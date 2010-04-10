@@ -29,51 +29,75 @@
 	{
 	
 		const POSITION_LIGHT = 0;
-		const POSTION_FINGER_L = 1;
+		const POSITION_FINGER_L = 1;
 		const POSITION_FINGER_R = 2;
 		const POSITION_NECK_1 = 3;
 		const POSITION_NECK_2 = 4;
-		const POSTION_BODY = 5;
+		const POSITION_BODY = 5;
 		const POSITION_HEAD = 6;
-		const POSTION_LEGS = 7;
-		const POSTION_FEET = 8;
-		const POSTION_HANDS = 9;
-		const POSTION_ARMS = 10;
-		const POSTION_TORSO = 11;
-		const POSTION_WAIST = 12;
-		const POSTION_WRIST_L = 13;
-		const POSTION_WRIST_R = 14;
-		const POSTION_WIELD_L = 15;
-		const POSTION_WIELD_R = 16;
-		const POSTION_HOLD = 17;
-		const POSTION_FLOAT = 18;
+		const POSITION_LEGS = 7;
+		const POSITION_FEET = 8;
+		const POSITION_HANDS = 9;
+		const POSITION_ARMS = 10;
+		const POSITION_TORSO = 11;
+		const POSITION_WAIST = 12;
+		const POSITION_WRIST_L = 13;
+		const POSITION_WRIST_R = 14;
+		const POSITION_WIELD_L = 15;
+		const POSITION_WIELD_R = 16;
+		const POSITION_HOLD = 17;
+		const POSITION_FLOAT = 18;
 		
 		private $equipment;
+		private $types;
 		
 		public function __construct()
 		{
 		
+			$this->types = array
+			(
+				self::POSITION_LIGHT => Equipment::TYPE_LIGHT,
+				self::POSITION_FINGER_L => Equipment::TYPE_FINGER,
+				self::POSITION_FINGER_R => Equipment::TYPE_FINGER,
+				self::POSITION_NECK_1 => Equipment::TYPE_NECK,
+				self::POSITION_NECK_2 => Equipment::TYPE_NECK,
+				self::POSITION_BODY => Equipment::TYPE_BODY,
+				self::POSITION_HEAD => Equipment::TYPE_HEAD,
+				self::POSITION_LEGS => Equipment::TYPE_LEGS,
+				self::POSITION_FEET => Equipment::TYPE_FEET,
+				self::POSITION_HANDS => Equipment::TYPE_HANDS,
+				self::POSITION_ARMS => Equipment::TYPE_ARMS,
+				self::POSITION_TORSO => Equipment::TYPE_TORSO,
+				self::POSITION_WAIST => Equipment::TYPE_WAIST,
+				self::POSITION_WRIST_L => Equipment::TYPE_WRIST,
+				self::POSITION_WRIST_R => Equipment::TYPE_WRIST,
+				self::POSITION_WIELD_L => Equipment::TYPE_WIELD,
+				self::POSITION_WIELD_R => Equipment::TYPE_WIELD,
+				self::POSITION_HOLD => Equipment::TYPE_HOLD,
+				self::POSITION_FLOAT => Equipment::TYPE_FLOAT
+			);
+			
 			$this->equipment = array
 			(
 				self::POSITION_LIGHT => null,
-				self::POSTION_FINGER_L => null,
+				self::POSITION_FINGER_L => null,
 				self::POSITION_FINGER_R => null,
 				self::POSITION_NECK_1 => null,
 				self::POSITION_NECK_2 => null,
-				self::POSTION_BODY => null,
+				self::POSITION_BODY => null,
 				self::POSITION_HEAD => null,
-				self::POSTION_LEGS => null,
-				self::POSTION_FEET => null,
-				self::POSTION_HANDS => null,
-				self::POSTION_ARMS => null,
-				self::POSTION_TORSO => null,
-				self::POSTION_WAIST => null,
-				self::POSTION_WRIST_L => null,
-				self::POSTION_WRIST_R => null,
-				self::POSTION_WIELD_L => null,
-				self::POSTION_WIELD_R => null,
-				self::POSTION_HOLD => null,
-				self::POSTION_FLOAT => null
+				self::POSITION_LEGS => null,
+				self::POSITION_FEET => null,
+				self::POSITION_HANDS => null,
+				self::POSITION_ARMS => null,
+				self::POSITION_TORSO => null,
+				self::POSITION_WAIST => null,
+				self::POSITION_WRIST_L => null,
+				self::POSITION_WRIST_R => null,
+				self::POSITION_WIELD_L => null,
+				self::POSITION_WIELD_R => null,
+				self::POSITION_HOLD => null,
+				self::POSITION_FLOAT => null
 			);
 		
 		}

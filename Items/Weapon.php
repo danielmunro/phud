@@ -25,18 +25,34 @@
 	 *
 	 */
 
-	class Drink extends Item
+	class Weapon extends Equipment
 	{
 	
-		protected $thirst = 0;
-
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $thirst = 1, $can_own = true, $door_unlock_id = null)
+		protected $hit_roll;
+		protected $dam_roll;
+		protected $weapon_type;
+		
+		const TYPE_SWORD = 1;
+		const TYPE_AXE = 2;
+		const TYPE_MACE = 3;
+		const TYPE_STAFF = 4;
+		const TYPE_WHIP = 5;
+		const TYPE_DAGGER = 6;
+		const TYPE_WAND = 7;
+		const TYPE_WHIP = 8;
+		const TYPE_EXOTIC = 9;
+		const TYPE_SPEAR = 10;
+		const TYPE_FLAIL = 11;
+		const TYPE_WHIP = 12;
+		
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $weapon_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_DRINK, $can_own);
-			$this->thirst = $thirst;
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WEILD, $condition, $can_own, $door_unlock_id);
+			$this->weapon_type = $weapon_type;
+			$this->hit_roll = $hit_roll;
+			$this->dam_roll = $dam_roll;
 		}
-		
 		public function save($inv_inside_id)
 		{
 			if($this->id)
@@ -49,13 +65,15 @@
 						weight = ?,
 						item_type = ?,
 						can_own = ?,
-						thirst = ?,
 						fk_inv_inside_id = ?,
-						fk_door_unlock_id = ?
+						fk_door_unlock_id = ?,
+						weapon_type = ?,
+						hit_roll = ?,
+						dam_roll = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
-						$this->weight, $this->type, $this->can_own, $this->thirst, $inv_inside_id, 
-						$this->door_unlock_id, $this->id));
+						$this->weight, $this->type, $this->can_own, $inv_inside_id,
+						$this->door_unlock_id, $this->weapon_type, $this->hit_roll, $this->dam_roll, $this->id));
 			
 			Db::getInstance()->query(
 				'INSERT INTO items (
@@ -66,17 +84,22 @@
 					weight,
 					item_type,
 					can_own,
-					thirst,
 					fk_inv_inside_id,
-					fk_door_unlock_id)
+					fk_door_unlock_id,
+					weapon_type,
+					hit_roll,
+					dam_roll)
 				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $this->thirst, $inv_inside_id, $this->door_unlock_id));
+				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id,
+				$this->weapon_type, $this->hit_roll, $this->dam_roll));
 			$this->id = Db::getInstance()->insert_id;
 		}
-		
-		public function getThirst() { return $this->thirst; }
+		public function getWeaponType() { return $this->weapon_type; }
+		public function getHitRoll() { return $this->hit_roll; }
+		public function getDamRoll() { return $this->dam_roll; }
+	
 	}
 
 ?>

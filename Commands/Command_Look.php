@@ -64,10 +64,13 @@
 			
 			// Actor is looking at something... find out what it is
 			$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			
 			if(empty($target))
 				$target = $actor->getRoom()->getInventory()->getItemByInput($args);
+			
 			if(empty($target))
 				$target = $actor->getInventory()->getItemByInput($args);
+			
 			if(!empty($target))
 				return Server::out($actor, $target->lookDescribe());
 			

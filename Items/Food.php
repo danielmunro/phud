@@ -30,22 +30,16 @@
 	
 		protected $nourishment = 0;
 
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $condition, $nourishment, $shop = false)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $nourishment = 1, $can_own = true, $door_unlock_id = null)
 		{
-			$this->id = $id;
-			$this->long = $long;
-			$this->short = $short;
-			$this->nouns = $nouns;
-		
-			$this->value = $value;
-			$this->weight = $weight;
-			$this->condition = $condition;
+			
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_FOOD, $can_own);
 			$this->nourishment = $nourishment;
-			$this->shop = $shop;
-			$this->type = 'food';
 		}
+		
 		public function save($inv_inside_id)
 		{
+		
 			if($this->id)
 				return Db::getInstance()->query(
 					'UPDATE items SET
@@ -54,18 +48,15 @@
 						nouns = ?,
 						value = ?,
 						weight = ?,
-						item_condition = ?,
 						item_type = ?,
 						can_own = ?,
-						equipment_position = ?,
-						verb = ?,
 						nourishment = ?,
-						fk_inv_inside_id = ?
+						fk_inv_inside_id = ?,
+						fk_door_unlock_id = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
-						$this->weight, $this->condition, $this->type, $this->can_own,
-						$this->equipment_position, $this->verb, $this->nourishment, $inv_inside_id, 
-						$this->id));
+						$this->weight, $this->type, $this->can_own, $this->nourishment, $inv_inside_id, 
+						$this->door_unlock_id, $this->id));
 			
 			Db::getInstance()->query(
 				'INSERT INTO items (
@@ -74,24 +65,19 @@
 					nouns,
 					value,
 					weight,
-					item_condition,
 					item_type,
 					can_own,
-					equipment_position,
-					verb,
 					nourishment,
-					fk_inv_inside_id)
+					fk_inv_inside_id,
+					fk_door_unlock_id)
 				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->condition, $this->type, $this->can_own, $this->equipment_position,
-				$this->verb, $this->nourishment, $inv_inside_id));
+				$this->type, $this->can_own, $this->nourishment, $inv_inside_id, $this->door_unlock_id));
 			$this->id = Db::getInstance()->insert_id;
 		}
-		public function getNourishment()
-		{
-			return $this->nourishment;
-		}
+		
+		public function getNourishment() { return $this->nourishment; }
 	}
 
 ?>

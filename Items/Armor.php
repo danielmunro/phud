@@ -25,18 +25,23 @@
 	 *
 	 */
 
-	class Drink extends Item
+	class Armor extends Equipment
 	{
 	
-		protected $thirst = 0;
-
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $thirst = 1, $can_own = true, $door_unlock_id = null)
+		protected $ac_slash = 0;
+		protected $ac_bash = 0;
+		protected $ac_pierce = 0;
+		protected $ac_magic = 0;
+		
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_DRINK, $can_own);
-			$this->thirst = $thirst;
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $condition, $can_own, $door_unlock_id);
+			$this->ac_slash = $ac_slash;
+			$this->ac_bash = $ac_bash;
+			$this->ac_pierce = $ac_pierce;
+			$this->ac_magic = $ac_magic;
 		}
-		
 		public function save($inv_inside_id)
 		{
 			if($this->id)
@@ -49,13 +54,16 @@
 						weight = ?,
 						item_type = ?,
 						can_own = ?,
-						thirst = ?,
 						fk_inv_inside_id = ?,
-						fk_door_unlock_id = ?
+						fk_door_unlock_id = ?,
+						ac_slash = ?,
+						ac_bash = ?,
+						ac_pierce = ?,
+						ac_magic = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
-						$this->weight, $this->type, $this->can_own, $this->thirst, $inv_inside_id, 
-						$this->door_unlock_id, $this->id));
+						$this->weight, $this->type, $this->can_own, $inv_inside_id,
+						$this->door_unlock_id, $this->ac_slash, $this->ac_bash, $this->ac_pierce, $this->ac_magic, $this->id));
 			
 			Db::getInstance()->query(
 				'INSERT INTO items (
@@ -66,17 +74,24 @@
 					weight,
 					item_type,
 					can_own,
-					thirst,
 					fk_inv_inside_id,
-					fk_door_unlock_id)
+					fk_door_unlock_id,
+					ac_slash,
+					ac_bash,
+					ac_pierce,
+					ac_magic)
 				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $this->thirst, $inv_inside_id, $this->door_unlock_id));
+				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id, $this->ac_slash,
+				$this->ac_bash, $this->ac_pierce, $this->ac_magic));
 			$this->id = Db::getInstance()->insert_id;
 		}
-		
-		public function getThirst() { return $this->thirst; }
+		public function getACSlash() { return $this->ac_slash; }
+		public function getACBash() { return $this->ac_bash; }
+		public function getACPierce() { return $this->ac_pierce; }
+		public function getACMagic() { return $this->ac_magic; }
+	
 	}
 
 ?>

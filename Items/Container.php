@@ -30,22 +30,26 @@
 	
 		private $inventory;
 	
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $condition, $type, $inventory = null, $can_own = true, $verb = '', $equipment_position = null)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $inventory = null, $can_own = true)
 		{
 		
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, $condition, $type, $can_own, $verb, $equipment_position);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_CONTAINER, $can_own);
 			
 			if(!($inventory instanceof Inventory))
 				$inventory = new Inventory($type, $this->id);
 			else
 			{
-				$inventory->setTable($type);
+				$inventory->setTable(self::TYPE_CONTAINER);
 				$inventory->setTableId($this->id);
 			}
 			
 			$this->inventory = $inventory;
 		}
-		
+		public function save($inv_inside_id)
+		{
+			parent::save($inv_inside_id);
+			$this->inventory->save();
+		}
 		public function getInventory() { return $this->inventory; }
 		
 		public function lookDescribe()

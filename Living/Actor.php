@@ -46,7 +46,6 @@
 		protected $wis;
 		protected $dex;
 		protected $con;
-		protected $trigger;
 		protected $fighting;
 		protected $sex;
 		protected $disposition; // sitting, sleeping, standing
@@ -55,12 +54,18 @@
 		protected $concentration;
 		protected $delay = 0;
 		protected $fightable = true;
+		protected $hit_roll = 0;
+		protected $dam_roll = 0;
+		protected $ac_slash = 0;
+		protected $ac_bash = 0;
+		protected $ac_pierce = 0;
+		protected $ac_magic = 0;
 		
 		protected $race = null;
 		public $_class = null;
 		protected $room = null;
 		protected $inventory = null;
-		protected $equipment = null;
+		protected $equipped = null;
 		public $skill_set = null;
 		
 		static $instances;
@@ -70,7 +75,7 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
-			$this->equipment = new Equipment();
+			$this->equipped = new Equipped();
 			$this->room = Room::find($room_id);
 			
 			if($this instanceof User)
@@ -111,7 +116,7 @@
 		public function getMovement() { return $this->movement; }
 		public function getMaxMovement() { return $this->max_movement; }
 		public function getInventory() { return $this->inventory; }
-		public function getEquipment() { return $this->equipment; }
+		public function getEquipped() { return $this->equipped; }
 		public function getRoomId() { return $this->room->getId(); }
 		public function getRoom() { return $this->room; }
 		public function getDescription() { return $this->long; }
@@ -157,24 +162,24 @@
 		}
 		public function getStatus()
 		{
-		
+			
 			$statuses = array
 			(
 				'100' => 'is in excellent condition',
-				'99' => 'has some scratches',
+				'99' => 'has a few scratches',
+				'75' => 'has some small wounds and bruises',
 				'50' => 'has quite a few wounds',
-				'10' => 'has some big nasty wounds and scratches'
+				'30' => 'has some big nasty wounds and scratches',
+				'15' => 'looks pretty hurt',
+				'0' => 'is in awful condition'
 			);
 			
 			$hp_percent = $this->getHpPercent();
 			
 			foreach($statuses as $index => $status)
-			{
 				if($hp_percent <= $index)
-				{
 					$descriptor = $status;
-				}
-			}
+			
 			return $descriptor;
 		
 		}
@@ -341,7 +346,6 @@
 		{
 		
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
-			$attacking_weapon = $this->equipment->getEquipmentByPosition(Equipment::WEAPON);
 			
 			if($attacking_weapon === null)
 				$verb = $this->getRace()->getUnarmedVerb();
