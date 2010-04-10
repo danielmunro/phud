@@ -37,10 +37,15 @@
 		protected $condition = 100;
 		protected $type = '';
 		protected $can_own = true;
-		protected $equipment_position = '';
 		protected $verb = '';
 		protected $shop = false;
 		protected $door_unlock_id = 0;
+		
+		const TYPE_ITEM = 1;
+		const TYPE_CONTAINER = 2;
+		const TYPE_FOOD = 3;
+		const TYPE_DRINK = 4;
+		const TYPE_WEAPON = 5;
 		
 		private static $instances = array();
 		
@@ -73,24 +78,23 @@
 			if(empty($row))
 				return null;
 			
-			if($row->fk_inventory_id > 0)
-				self::$instances[$id] = 
-					new Container($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
-							$row->item_condition, $row->item_type, Inventory::findById($row->fk_inventory_id), $row->can_own, $row->verb,
-							$row->equipment_position);
-			else if(isset($row->nourishment) && $row->nourishment > 0)
-				self::$instances[$id] = 
-					new Food($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
+			switch($row->item_type)
+			{
+				case self::TYPE_CONTAINER:
+					self::$instances[$id] = new Container($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
+						$row->item_condition, $row->item_type, Inventory::findById($row->fk_inventory_id), $row->can_own, $row->verb,
+						$row->equipment_position);
+				case self::TYPE_FOOD:
+					self::$instances[$id] = new Food($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
 						$row->item_condition, $row->nourishment);
-			else if(isset($row->thirst) && $row->thirst > 0)
-				self::$instances[$id] =
-					new Drink($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
+				case self::TYPE_DRINK:
+					self::$instances[$id] = new Drink($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
 						$row->item_condition, $row->thirst);
-			else						
-				self::$instances[$id] = 
-					new Item($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
+				default:
+					self::$instances[$id] = new Item($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight,
 						$row->item_condition, $row->item_type, $row->can_own, $row->verb,
-						$row->equipment_position, $row->fk_door_unlock_id);
+						$row->equipment_position, $row->fk_door_unlock_id);		
+			}
 			
 			return self::$instances[$id];
 		}

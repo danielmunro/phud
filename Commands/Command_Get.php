@@ -35,7 +35,9 @@
 				$item = $actor->getRoom()->getInventory()->getItemByInput($args);
 			else
 			{
+				
 				array_shift($args);
+				
 				// getting something from somewhere
 				$container = $actor->getRoom()->getInventory()->getContainerByInput($args);
 				if(!($container instanceof Container))
@@ -43,12 +45,26 @@
 				if(!($container instanceof Container))
 					return Server::out($actor, "Nothing is there.");
 				
-				$item = $container->getInventory()->getItemByInput(array('', $args[0]));
-				
-				if($item instanceof Item)
-					$from = ' from ' . $container->getShort();
+				if($args[0] == 'all')
+				{
+					foreach($container->getInventory()->getItems() as $item)
+					{
+						$container->getInventory()->remove($item);
+						$actor->getInventory()->add($item);
+						Server::out($actor, 'You get ' . $item->getShort() . ' from ' . $container->getShort() . '.');
+					}
+					return;
+				}
 				else
-					return Server::out($actor, "You see nothing like that.");
+				{
+				
+					$item = $container->getInventory()->getItemByInput(array('', $args[0]));
+				
+					if($item instanceof Item)
+						$from = ' from ' . $container->getShort();
+					else
+						return Server::out($actor, "You see nothing like that.");
+				}
 			}
 			
 			if($item instanceof Item)

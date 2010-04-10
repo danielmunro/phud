@@ -167,6 +167,7 @@
 						if($command instanceof Command)
 						{
 							$command->perform($this->clients[$i], $args);
+							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 							continue;
 						}
 						

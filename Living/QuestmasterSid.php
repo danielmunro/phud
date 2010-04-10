@@ -46,15 +46,15 @@
 		{
 			
 			$quest = Quest::find($actor->getId(), 1);
-			if(!$quest->getAwardObtained())
-			{
-				if(!$quest->getAccepted())
-					return Command_Say::perform($this, "Thank goodness you've arrived. A giant rat from the wine cellar has stolen some of my poker chips! Chase him down and slay him and I will give you a reward.");
-				if($quest->getAccepted() && !$quest->getCompleted())
-					return Command_Say::perform($this, "Ah no luck yet? Well keep at it!");
-				if($quest->getComplete() && !$actor->getAwardObtained())
-					return $this->questAward($actor);
-			}
+			
+			if(!$quest->getAccepted())
+				return Command_Say::perform($this, "Thank goodness you've arrived. A giant rat from the wine cellar has stolen some of my poker chips! Chase him down and slay him and I will give you a reward.");
+			if($quest->getAccepted() && !$quest->getComplete())
+				return Command_Say::perform($this, "Ah no luck yet? Well keep at it!");
+			if($quest->getComplete() && !$quest->getAwardObtained())
+				return $this->questAward($actor);
+			if($quest->getAwardObtained())
+				return Command_Say::perform($this, "Now I can get back to business.");
 		}
 		
 		public function questAward(&$actor)
@@ -63,6 +63,7 @@
 			$quest = Quest::find($actor->getId(), 1);
 			if($quest->getComplete() && !$quest->getAwardObtained())
 			{
+				$quest->setAwardObtained(true);
 				$actor->awardExperience(1000);
 				$this->silver += 2;
 				Command_Say::perform($this, "Thank you so much " . $actor->getAlias(true) . "! Here's a fair cut of the loot.");
@@ -89,10 +90,13 @@
 		{
 		
 			$item = $actor->getInventory()->getItemByInput(array('', 'chips'));
+			$quest = Quest::find($actor->getId(), 1);
+			
+			if($quest->getAwardObtained())
+				return Command_Say::perform($this, "Now I can get back to business.");
 			
 			if($item instanceof Item && $item->getType() == 'quest')
 			{
-				$quest = Quest::find($actor->getId(), 1);
 				$quest->setComplete(true);
 				$actor->getInventory()->remove($item);
 				$this->questAward($actor);

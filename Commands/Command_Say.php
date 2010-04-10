@@ -18,9 +18,9 @@
 			
 			foreach($actors as $a)
 				if($a->getAlias() == $actor->getAlias())
-					Server::out($a, "You say, \"" . $message ."\"" . ($a instanceof User ? "\n\n" . $a->prompt() : ''), false);
+					Server::out($a, "You say, \"" . $message ."\"");
 				else
-					Server::out($a, $actor->getAlias(true) . " says, \"" . $message . "\"" . ($a instanceof User ? "\n\n" . $a->prompt() : ''), false);
+					Server::out($a, $actor->getAlias(true) . " says, \"" . $message . "\"");
 		}
 	}
 ?>

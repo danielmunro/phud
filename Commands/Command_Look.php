@@ -33,7 +33,7 @@
 		
 			if($args === null || sizeof($args) == 1) // The actor is looking
 			{
-				print $actor->getAlias() . ': ' . $actor->getRoom()->getId() . ': ';
+				
 				$doors = Door::findByRoomId($actor->getRoom()->getId());
 				
 				Server::out($actor, $actor->getRoom()->getTitle());
@@ -59,7 +59,7 @@
 						Server::out($actor, 
 							ucfirst($item->getShort()) . ' is here.');
 				
-				return Server::out($actor, "\n" . $actor->prompt(), false);
+				return;
 			}
 			
 			// Actor is looking at something... find out what it is
@@ -69,7 +69,7 @@
 			if(empty($target))
 				$target = $actor->getInventory()->getItemByInput($args);
 			if(!empty($target))
-				return Server::out($actor, $target->lookDescribe() . "\n\n" . $actor->prompt(), false);
+				return Server::out($actor, $target->lookDescribe());
 			
 			// Direction
 			if(strpos($args[1], 'n') === 0)

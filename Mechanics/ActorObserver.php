@@ -74,7 +74,7 @@
 		
 		public function getActorByRoomAndInput($room_id, $input)
 		{
-			print_r($this->actors);
+			
 			if(empty($input[1]))
 				return;
 			$input[1] = strtolower($input[1]);
@@ -152,18 +152,18 @@
 						$actor->setRoom(Room::find($actor->getDefaultRoomId()));
 						$actor->resetRespawnTime();
 						$actor->setDead(false);
-						self::announceToOthersInRoom($actor->getRoom()->getId(), $actor->getId(),
+						self::announceToOthersInRoom($actor->getRoom()->getId(), $actor->getShort(),
 									$actor->getAlias(true) . " arrives in a puff of smoke.");
 					}
 			}
 		
 		}
 		
-		public static function announceToOthersInRoom($room_id, $actor_id, $message)
+		public static function announceToOthersInRoom($room_id, $actor_short, $message)
 		{
 			$actors = self::instance()->getActorsInRoom($room_id);
 			foreach($actors as $actor)
-				if($actor->getId() != $actor_id)
+				if($actor->getShort() != $actor_short)
 					Server::out($actor, $message);
 		}
 		

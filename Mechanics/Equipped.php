@@ -25,15 +25,56 @@
 	 *
 	 */
 
-	class Equipment extends Item
+	class Equipped
 	{
 	
-		private $position;
+		const POSITION_LIGHT = 0;
+		const POSTION_FINGER_L = 1;
+		const POSITION_FINGER_R = 2;
+		const POSITION_NECK_1 = 3;
+		const POSITION_NECK_2 = 4;
+		const POSTION_BODY = 5;
+		const POSITION_HEAD = 6;
+		const POSTION_LEGS = 7;
+		const POSTION_FEET = 8;
+		const POSTION_HANDS = 9;
+		const POSTION_ARMS = 10;
+		const POSTION_TORSO = 11;
+		const POSTION_WAIST = 12;
+		const POSTION_WRIST_L = 13;
+		const POSTION_WRIST_R = 14;
+		const POSTION_WIELD_L = 15;
+		const POSTION_WIELD_R = 16;
+		const POSTION_HOLD = 17;
+		const POSTION_FLOAT = 18;
+		
+		private $equipment;
 		
 		public function __construct()
 		{
 		
-			
+			$this->equipment = array
+			(
+				self::POSITION_LIGHT => null,
+				self::POSTION_FINGER_L => null,
+				self::POSITION_FINGER_R => null,
+				self::POSITION_NECK_1 => null,
+				self::POSITION_NECK_2 => null,
+				self::POSTION_BODY => null,
+				self::POSITION_HEAD => null,
+				self::POSTION_LEGS => null,
+				self::POSTION_FEET => null,
+				self::POSTION_HANDS => null,
+				self::POSTION_ARMS => null,
+				self::POSTION_TORSO => null,
+				self::POSTION_WAIST => null,
+				self::POSTION_WRIST_L => null,
+				self::POSTION_WRIST_R => null,
+				self::POSTION_WIELD_L => null,
+				self::POSTION_WIELD_R => null,
+				self::POSTION_HOLD => null,
+				self::POSTION_FLOAT => null
+			);
 		
 		}
 		

@@ -73,7 +73,7 @@
 		
 			if($query_str == '')
 				throw new Exception('Query string is empty');
-				
+			
 			$this->result = !empty($parameters) ? 
 								parent::query($this->sanitize($query_str, $parameters)) :
 								parent::query($query_str);
