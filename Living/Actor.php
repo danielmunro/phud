@@ -124,6 +124,7 @@
 		public function getSilver() { return $this->silver; }
 		public function addSilver($silver) { $this->silver += $silver; }
 		public function getGold() { return $this->gold; }
+		public function getSex() { return $this->sex; }
 		public function setRoom($room)
 		{
 			if($room instanceof Room)

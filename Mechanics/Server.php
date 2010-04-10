@@ -133,7 +133,9 @@
 					
 					if(in_array($this->clients[$i]->getSocket(), $read))
 					{
-						$input = strtolower(socket_read($this->clients[$i]->getSocket(), 1024));
+						$input = socket_read($this->clients[$i]->getSocket(), 1024);
+						if(strpos($input, 'room ') !== 0)
+							$input = trim($input);
 						
 						// Modify the command buffer appropriately
 						if(trim($input) == '~')
@@ -260,9 +262,13 @@
 				100
 			);
 			$m->getInventory()->add(new Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
+			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 0, 4, Weapon::TYPE_SWORD, 1, 2));
+			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue mace is here.', 'a sub issue mace', 'sub mace', 0, 4, Weapon::TYPE_MACE, 1, 2));
+			Room::find(1)->getInventory()->add(new Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, Equipment::TYPE_WIELD, -10, -10, -10, 0));
 			//new Shopkeeper('Arlen'
 			new QuestmasterSid();
-			new Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
+			$m = new Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
+			$m->getInventory()->add(new Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
 			//$q = new Questmaster('Sid', 'sid gambler', 'A notorious gambler stands before you, fidgeting with poker chips.', 6, 1, 'human');
 			//$q->addQuestInfoDialog('message', "Drat! I figured the Temple would send a fresh recruit. You think they'd give me a little more respect than that.", 2);
 			//$q->addQuestInfoDialog('action', "Fidgeting the poker chips in one hand, Sid grabs a hankerchief and wipes his brow.", 1);

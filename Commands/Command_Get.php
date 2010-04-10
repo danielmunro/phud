@@ -32,7 +32,10 @@
 		{
 		
 			if(sizeof($args) == 2)
+			{
 				$item = $actor->getRoom()->getInventory()->getItemByInput($args);
+				$container = $actor->getRoom();
+			}
 			else
 			{
 				

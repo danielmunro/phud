@@ -39,16 +39,14 @@
 		const TYPE_WHIP = 5;
 		const TYPE_DAGGER = 6;
 		const TYPE_WAND = 7;
-		const TYPE_WHIP = 8;
-		const TYPE_EXOTIC = 9;
-		const TYPE_SPEAR = 10;
-		const TYPE_FLAIL = 11;
-		const TYPE_WHIP = 12;
+		const TYPE_EXOTIC = 8;
+		const TYPE_SPEAR = 9;
+		const TYPE_FLAIL = 10;
 		
 		public function __construct($id, $long, $short, $nouns, $value, $weight, $weapon_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WEILD, $condition, $can_own, $door_unlock_id);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id);
 			$this->weapon_type = $weapon_type;
 			$this->hit_roll = $hit_roll;
 			$this->dam_roll = $dam_roll;

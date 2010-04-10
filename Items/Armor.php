@@ -33,10 +33,10 @@
 		protected $ac_pierce = 0;
 		protected $ac_magic = 0;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $equipment_type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $condition, $can_own, $door_unlock_id);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_ARMOR, $equipment_type, $condition, $can_own, $door_unlock_id);
 			$this->ac_slash = $ac_slash;
 			$this->ac_bash = $ac_bash;
 			$this->ac_pierce = $ac_pierce;

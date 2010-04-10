@@ -43,6 +43,7 @@
 		
 		public static function findById($id)
 		{
+			
 			$row = Db::getInstance()->query(
 				'SELECT * FROM inventories WHERE id = ?', $id)->getResult()->fetch_object();
 			
@@ -94,15 +95,13 @@
 		public function remove(Item $item, $hard = false)
 		{
 			foreach($this->items as $key => $i)
-			{
-				print $i->getShort() . " - " . $item->getShort() . " ? " . ($i->getShort() == $item->getShort()) . "\n";
 				if($i->getShort() == $item->getShort())
 				{
 					unset($this->items[$key]);
 					if($hard)
 						$item->delete();
+					return;
 				}
-			}
 		}
 		
 		public function getItems() { return $this->items; }

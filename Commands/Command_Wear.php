@@ -8,11 +8,11 @@
 		
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if($item instanceof Item && !($item instanceof Equipable))
+			if(!($item instanceof Equipment))
 				return Server::out($actor, "You cannot equip " . $item->getShort() . ".");
 			
 			if($item instanceof Item)
-				$actor->getEquipment()->equip($actor, $item);
+				return $actor->getEquipped()->equip($actor, $item);
 			
 			Server::out($actor, 'You have nothing like that in your inventory.');
 		

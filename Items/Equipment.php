@@ -51,14 +51,14 @@
 		{
 			
 			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own, $door_unlock_id);
-			$this->condition = $condtion;
+			$this->condition = $condition;
 			$this->equipment_type = $equipment_type;
 		}
 		
 		public function getCondition() { return $this->condition; }
 		public function decreaseCondition($amount) { $this->condition -= $amount; }
 		public function increaseCondition($amount) { $this->condition += $amount; }
-		public function getEquipmentType() { return $this->position; }
+		public function getEquipmentType() { return $this->equipment_type; }
 	
 	}
 

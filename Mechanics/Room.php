@@ -45,7 +45,7 @@
 	
 		const PURGATORY_ROOM_ID = 7;
 	
-		private function __construct($id = null)
+		public function __construct($id = null)
 		{
 			
 		}
@@ -67,8 +67,8 @@
 		public static function find($id)
 		{
 		
-			if(isset(Room::$instance[$id]) === true && Room::$instance[$id] instanceof Room)
-				return Room::$instance[$id];
+			if(isset(self::$instance[$id]) === true && self::$instance[$id] instanceof Room)
+				return self::$instance[$id];
 			
 			$row = Db::getInstance()->query(
 				'SELECT 
@@ -76,10 +76,10 @@
 				FROM 
 					world 
 				WHERE world.id = ?', $id)->getResult()->fetch_object();
-			Room::$instance[$id] = new Room($id);
-			Room::$instance[$id]->loadFrom($row);
-			Room::$instance[$id]->setInventory(Inventory::find('room', $id));
-			return Room::$instance[$id];
+			self::$instance[$id] = new self($id);
+			self::$instance[$id]->loadFrom($row);
+			self::$instance[$id]->setInventory(Inventory::find('room', $id));
+			return self::$instance[$id];
 		
 		}
 		
@@ -132,6 +132,28 @@
 		public function getInventory() { return $this->inventory; }
 		public function setInventory(Inventory $inventory) { $this->inventory = $inventory; }
 		public function getArea() { return $this->area; }
+		
+		public function setTitle($title) { $this->title = $title; }
+		public function setDescription($description) { $this->description = $description; }
+		public function setNorth($north) { $this->north = $north; }
+		public function setSouth($south) { $this->south = $south; }
+		public function setEast($east) { $this->east = $east; }
+		public function setWest($west) { $this->west = $west; }
+		public function setUp($up) { $this->up = $up; }
+		public function setDown($down) { $this->down = $down; }
+		
+		public function save()
+		{
+			if($this->id)
+				Db::getInstance()->query('UPDATE world SET title = ?, description = ?, north = ?, south = ?, east = ?, west = ?, up = ?, down = ?, area = ? WHERE id = ?',
+					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area, $this->id));
+			else
+			{
+				$this->id = Db::getInstance()->query('INSERT INTO world (title, description, north, south, east, west, up, down, area) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area))->insert_id;
+				self::$instance[$this->id] = $this;
+			}
+		}
 	}
 
 ?>

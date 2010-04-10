@@ -32,8 +32,7 @@
 		{
 		
 			Server::out($actor, 'Your equipment:');
-			Server::out($actor, $actor->getEquipment()->displayContents());
-		
+			Server::out($actor, $actor->getEquipped()->displayContents());		
 		}
 	
 	}
