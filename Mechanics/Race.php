@@ -45,6 +45,14 @@
 		
 		private static $instances = array();
 		
+		protected $hit_roll = 0;
+		protected $dam_roll = 0;
+		
+		protected $ac_slash = 0;
+		protected $ac_bash = 0;
+		protected $ac_pierce = 0;
+		protected $ac_magic = 0;
+		
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
 		protected $full = 0;
@@ -55,6 +63,20 @@
 		protected $unarmed_verb = 'punch';
 		
 		private $actor;
+		
+		protected $size = 2;
+		
+		protected $effects_resist = array();
+		protected $effects_vuln = array();
+		
+		protected $materials_vuln = array();
+		
+		protected $damages_vuln = array();
+		
+		const SIZE_TINY = 0;
+		const SIZE_SMALL = 1;
+		const SIZE_NORMAL = 2;
+		const SIZE_LARGE = 3;
 		
 		protected function __construct()
 		{
@@ -86,6 +108,14 @@
 			$actor->setDex($this->dex);
 			$actor->setCon($this->con);
 			
+			$actor->setHitRoll($this->hit_roll);
+			$actor->setDamRoll($this->dam_roll);
+			
+			$actor->setAcSlash($this->ac_slash);
+			$actor->setAcBash($this->ac_bash);
+			$actor->setAcPierce($this->ac_pierce);
+			$actor->setAcMagic($this->ac_magic);
+			
 		}
 		
 		public function getRaceStr() { return get_class($this); }
@@ -100,5 +130,11 @@
 		public function getDecreaseNourishment() { return $this->decrease_nourishment; }
 		public function getDecreaseThirst() { return $this->decrease_thirst; }
 		public function getFull() { return $this->full; }
+		public function getHitRoll() { return $this->hit_roll; }
+		public function getDamRoll() { return $this->dam_roll; }
+		public function getAcSlash() { return $this->ac_slash; }
+		public function getAcBash() { return $this->ac_bash; }
+		public function getAcPierce() { return $this->ac_pierce; }
+		public function getAcMagic() { return $this->ac_magic; }
 	}
 ?>

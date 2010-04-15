@@ -32,22 +32,30 @@
 		{
 		
 			$this->str = 17;
-			$this->int = 20;
+			$this->int = 19;
 			$this->wis = 18;
 			$this->dex = 19;
-			$this->con = 18;
+			$this->con = 17;
 			
 			$this->max_str = 21;
-			$this->max_int = 24;
+			$this->max_int = 23;
 			$this->max_wis = 22;
 			$this->max_dex = 23;
-			$this->max_con = 22;
+			$this->max_con = 21;
 			
 			$this->movement_cost = 2;
 			
 			$this->decrease_thirst = 1;
 			$this->decrease_nourishment = 1;
 			$this->full = 40;
+			
+			$this->ac_bash = 0;
+			$this->ac_slash = 0;
+			$this->ac_pierce = 0;
+			$this->ac_magic = 0;
+			
+			$this->hit_roll = 1;
+			$this->dam_roll = 2;
 			
 			$this->move_verb = 'walks';
 			

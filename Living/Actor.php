@@ -66,7 +66,6 @@
 		protected $room = null;
 		protected $inventory = null;
 		protected $equipped = null;
-		public $skill_set = null;
 		
 		static $instances;
 		
@@ -184,6 +183,12 @@
 			return $descriptor;
 		
 		}
+		public function setHitRoll($hit_roll) { $this->hit_roll = $hit_roll; }
+		public function setDamRoll($dam_roll) { $this->dam_roll = $dam_roll; }
+		public function setAcSlash($ac_slash) { $this->ac_slash = $ac_slash; }
+		public function setAcBash($ac_bash) { $this->ac_bash = $ac_bash; }
+		public function setAcPierce($ac_pierce) { $this->ac_pierce = $ac_pierce; }
+		public function setAcMagic($ac_magic) { $this->ac_magic = $ac_magic; }
 		public function increaseCopper($amount) { $this->copper += $amount; }
 		public function decreaseCopper($amount) { $this->copper -= $amount; }
 		public function increaseSilver($amount) { $this->silver += $amount; }
@@ -373,10 +378,11 @@
 			
 			$actors = ActorObserver::instance()->getActorsInRoom($this->room->getId());
 			
-			foreach($actors as $actor_sub)
-				Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($attack > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+			if($this->damage($actor, $attack))
+				foreach($actors as $actor_sub)
+					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($attack > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+			//$actor->setHp($actor->getHp() - $attack, $this);
 			
-			$actor->setHp($actor->getHp() - $attack, $this);
 			
 			if($actor->getHp() > 0)
 			{
@@ -385,6 +391,59 @@
 					$actor->addFighter($this);
 			}
 			Debug::addDebugLine(' Round done computing.');
+		}
+		
+		public function isSafe()
+		{
+			// Checks for safe rooms, imms, non-mobs, etc
+			return false;
+		}
+		
+		public function damage(Actor &$target, $damage, $type = Damage::TYPE_HIT)
+		{
+		
+			// Don't do anything if dead
+			if(!$target->isAlive() || !$this->isAlive())
+				return false;
+			
+			// Don't hit yerself
+			if($this->getAlias() == $target->getAlias())
+				return false;
+			
+			// Damage reduction
+			if ($damage > 35)
+				$damage = ($damage - 35) / 2 + 35;
+			if ($damage > 80)
+				$damage = ($damage - 80) / 2 + 80;
+			
+			// Check for safe rooms, imms, non mobs & non players, etc
+			if($target->isSafe())
+				return false;
+			
+			// Update fighters list
+			if(!$target->getFighter($this->getAlias()))
+				$target->addFighter($this);
+			if(!$this->getFighter($target->getAlias()))
+				$this->addFighter($target);
+			
+			// Check for parry, dodge, and shield block
+			if($type === Damage::TYPE_HIT)
+			{
+				$skill = Skill::findByAliasAndName($target->getAlias(), 'dodge');
+				if(!empty($skill))
+				{
+					if(Skill_Dodge::perform($target, $skill))
+					{
+						Server::out($this, $target->getAlias(true) . ' dodges your attack!');
+						Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
+						return false;
+					}
+				}
+			}
+			
+			$target->setHp($target->getHp() - $damage, $this);
+			return true;
+			
 		}
 		
 		public function checkAlive($killer = null)

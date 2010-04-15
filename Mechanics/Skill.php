@@ -25,23 +25,83 @@
 	 *
 	 */
 
-	abstract class Skill
+	class Skill
 	{
 	
-		private static $instances;
+		private $id = 0;
+		private $name = '';
+		private $proficiency = 0;
+		private $user_id = 0;
 	
-		public static function find($skill)
+		private static $instances = array();
+	
+		public function __construct($id, $name, $proficiency, $alias, $user_id = null)
 		{
-			$skill = ucfirst($skill);
-			if(class_exists($skill))
-			{
-				if(empty(self::$instances[$skill]))
-					self::$instances[$skill] = new $skill();
-				return self::$instances[$skill];
-			}		
+		
+			$alias = strtolower($alias);
+			$name = strtolower($name);
+			
+			$this->id = $id;
+			$this->name = $name;
+			$this->proficiency = $proficiency;
+			$this->user_id = $user_id;
+			
+			self::$instances[$alias][$name] = $this;
 		}
 	
-		abstract public static function perform(Actor &$actor, $args = null);
+		public static function findByUserAndInput($user_id, $input)
+		{
+		
+			$skills = Skill::findByUserId($user_id);
+			if(!empty($skills[$input]))
+				return $skills[$input];
+		}
+		
+		public static function findByAliasAndName($alias, $name, $query = false)
+		{
+			$alias = strtolower($alias);
+			$name = strtolower($name);
+			if(!isset(self::$instances[$alias][$name]))
+				return null;
+			
+			return self::$instances[$alias][$name];
+		}
+	
+		public static function findByUserId($user_id)
+		{
+			
+			if(!empty(self::$instances[$user_id]))
+				return self::$instances[$user_id];
+			
+			$rows = Db::getInstance()->query('SELECT users.alias, skills.* FROM skills INNER JOIN users ON skills.fk_user_id = users.id WHERE fk_user_id = ?', $user_id)->fetch_objects();
+			
+			foreach($rows as $row)
+				self::$instances[$row->alias][$row->skill] = new Skill($row->id, $row->skill, $row->percent, $row->fk_user_id);
+			
+			return self::$instances[$row->alias];
+		}
+	
+		public function getName() { return $this->name; }
+		public function getProficiency() { return $this->proficiency; }
+		public function increaseProficiency($proficiency) { $this->proficiency = $proficiency; }
+		
+		public function checkGain()
+		{
+			
+			
+		}
+		
+		public function save()
+		{
+		
+			if(!$this->user_id)
+				return false;
+			
+			if($this->id)
+				Db::getInstance()->query('UPDATE skills SET skill = ?, percent = ? WHERE id = ?', array($this->name, $this->proficiency, $this->id));
+			else
+				$this->id = Db::getInstance()->query('INSERT INTO skills (skill, percent, fk_user_id) VALUES (?, ?, ?)', array($this->name, $this->proficiency, $this->user_id));
+		}
 	
 	}
 

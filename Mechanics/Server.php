@@ -173,6 +173,25 @@
 							continue;
 						}
 						
+						$skill = Skill::findByUserAndInput($this->clients[$i]->getId(), $args[0]);
+						if($skill instanceof Skill)
+						{
+							$skill = Skill_Perform::find('Skill_' . ucfirst($skill->getName()))->perform($this->clients[$i], $skill, $args[0]);
+							//$skill->perform($this->clients[$i], $args);
+							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							continue;
+						}
+						
+						/**
+						$spell = Spell::find('Spell_' . ucfirst($args[0]));
+						if($spell instanceof Spell)
+						{
+							$spell->perform($this->clients[$i], $args);
+							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							continue;
+						}
+						*/
+						
 						$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
 						$input = trim($input);
 						foreach($doors as $door)
@@ -216,7 +235,7 @@
 		
 		public function initializeEnvironment()
 		{
-			new Mob
+			$m = new Mob
 			(
 				'a town crier',
 				'town crier',
@@ -231,6 +250,7 @@
 				100,
 				100
 			);
+			new Skill(0, 'dodge', 100, $m->getAlias());
 			new Mob
 			(
 				'the zombified remains of the mayor of Midgaard',
@@ -265,15 +285,9 @@
 			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 0, 4, Weapon::TYPE_SWORD, 1, 2));
 			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue mace is here.', 'a sub issue mace', 'sub mace', 0, 4, Weapon::TYPE_MACE, 1, 2));
 			Room::find(1)->getInventory()->add(new Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, Equipment::TYPE_WIELD, -10, -10, -10, 0));
-			//new Shopkeeper('Arlen'
 			new QuestmasterSid();
 			$m = new Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
 			$m->getInventory()->add(new Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
-			//$q = new Questmaster('Sid', 'sid gambler', 'A notorious gambler stands before you, fidgeting with poker chips.', 6, 1, 'human');
-			//$q->addQuestInfoDialog('message', "Drat! I figured the Temple would send a fresh recruit. You think they'd give me a little more respect than that.", 2);
-			//$q->addQuestInfoDialog('action', "Fidgeting the poker chips in one hand, Sid grabs a hankerchief and wipes his brow.", 1);
-			//$q->addQuestInfoDialog('message', "We've got no time to waste. The biggest rat I'd ever seen ran in from the wine cellar, swiped my poker chips he did!", 3);
-			//$q->addQuestInfoDialog('message', "I need you to follow the giant rat back into the wine cellar and get me those poker chips. I'll have a reward for you.", 1);
 		}
 		
 		public function getSocket()

@@ -25,48 +25,18 @@
 	 *
 	 */
 
-	class Undead extends Race
+	class Skill_Dodge extends Skill_Perform
 	{
 	
-		public function __construct()
+		public static function perform(Actor &$actor, Skill $skill, $args = null)
 		{
-		
-			$this->str = 20;
-			$this->int = 15;
-			$this->wis = 15;
-			$this->dex = 13;
-			$this->con = 21;
-			$this->max_str = 23;
-			$this->max_int = 20;
-			$this->max_wis = 20;
-			$this->max_dex = 18;
-			$this->max_con = 24;
 			
-			$this->movement_cost = 2;
+			$chance = rand(0, 100);
+			return $chance < $skill->getProficiency() / 2;
 			
-			$this->decrease_thirst = 1;
-			$this->decrease_nourishment = 2;
-			$this->full = 40;
-			
-			$this->ac_bash = -15;
-			$this->ac_slash = -15;
-			$this->ac_pierce = 0;
-			$this->ac_magic = 10;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 2;
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->unarmed_verb = 'swipe';
-			
-			$this->move_verb = 'limps';
-			
-			parent::__construct();
-		
 		}
+		
+		public function getName() { return 'Kick'; }
 	
 	}
 

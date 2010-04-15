@@ -25,33 +25,33 @@
 	 *
 	 */
 
-	class Undead extends Race
+	class Elf extends Race
 	{
 	
 		public function __construct()
 		{
 		
-			$this->str = 20;
-			$this->int = 15;
-			$this->wis = 15;
-			$this->dex = 13;
-			$this->con = 21;
-			$this->max_str = 23;
-			$this->max_int = 20;
-			$this->max_wis = 20;
-			$this->max_dex = 18;
-			$this->max_con = 24;
+			$this->str = 14;
+			$this->int = 18;
+			$this->wis = 21;
+			$this->dex = 21;
+			$this->con = 15;
+			$this->max_str = 18;
+			$this->max_int = 22;
+			$this->max_wis = 25;
+			$this->max_dex = 25;
+			$this->max_con = 19;
 			
-			$this->movement_cost = 2;
+			$this->movement_cost = 1;
 			
 			$this->decrease_thirst = 1;
-			$this->decrease_nourishment = 2;
+			$this->decrease_nourishment = 1;
 			$this->full = 40;
 			
-			$this->ac_bash = -15;
-			$this->ac_slash = -15;
+			$this->ac_bash = 0;
+			$this->ac_slash = 0;
 			$this->ac_pierce = 0;
-			$this->ac_magic = 10;
+			$this->ac_magic = 0;
 			
 			$this->hit_roll = 1;
 			$this->dam_roll = 2;
@@ -60,9 +60,11 @@
 			(
 			);
 			
-			$this->unarmed_verb = 'swipe';
+			$this->unarmed_verb = 'punch';
 			
-			$this->move_verb = 'limps';
+			$this->move_verb = 'walks';
+			
+			$this->size = self::SIZE_NORMAL
 			
 			parent::__construct();
 		

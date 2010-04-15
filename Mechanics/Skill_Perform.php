@@ -25,38 +25,23 @@
 	 *
 	 */
 
-	class Kick extends Skill
+	abstract class Skill_Perform
 	{
-	
-		public static function perform(Actor &$actor, $args = null)
+		
+		private static $instances;
+
+		public static function find($skill)
 		{
-		
-			$actor_target = $actor->getTarget();
-			$specified_target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $args);
 			
-			$final_target = null;
-			if($actor_target instanceof Actor)
-				$final_target = $actor_target;
-			else if($specified_target instanceof Actor)
-				$final_target = $specified_target;
-			
-			if($final_target === null)
-				return Server::out($actor, 'You kick your legs wildly!');
-			
-			
-			Server::out($actor, 'You kick ' . $final_target->getAlias() . ', causing him pain!');
-			Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
-			
-			$final_target->setHp($final_target->getHp() - (1 + $actor->getLevel() * 0.1), $actor);
-			
-			if(!($actor_target instanceof Actor))
-				$actor->addFighter($final_target);
-			
-			$actor->incrementDelay(1);
-			
+			if(class_exists($skill))
+			{
+				if(empty(self::$instances[$skill]))
+					self::$instances[$skill] = new $skill();
+				return self::$instances[$skill];
+			}		
 		}
-		
-		public function getName() { return 'kick'; }
+	
+		abstract public static function perform(Actor &$actor, Skill $skill, $args = null);
 	
 	}
 

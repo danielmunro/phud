@@ -141,7 +141,7 @@
 					case 'human':
 						$this->setRace('human');
 						Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
-						Server::out($this, "Now let's figure out your statistics...");
+						Server::out($this, "Now let's figure out your attributes...");
 						$this->login['attr'] = 0;
 						Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 						Server::out($this,
@@ -150,6 +150,7 @@
 						return;
 					default:
 						Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
+						$this->login['race'] = false;
 				}
 			}
 			
@@ -232,6 +233,7 @@
 					$this->login['finish'] = false;
 					$this->login['attr'] = true;
 					Server::out($this, "Well done! Press any key to begin your journey.");
+					return;
 				}
 			}
 			
@@ -255,7 +257,7 @@
 				$this->nourishment = 5;
 				$this->setRoom(Room::find(1));
 				
-				$this->save();
+				$this->save(false);
 				
 				parent::__construct($this->getRoom()->getId());
 			}
@@ -341,10 +343,13 @@
 		
 		public function getId() { return $this->id; }
 		
-		public function save()
+		public function save($inv = true)
 		{
 			Debug::addDebugLine("Saving actor " . $this->getAlias(true));
-			$this->inventory->save();
+			
+			if($inv)
+				$this->inventory->save();
+			
 			if($this->id)
 				Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
 											alias = ?,
