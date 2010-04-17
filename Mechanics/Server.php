@@ -173,24 +173,14 @@
 							continue;
 						}
 						
-						$skill = Skill::findByUserAndInput($this->clients[$i]->getId(), $args[0]);
+						$skill = Skill::findByActorAndInput($this->clients[$i]->getAlias(), $args[0]);
 						if($skill instanceof Skill)
 						{
-							$skill = Skill_Perform::find('Skill_' . ucfirst($skill->getName()))->perform($this->clients[$i], $skill, $args[0]);
+							$skill = Perform::find('Skill_' . ucfirst($skill->getName()))->perform($this->clients[$i], $skill, $args[0]);
 							//$skill->perform($this->clients[$i], $args);
 							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 							continue;
 						}
-						
-						/**
-						$spell = Spell::find('Spell_' . ucfirst($args[0]));
-						if($spell instanceof Spell)
-						{
-							$spell->perform($this->clients[$i], $args);
-							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
-							continue;
-						}
-						*/
 						
 						$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
 						$input = trim($input);

@@ -43,7 +43,8 @@
 			'Command_Inv' => 'Command_Inventory',
 			'Command_Eq' => 'Command_Equipment',
 			'Command_Equip' => 'Command_Equipment',
-			'Command_Sc' => 'Command_Score'
+			'Command_Sc' => 'Command_Score',
+			'Command_C' => 'Command_Cast'
 		);
 	
 		public static function find($command)

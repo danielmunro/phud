@@ -62,7 +62,6 @@
 		protected $ac_magic = 0;
 		
 		protected $race = null;
-		public $_class = null;
 		protected $room = null;
 		protected $inventory = null;
 		protected $equipped = null;

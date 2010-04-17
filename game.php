@@ -36,14 +36,15 @@
 	
 		$dirs = array
 		(
-			'',
-			'Interfaces/',
-			'Living/',
+			'Commands/',
 			'Mechanics/',
+			'Living/',
 			'Races/',
 			'Items/',
+			'',
+			'Interfaces/',
 			'Skills/',
-			'Commands/'
+			'Spells/'
 		);
 	
 		foreach($dirs as $dir)

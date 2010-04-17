@@ -49,36 +49,38 @@
 			self::$instances[$alias][$name] = $this;
 		}
 	
-		public static function findByUserAndInput($user_id, $input)
+		public static function findByActorAndInput($alias, $input)
 		{
 		
-			$skills = Skill::findByUserId($user_id);
+			$skills = Skill::findByAlias($alias);
 			if(!empty($skills[$input]))
 				return $skills[$input];
 		}
 		
-		public static function findByAliasAndName($alias, $name, $query = false)
+		public static function findByAliasAndName($alias, $name)
 		{
-			$alias = strtolower($alias);
-			$name = strtolower($name);
-			if(!isset(self::$instances[$alias][$name]))
-				return null;
-			
-			return self::$instances[$alias][$name];
+
+			if(!isset(self::$instances[$alias]))
+				self::findByAlias($alias);
+
+			if(isset(self::$instances[$alias][$name]))
+				return self::$instances[$alias][$name];
+
+			return null;
 		}
 	
-		public static function findByUserId($user_id)
+		public static function findByAlias($alias)
 		{
 			
-			if(!empty(self::$instances[$user_id]))
-				return self::$instances[$user_id];
+			if(!empty(self::$instances[$alias]))
+				return self::$instances[$alias];
 			
-			$rows = Db::getInstance()->query('SELECT users.alias, skills.* FROM skills INNER JOIN users ON skills.fk_user_id = users.id WHERE fk_user_id = ?', $user_id)->fetch_objects();
+			$rows = Db::getInstance()->query('SELECT skills.* FROM skills INNER JOIN users ON skills.fk_user_id = users.id WHERE users.alias = ?', $alias)->fetch_objects();
 			
 			foreach($rows as $row)
-				self::$instances[$row->alias][$row->skill] = new Skill($row->id, $row->skill, $row->percent, $row->fk_user_id);
+				self::$instances[$alias][$row->skill] = new Skill($row->id, $row->skill, $row->percent, $row->fk_user_id);
 			
-			return self::$instances[$row->alias];
+			return self::$instances[$alias];
 		}
 	
 		public function getName() { return $this->name; }

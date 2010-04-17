@@ -25,7 +25,7 @@
 	 *
 	 */
 
-	class Skill_Kick extends Skill_Perform
+	class Skill_Kick extends Perform
 	{
 	
 		private static $base_chance = 99;

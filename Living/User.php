@@ -36,6 +36,11 @@
 		private $login = array('alias' => false);
 		private $command_buffer = array();
 		
+		const FIGHTING_MYRMIDON = 0;
+		const FIGHTING_BERSERKER = 1;
+		const FIGHTING_MONK = 2;
+		const FIGHTING_ROGUE = 4;
+		
 		public function __construct($socket)
 		{
 			$this->socket = $socket;
@@ -230,11 +235,25 @@
 				}
 				else
 				{
-					$this->login['finish'] = false;
+					$this->login['caster'] = false;
 					$this->login['attr'] = true;
-					Server::out($this, "Well done! Press any key to begin your journey.");
+					Server::out($this, "Please select your primary casting discipline:");
+					Server::out($this, "[Healing Geomancy Benedictions Necromancy Sorcery Summoning]");
 					return;
 				}
+			}
+			
+			if(isset($this->login['caster']) && $this->login['caster'] === false)
+			{
+				$this->login['caster'] = $input;
+				switch($this->login['caster'])
+				{
+					case 'heal':
+					case 'healer':
+						Caster_Healing::giveGroupToActor($this);
+						
+				}
+				return;
 			}
 			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)

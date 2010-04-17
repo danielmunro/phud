@@ -25,10 +25,18 @@
 	 *
 	 */
 
-	abstract class Skill_Perform
+	abstract class Perform
 	{
 		
+		protected $level = 0;
+		protected $min_mana_cost = 0;
+		protected $min_movement_cost = 0;
+		protected $min_hp_cost = 0;
+		protected $display_name = array();
+		
 		private static $instances;
+
+		protected function __construct() {}
 
 		public static function find($skill)
 		{
@@ -37,12 +45,29 @@
 			{
 				if(empty(self::$instances[$skill]))
 					self::$instances[$skill] = new $skill();
+				
 				return self::$instances[$skill];
 			}		
 		}
 	
 		abstract public static function perform(Actor &$actor, Skill $skill, $args = null);
 	
+		public function getLevel() { return $this->level; }
+		public function getMinManaCost() { return $this->min_mana_cost; }
+		public function getMinHpCost() { return $this->min_hp_cost; }
+		public function getMinMovementCost() { return $this->min_movement_cost; }
+	
+		public function getDisplayName($actor)
+		{
+			return $this->display_name[0];
+		}
+	
+		public function getModifiedManaCost(Actor $caster)
+		{
+		
+			$cost = 100 / ( 2 + $caster->getLevel() - $this->level);
+			return $cost > $this->min_mana_cost ? $cost : $this->min_mana_cost;
+		}
 	}
 
 ?>
