@@ -25,7 +25,7 @@
 	 *
 	 */
 
-	class Skill_Dodge extends Perform
+	class Skill_Shield_Block extends Perform
 	{
 	
 		public static function perform(Actor &$actor, Skill $skill, $args = null)
@@ -33,10 +33,9 @@
 			
 			$chance = rand(0, 100);
 			return $chance < $skill->getProficiency() / 2;
-			
 		}
 		
-		public function getName() { return 'Dodge'; }
+		public function getName() { return 'Shield_Block'; }
 	
 	}
 

@@ -25,19 +25,25 @@
 	 *
 	 */
 
-	class Skill_Dodge extends Perform
+	class Spell_Cure_Serious extends Perform
 	{
 	
-		public static function perform(Actor &$actor, Skill $skill, $args = null)
+		protected $level = 10;
+		protected $display_name = array('cure serious', 'frzzz flam');
+		protected $improve_by_practice = 0;
+		protected $min_mana_cost = 25;
+	
+		public static function perform(Actor &$actor, Skill $spell, $args = null)
 		{
+		
+			$amount = 5 + $actor->getLevel() / 2;
+			$actor->setHp($actor->getHp() + (int) $amount);
 			
-			$chance = rand(0, 100);
-			return $chance < $skill->getProficiency() / 2;
-			
+			Server::out($actor, "You feel better!");
 		}
 		
-		public function getName() { return 'Dodge'; }
-	
+		public function getName() { return 'Cure_Serious'; }
+		
 	}
 
 ?>

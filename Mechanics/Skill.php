@@ -48,6 +48,24 @@
 			
 			self::$instances[$alias][$name] = $this;
 		}
+		
+		public static function saveSet($alias)
+		{
+			
+			if(empty(self::$instances[$alias]))
+				return;
+			
+			foreach(self::$instances[$alias] as $skill)
+				$skill->save();
+		}
+		
+		public function save()
+		{
+			if($this->id)
+				Db::getInstance()->query('UPDATE skills SET proficiency = ? WHERE id = ?', array($this->proficiency, $this->id));
+			else
+				$this->id = Db::getInstance()->query('INSERT INTO skills (skill, percent, fk_user_id) VALUES (?, ?, ?)', array($this->name, $this->proficiency, $this->user_id))->insert_id;
+		}
 	
 		public static function findByActorAndInput($alias, $input)
 		{
@@ -87,12 +105,7 @@
 		public function getProficiency() { return $this->proficiency; }
 		public function increaseProficiency($proficiency) { $this->proficiency = $proficiency; }
 		
-		public function checkGain()
-		{
-			
-			
-		}
-		
+		/**
 		public function save()
 		{
 		
@@ -104,7 +117,7 @@
 			else
 				$this->id = Db::getInstance()->query('INSERT INTO skills (skill, percent, fk_user_id) VALUES (?, ?, ?)', array($this->name, $this->proficiency, $this->user_id));
 		}
-	
+		*/
 	}
 
 ?>

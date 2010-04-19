@@ -380,8 +380,6 @@
 			if($this->damage($actor, $attack))
 				foreach($actors as $actor_sub)
 					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($attack > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
-			//$actor->setHp($actor->getHp() - $attack, $this);
-			
 			
 			if($actor->getHp() > 0)
 			{
@@ -428,21 +426,36 @@
 			// Check for parry, dodge, and shield block
 			if($type === Damage::TYPE_HIT)
 			{
-				$skill = Skill::findByAliasAndName($target->getAlias(), 'dodge');
-				if(!empty($skill))
+				$skill = Skill::findByAliasAndName($target->getAlias(), 'Dodge');
+				if(!empty($skill) && Skill_Dodge::perform($target, $skill))
 				{
-					if(Skill_Dodge::perform($target, $skill))
-					{
-						Server::out($this, $target->getAlias(true) . ' dodges your attack!');
-						Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
-						return false;
-					}
+					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
+					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
+					return false;
+				}
+				$skill = Skill::findByAliasAndName($target->getAlias(), 'Shield_Block');
+				if(!empty($skill) && Skill_Shield_Block::perform($target, $skill))
+				{
+					
+					Server::out($this, $target->getAlias(true) . " blocks your attack with " . $target->getDisplaySex() . " shield!");
+					Server::out($target, "You block " . $this->getAlias() . "'s attack with your shield!");
+					return false;
 				}
 			}
 			
 			$target->setHp($target->getHp() - $damage, $this);
 			return true;
 			
+		}
+		
+		public function getDisplaySex()
+		{
+			if($this->getSex() == 'm')
+				return 'his';
+			else if($this->getSex() == 'f')
+				return 'her';
+			else
+				return 'its';
 		}
 		
 		public function checkAlive($killer = null)

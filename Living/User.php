@@ -251,9 +251,22 @@
 					case 'heal':
 					case 'healer':
 						Caster_Healing::giveGroupToActor($this);
-						
+						break;
+					default:
+						$this->login['caster'] = false;
+						Server::out($this, "That is not a casting discipline.");
+						return;
 				}
+				$this->login['fighter'] = false;
+				Server::out($this, "Please select a fighting discipline:");
+				Server::out($this, "[Myrmidon Berserker Monk Rogue]");
 				return;
+			}
+			
+			if(isset($this->login['fighter']) && $this->login['fighter'] === false)
+			{
+				$this->login['fighter'] = $input;
+				$this->login['finish'] = false;
 			}
 			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)

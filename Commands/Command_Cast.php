@@ -53,6 +53,7 @@
 			 * Perform
 			 */
 			$perform->perform($actor, $spell, $args);
+			$perform->checkGain($actor, $spell);
 			$actor->setMana($actor->getMana() - $mana_cost);
 		}
 	}

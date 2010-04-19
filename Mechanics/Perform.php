@@ -33,6 +33,7 @@
 		protected $min_movement_cost = 0;
 		protected $min_hp_cost = 0;
 		protected $display_name = array();
+		protected $improve_by_practice = 0;
 		
 		private static $instances;
 
@@ -56,6 +57,7 @@
 		public function getMinManaCost() { return $this->min_mana_cost; }
 		public function getMinHpCost() { return $this->min_hp_cost; }
 		public function getMinMovementCost() { return $this->min_movement_cost; }
+		public function getImprovedByPractice() { return $this->improved_by_practice; }
 	
 		public function getDisplayName($actor)
 		{
@@ -67,6 +69,13 @@
 		
 			$cost = 100 / ( 2 + $caster->getLevel() - $this->level);
 			return $cost > $this->min_mana_cost ? $cost : $this->min_mana_cost;
+		}
+		
+		
+		public function checkGain($actor, $skill)
+		{
+			
+			
 		}
 	}
 

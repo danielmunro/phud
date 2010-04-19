@@ -30,12 +30,13 @@
 	
 		protected $level = 1;
 		protected $display_name = array('cure light', 'frzzz');
+		protected $improve_by_practice = 0;
 	
 		public static function perform(Actor &$actor, Skill $spell, $args = null)
 		{
 		
-			$amount = 15 + $actor->getLevel() / 2;
-			$actor->setHp($actor->getHp() + $amount);
+			$amount = 1 + $actor->getLevel() / 2;
+			$actor->setHp($actor->getHp() + (int) $amount);
 			
 			Server::out($actor, "You feel better!");
 		}

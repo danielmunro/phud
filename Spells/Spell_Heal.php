@@ -25,19 +25,25 @@
 	 *
 	 */
 
-	class Skill_Dodge extends Perform
+	class Spell_Heal extends Perform
 	{
 	
-		public static function perform(Actor &$actor, Skill $skill, $args = null)
+		protected $level = 45;
+		protected $display_name = array('heal', 'frzzz plfsa');
+		protected $improve_by_practice = 0;
+		protected $min_mana_cost = 50;
+	
+		public static function perform(Actor &$actor, Skill $spell, $args = null)
 		{
+		
+			$amount = 50;
+			$actor->setHp($actor->getHp() + $amount);
 			
-			$chance = rand(0, 100);
-			return $chance < $skill->getProficiency() / 2;
-			
+			Server::out($actor, "You feel better!");
 		}
 		
-		public function getName() { return 'Dodge'; }
-	
+		public function getName() { return 'Heal'; }
+		
 	}
 
 ?>
