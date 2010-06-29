@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class _List extends \Mechanics\Command
+	class CList extends \Mechanics\Command
 	{
 	
 		protected function __construct()
