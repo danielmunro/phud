@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	abstract class Actor
 	{
 	
@@ -73,13 +73,13 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
-			$this->equipped = new Equipped();
+			$this->equipped = new \Mechanics\Equipped();
 			$this->room = Room::find($room_id);
 			
 			if($this instanceof User)
-				$this->inventory = Inventory::find($this->getTable(), $this->id);
+				$this->inventory = \Mechanics\Inventory::find($this->getTable(), $this->id);
 			else
-				$this->inventory = new Inventory($this->getTable(), 0);
+				$this->inventory = new \Mechanics\Inventory($this->getTable(), 0);
 		}
 		
 		public function getStr() { return $this->str; }
