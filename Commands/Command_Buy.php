@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Command_Buy extends Command
+	namespace Commands;
+	class Buy extends Command
 	{
 	
 		public static function perform(&$actor, $args = null)

@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Command_North extends Move_Direction
+	namespace Commands;
+	class North extends \Mechanics\Move_Direction
 	{
 	
 		public static function perform(&$actor, $args = null)
