@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class Equipped
 	{
 	
@@ -118,7 +118,7 @@
 		
 		}
 		
-		public function equip(Actor &$actor, Equipment $item)
+		public function equip(Actor &$actor, \Items\Equipment $item)
 		{
 			
 			$positions = array_keys(self::$types, $item->getEquipmentType());
@@ -160,17 +160,17 @@
 				$msg_others = $actor->getAlias(true) . " ";
 			}
 			
-			if($equipped->getEquipmentType() == Equipment::TYPE_WIELD)
+			if($equipped->getEquipmentType() == \Items\Equipment::TYPE_WIELD)
 			{
 				$msg_you .= 'wield ';
 				$msg_others .= 'wields ';
 			}
-			else if($equipped->getEquipmentType() == Equipment::TYPE_FLOAT)
+			else if($equipped->getEquipmentType() == \Items\Equipment::TYPE_FLOAT)
 			{
 				$msg_you .= 'releases ';
 				$msg_others .= 'releases ';
 			}
-			else if($equipped->getEquipmentType() == Equipment::TYPE_HOLD)
+			else if($equipped->getEquipmentType() == \Items\Equipment::TYPE_HOLD)
 			{
 				$msg_you .= 'hold ';
 				$msg_others .= 'holds ';

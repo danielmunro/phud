@@ -24,42 +24,56 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	abstract class Command
 	{
 	
 		public static $instances = array();
 	
-		public static $aliases =
-		array
-		(
-			'Command_N' => 'Command_North',
-			'Command_S' => 'Command_South',
-			'Command_E' => 'Command_East',
-			'Command_W' => 'Command_West',
-			'Command_U' => 'Command_Up',
-			'Command_D' => 'Command_Down',
-			'Command_L' => 'Command_Look',
-			'Command_Inv' => 'Command_Inventory',
-			'Command_Eq' => 'Command_Equipment',
-			'Command_Equip' => 'Command_Equipment',
-			'Command_Sc' => 'Command_Score',
-			'Command_C' => 'Command_Cast'
-		);
-	
-		public static function find($command)
+		public static $aliases = array();
+		
+		public static function addAlias($command, $alias)
 		{
 			
-			if(empty(self::$instances[$command]) && class_exists($command))
-				self::$instances[$command] = new $command();
+			if(is_array($alias))
+			{
+				foreach($alias as $a)
+					self::addAlias($command, $a);
+				return;
+			}
 			
-			if(!empty(self::$aliases[$command]))
-				return self::find(self::$aliases[$command]);
+			if(isset(self::$aliases[$alias]))
+				throw new \Exceptions\Command(
+								'Cannot redeclare aliases.',
+								\Exceptions\Command::ALIAS_ALREADY_EXISTS);
+			self::$aliases[$alias] = $command;
+		}
+	
+		public static function instantiate($command)
+		{
 			
-			if(!empty(self::$instances[$command]) && self::$instances[$command] instanceof Command)
-				return self::$instances[$command];
+			$class = 'Commands\\' . $command;
 			
-			return null;
+			if(isset(self::$instances[$command]))
+				throw new \Exceptions\Command(
+								$command . ' already instantiated, trying to do so again.',
+								\Exceptions\Command::ALREADY_INSTANTIATED);
+			print 'CL: ' . $class . "\n";
+			self::$instances[$class] = new $class();
+		}
+	
+		public static function find($input)
+		{
+			
+			$input = strtolower($input);
+			if(!isset(self::$aliases[$input]))
+				throw new \Exceptions\Command(
+								$input . ' unrecognized.',
+								\Exceptions\Command::INVALID_COMMAND);
+			
+			$alias = self::$aliases[$input];
+			
+			return self::$instances[$alias];
 		}
 		
 		public static function findObjectByArgs($objects, $args)

@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class User extends Actor
+	namespace Living;
+	class User extends \Mechanics\Actor
 	{
 	
 		protected $id;
@@ -44,6 +44,7 @@
 		public function __construct($socket)
 		{
 			$this->socket = $socket;
+			$this->login['alias'] = false;
 		}
 		
 		public function prompt()
@@ -56,19 +57,19 @@
 			if($this->login['alias'] === false)
 			{
 				$this->login['alias'] = $input;
-				$row = Db::getInstance()->query(
+				$row = \Mechanics\Db::getInstance()->query(
 					'SELECT * FROM users WHERE alias = ?',
 					$this->login['alias'])->getResult()->fetch_object();
 				if(!empty($row))
 				{
-					Server::out($this, 'Please give me yer secret password: ', false);
+					\Mechanics\Server::out($this, 'Please give me yer secret password: ', false);
 					$this->login['pass'] = false;
 				}
 				else
 				{
-					Server::out($this, 'Ah, a newcomer to our realm! I will help get you set up to begin your adventure.');
-					Server::out($this, 'My senses are old and weary, but I must keep up the records!');
-					Server::out($this, 'First things first, did I hear ye right, yer name is ' . $this->login['alias'] . '? (y/n) ', false);
+					\Mechanics\Server::out($this, 'Ah, a newcomer to our realm! I will help get you set up to begin your adventure.');
+					\Mechanics\Server::out($this, 'My senses are old and weary, but I must keep up the records!');
+					\Mechanics\Server::out($this, 'First things first, did I hear ye right, yer name is ' . $this->login['alias'] . '? (y/n) ', false);
 					$this->login['confirm_new'] = false;
 				}
 				return;
@@ -82,11 +83,11 @@
 			
 				if($this->id == 0)
 				{
-					Server::out($this, 'Hmm... Did I hear you right? Try again.');
+					\Mechanics\Server::out($this, 'Hmm... Did I hear you right? Try again.');
 					$this->login = array('alias' => false);
 				}
 				else
-					Command_Look::perform($this);
+					\Commands\Look::perform($this);
 
 				return;
 			}
@@ -99,16 +100,13 @@
 					case 'y':
 					case 'yes':
 						$this->login['new_pass'] = false;
-						Server::out($this, "Alright, good. Now I'll need a secret password from ye so I'll recognize you later. What is that password? ", false);
-						return;
+						return \Mechanics\Server::out($this, "Alright, good. Now I'll need a secret password from ye so I'll recognize you later. What is that password? ", false);
 					case 'n':
 					case 'no':
 						$this->login = array('alias' => false);
-						Server::out($this, "Must've misheard ye. What is yer name again? ", false);
-						return;
+						return \Mechanics\Server::out($this, "Must've misheard ye. What is yer name again? ", false);
 					default:
-						Server::out($this, 'Eh? It was a yes or no question, so which is it? ', false);
-						return;
+						return \Mechanics\Server::out($this, 'Eh? It was a yes or no question, so which is it? ', false);
 				}
 			}
 			
@@ -116,8 +114,7 @@
 			{
 				$this->login['new_pass'] = $input;
 				$this->login['new_pass_2'] = false;
-				Server::out($this, 'Can I get that again? ', false);
-				return;
+				return \Mechanics\Server::out($this, 'Can I get that again? ', false);
 			}
 			
 			if(isset($this->login['new_pass_2']) && $this->login['new_pass_2'] === false)
@@ -126,14 +123,14 @@
 				if($this->login['new_pass'] == $this->login['new_pass_2'])
 				{
 					$this->login['race'] = false;
-					Server::out($this, 'Alright! What race are you?');
-					Server::out($this, '[human undead faerie] ', false);
+					\Mechanics\Server::out($this, 'Alright! What race are you?');
+					\Mechanics\Server::out($this, '[human undead faerie] ', false);
 				}
 				else
 				{
 					unset($this->login['new_pass_2']);
 					$this->login['new_pass'] = false;
-					Server::out($this, "Yer passwords don't match. What is yer password? ", false);
+					\Mechanics\Server::out($this, "Yer passwords don't match. What is yer password? ", false);
 				}
 				return;
 			}
@@ -145,16 +142,16 @@
 				{
 					case 'human':
 						$this->setRace('human');
-						Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
-						Server::out($this, "Now let's figure out your attributes...");
+						\Mechanics\Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
+						\Mechanics\Server::out($this, "Now let's figure out your attributes...");
 						$this->login['attr'] = 0;
-						Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-						Server::out($this,
+						\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+						\Mechanics\Server::out($this,
 							'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
-						Server::out($this, "Add a point to: ", false);
+						\Mechanics\Server::out($this, "Add a point to: ", false);
 						return;
 					default:
-						Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
+						\Mechanics\Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
 						$this->login['race'] = false;
 				}
 			}
@@ -169,10 +166,10 @@
 						{
 							$this->setStr($this->getStr() + 1);
 						}
-						catch(Actor_Exception $e)
+						catch(\Mechanics\Actor_Exception $e)
 						{
 							$this->login['attr']--;
-							Server::out($this, 'This attribute is maxed!');
+							\Mechanics\Server::out($this, 'This attribute is maxed!');
 						}
 						break;
 					case 'int':
@@ -180,10 +177,10 @@
 						{
 							$this->setInt($this->getInt() + 1);
 						}
-						catch(Actor_Exception $e)
+						catch(\Mechanics\Actor_Exception $e)
 						{
 							$this->login['attr']--;
-							Server::out($this, 'This attribute is maxed!');
+							\Mechanics\Server::out($this, 'This attribute is maxed!');
 						}
 						break;
 					case 'wis':
@@ -191,10 +188,10 @@
 						{
 							$this->setWis($this->getWis() + 1);
 						}
-						catch(Actor_Exception $e)
+						catch(\Mechanics\Actor_Exception $e)
 						{
 							$this->login['attr']--;
-							Server::out($this, 'This attribute is maxed!');
+							\Mechanics\Server::out($this, 'This attribute is maxed!');
 						}
 						break;
 					case 'dex':
@@ -202,10 +199,10 @@
 						{
 							$this->setDex($this->getDex() + 1);
 						}
-						catch(Actor_Exception $e)
+						catch(\Mechanics\Actor_Exception $e)
 						{
 							$this->login['attr']--;
-							Server::out($this, 'This attribute is maxed!');
+							\Mechanics\Server::out($this, 'This attribute is maxed!');
 						}
 						break;
 					case 'con':
@@ -213,14 +210,14 @@
 						{
 							$this->setCon($this->getCon() + 1);
 						}
-						catch(Actor_Exception $e)
+						catch(\Mechanics\Actor_Exception $e)
 						{
 							$this->login['attr']--;
-							Server::out($this, 'This attribute is maxed!');
+							\Mechanics\Server::out($this, 'This attribute is maxed!');
 						}
 						break;
 					default:
-						Server::out($this, 'Which attribute is that? ', false);
+						\Mechanics\Server::out($this, 'Which attribute is that? ', false);
 						return;
 				}
 				
@@ -228,43 +225,50 @@
 				
 				if($this->login['attr'] < 10)
 				{
-					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-					Server::out($this,
+					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+					\Mechanics\Server::out($this,
 						'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
-					Server::out($this, "Add a point to: ", false);
+					\Mechanics\Server::out($this, "Add a point to: ", false);
 				}
 				else
 				{
-					$this->login['caster'] = false;
+					$this->login['discipline'] = false;
 					$this->login['attr'] = true;
-					Server::out($this, "Please select your primary casting discipline:");
-					Server::out($this, "[Healing Geomancy Benedictions Necromancy Sorcery Summoning]");
+					\Mechanics\Server::out($this, "Please select your primary discipline:");
+					\Mechanics\Server::out($this, "[Berserker Crusader Elementalist Gladiator Rogue Sorcerer]");
 					return;
 				}
 			}
 			
-			if(isset($this->login['caster']) && $this->login['caster'] === false)
+			if(isset($this->login['discipline']) && $this->login['discipline'] === false)
 			{
-				$this->login['caster'] = $input;
+				$this->login['discipline'] = $input;
+				$this->login['finish'] = false;
+				/**
 				switch($this->login['caster'])
 				{
-					case 'heal':
-					case 'healer':
-						Caster_Healing::giveGroupToActor($this);
+					case 'cru':
+					case 'crusader':
+						$this->setDiscipline(new Crusader());
 						break;
 					default:
 						$this->login['caster'] = false;
 						Server::out($this, "That is not a casting discipline.");
 						return;
 				}
-				$this->login['fighter'] = false;
 				Server::out($this, "Please select a fighting discipline:");
 				Server::out($this, "[Myrmidon Berserker Monk Rogue]");
+				*/
 				return;
 			}
 			
 			if(isset($this->login['fighter']) && $this->login['fighter'] === false)
 			{
+				$this->login['fighter'] = $input;
+				//switch($this->login['fighter'])
+				//{
+				//	case
+				//}
 				$this->login['fighter'] = $input;
 				$this->login['finish'] = false;
 			}
@@ -290,7 +294,7 @@
 				$this->setRoom(Room::find(1));
 				
 				$this->save(false);
-				
+				\Commands\Look::perform($this);
 				parent::__construct($this->getRoom()->getId());
 			}
 		}
@@ -317,9 +321,9 @@
 		
 		public function loadByAliasAndPassword($alias, $password)
 		{
-			$row = Db::getInstance()->query('SELECT * FROM users WHERE LOWER(alias) = ? AND pass = ?', array(strtolower($alias), sha1('mud password salt!' . $password)))->getResult()->fetch_object();
+			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM users WHERE LOWER(alias) = ? AND pass = ?', array(strtolower($alias), sha1('mud password salt!' . $password)))->getResult()->fetch_object();
 			if(empty($row))
-				throw new Exception('No user found');
+				throw new \Exception('No user found');
 			$this->alias = $row->alias;
 			$this->hp = $row->hp;
 			$this->max_hp = $row->max_hp;
@@ -338,7 +342,7 @@
 			$this->dex = $row->dex;
 			$this->con = $row->con;
 			$this->setRace($row->race);
-			$this->setRoom(Room::find($row->fk_room_id));
+			$this->setRoom(\Mechanics\Room::find($row->fk_room_id));
 			$this->experience = $row->experience;
 			$this->exp_per_level = $row->exp_per_level;
 			$this->id = $row->id;
@@ -377,13 +381,13 @@
 		
 		public function save($inv = true)
 		{
-			Debug::addDebugLine("Saving actor " . $this->getAlias(true));
+			\Mechanics\Debug::addDebugLine("Saving actor " . $this->getAlias(true));
 			
 			if($inv)
 				$this->inventory->save();
 			
 			if($this->id)
-				Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
+				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
 											alias = ?,
 											hp = ?,
 											max_hp = ?,
@@ -429,8 +433,8 @@
 											$this->id));
 			else
 			{
-				Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
+															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
 																$this->getAlias(),
 																$this->hp,
 																$this->max_hp,
@@ -450,8 +454,8 @@
 																$this->con,
 																$this->getRaceStr(),
 																$this->getRoom()->getId()
-															));
-				$this->id = Db::getInstance()->insert_id;
+															), true);
+				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
 		}
 	}

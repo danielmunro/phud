@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Db extends Mysqli
+	namespace Mechanics;
+	class Db extends \Mysqli
 	{
 		
 		/**
@@ -45,7 +45,7 @@
 		 */
 		protected function __construct()
 		{
-			parent::__construct('localhost', 'root', '', 'mud');
+			parent::__construct('localhost', 'root', 'Gx9$m.1r', 'mud');
 		}
 		
 		/**

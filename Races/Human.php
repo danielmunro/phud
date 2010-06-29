@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Human extends Race
+	namespace Races;
+	class Human extends \Mechanics\Race
 	{
 	
 		protected function __construct()

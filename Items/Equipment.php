@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Items;
 	abstract class Equipment extends Item
 	{
 	

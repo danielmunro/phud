@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class Room
 	{
 	
@@ -74,8 +74,8 @@
 				'SELECT 
 					*
 				FROM 
-					world 
-				WHERE world.id = ?', $id)->getResult()->fetch_object();
+					rooms 
+				WHERE id = ?', $id)->getResult()->fetch_object();
 			self::$instance[$id] = new self($id);
 			self::$instance[$id]->loadFrom($row);
 			self::$instance[$id]->setInventory(Inventory::find('room', $id));
@@ -145,11 +145,11 @@
 		public function save()
 		{
 			if($this->id)
-				Db::getInstance()->query('UPDATE world SET title = ?, description = ?, north = ?, south = ?, east = ?, west = ?, up = ?, down = ?, area = ? WHERE id = ?',
+				Db::getInstance()->query('UPDATE rooms SET title = ?, description = ?, north = ?, south = ?, east = ?, west = ?, up = ?, down = ?, area = ? WHERE id = ?',
 					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area, $this->id));
 			else
 			{
-				$this->id = Db::getInstance()->query('INSERT INTO world (title, description, north, south, east, west, up, down, area) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+				$this->id = Db::getInstance()->query('INSERT INTO rooms (title, description, north, south, east, west, up, down, area) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
 					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area))->insert_id;
 				self::$instance[$this->id] = $this;
 			}

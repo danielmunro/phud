@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Items;
 	class Item
 	{
 	
@@ -67,7 +67,7 @@
 			if(!empty(self::$instances[$id]) && self::$instances[$id] instanceof Item)
 				return self::$instances[$id];
 			
-			$row = Db::getInstance()->query('SELECT * FROM items WHERE id = ?', $id)->getResult()->fetch_object();
+			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM items WHERE id = ?', $id)->getResult()->fetch_object();
 			
 			if(empty($row))
 				return null;

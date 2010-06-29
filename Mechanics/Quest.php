@@ -1,5 +1,5 @@
 <?php
-
+	namespace Mechanics;
 	class Quest
 	{
 	

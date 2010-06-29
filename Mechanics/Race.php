@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	abstract class Race
 	{
 	
@@ -90,13 +90,12 @@
 			if(!empty(self::$instances[$race]) && self::$instances[$race] instanceof Race)
 				return self::$instances[$race];
 			
-			if(class_exists($race))
-			{
-				$instance = new $race();
-			
-				if(!empty($instance) && $instance instanceof Race)
-					return self::$instances[$race] = $instance;
-			}
+			$class = 'Races\\' . $race;
+
+			$instance = new $class();
+		
+			if(!empty($instance) && $instance instanceof Race)
+				return self::$instances[$race] = $instance;
 		}
 		
 		public function applyRacialAttributeModifiers(&$actor)

@@ -233,10 +233,10 @@ CREATE TABLE `users` (
 -- Table structure for table `world`
 --
 
-DROP TABLE IF EXISTS `world`;
+DROP TABLE IF EXISTS `rooms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `world` (
+CREATE TABLE `rooms` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
@@ -252,13 +252,13 @@ CREATE TABLE `world` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `world`
+-- Dumping data for table `rooms`
 --
 
-LOCK TABLES `world` WRITE;
-/*!40000 ALTER TABLE `world` DISABLE KEYS */;
-INSERT INTO `world` VALUES (1,'Temple Fountain','A majestic fountain temple lies in the middle of an extensive and beautiful walkway.',2,3,0,0,0,0,'temple'),(2,'Temple Courtyard','The walkway opens up to a large courtyard, basking in the open sun.',0,1,0,8,0,0,'temple'),(3,'Temple Entrance','A grand archway separates the foyer from the busy market street.',1,4,5,0,0,0,'temple'),(4,'The Market Square','Roads full of busy travellers stretch in every direction. To the north is an awe-inspiring temple.',3,0,0,0,0,0,'temple'),(5,'Cleric\'s Bar','A dim bar is here, lit by wall candles dancing in the breeze.',0,0,0,3,0,6,'temple'),(6,'Gambling Room','The large, unfinished basement of the Cleric\'s bar has given way to gambling rings.',0,0,0,0,5,0,'temple'),(7,'Puragtory','',0,0,0,0,0,0,'temple'),(8,'Entrance to the Temple Arena','A large training arena lies before you.',0,0,2,0,0,0,'temple_arena');
-/*!40000 ALTER TABLE `world` ENABLE KEYS */;
+LOCK TABLES `rooms` WRITE;
+/*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
+INSERT INTO `rooms` VALUES (1,'Temple Fountain','A majestic fountain temple lies in the middle of an extensive and beautiful walkway.',2,3,0,0,0,0,'temple'),(2,'Temple Courtyard','The walkway opens up to a large courtyard, basking in the open sun.',0,1,0,8,0,0,'temple'),(3,'Temple Entrance','A grand archway separates the foyer from the busy market street.',1,4,5,0,0,0,'temple'),(4,'The Market Square','Roads full of busy travellers stretch in every direction. To the north is an awe-inspiring temple.',3,0,0,0,0,0,'temple'),(5,'Cleric\'s Bar','A dim bar is here, lit by wall candles dancing in the breeze.',0,0,0,3,0,6,'temple'),(6,'Gambling Room','The large, unfinished basement of the Cleric\'s bar has given way to gambling rings.',0,0,0,0,5,0,'temple'),(7,'Puragtory','',0,0,0,0,0,0,'temple'),(8,'Entrance to the Temple Arena','A large training arena lies before you.',0,0,2,0,0,0,'temple_arena');
+/*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

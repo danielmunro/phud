@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class Inventory
 	{
 	
@@ -82,17 +82,17 @@
 				if($row->item_id == 0)
 					continue;
 			
-				self::$instances[$table][$table_id]->add(Item::getInstance($row->item_id));
+				self::$instances[$table][$table_id]->add(\Items\Item::getInstance($row->item_id));
 			}
 			return self::$instances[$table][$table_id];
 		}
 		
-		public function add(Item $item)
+		public function add(\Items\Item $item)
 		{
 			$this->items[] = $item;
 		}
 		
-		public function remove(Item $item, $hard = false)
+		public function remove(\Items\Item $item, $hard = false)
 		{
 			foreach($this->items as $key => $i)
 				if($i->getShort() == $item->getShort())

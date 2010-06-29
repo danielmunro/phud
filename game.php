@@ -29,14 +29,26 @@
 
 	date_default_timezone_set('America/Los_Angeles');
 
-	Debug::newLog();
+	\Mechanics\Debug::newLog();
+	
+	// Load all commands
+	$d = dir(dirname(__FILE__) . '/Commands');
+	while($command = $d->read())
+		if(strpos($command, '.php') !== false)
+			\Mechanics\Command::instantiate(substr($command, 0, strpos($command, '.')));
 
+	// Autoloader
 	function __autoload($class)
 	{
-	
+		print $class . "\n";
+		if(strpos($class, "\\"))
+		{
+			list($namespace, $class) = explode("\\", $class);
+			if(file_exists($namespace . '/' . $class . '.php'))
+				return require_once($namespace . '/' . $class . '.php');
+		}
 		$dirs = array
 		(
-			'Commands/',
 			'Mechanics/',
 			'Living/',
 			'Races/',
@@ -44,7 +56,8 @@
 			'',
 			'Interfaces/',
 			'Skills/',
-			'Spells/'
+			'Spells/',
+			'Disciplines/'
 		);
 	
 		foreach($dirs as $dir)
@@ -53,6 +66,6 @@
 	
 	}
 
-	Server::start();
+	\Mechanics\Server::start();
 
 ?>

@@ -73,13 +73,13 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
-			$this->equipped = new \Mechanics\Equipped();
+			//$this->equipped = new Equipped();
 			$this->room = Room::find($room_id);
 			
 			if($this instanceof User)
-				$this->inventory = \Mechanics\Inventory::find($this->getTable(), $this->id);
+				$this->inventory = Inventory::find($this->getTable(), $this->id);
 			else
-				$this->inventory = new \Mechanics\Inventory($this->getTable(), 0);
+				$this->inventory = new Inventory($this->getTable(), 0);
 		}
 		
 		public function getStr() { return $this->str; }
@@ -292,11 +292,11 @@
 		public function setRace($race)
 		{
 			$race = Race::getInstance($race);
-			if($race instanceof Race)
-			{
+			//if($race instanceof \Mechanics\Race)
+			//{
 				$this->race = $race;
 				$this->race->applyRacialAttributeModifiers($this);
-			}
+			//}
 		
 		}
 		public function decreaseFunds($value)
@@ -589,7 +589,7 @@
 		}
 	}
 	
-	class Actor_Exception extends Exception
+	class Actor_Exception extends \Exception
 	{
 		const MAX_ATTRIBUTE = 0;
 	}

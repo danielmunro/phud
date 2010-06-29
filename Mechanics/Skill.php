@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class Skill
 	{
 	
@@ -103,7 +103,7 @@
 	
 		public function getName() { return $this->name; }
 		public function getProficiency() { return $this->proficiency; }
-		public function increaseProficiency($proficiency) { $this->proficiency = $proficiency; }
+		public function setProficiency($proficiency) { $this->proficiency = $proficiency; }
 		
 		/**
 		public function save()

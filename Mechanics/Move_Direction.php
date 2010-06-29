@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	abstract class Move_Direction extends Command
 	{
 
@@ -51,8 +51,8 @@
 					$actor->setMovement($actor->getMovement() - $actor->getRace()->getMovementCost());
 					ActorObserver::instance()->updateRoomChange($actor, 'leaving ' . $args[1]);
 					$actor->setRoom(Room::find($args[0]));
-					if($actor instanceof User)
-						Command::find('Command_Look')->perform($actor);
+					if($actor instanceof \Living\User)
+						Command::find('Look')->perform($actor);
 					
 					ActorObserver::instance()->updateRoomChange($actor, 'arriving');
 					

@@ -28,6 +28,12 @@
 	class Look extends \Mechanics\Command
 	{
 		
+		protected function __construct()
+		{
+			
+			\Mechanics\Command::addAlias(__CLASS__, array('l', 'look'));
+		}
+		
 		public static function perform(&$actor, $args = null)
 		{
 		

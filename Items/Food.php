@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Items;
 	class Food extends Item
 	{
 	

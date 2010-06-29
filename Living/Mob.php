@@ -1,6 +1,6 @@
 <?php
-
-	class Mob extends Actor
+	namespace Living;
+	class Mob extends \Mechanics\Actor
 	{
 	
 		protected $movement_speed;

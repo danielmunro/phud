@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class ActorObserver
 	{
 	
@@ -104,14 +104,14 @@
 				
 				if($actor->getRoom()->getId() == $actor_changed->getRoom()->getId() && $actor->getAlias() != $actor_changed->getAlias())
 				{
-					if($actor instanceof User && $details == 'arriving')
+					if($details == 'arriving')
 						Server::out($actor, $actor_changed->getAlias(true) . ' has arrived.');
 					
-					if($actor instanceof User && strpos($details, 'leaving') !== false)
+					if(strpos($details, 'leaving') !== false)
 						Server::out($actor, $actor_changed->getAlias(true) . ' ' . $actor_changed->getRace()->getMoveVerb() . ' ' . strtolower(substr($details, 8)) . '.');
 					
-					if($actor_changed instanceof User && $details == 'looking')
-						Server::out($actor_changed, ($actor instanceof Questmaster ? Tag::apply('Questmaster') : '') . $actor->getAlias(true) . ' is here.');
+					if($details == 'looking')
+						Server::out($actor_changed, ($actor instanceof \Living\Questmaster ? Tag::apply('Questmaster') : '') . $actor->getAlias(true) . ' is here.');
 				}
 			}
 		

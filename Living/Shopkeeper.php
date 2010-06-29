@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Shopkeeper extends Actor
+	namespace Living;
+	class Shopkeeper extends \Mechanics\Actor
 	{
 	
 		private $list_item_message = "Here's what I have in stock now";

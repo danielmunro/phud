@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Undead extends Race
+	namespace Races;
+	class Undead extends \Mechanics\Race
 	{
 	
 		public function __construct()

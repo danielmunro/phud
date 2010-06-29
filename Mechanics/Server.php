@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Mechanics;
 	class Server
 	{
 		
@@ -75,7 +75,7 @@
 				$read[0] = $this->socket;
 				
 				for($i = 0; $i < sizeof($this->clients); $i ++)
-					if($this->clients[$i] instanceof User)
+					if($this->clients[$i] instanceof \Living\User)
 						$read[$i + 1] = $this->clients[$i]->getSocket();
 				
 				$null = null;
@@ -90,7 +90,7 @@
 						if($this->clients[$i] === null)
 						{
 							$socket = socket_accept($this->socket);
-							$this->clients[$i] = new User($socket);
+							$this->clients[$i] = new \Living\User($socket);
 							$added = $i;
 							
 							break;
@@ -99,7 +99,7 @@
 					if($added === false)
 					{
 						$socket = socket_accept($this->socket);
-						$this->clients[] = new User($socket);
+						$this->clients[] = new \Living\User($socket);
 						$added = sizeof($this->clients) - 1;
 					}
 					self::out($this->clients[$added], 'Welcome to mud. What is yer name? ', false);
@@ -128,7 +128,7 @@
 				// Input
 				for($i = 0; $i < sizeof($this->clients); $i ++)
 				{
-					if(!($this->clients[$i] instanceof User))
+					if(!($this->clients[$i] instanceof \Living\User))
 						continue;
 					
 					if(in_array($this->clients[$i]->getSocket(), $read))
@@ -159,13 +159,14 @@
 							$this->clients[$i]->setLastInput($input);
 						
 						$args = explode(' ', trim($input));
-						$command = Command::find('Command_' . ucfirst($args[0]));
+						
 						if(!$this->clients[$i]->getAlias())
 						{
 							$this->clients[$i]->handleLogin($args[0]);
 							continue;
 						}
 						
+						$command = Command::find($args[0]);
 						if($command instanceof Command)
 						{
 							$command->perform($this->clients[$i], $args);
@@ -196,6 +197,7 @@
 								Server::out($this->clients[$i], "That is already done.");
 								continue;
 							}
+						Server::out($this->clients[$i], "What was that?");
 					}
 				}
 			}
@@ -216,7 +218,7 @@
 		public static function out($client, $message, $break_line = true)
 		{
 			
-			if(!($client instanceof User))
+			if(!($client instanceof \Living\User))
 				return;
 			
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
@@ -225,7 +227,7 @@
 		
 		public function initializeEnvironment()
 		{
-			$m = new Mob
+			$m = new \Living\Mob
 			(
 				'a town crier',
 				'town crier',
@@ -241,7 +243,7 @@
 				100
 			);
 			new Skill(0, 'dodge', 100, $m->getAlias());
-			new Mob
+			new \Living\Mob
 			(
 				'the zombified remains of the mayor of Midgaard',
 				'zombie corpse mayor',
@@ -256,14 +258,14 @@
 				100,
 				100
 			);
-			$m = new Mob
+			$m = new \Living\Mob
 			(
 				'a giant rat',
 				'giant rat',
 				'A behemoth of a rat scurries about before you.',
-				'temple_wine_cellar',
-				11,
-				3,
+				'temple midgaard',
+				1,
+				1,
 				'human',
 				20,
 				5,
@@ -271,13 +273,13 @@
 				100,
 				100
 			);
-			$m->getInventory()->add(new Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
-			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 0, 4, Weapon::TYPE_SWORD, 1, 2));
-			Room::find(1)->getInventory()->add(new Weapon(0, 'a sub issue mace is here.', 'a sub issue mace', 'sub mace', 0, 4, Weapon::TYPE_MACE, 1, 2));
-			Room::find(1)->getInventory()->add(new Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, Equipment::TYPE_WIELD, -10, -10, -10, 0));
-			new QuestmasterSid();
-			$m = new Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
-			$m->getInventory()->add(new Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
+			$m->getInventory()->add(new \Items\Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
+			Room::find(1)->getInventory()->add(new \Items\Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 0, 4, \Items\Weapon::TYPE_SWORD, 1, 2));
+			Room::find(1)->getInventory()->add(new \Items\Weapon(0, 'a sub issue mace is here.', 'a sub issue mace', 'sub mace', 0, 4, \Items\Weapon::TYPE_MACE, 1, 2));
+			Room::find(1)->getInventory()->add(new \Items\Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, \Items\Equipment::TYPE_WIELD, -10, -10, -10, 0));
+			//new QuestmasterSid();
+			$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
+			$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
 		}
 		
 		public function getSocket()

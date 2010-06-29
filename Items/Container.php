@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-
+	namespace Items;
 	class Container extends Item
 	{
 	
