@@ -157,7 +157,9 @@
 						$pre = $prices[$key] . ' copper - ';
 					else
 						$pre = ($item > 1 ? '(' . $item . ') ' : '' );
-					$buffer .=  $pre . ucfirst($key) . "\n";
+					$buffer .=  $pre . ucfirst($key);
+					if(sizeof($items) - 1 < $key)
+						$buffer .= "\n";
 				}
 			}
 			else

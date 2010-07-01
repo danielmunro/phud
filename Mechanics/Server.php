@@ -166,38 +166,42 @@
 							continue;
 						}
 						
-						$command = Command::find($args[0]);
-						if($command instanceof Command)
+						try
 						{
-							$command->perform($this->clients[$i], $args);
-							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							$command = Command::find($args[0]);
+						}
+						catch(\Exceptions\Command $e)
+						{
+						
+							if($this->clients[$i]->getSkillset()->isValidSkill($args[0]))
+							{
+								$this->clients[$i]->getSkillset()->perform($args);
+								Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+								continue;
+							}
+							
+							$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
+							$input = trim($input);
+							foreach($doors as $door)
+								if($door->getHidden() && $door->getHiddenShowCommand() == $input)
+								{
+									self::out($this->clients[$i], $door->getHiddenAction());
+									$door->setHidden(false);
+									continue;
+								}
+								elseif(!$door->getHidden() && $door->getHiddenShowCommand() == $input)
+								{
+									self::out($this->clients[$i], "That is already done.");
+									continue;
+								}
+							self::out($this->clients[$i], "What was that?");
 							continue;
 						}
 						
-						$skill = Skill::findByActorAndInput($this->clients[$i]->getAlias(), $args[0]);
-						if($skill instanceof Skill)
-						{
-							$skill = Perform::find('Skill_' . ucfirst($skill->getName()))->perform($this->clients[$i], $skill, $args[0]);
-							//$skill->perform($this->clients[$i], $args);
-							Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
-							continue;
-						}
+						// Perform command
+						$command->perform($this->clients[$i], $args);
+						self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 						
-						$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
-						$input = trim($input);
-						foreach($doors as $door)
-							if($door->getHidden() && $door->getHiddenShowCommand() == $input)
-							{
-								Server::out($this->clients[$i], $door->getHiddenAction());
-								$door->setHidden(false);
-								continue;
-							}
-							elseif(!$door->getHidden() && $door->getHiddenShowCommand() == $input)
-							{
-								Server::out($this->clients[$i], "That is already done.");
-								continue;
-							}
-						Server::out($this->clients[$i], "What was that?");
 					}
 				}
 			}
@@ -242,7 +246,7 @@
 				100,
 				100
 			);
-			new Skill(0, 'dodge', 100, $m->getAlias());
+			//new Skill(0, 'dodge', 100, $m->getAlias());
 			new \Living\Mob
 			(
 				'the zombified remains of the mayor of Midgaard',

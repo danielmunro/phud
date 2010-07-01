@@ -47,7 +47,7 @@
 		}
 		
 		public function setListItemMessage($message) { $this->list_item_message = $message; }
-		public function getListItemMessage() { return $this->list_item_lessage; }
+		public function getListItemMessage() { return $this->list_item_message; }
 		
 		public function setNoItemMessage($message) { $this->no_item_message = $message; }
 		public function getNoItemMessage() { return $this->no_item_message; }

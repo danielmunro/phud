@@ -24,49 +24,49 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Skill_Kick extends Perform
+	namespace Skills;
+	class Kick extends \Mechanics\Skill
 	{
 	
 		private static $base_chance = 99;
+		private static $aliases = array('kick');
 	
-		public static function perform(Actor &$actor, Skill $skill, $args = null)
+		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
 			
 			$actor_target = $actor->getTarget();
-			$specified_target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $args);
+			$specified_target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $args);
 			
 			$final_target = null;
 			
-			if($actor_target instanceof Actor)
+			if($actor_target instanceof \Mechanics\Actor)
 				$final_target = $actor_target;
-			else if($specified_target instanceof Actor)
+			else if($specified_target instanceof \Mechanics\Actor)
 				$final_target = $specified_target;
 			
 			if($final_target === null)
-				return Server::out($actor, 'You kick your legs wildly!');
+				return \Mechanics\Server::out($actor, 'You kick your legs wildly!');
 			
 			$actor->incrementDelay(1);
 			
-			if(!($actor_target instanceof Actor))
+			if(!($actor_target instanceof \Mechanics\Actor))
 				$actor->addFighter($final_target);
 			
 			$chance = rand(0, 100);
-			if($chance > self::$base_chance)
-				return Server::out($actor, 'You fall flat on your face!');
+			if($chance > self::$base_chance || $chance > $this->percent)
+				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
 			
-			if($chance > $skill->getProficiency())
-				return Server::out($actor, 'You fall flat on your face!');
-			
-			if($actor->damage($final_target, rand(1, 1 + $actor->getLevel()), Damage::TYPE_BASH))
+			if($actor->damage($final_target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))
 			{
-				Server::out($actor, 'You kick ' . $final_target->getAlias() . ', causing him pain!');
-				Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
+				\Mechanics\Server::out($actor, 'You kick ' . $final_target->getAlias() . ', causing him pain!');
+				\Mechanics\Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
 			}
 		}
 		
-		public function getName() { return 'Kick'; }
-	
+		public static function getAliases()
+		{
+			return self::$aliases;
+		}
 	}
 
 ?>

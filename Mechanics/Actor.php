@@ -28,6 +28,8 @@
 	abstract class Actor
 	{
 	
+		const MAX_LEVEL = 51;
+	
 		protected $alias;
 		protected $password = '';
 		protected $long = '';
@@ -65,6 +67,7 @@
 		protected $room = null;
 		protected $inventory = null;
 		protected $equipped = null;
+		protected $skillset = null;
 		
 		static $instances;
 		
@@ -80,8 +83,11 @@
 				$this->inventory = Inventory::find($this->getTable(), $this->id);
 			else
 				$this->inventory = new Inventory($this->getTable(), 0);
+			
+			$this->skillset = Skillset::findByActor($this);
 		}
 		
+		public function getSkillset() { return $this->skillset; }
 		public function getStr() { return $this->str; }
 		public function getInt() { return $this->int; }
 		public function getWis() { return $this->wis; }
@@ -102,7 +108,7 @@
 			else
 				return $this->alias;
 		}
-		public function getRaceStr() { return $this->race->getRaceStr(); }
+		public function getRaceStr() { return get_class($this->race); }
 		public function getClassStr() { return $this->_class->getClassStr(); }
 		public function getLevel() { return $this->level; }
 		

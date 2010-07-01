@@ -37,8 +37,8 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			Server::out($actor, 'Your inventory:');
-			Server::out($actor, $actor->getInventory()->displayContents());
+			\Mechanics\Server::out($actor, 'Your inventory:');
+			\Mechanics\Server::out($actor, $actor->getInventory()->displayContents());
 		
 		}
 	

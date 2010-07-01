@@ -38,32 +38,32 @@
 		{
 		
 			if(sizeof($args) == 3)
-				$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
 			else
 			{
-				$targets = ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
+				$targets = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
 				foreach($targets as $potential_target)
-					if($potential_target instanceof Shopkeeper)
+					if($potential_target instanceof \Living\Shopkeeper)
 						$target = $potential_target;
 			}
 			
-			if(!($target instanceof Actor))
-				return Server::out($actor, "They are not here.");
+			if(!($target instanceof \Mechanics\Actor))
+				return \Mechanics\Server::out($actor, "They are not here.");
 			
-			if(!($target instanceof Shopkeeper))
-				return Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
+			if(!($target instanceof \Living\Shopkeeper))
+				return \Mechanics\Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
 			
 			$item = $target->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof Item))
-				return Command_Say::perform($target, $target->getNoItemMessage());
+			if(!($item instanceof \Items\Item))
+				return Say::perform($target, $target->getNoItemMessage());
 			
 			if($actor->decreaseFunds($item->getValue()) === false)
-				return Command_Say::perform($target, $target->getNotEnoughMoneyMessage());
+				return Say::perform($target, $target->getNotEnoughMoneyMessage());
 			
 			$item->copyTo($actor);
 			
-			Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
+			\Mechanics\Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 			
 		}
 	}

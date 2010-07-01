@@ -40,7 +40,6 @@
 	// Autoloader
 	function __autoload($class)
 	{
-		print $class . "\n";
 		if(strpos($class, "\\"))
 		{
 			list($namespace, $class) = explode("\\", $class);

@@ -24,19 +24,16 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	class Recall extends \Mechanics\Command
+	namespace Exceptions;
+	class Skillset extends \Exception
 	{
 	
-		protected function __construct()
-		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'recall');
-		}
+		const SKILL_NOT_FOUND = 1;
+		const BAD_CONFIG = 2;
 	
-		public static function perform(&$actor, $args = null)
+		public function __construct($msg, $no)
 		{
-			$actor->setRoom(Room::find(1));
+			parent::__construct($msg, $no);
 		}
 	}
 ?>

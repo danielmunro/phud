@@ -24,19 +24,17 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	class Recall extends \Mechanics\Command
+	namespace Exceptions;
+	class Command extends \Exception
 	{
 	
-		protected function __construct()
-		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'recall');
-		}
+		const INVALID_COMMAND = 1;
+		const ALREADY_INSTANTIATED = 2;
+		const ALIAS_ALREADY_EXISTS = 3;
 	
-		public static function perform(&$actor, $args = null)
+		public function __construct($msg, $no)
 		{
-			$actor->setRoom(Room::find(1));
+			parent::__construct($msg, $no);
 		}
 	}
 ?>

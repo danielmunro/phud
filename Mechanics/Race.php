@@ -87,14 +87,14 @@
 		{
 			$race = ucfirst($race);
 			
-			if(!empty(self::$instances[$race]) && self::$instances[$race] instanceof Race)
+			if(!empty(self::$instances[$race]) && self::$instances[$race] instanceof self)
 				return self::$instances[$race];
 			
 			$class = 'Races\\' . $race;
 
 			$instance = new $class();
 		
-			if(!empty($instance) && $instance instanceof Race)
+			if(!empty($instance) && $instance instanceof self)
 				return self::$instances[$race] = $instance;
 		}
 		

@@ -37,22 +37,22 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			Server::out($actor, 'You are ' . $actor->getAlias() . ', a(n) ' . $actor->getRaceStr());
-			Server::out($actor, 'Attributes: Str (' . $actor->getStr() . ') ' .
+			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a(n) ' . $actor->getRaceStr());
+			\Mechanics\Server::out($actor, 'Attributes: Str (' . $actor->getStr() . ') ' .
 			'Int (' . $actor->getInt() . ') ' . 
 			'Wis (' . $actor->getWis() . ') ' .
 			'Dex (' . $actor->getDex() . ') ' .
 			'Con (' . $actor->getCon() . ')');
 			
-			Server::out(
+			\Mechanics\Server::out(
 				$actor, 'Hp: ' . $actor->getHp() . '/' . $actor->getMaxHp() .
 				' Mana: ' . $actor->getMana() . '/' . $actor->getMaxMana() .
 				' Movement: ' . $actor->getMovement() . '/' . $actor->getMaxMovement());
 			
 			$experience = (int) ($actor->getExpPerLevel() - ($actor->getExperience() % $actor->getExpPerLevel()));
-			Server::out($actor,
+			\Mechanics\Server::out($actor,
 				'Level ' . $actor->getLevel() . ', ' . $experience . ' experience to next level');
-			Server::out($actor,
+			\Mechanics\Server::out($actor,
 				$actor->getGold() . ' gold, ' . $actor->getSilver() . ' silver, ' . $actor->getCopper() . ' copper.');
 		
 		}

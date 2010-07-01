@@ -58,7 +58,7 @@
 				throw new \Exceptions\Command(
 								$command . ' already instantiated, trying to do so again.',
 								\Exceptions\Command::ALREADY_INSTANTIATED);
-			print 'CL: ' . $class . "\n";
+			
 			self::$instances[$class] = new $class();
 		}
 	

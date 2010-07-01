@@ -36,11 +36,6 @@
 		private $login = array('alias' => false);
 		private $command_buffer = array();
 		
-		const FIGHTING_MYRMIDON = 0;
-		const FIGHTING_BERSERKER = 1;
-		const FIGHTING_MONK = 2;
-		const FIGHTING_ROGUE = 4;
-		
 		public function __construct($socket)
 		{
 			$this->socket = $socket;

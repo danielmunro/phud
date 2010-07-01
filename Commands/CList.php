@@ -38,22 +38,22 @@
 		{
 			
 			if(sizeof($args) == 3)
-				$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
 			else
 			{
-				$targets = ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
+				$targets = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
 				foreach($targets as $potential_target)
-					if($potential_target instanceof Shopkeeper)
+					if($potential_target instanceof \Living\Shopkeeper)
 						$target = $potential_target;
 			}
 			
-			if(!($target instanceof Actor))
-				return Server::out($actor, "They are not here.");
+			if(!isset($target))
+				return \Mechanics\Server::out($actor, "They are not here.");
 			
-			if(!($target instanceof Shopkeeper))
-				return Server::out($actor, "They are not selling anything.");
+			if(!($target instanceof \Living\Shopkeeper))
+				return \Mechanics\Server::out($actor, "They are not selling anything.");
 			
-			Command_Say::perform($target, $target->getListItemMessage() . "\n" . $target->getInventory()->displayContents(true));
+			Say::perform($target, $target->getListItemMessage() . "\n" . $target->getInventory()->displayContents(true));
 		}
 	}
 ?>

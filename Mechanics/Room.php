@@ -131,6 +131,7 @@
 		}
 		public function getInventory() { return $this->inventory; }
 		public function setInventory(Inventory $inventory) { $this->inventory = $inventory; }
+		public function setArea($area) { $this->area = $area; }
 		public function getArea() { return $this->area; }
 		
 		public function setTitle($title) { $this->title = $title; }
