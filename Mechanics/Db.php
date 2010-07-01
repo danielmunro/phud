@@ -45,7 +45,7 @@
 		 */
 		protected function __construct()
 		{
-			parent::__construct('localhost', 'root', 'Gx9$m.1r', 'mud');
+			parent::__construct('localhost', 'root', '7dks2ld0s2k1mndiud-2503203s', 'mud');
 		}
 		
 		/**
