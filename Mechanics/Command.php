@@ -48,8 +48,17 @@
 								\Exceptions\Command::ALIAS_ALREADY_EXISTS);
 			self::$aliases[$alias] = $command;
 		}
+		
+		public function runInstantiation()
+		{
+		
+			$d = dir(dirname(__FILE__) . '/../Commands');
+			while($command = $d->read())
+				if(strpos($command, '.php') !== false)
+					self::instantiate(substr($command, 0, strpos($command, '.')));
+		}
 	
-		public static function instantiate($command)
+		private static function instantiate($command)
 		{
 			
 			$class = 'Commands\\' . $command;

@@ -47,6 +47,166 @@
 			return 'hp:' . $this->getHp() . '/' . $this->getMaxHp() . ' mana: ' . $this->getMana() . '/' . $this->getMaxMana() . ' mv: ' . $this->getMovement() . '/' . $this->getMaxMovement() . ' >';
 		}
 		
+		public function addCommandBuffer($input)
+		{
+			$this->command_buffer[] = $input;
+		}
+		
+		public function clearCommandBuffer()
+		{
+			$this->command_buffer = array();
+		}
+		
+		public function shiftCommandBuffer()
+		{
+			if(sizeof($this->command_buffer) > 0)
+				return array_shift($this->command_buffer);
+			else
+				return null;
+		}
+		
+		public function loadByAliasAndPassword($alias, $password)
+		{
+			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM users WHERE LOWER(alias) = ? AND pass = ?', array(strtolower($alias), sha1('mud password salt!' . $password)))->getResult()->fetch_object();
+			if(empty($row))
+				throw new \Exception('No user found');
+			$this->alias = $row->alias;
+			$this->hp = $row->hp;
+			$this->max_hp = $row->max_hp;
+			$this->mana = $row->mana;
+			$this->max_mana = $row->max_mana;
+			$this->movement = $row->movement;
+			$this->max_movement = $row->max_movement;
+			$this->level = $row->level;
+			$this->copper = $row->copper;
+			$this->silver = $row->silver;
+			$this->gold = $row->gold;
+			$this->password = $row->pass;
+			$this->str = $row->str;
+			$this->int = $row->int;
+			$this->wis = $row->wis;
+			$this->dex = $row->dex;
+			$this->con = $row->con;
+			$this->setRace($row->race);
+			$this->setRoom(\Mechanics\Room::find($row->fk_room_id));
+			$this->experience = $row->experience;
+			$this->exp_per_level = $row->exp_per_level;
+			$this->id = $row->id;
+			$this->thirst = $row->thirst;
+			$this->nourishment = $row->nourishment;
+			parent::__construct($this->getRoom()->getId());
+		}
+		public function getTable() { return 'users'; }
+		public function setLastInput($input) { $this->last_input = $input; }
+		public function getLastInput() { return $this->last_input; }
+		public function getSocket() { return $this->socket; }
+		public function __toString() { return $this->socket; }
+		public function decreaseRacialNourishmentAndThirst()
+		{
+			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
+			$this->thirst -= $this->getRace()->getDecreaseThirst();
+		}
+		public function getNourishment() { return $this->nourishment; }
+		public function getThirst() { return $this->thirst; }
+		public function increaseNourishment($nourishment)
+		{
+			if($this->nourishment < 0)
+				$this->nourishment = $nourishment;
+			else
+				$this->nourishment += $nourishment;
+		}
+		public function increaseThirst($thirst)
+		{
+			if($this->thirst < 0)
+				$this->thirst = $thirst;
+			else
+				$this->thirst += $thirst;
+		}
+		
+		public function getId() { return $this->id; }
+		
+		public function save($inv = true)
+		{
+			\Mechanics\Debug::addDebugLine("Saving actor " . $this->getAlias(true));
+			
+			if($inv)
+				$this->inventory->save();
+			
+			$this->equipped->save();
+			
+			if($this->id)
+				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
+											alias = ?,
+											hp = ?,
+											max_hp = ?,
+											mana = ?,
+											max_mana = ?,
+											movement = ?,
+											max_movement = ?,
+											level = ?,
+											copper = ?,
+											silver = ?,
+											gold = ?,
+											pass = ?,
+											str = ?,
+											`int` = ?,
+											wis = ?,
+											dex = ?,
+											con = ?,
+											race = ?,
+											experience = ?,
+											exp_per_level = ?,
+											fk_room_id = ? WHERE id = ?', array(
+											$this->getAlias(),
+											$this->hp,
+											$this->max_hp,
+											$this->mana,
+											$this->max_mana,
+											$this->movement,
+											$this->max_movement,
+											$this->level,
+											$this->copper,
+											$this->silver,
+											$this->gold,
+											$this->password,
+											$this->str,
+											$this->int,
+											$this->wis,
+											$this->dex,
+											$this->con,
+											$this->getRaceStr(),
+											$this->experience,
+											$this->exp_per_level,
+											$this->getRoom()->getId(),
+											$this->id));
+			else
+			{
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
+															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+																$this->getAlias(),
+																$this->hp,
+																$this->max_hp,
+																$this->mana,
+																$this->max_mana,
+																$this->movement,
+																$this->max_movement,
+																$this->level,
+																$this->copper,
+																$this->silver,
+																$this->gold,
+																$this->password,
+																$this->str,
+																$this->int,
+																$this->wis,
+																$this->dex,
+																$this->con,
+																$this->getRaceStr(),
+																$this->getRoom()->getId()
+															), true);
+				$this->id = \Mechanics\Db::getInstance()->insert_id;
+			}
+		}
+		
 		public function handleLogin($input)
 		{
 			if($this->login['alias'] === false)
@@ -291,166 +451,6 @@
 				$this->save(false);
 				\Commands\Look::perform($this);
 				parent::__construct($this->getRoom()->getId());
-			}
-		}
-		
-		public function addCommandBuffer($input)
-		{
-			$this->command_buffer[] = $input;
-		}
-		
-		public function clearCommandBuffer()
-		{
-			$this->command_buffer = array();
-		}
-		
-		public function shiftCommandBuffer()
-		{
-			if(sizeof($this->command_buffer) > 0)
-				return array_shift($this->command_buffer);
-			else
-				return null;
-		}
-		
-		
-		
-		public function loadByAliasAndPassword($alias, $password)
-		{
-			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM users WHERE LOWER(alias) = ? AND pass = ?', array(strtolower($alias), sha1('mud password salt!' . $password)))->getResult()->fetch_object();
-			if(empty($row))
-				throw new \Exception('No user found');
-			$this->alias = $row->alias;
-			$this->hp = $row->hp;
-			$this->max_hp = $row->max_hp;
-			$this->mana = $row->mana;
-			$this->max_mana = $row->max_mana;
-			$this->movement = $row->movement;
-			$this->max_movement = $row->max_movement;
-			$this->level = $row->level;
-			$this->copper = $row->copper;
-			$this->silver = $row->silver;
-			$this->gold = $row->gold;
-			$this->password = $row->pass;
-			$this->str = $row->str;
-			$this->int = $row->int;
-			$this->wis = $row->wis;
-			$this->dex = $row->dex;
-			$this->con = $row->con;
-			$this->setRace($row->race);
-			$this->setRoom(\Mechanics\Room::find($row->fk_room_id));
-			$this->experience = $row->experience;
-			$this->exp_per_level = $row->exp_per_level;
-			$this->id = $row->id;
-			$this->thirst = $row->thirst;
-			$this->nourishment = $row->nourishment;
-			parent::__construct($this->getRoom()->getId());
-		}
-		public function getTable() { return 'users'; }
-		public function setLastInput($input) { $this->last_input = $input; }
-		public function getLastInput() { return $this->last_input; }
-		public function getSocket() { return $this->socket; }
-		public function __toString() { return $this->socket; }
-		public function decreaseRacialNourishmentAndThirst()
-		{
-			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
-			$this->thirst -= $this->getRace()->getDecreaseThirst();
-		}
-		public function getNourishment() { return $this->nourishment; }
-		public function getThirst() { return $this->thirst; }
-		public function increaseNourishment($nourishment)
-		{
-			if($this->nourishment < 0)
-				$this->nourishment = $nourishment;
-			else
-				$this->nourishment += $nourishment;
-		}
-		public function increaseThirst($thirst)
-		{
-			if($this->thirst < 0)
-				$this->thirst = $thirst;
-			else
-				$this->thirst += $thirst;
-		}
-		
-		public function getId() { return $this->id; }
-		
-		public function save($inv = true)
-		{
-			\Mechanics\Debug::addDebugLine("Saving actor " . $this->getAlias(true));
-			
-			if($inv)
-				$this->inventory->save();
-			
-			if($this->id)
-				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
-											alias = ?,
-											hp = ?,
-											max_hp = ?,
-											mana = ?,
-											max_mana = ?,
-											movement = ?,
-											max_movement = ?,
-											level = ?,
-											copper = ?,
-											silver = ?,
-											gold = ?,
-											pass = ?,
-											str = ?,
-											`int` = ?,
-											wis = ?,
-											dex = ?,
-											con = ?,
-											race = ?,
-											experience = ?,
-											exp_per_level = ?,
-											fk_room_id = ? WHERE id = ?', array(
-											$this->getAlias(),
-											$this->hp,
-											$this->max_hp,
-											$this->mana,
-											$this->max_mana,
-											$this->movement,
-											$this->max_movement,
-											$this->level,
-											$this->copper,
-											$this->silver,
-											$this->gold,
-											$this->password,
-											$this->str,
-											$this->int,
-											$this->wis,
-											$this->dex,
-											$this->con,
-											$this->getRaceStr(),
-											$this->experience,
-											$this->exp_per_level,
-											$this->getRoom()->getId(),
-											$this->id));
-			else
-			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
-																$this->getAlias(),
-																$this->hp,
-																$this->max_hp,
-																$this->mana,
-																$this->max_mana,
-																$this->movement,
-																$this->max_movement,
-																$this->level,
-																$this->copper,
-																$this->silver,
-																$this->gold,
-																$this->password,
-																$this->str,
-																$this->int,
-																$this->wis,
-																$this->dex,
-																$this->con,
-																$this->getRaceStr(),
-																$this->getRoom()->getId()
-															), true);
-				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
 		}
 	}

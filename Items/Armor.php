@@ -45,7 +45,7 @@
 		public function save($inv_inside_id)
 		{
 			if($this->id)
-				return Db::getInstance()->query(
+				return \Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -65,7 +65,7 @@
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
 						$this->door_unlock_id, $this->ac_slash, $this->ac_bash, $this->ac_pierce, $this->ac_magic, $this->id));
 			
-			Db::getInstance()->query(
+			\Mechanics\Db::getInstance()->query(
 				'INSERT INTO items (
 					short_desc,
 					long_desc,
@@ -85,7 +85,7 @@
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
 				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id, $this->ac_slash,
 				$this->ac_bash, $this->ac_pierce, $this->ac_magic));
-			$this->id = Db::getInstance()->insert_id;
+			$this->id = \Mechanics\Db::getInstance()->insert_id;
 		}
 		public function getACSlash() { return $this->ac_slash; }
 		public function getACBash() { return $this->ac_bash; }

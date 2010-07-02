@@ -231,56 +231,7 @@
 		
 		public function initializeEnvironment()
 		{
-			$m = new \Living\Mob
-			(
-				'a town crier',
-				'town crier',
-				'You see a town crier before you.',
-				'temple midgaard',
-				3,
-				1,
-				'human',
-				27,
-				1,
-				20,
-				100,
-				100
-			);
-			//new Skill(0, 'dodge', 100, $m->getAlias());
-			new \Living\Mob
-			(
-				'the zombified remains of the mayor of Midgaard',
-				'zombie corpse mayor',
-				'The partially decomposed, moaning zombie corpse of the mayor of Midgaard stands before you.',
-				'temple midgaard',
-				2,
-				1,
-				'undead',
-				14,
-				5,
-				20,
-				100,
-				100
-			);
-			$m = new \Living\Mob
-			(
-				'a giant rat',
-				'giant rat',
-				'A behemoth of a rat scurries about before you.',
-				'temple midgaard',
-				1,
-				1,
-				'human',
-				20,
-				5,
-				6,
-				100,
-				100
-			);
-			$m->getInventory()->add(new \Items\Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
-			Room::find(1)->getInventory()->add(new \Items\Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 0, 4, \Items\Weapon::TYPE_SWORD, 1, 2));
-			Room::find(1)->getInventory()->add(new \Items\Weapon(0, 'a sub issue mace is here.', 'a sub issue mace', 'sub mace', 0, 4, \Items\Weapon::TYPE_MACE, 1, 2));
-			Room::find(1)->getInventory()->add(new \Items\Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, \Items\Equipment::TYPE_WIELD, -10, -10, -10, 0));
+			
 			//new QuestmasterSid();
 			$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
 			$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));

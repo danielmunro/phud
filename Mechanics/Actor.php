@@ -76,13 +76,18 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
-			$this->equipped = new Equipped();
 			$this->room = Room::find($room_id);
 			
-			if($this instanceof User)
+			if($this instanceof \Living\User)
+			{
 				$this->inventory = Inventory::find($this->getTable(), $this->id);
+				$this->equipped = new Equipped($this);
+			}
 			else
+			{
 				$this->inventory = new Inventory($this->getTable(), 0);
+				$this->equipped = new Equipped();
+			}
 			
 			$this->skillset = Skillset::findByActor($this);
 		}

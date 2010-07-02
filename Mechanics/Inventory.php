@@ -157,14 +157,12 @@
 						$pre = $prices[$key] . ' copper - ';
 					else
 						$pre = ($item > 1 ? '(' . $item . ') ' : '' );
-					$buffer .=  $pre . ucfirst($key);
-					if(sizeof($items) - 1 < $key)
-						$buffer .= "\n";
+					$buffer .=  $pre . ucfirst($key) .  "\n";
 				}
 			}
 			else
 				$buffer = "Nothing.";
-			return $buffer;
+			return trim($buffer);
 		}
 		
 		public function save()
@@ -184,8 +182,9 @@
 			}
 			foreach($this->items as $i => $item)
 			{
+				
 				$item->save($this->id);
-				if($item instanceof Container)
+				if($item instanceof \Items\Container)
 					$item->getInventory()->save($this->id);
 			}
 		}

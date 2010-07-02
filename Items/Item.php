@@ -64,7 +64,7 @@
 		public static function getInstance($id)
 		{
 		
-			if(!empty(self::$instances[$id]) && self::$instances[$id] instanceof Item)
+			if(!empty(self::$instances[$id]) && self::$instances[$id] instanceof self)
 				return self::$instances[$id];
 			
 			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM items WHERE id = ?', $id)->getResult()->fetch_object();
@@ -96,8 +96,9 @@
 		}
 		public function save($inv_inside_id)
 		{
+		
 			if($this->id)
-				return Db::getInstance()->query(
+				return \Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -113,7 +114,7 @@
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
 						$this->door_unlock_id, $this->id));
 			
-			Db::getInstance()->query(
+			\Mechanics\Db::getInstance()->query(
 				'INSERT INTO items (
 					short_desc,
 					long_desc,
@@ -128,7 +129,7 @@
 					(?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
 				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id));
-			$this->id = Db::getInstance()->insert_id;
+			$this->id = \Mechanics\Db::getInstance()->insert_id;
 		}
 		public function getShort() { return $this->short; }
 		public function getLong() { return $this->long; }

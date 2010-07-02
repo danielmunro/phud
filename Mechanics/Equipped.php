@@ -48,6 +48,8 @@
 		const POSITION_FLOAT = 18;
 		
 		private $equipment = array();
+		private $inventory = null;
+		private $user = null;
 		private static $types = array
 		(
 			self::POSITION_LIGHT => \Items\Equipment::TYPE_LIGHT,
@@ -91,7 +93,7 @@
 			self::POSITION_FLOAT => 	'<floating nearby>    '
 		);
 		
-		public function __construct()
+		public function __construct(\Living\User $user = null)
 		{
 			
 			$this->equipment = array
@@ -115,7 +117,20 @@
 				self::POSITION_WIELD_R => null,
 				self::POSITION_FLOAT => null
 			);
+			
+			if($user)
+			{
+				$this->user = $user;
+				$this->inventory = Inventory::find('users_eq', $this->user->getId());
+				foreach($this->inventory->getItems() as $item)
+					$this->equip($this->user, $item);
+			}
+		}
 		
+		public function save()
+		{
+			
+			$this->inventory->save();
 		}
 		
 		public function equip(Actor &$actor, \Items\Equipment $item)
@@ -131,6 +146,7 @@
 				if($this->equipment[$position] === null)
 				{
 					$actor->getInventory()->remove($item);
+					$this->inventory->add($item);
 					$this->equipment[$position] = $item;
 					$equipped = $item;
 					$equipped_position = $position;
@@ -139,6 +155,8 @@
 				if($this->equipment[$position] !== null && $i == sizeof($positions))
 				{
 					$item_remove = $this->equipment[$position];
+					$this->inventory->remove($item_remove);
+					$this->inventory->add($item);
 					$actor->getInventory()->add($item_remove);
 					$actor->getInventory()->remove($item);
 					$this->equipment[$position] = $item;
@@ -277,7 +295,7 @@
 		
 		public function getEquipmentByPosition($position) { return $this->equipment[$position]; }
 		
-		public function displayContents($actor)
+		public function displayContents()
 		{
 		
 			$buffer = '';

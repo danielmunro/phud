@@ -32,15 +32,15 @@
 	\Mechanics\Debug::newLog();
 	
 	// Load all commands
-	$d = dir(dirname(__FILE__) . '/Commands');
-	while($command = $d->read())
-		if(strpos($command, '.php') !== false)
-			\Mechanics\Command::instantiate(substr($command, 0, strpos($command, '.')));
+	\Mechanics\Command::runInstantiation();
 
+	// Load all areas
+	\Mechanics\Area::runInstantiation();
+	
 	// Autoloader
 	function __autoload($class)
 	{
-		print $class . "\n";
+		
 		if(strpos($class, "\\"))
 		{
 			list($namespace, $class) = explode("\\", $class);

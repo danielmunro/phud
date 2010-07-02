@@ -24,35 +24,21 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	class Remove extends \Mechanics\Command
+	namespace Mechanics;
+	abstract class Area
 	{
 	
-		protected function __construct()
+		public static function runInstantiation()
 		{
 		
-			\Mechanics\Command::addAlias(__CLASS__, array('rem', 'remove'));
+			$d = dir(dirname(__FILE__) . '/../Areas');
+			while($area_file = $d->read())
+				if(strpos($area_file, '.php') !== false)
+				{
+					require_once(dirname(__FILE__) . '/../Areas/' . $area_file);
+					$area = '\Areas\\' . substr($area_file, 0, strpos($area_file, '.'));
+					$area::instantiate();
+				}
 		}
-	
-		public static function perform(&$actor, $args = null)
-		{
-		
-			return $actor->getEquipped()->remove($actor, $equipment);
-		
-			$equipment = $actor->getEquipped()->getEquipmentByInput($args);
-			if(is_array($equipment) && sizeof($equipment) > 0)
-			{
-				$equipment = array_shift($equipment);
-				$actor->getEquipped()->remove($actor, $equipment);
-				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
-			}
-			else
-			{
-				\Mechanics\Server::out($actor, 'You are not wearing anything like that.');
-			}
-		
-		}
-	
 	}
-
 ?>
