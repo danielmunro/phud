@@ -192,7 +192,7 @@
 				if($target instanceof Actor)
 				{
 					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . '.');
-					if($actor instanceof User)
+					if($actor instanceof \Living\User)
 					{
 						Server::out($actor, "\n" . $actor->prompt(), false);
 					}

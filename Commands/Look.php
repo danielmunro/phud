@@ -69,7 +69,7 @@
 			}
 			
 			// Actor is looking at something... find out what it is
-			$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
 			
 			if(empty($target))
 				$target = $actor->getRoom()->getInventory()->getItemByInput($args);
@@ -78,7 +78,7 @@
 				$target = $actor->getInventory()->getItemByInput($args);
 			
 			if(!empty($target))
-				return Server::out($actor, $target->lookDescribe());
+				return \Mechanics\Server::out($actor, $target->lookDescribe());
 			
 			// Direction
 			if(strpos($args[1], 'n') === 0)

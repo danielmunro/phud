@@ -49,10 +49,10 @@
 				
 				// getting something from somewhere
 				$container = $actor->getRoom()->getInventory()->getContainerByInput($args);
-				if(!($container instanceof Container))
+				if(!($container instanceof \Items\Container))
 					$container = $actor->getInventory()->getContainerByInput($args);
-				if(!($container instanceof Container))
-					return Server::out($actor, "Nothing is there.");
+				if(!($container instanceof \Items\Container))
+					return \Mechanics\Server::out($actor, "Nothing is there.");
 				
 				if($args[0] == 'all')
 				{
@@ -60,7 +60,7 @@
 					{
 						$container->getInventory()->remove($item);
 						$actor->getInventory()->add($item);
-						Server::out($actor, 'You get ' . $item->getShort() . ' from ' . $container->getShort() . '.');
+						\Mechanics\Server::out($actor, 'You get ' . $item->getShort() . ' from ' . $container->getShort() . '.');
 					}
 					return;
 				}
@@ -69,25 +69,25 @@
 				
 					$item = $container->getInventory()->getItemByInput(array('', $args[0]));
 				
-					if($item instanceof Item)
+					if($item instanceof \Items\Item)
 						$from = ' from ' . $container->getShort();
 					else
-						return Server::out($actor, "You see nothing like that.");
+						return \Mechanics\Server::out($actor, "You see nothing like that.");
 				}
 			}
 			
-			if($item instanceof Item)
+			if($item instanceof \Items\Item)
 			{
 				if(!$item->getCanOwn())
-					return Server::out($actor, "You cannot pick that up.");
+					return \Mechanics\Server::out($actor, "You cannot pick that up.");
 				
 				$container->getInventory()->remove($item);
 				$actor->getInventory()->add($item);
-				Server::out($actor, 'You get ' . $item->getShort() . (isset($from) ? $from : '') . '.');
+				\Mechanics\Server::out($actor, 'You get ' . $item->getShort() . (isset($from) ? $from : '') . '.');
 			}
 			else
 			{
-				Server::out($actor, 'You see nothing like that.');
+				\Mechanics\Server::out($actor, 'You see nothing like that.');
 			}
 		
 		}

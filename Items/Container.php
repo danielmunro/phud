@@ -35,8 +35,8 @@
 		
 			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_CONTAINER, $can_own);
 			
-			if(!($inventory instanceof Inventory))
-				$inventory = new Inventory($type, $this->id);
+			if(!($inventory instanceof \Mechanics\Inventory))
+				$inventory = new \Mechanics\Inventory(self::TYPE_CONTAINER, $this->id);
 			else
 			{
 				$inventory->setTable(self::TYPE_CONTAINER);

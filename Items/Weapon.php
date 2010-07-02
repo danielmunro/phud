@@ -54,7 +54,7 @@
 		public function save($inv_inside_id)
 		{
 			if($this->id)
-				return Db::getInstance()->query(
+				return \Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -73,7 +73,7 @@
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
 						$this->door_unlock_id, $this->weapon_type, $this->hit_roll, $this->dam_roll, $this->id));
 			
-			Db::getInstance()->query(
+			\Mechanics\Db::getInstance()->query(
 				'INSERT INTO items (
 					short_desc,
 					long_desc,
@@ -92,7 +92,7 @@
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
 				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id,
 				$this->weapon_type, $this->hit_roll, $this->dam_roll));
-			$this->id = Db::getInstance()->insert_id;
+			$this->id = \Mechanics\Db::getInstance()->insert_id;
 		}
 		public function getWeaponType() { return $this->weapon_type; }
 		public function getHitRoll() { return $this->hit_roll; }

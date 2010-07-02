@@ -130,7 +130,7 @@
 				if(!is_array($nouns))
 					$nouns = explode(' ', $nouns);
 				foreach($nouns as $noun)
-					if(strpos($noun, $input[1]) === 0 && $item instanceof Container)
+					if(strpos($noun, $input[1]) === 0 && $item instanceof \Items\Container)
 						return $item;
 			}
 		}

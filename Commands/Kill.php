@@ -37,14 +37,14 @@
 		public static function perform(&$actor, $args = null)
 		{
 			$target = $actor->getTarget();
-			if($target instanceof Actor)
-				Server::out($actor, "Whoa! Don't you think one is enough?");
+			if($target instanceof \Mechanics\Actor)
+				\Mechanics\Server::out($actor, "Whoa! Don't you think one is enough?");
 			
-			$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
 			
-			if(!($target instanceof Actor))
+			if(!($target instanceof \Mechanics\Actor))
 			{
-				Server::out($actor, 'Nothing is here.');
+				\Mechanics\Server::out($actor, 'Nothing is here.');
 				return;
 			}
 						

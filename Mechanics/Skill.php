@@ -49,8 +49,8 @@
 		}
 	
 		public function getName() { return $this->name; }
-		public function getProficiency() { return $this->proficiency; }
-		public function setProficiency($proficiency) { $this->proficiency = $proficiency; }
+		public function getPercent() { return $this->percent; }
+		public function setPercent($percent) { $this->percent = $percent; }
 	}
 
 ?>

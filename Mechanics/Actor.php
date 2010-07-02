@@ -48,7 +48,7 @@
 		protected $wis;
 		protected $dex;
 		protected $con;
-		protected $fighting;
+		protected $fighting = array();
 		protected $sex;
 		protected $disposition; // sitting, sleeping, standing
 		protected $experience;
@@ -76,7 +76,7 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
-			//$this->equipped = new Equipped();
+			$this->equipped = new Equipped();
 			$this->room = Room::find($room_id);
 			
 			if($this instanceof User)
@@ -108,7 +108,11 @@
 			else
 				return $this->alias;
 		}
-		public function getRaceStr() { return get_class($this->race); }
+		public function getRaceStr()
+		{
+			$class = get_class($this->race);
+			return substr($class, strpos($class, '\\') + 1);
+		}
 		public function getClassStr() { return $this->_class->getClassStr(); }
 		public function getLevel() { return $this->level; }
 		
@@ -141,6 +145,7 @@
 		public function getConcentration() { return $this->concentration; }
 		public function getFighter($fighter_alias)
 		{
+			
 			foreach($this->fighting as $index => $fighter)
 				if($fighter->getAlias() == $fighter_alias)
 					return $fighter;
@@ -217,7 +222,7 @@
 		}
 		public function getDelay() { return $this->delay; }
 		public function getFightable() { return $this->fightable; }
-		public function setHp($hp, $killer = null) { $this->hp = $hp; $this->checkAlive($killer); }
+		public function setHp($hp, $killer = null) { $this->hp = $hp; }
 		public function setMaxHp($max_hp) { $this->max_hp = $max_hp; }
 		public function setMana($mana) { $this->mana = $mana; }
 		public function setMaxMana($max_mana) { $this->max_mana = $max_mana; }
@@ -233,7 +238,7 @@
 			if(!$fighting->getFightable())
 				return Server::out($this, "You can't fight them!");
 			
-			Debug::addDebugLine("User " . $this->getAlias(true) . " adding fighter " . $fighting->getAlias(true) . ".");
+			Debug::addDebugLine("User " . $this->getAlias() . " adding fighter " . $fighting->getAlias() . ".");
 			Server::out($this, 'You scream and attack!');
 			$this->fighting[] = $fighting;
 		}
@@ -358,10 +363,10 @@
 		
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
 			
-			if($attacking_weapon === null)
+			//if($attacking_weapon === null)
 				$verb = $this->getRace()->getUnarmedVerb();
-			else
-				$verb = $attacking_weapon->getVerb();
+			//else
+			//	$verb = $attacking_weapon->getVerb();
 		
 			// Attack - hit or miss?
 			if($this->str <= $actor->getDex())
@@ -390,9 +395,10 @@
 			if($actor->getHp() > 0)
 			{
 				$actor_target = $actor->getTarget();
-				if(!($actor_target instanceof Actor))
+				if(!($actor_target instanceof self))
 					$actor->addFighter($this);
 			}
+			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
 		}
 		
@@ -432,15 +438,13 @@
 			// Check for parry, dodge, and shield block
 			if($type === Damage::TYPE_HIT)
 			{
-				$skill = Skill::findByAliasAndName($target->getAlias(), 'Dodge');
-				if(!empty($skill) && Skill_Dodge::perform($target, $skill))
+				if($target->getSkillset()->isValidSkill('dodge') && $target->getSkillset()->perform('dodge'))
 				{
 					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
 					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
 					return false;
 				}
-				$skill = Skill::findByAliasAndName($target->getAlias(), 'Shield_Block');
-				if(!empty($skill) && Skill_Shield_Block::perform($target, $skill))
+				if($target->getSkillset()->isValidSkill('shield_block') && $target->getSkillset()->perform('shield_block'))
 				{
 					
 					Server::out($this, $target->getAlias(true) . " blocks your attack with " . $target->getDisplaySex() . " shield!");
@@ -449,7 +453,7 @@
 				}
 			}
 			
-			$target->setHp($target->getHp() - $damage, $this);
+			$target->setHp($target->getHp() - $damage);
 			return true;
 			
 		}
@@ -480,25 +484,23 @@
 					Server::out($killer, "You get " . $killer->applyExperienceFrom($this) . " experience for your kill.");
 				}
 				
-				if($this instanceof User)
+				if($this instanceof \Living\User)
 					$nouns = $this->getAlias();
-				elseif($this instanceof Mob)
+				elseif($this instanceof \Living\Mob)
 					$nouns = $this->getNoun();
 				
-				$corpse = new Container(0,
+				$corpse = new \Items\Container(0,
 										'A corpse of ' . $this->getAlias() . ' lies here.',
 										'a corpse of ' . $this->getAlias(),
 										'corpse ' . $this->getAlias(),
-										0,
 										100,
-										0,
 										'corpse',
 										$this->inventory,
 										false);
 				
 				$this->room->getInventory()->add($corpse);
 				
-				if($this instanceof User)
+				if($this instanceof \Living\User)
 				{
 					$this->inventory = new Inventory('users', $this->id);
 					$this->inventory->save();
@@ -507,10 +509,10 @@
 				$this->setHp(1);
 				Debug::addDebugLine($this->getAlias(true) . ' died.');
 				Server::out($this, 'You have been KILLED!');
-				if($this instanceof Mob)
+				if($this instanceof \Living\Mob)
 					$this->handleRespawn();
 				
-				$target = $this->getTarget();
+				//$target = $this->getTarget();
 			}
 		
 		}

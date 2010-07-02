@@ -53,7 +53,7 @@
 				$actor->addFighter($final_target);
 			
 			$chance = rand(0, 100);
-			if($chance > self::$base_chance || $chance > $this->percent)
+			if($chance > self::$base_chance || $chance > $this->getPercent())
 				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
 			
 			if($actor->damage($final_target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))

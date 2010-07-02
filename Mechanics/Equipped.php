@@ -47,27 +47,27 @@
 		const POSITION_WIELD_R = 16;
 		const POSITION_FLOAT = 18;
 		
-		private $equipment;
+		private $equipment = array();
 		private static $types = array
 		(
-			self::POSITION_LIGHT => Equipment::TYPE_LIGHT,
-			self::POSITION_FINGER_L => Equipment::TYPE_FINGER,
-			self::POSITION_FINGER_R => Equipment::TYPE_FINGER,
-			self::POSITION_NECK_1 => Equipment::TYPE_NECK,
-			self::POSITION_NECK_2 => Equipment::TYPE_NECK,
-			self::POSITION_BODY => Equipment::TYPE_BODY,
-			self::POSITION_HEAD => Equipment::TYPE_HEAD,
-			self::POSITION_LEGS => Equipment::TYPE_LEGS,
-			self::POSITION_FEET => Equipment::TYPE_FEET,
-			self::POSITION_HANDS => Equipment::TYPE_HANDS,
-			self::POSITION_ARMS => Equipment::TYPE_ARMS,
-			self::POSITION_TORSO => Equipment::TYPE_TORSO,
-			self::POSITION_WAIST => Equipment::TYPE_WAIST,
-			self::POSITION_WRIST_L => Equipment::TYPE_WRIST,
-			self::POSITION_WRIST_R => Equipment::TYPE_WRIST,
-			self::POSITION_WIELD_L => Equipment::TYPE_WIELD,
-			self::POSITION_WIELD_R => Equipment::TYPE_WIELD,
-			self::POSITION_FLOAT => Equipment::TYPE_FLOAT
+			self::POSITION_LIGHT => \Items\Equipment::TYPE_LIGHT,
+			self::POSITION_FINGER_L => \Items\Equipment::TYPE_FINGER,
+			self::POSITION_FINGER_R => \Items\Equipment::TYPE_FINGER,
+			self::POSITION_NECK_1 => \Items\Equipment::TYPE_NECK,
+			self::POSITION_NECK_2 => \Items\Equipment::TYPE_NECK,
+			self::POSITION_BODY => \Items\Equipment::TYPE_BODY,
+			self::POSITION_HEAD => \Items\Equipment::TYPE_HEAD,
+			self::POSITION_LEGS => \Items\Equipment::TYPE_LEGS,
+			self::POSITION_FEET => \Items\Equipment::TYPE_FEET,
+			self::POSITION_HANDS => \Items\Equipment::TYPE_HANDS,
+			self::POSITION_ARMS => \Items\Equipment::TYPE_ARMS,
+			self::POSITION_TORSO => \Items\Equipment::TYPE_TORSO,
+			self::POSITION_WAIST => \Items\Equipment::TYPE_WAIST,
+			self::POSITION_WRIST_L => \Items\Equipment::TYPE_WRIST,
+			self::POSITION_WRIST_R => \Items\Equipment::TYPE_WRIST,
+			self::POSITION_WIELD_L => \Items\Equipment::TYPE_WIELD,
+			self::POSITION_WIELD_R => \Items\Equipment::TYPE_WIELD,
+			self::POSITION_FLOAT => \Items\Equipment::TYPE_FLOAT
 		);
 		private static $labels = array
 		(
@@ -188,55 +188,55 @@
 			
 			switch($equipped->getEquipmentType())
 			{
-				case Equipment::TYPE_LIGHT:
+				case \Items\Equipment::TYPE_LIGHT:
 					$msg_you .= ' as a light.';
 					$msg_others .= ' as a light.';
 					break;
-				case Equipment::TYPE_FLOAT:
+				case \Items\Equipment::TYPE_FLOAT:
 					$msg_you .= ' to float around nearby.';
 					$msg_others .= ' to float around nearby.';
 					break;
-				case Equipment::TYPE_WIELD:
+				case \Items\Equipment::TYPE_WIELD:
 					$msg_you .= '.';
 					$msg_others .= '.';
 					break;
-				case Equipment::TYPE_FINGER:
+				case \Items\Equipment::TYPE_FINGER:
 					$msg_you .= ' on your finger.';
 					$msg_others .= 'on ' . $sex . ' finger.';
 					break;
-				case Equipment::TYPE_ARMS:
+				case \Items\Equipment::TYPE_ARMS:
 					$msg_you .= ' on your arms.';
 					$msg_others .= 'on ' . $sex . ' arms.';
 					break;
-				case Equipment::TYPE_BODY:
+				case \Items\Equipment::TYPE_BODY:
 					$msg_you .= ' around your body.';
 					$msg_others .= ' around ' . $sex . ' body.';
 					break;
-				case Equipment::TYPE_FEET:
+				case \Items\Equipment::TYPE_FEET:
 					$msg_you .= ' on your feet.';
 					$msg_others .= ' on ' . $sex . ' feet.';
 					break;
-				case Equipment::TYPE_HEAD:
+				case \Items\Equipment::TYPE_HEAD:
 					$msg_you .= ' on your head.';
 					$msg_others .= ' on ' . $sex . ' head.';
 					break;
-				case Equipment::TYPE_HANDS:
+				case \Items\Equipment::TYPE_HANDS:
 					$msg_you .= ' on your hands.';
 					$msg_others .= ' on ' . $sex . ' hands.';
 					break;
-				case Equipment::TYPE_HOLD:
+				case \Items\Equipment::TYPE_HOLD:
 					$msg_you .= ' in your hand.';
 					$msg_others .= ' in ' . $sex . ' hand.';
 					break;
-				case Equipment::TYPE_TORSO:
+				case \Items\Equipment::TYPE_TORSO:
 					$msg_you .= ' around your torso.';
 					$msg_others .= ' around ' . $sex . ' torso.';
 					break;
-				case Equipment::TYPE_WAIST:
+				case \Items\Equipment::TYPE_WAIST:
 					$msg_you .= ' around your waist.';
 					$msg_others .= ' around ' . $sex . ' waist.';
 					break;
-				case Equipment::TYPE_WRIST:
+				case \Items\Equipment::TYPE_WRIST:
 					$msg_you .= ' on your wrist.';
 					$msg_others .= ' on ' . $sex . ' wrist.';
 					break;
@@ -251,7 +251,7 @@
 		public function removeByPosition(Actor &$actor, $position)
 		{
 			
-			if($this->equipment[$position] instanceof Equipment)
+			if($this->equipment[$position] instanceof \Items\Equipment)
 			{
 				$item = $this->equipment[$position];
 				$actor->getInventory()->add($item);
@@ -262,7 +262,7 @@
 			
 		}
 		
-		public function remove(Actor &$actor, Equipment $item)
+		public function remove(Actor &$actor, \Items\Equipment $item)
 		{
 		
 			if(in_array($item, $this->equipment))
@@ -289,7 +289,7 @@
 				for($i = 0; $i < $len_diff; $i++)
 					$buf .= ' ';
 				$buffer .= $buf;
-				if($eq instanceof Equipment)
+				if($eq instanceof \Items\Equipment)
 					$buffer .= '      ' . $eq->getShort() . "\n";
 				else
 					$buffer .= "      nothing\n";

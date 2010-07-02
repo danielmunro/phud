@@ -93,7 +93,7 @@
 		public function handleRespawn()
 		{
 			$this->dead = true;
-			$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
+			$this->setRoom(\Mechanics\Room::find(\Mechanics\Room::PURGATORY_ROOM_ID));
 		}
 		public function decreaseRespawnTime()
 		{

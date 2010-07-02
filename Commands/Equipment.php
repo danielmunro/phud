@@ -37,8 +37,8 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			Server::out($actor, 'Your equipment:');
-			Server::out($actor, $actor->getEquipped()->displayContents());		
+			\Mechanics\Server::out($actor, 'Your equipment:');
+			\Mechanics\Server::out($actor, $actor->getEquipped()->displayContents());		
 		}
 	
 	}

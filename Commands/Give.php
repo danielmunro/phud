@@ -44,11 +44,11 @@
 			{
 				$give_amount = $args[1];
 				$currency = $args[2];
-				$actors = ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
-				$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[3]));
+				$actors = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[3]));
 				
-				if(!($target instanceof Actor))
-					return Server::out($actor, "They aren't here.");
+				if(!($target instanceof \Mechanics\Actor))
+					return \Mechanics\Server::out($actor, "They aren't here.");
 				
 				if(strpos('copper', $currency) === 0)
 					$currency_proper = 'copper';
@@ -58,35 +58,35 @@
 					$currency_proper = 'gold';
 				
 				if(!isset($currency_proper))
-					return Server::out($actor, "What kind of currency?");
+					return \Mechanics\Server::out($actor, "What kind of currency?");
 				
 				$amount = $actor->{'get' . ucfirst($currency_proper)}();
 				
 				if($amount < $give_amount)
-					return Server::out($actor, "You don't have that.");
+					return \Mechanics\Server::out($actor, "You don't have that.");
 				
 				$actor->{'decrease' . ucfirst($currency_proper)}($give_amount);
 				$target->{'increase' . ucfirst($currency_proper)}($give_amount);
 				
-				Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
-				Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
+				\Mechanics\Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
+				\Mechanics\Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
 			}
 			else
 			{
 				$item = $actor->getInventory()->getItemByInput($args);
 				array_shift($args);
-				$target = ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
 			
 				if(empty($item))
-					return Server::out($actor, "You don't appear to have that.");
+					return \Mechanics\Server::out($actor, "You don't appear to have that.");
 			
-				if(!($target instanceof Actor))
-					return Server::out($actor, "You don't see them here.");
-				print 'giving?';
+				if(!($target instanceof \Mechanics\Actor))
+					return \Mechanics\Server::out($actor, "You don't see them here.");
+				
 				$actor->getInventory()->remove($item);
 				$target->getInventory()->add($item);
-				Server::out($actor, "You give " . $item->getShort() . " to " . $target->getAlias() . ".");
-				Server::out($target, $actor->getAlias(true) . " gives you " . $item->getShort() . ".");
+				\Mechanics\Server::out($actor, "You give " . $item->getShort() . " to " . $target->getAlias() . ".");
+				\Mechanics\Server::out($target, $actor->getAlias(true) . " gives you " . $item->getShort() . ".");
 			}
 		}
 	

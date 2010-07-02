@@ -39,14 +39,13 @@
 		
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof Equipment))
-				return Server::out($actor, "You cannot equip " . $item->getShort() . ".");
+			if(!$item)
+				return \Mechanics\Server::out($actor, 'You have nothing like that in your inventory.');
 			
-			if($item instanceof Item)
-				return $actor->getEquipped()->equip($actor, $item);
+			if(!($item instanceof \Items\Equipment))
+				return \Mechanics\Server::out($actor, "You cannot equip " . $item->getShort() . ".");
 			
-			Server::out($actor, 'You have nothing like that in your inventory.');
-		
+			return $actor->getEquipped()->equip($actor, $item);
 		}
 	
 	}
