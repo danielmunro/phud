@@ -42,6 +42,7 @@
 		private $door = null;
 		private $inventory = null;
 		private $area = '';
+		private $visibility = 1;
 	
 		const PURGATORY_ROOM_ID = 7;
 	
@@ -62,6 +63,7 @@
 			$this->up = $row->up;
 			$this->down = $row->down;
 			$this->area = $row->area;
+			$this->visibility = $row->visibility;
 		}
 	
 		public static function find($id)
@@ -82,7 +84,7 @@
 			return self::$instance[$id];
 		
 		}
-		
+		public function getVisibility() { return $this->visibility; }
 		public function getId() { return $this->id; }
 		public function getTitle() { return $this->title; }
 		public function getDescription() { return $this->description; }

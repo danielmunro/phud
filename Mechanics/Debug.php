@@ -46,7 +46,7 @@
 				return;
 			
 			$fp = fopen('debug.log', 'a');
-			fwrite($fp, $msg . ($new_line === true ? " [mem: " . '' . "]\n" : ''));
+			fwrite($fp, $msg . ($new_line === true ? " [mem: " . round(memory_get_usage(true)/1048576,2) . "]\n" : ''));
 			fclose($fp);
 		}
 	}

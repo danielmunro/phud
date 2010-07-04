@@ -135,7 +135,7 @@
 				if($actor->getMovement() > $actor->getMaxMovement())
 					$actor->setMovement($actor->getMaxMovement());
 
-				if($actor instanceof User)
+				if($actor instanceof \Living\User)
 				{
 					$actor->decreaseRacialNourishmentAndThirst();
 					if($actor->getNourishment() < 0)
@@ -146,25 +146,24 @@
 					Server::out($actor, "\n" . $actor->prompt(), false);
 				}
 				
-				if($actor instanceof Mob && $actor->getDead())
+				if($actor instanceof \Living\Mob && $actor->getDead())
 					if($actor->decreaseRespawnTime() < 1)
 					{
 						$actor->setRoom(Room::find($actor->getDefaultRoomId()));
 						$actor->resetRespawnTime();
 						$actor->setDead(false);
-						self::announceToOthersInRoom($actor->getRoom()->getId(), $actor->getShort(),
-									$actor->getAlias(true) . " arrives in a puff of smoke.");
+						self::announceToOthersInRoom($actor->getRoom()->getId(), $actor->getAlias(true));
 					}
 			}
 		
 		}
 		
-		public static function announceToOthersInRoom($room_id, $actor_short, $message)
+		public static function announceToOthersInRoom($room_id, $actor_alias)
 		{
 			$actors = self::instance()->getActorsInRoom($room_id);
 			foreach($actors as $actor)
-				if($actor->getShort() != $actor_short)
-					Server::out($actor, $message);
+				if($actor->getAlias(true) != $actor_alias)
+					Server::out($actor, $actor_alias . " arrives in a puff of smoke.");
 		}
 		
 		public function battles()

@@ -1,6 +1,6 @@
 <?php
 	namespace Mechanics;
-	class Affect
+	class Effect
 	{
 	
 		const FIRE = 0;

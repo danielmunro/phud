@@ -62,6 +62,7 @@
 		protected $ac_bash = 0;
 		protected $ac_pierce = 0;
 		protected $ac_magic = 0;
+		protected $affects = array();
 		
 		protected $race = null;
 		protected $room = null;
@@ -92,6 +93,17 @@
 			$this->skillset = Skillset::findByActor($this);
 		}
 		
+		public function removeAffects($affects)
+		{
+			foreach($affects as $affect)
+			{
+				$i = array_search($affect, $this->affects);
+				if($i !== false)
+					unset($this->affects[$i]);
+			}
+		}
+		public function addAffects($affects) { $this->affects = array_merge($this->affects, $affects); }
+		public function getAffects() { return $this->affects; }
 		public function getSkillset() { return $this->skillset; }
 		public function getStr() { return $this->str; }
 		public function getInt() { return $this->int; }
@@ -368,10 +380,19 @@
 		
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
 			
-			//if($attacking_weapon === null)
+			$attacking_weapon = null;
+			$hand_l = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
+			$hand_r = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
+			
+			if($hand_l instanceof \Items\Weapon)
+				$attacking_weapon = $hand_l;
+			elseif($hand_r instanceof \Items\Weapon)
+				$attacking_weapon = $hand_r;
+			
+			if($attacking_weapon)
+				$verb = $attacking_weapon->getVerb();
+			else
 				$verb = $this->getRace()->getUnarmedVerb();
-			//else
-			//	$verb = $attacking_weapon->getVerb();
 		
 			// Attack - hit or miss?
 			if($this->str <= $actor->getDex())
@@ -567,7 +588,7 @@
 				$this->long = 'You see nothing special about ' . $sex . '.';
 			
 			return  $this->long . "\r\n" . 
-					$this->getAlias(true) . ' the ' . strtolower($this->race->getRaceStr()) . ' ' . $this->getStatus() . '.';
+					$this->getAlias(true) . ' ' . $this->getStatus() . '.';
 		
 		}
 		

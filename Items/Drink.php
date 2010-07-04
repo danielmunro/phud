@@ -30,10 +30,10 @@
 	
 		protected $thirst = 0;
 
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $thirst = 1, $can_own = true, $door_unlock_id = null)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $thirst = 1, $can_own = true, $door_unlock_id = null, $affects = '')
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_DRINK, $can_own);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_DRINK, $can_own, $affects);
 			$this->thirst = $thirst;
 		}
 		

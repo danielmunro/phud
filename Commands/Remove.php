@@ -37,12 +37,10 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			return $actor->getEquipped()->remove($actor, $equipment);
-		
-			$equipment = $actor->getEquipped()->getEquipmentByInput($args);
-			if(is_array($equipment) && sizeof($equipment) > 0)
+			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
+			
+			if($equipment instanceof \Items\Equipment)
 			{
-				$equipment = array_shift($equipment);
 				$actor->getEquipped()->remove($actor, $equipment);
 				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
 			}

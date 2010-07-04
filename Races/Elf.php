@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Elf extends Race
+	namespace Races;
+	class Elf extends \Mechanics\Race
 	{
 	
 		public function __construct()
@@ -64,7 +64,7 @@
 			
 			$this->move_verb = 'walks';
 			
-			$this->size = self::SIZE_NORMAL
+			$this->size = self::SIZE_NORMAL;
 			
 			parent::__construct();
 		

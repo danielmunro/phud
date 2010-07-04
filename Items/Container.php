@@ -30,10 +30,10 @@
 	
 		private $inventory;
 	
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $inventory = null, $can_own = true)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $inventory = null, $can_own = true, $affects = '')
 		{
 		
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_CONTAINER, $can_own);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_CONTAINER, $can_own, $affects);
 			
 			if(!($inventory instanceof \Mechanics\Inventory))
 				$inventory = new \Mechanics\Inventory(self::TYPE_CONTAINER, $this->id);

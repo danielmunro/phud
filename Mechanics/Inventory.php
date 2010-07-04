@@ -87,13 +87,27 @@
 			return self::$instances[$table][$table_id];
 		}
 		
-		public function add(\Items\Item $item)
+		public function add($item)
 		{
-			$this->items[] = $item;
+		
+			if(is_array($item))
+				foreach($item as $i)
+					$this->add($i);
+			else if($item instanceof \Items\Item)
+				$this->items[] = $item;
 		}
 		
 		public function remove(\Items\Item $item, $hard = false)
 		{
+			
+			$i = array_search($item, $this->items);
+			if($i !== false)
+				unset($this->items[$i]);
+			if($hard)
+				$item->delete();
+			return;
+			
+			
 			foreach($this->items as $key => $i)
 				if($i->getShort() == $item->getShort())
 				{

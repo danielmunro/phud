@@ -123,9 +123,11 @@
 				$this->user = $user;
 				$this->inventory = Inventory::find('users_eq', $this->user->getId());
 				foreach($this->inventory->getItems() as $item)
-					$this->equip($this->user, $item);
+					$this->equip($this->user, $item, false);
 			}
 		}
+		
+		public function getInventory() { return $this->inventory; }
 		
 		public function save()
 		{
@@ -133,7 +135,7 @@
 			$this->inventory->save();
 		}
 		
-		public function equip(Actor &$actor, \Items\Equipment $item)
+		public function equip(Actor &$actor, \Items\Equipment $item, $display_message = true)
 		{
 			
 			$positions = array_keys(self::$types, $item->getEquipmentType());
@@ -148,6 +150,7 @@
 					$actor->getInventory()->remove($item);
 					$this->inventory->add($item);
 					$this->equipment[$position] = $item;
+					$actor->addAffects($item->getAffects());
 					$equipped = $item;
 					$equipped_position = $position;
 					break;
@@ -166,6 +169,9 @@
 					break;
 				}
 			}
+			
+			if(!$display_message)
+				return;
 			
 			if($dequipped)
 			{
@@ -283,10 +289,13 @@
 		public function remove(Actor &$actor, \Items\Equipment $item)
 		{
 		
-			if(in_array($item, $this->equipment))
+			$i = array_search($item, $this->equipment);
+			if($i !== false)
 			{
+				$this->getInventory()->remove($item);
 				$actor->getInventory()->add($item);
-				$this->equipment[$item->getEquipmentPosition()] = null;
+				$actor->removeAffects($item->getAffects());
+				$this->equipment[$i] = null;
 			}
 			else
 				Server::out($actor, 'Nothing is there.');

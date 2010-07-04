@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Ogre extends Race
+	namespace Races;
+	class Ogre extends \Mechanics\Race
 	{
 	
 		public function __construct()
@@ -66,7 +66,7 @@
 			
 			$this->size = self::SIZE_LARGE;
 			
-			$this->effects_resist = array(Effect::FIRE, Effect::COLD);
+			$this->effects_resist = array(\Mechanics\Effect::FIRE, \Mechanics\Effect::COLD);
 			
 			parent::__construct();
 		

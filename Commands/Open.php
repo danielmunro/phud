@@ -40,23 +40,23 @@
 			if(sizeof($args) < 2)
 				return Server::out($actor, 'Open what?');
 			
-			$door = Command::findObjectByArgs(
-									Door::findByRoomId($actor->getRoom()->getId()),
+			$door = \Mechanics\Command::findObjectByArgs(
+									\Mechanics\Door::findByRoomId($actor->getRoom()->getId()),
 									$args[1]);
 			
 			if(empty($door))
-				$door = Door::findByRoomAndDirection($actor->getRoom()->getId(), $args[1]);
+				$door = \Mechanics\Door::findByRoomAndDirection($actor->getRoom()->getId(), $args[1]);
 			
 			if(!empty($door) && !$door->getHidden($actor->getRoom()->getId()))
 				switch($door->getDisposition())
 				{
-					case Door::DISPOSITION_CLOSED:
-						$door->setDisposition(Door::DISPOSITION_OPEN);
-						return Server::out($actor, 'You open ' . $door->getShort() . '.');
-					case Door::DISPOSITION_OPEN:
-						return Server::out($actor, ucfirst($door->getShort()) . ' is already open.');
-					case Door::DISPOSITION_LOCKED:
-						return Server::out($actor, ucfirst($door->getShort()) . ' is locked.');
+					case \Mechanics\Door::DISPOSITION_CLOSED:
+						$door->setDisposition(\Mechanics\Door::DISPOSITION_OPEN);
+						return \Mechanics\Server::out($actor, 'You open ' . $door->getShort() . '.');
+					case \Mechanics\Door::DISPOSITION_OPEN:
+						return \Mechanics\Server::out($actor, ucfirst($door->getShort()) . ' is already open.');
+					case \Mechanics\Door::DISPOSITION_LOCKED:
+						return \Mechanics\Server::out($actor, ucfirst($door->getShort()) . ' is locked.');
 				}					
 			
 			return Server::out($actor, "You can't open anything like that.");

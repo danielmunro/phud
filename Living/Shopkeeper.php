@@ -40,6 +40,8 @@
 			$this->description = $description;
 			$this->area = $area;
 			$this->level = $level;
+			$this->hp = 1;
+			$this->max_hp = 1;
 			$this->setRace($race);
 			$this->fightable = false;
 			

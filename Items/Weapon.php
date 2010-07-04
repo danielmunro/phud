@@ -30,7 +30,9 @@
 	
 		protected $hit_roll;
 		protected $dam_roll;
-		protected $weapon_type;
+		protected $weapon_type = 0;
+		protected $verb = '';
+		protected $damage_type = 0;
 		
 		const TYPE_SWORD = 1;
 		const TYPE_AXE = 2;
@@ -43,13 +45,19 @@
 		const TYPE_SPEAR = 9;
 		const TYPE_FLAIL = 10;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $weapon_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null)
+		const DAMAGE_SLASH = 1;
+		const DAMAGE_PIERCE = 2;
+		const DAMAGE_POUND = 3;
+		
+		public function __construct($id, $long, $short, $nouns, $verb, $value, $weight, $weapon_type, $damage_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null, $affects = '')
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id, $affects);
 			$this->weapon_type = $weapon_type;
+			$this->damage_type = $damage_type;
 			$this->hit_roll = $hit_roll;
 			$this->dam_roll = $dam_roll;
+			$this->verb = $verb;
 		}
 		public function save($inv_inside_id)
 		{
@@ -67,11 +75,13 @@
 						fk_door_unlock_id = ?,
 						weapon_type = ?,
 						hit_roll = ?,
-						dam_roll = ?
+						dam_roll = ?,
+						verb = ?,
+						damage_type = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
-						$this->door_unlock_id, $this->weapon_type, $this->hit_roll, $this->dam_roll, $this->id));
+						$this->door_unlock_id, $this->weapon_type, $this->hit_roll, $this->dam_roll, $this->verb, $this->damage_type, $this->id));
 			
 			\Mechanics\Db::getInstance()->query(
 				'INSERT INTO items (
@@ -86,12 +96,14 @@
 					fk_door_unlock_id,
 					weapon_type,
 					hit_roll,
-					dam_roll)
+					dam_roll,
+					verb,
+					damage_type)
 				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
 				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id,
-				$this->weapon_type, $this->hit_roll, $this->dam_roll));
+				$this->weapon_type, $this->hit_roll, $this->dam_roll, $this->verb, $this->damage_type));
 			$this->id = \Mechanics\Db::getInstance()->insert_id;
 		}
 		public function getWeaponType() { return $this->weapon_type; }
