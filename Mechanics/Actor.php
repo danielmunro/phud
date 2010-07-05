@@ -65,6 +65,7 @@
 		protected $ac_magic = 0;
 		protected $affects = array();
 		
+		protected $discipline = null;
 		protected $race = null;
 		protected $room = null;
 		protected $inventory = null;
@@ -115,7 +116,7 @@
 		public function getWis() { return $this->wis; }
 		public function getDex() { return $this->dex; }
 		public function getCon() { return $this->con; }
-		
+		public function getDiscipline() { return $this->discipline; }
 		public function getAlias($upper = null)
 		{
 		
@@ -616,6 +617,14 @@
 			else
 				$experience *= 0.1;
 			
+			$randomizer_percent = rand(0, 10);
+			$randomizer_coin = rand(0, 1);
+			$randomizer_mod = $experience * ($randomizer_percent / 100);
+			if($randomizer_coin)
+				$experience += $randomizer_mod;
+			else
+				$experience -= $randomizer_mod;
+			
 			$experience = (int) $experience;
 			
 			$this->experience += $experience;
@@ -668,7 +677,7 @@
 		
 		public function getKillExperience()
 		{
-			return 300;
+			return 300 + (10 * $this->level);
 		}
 		abstract public function getTable();
 		public function getNoun()

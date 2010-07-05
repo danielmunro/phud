@@ -101,11 +101,13 @@
 		{
 			
 			$i = array_search($item, $this->items);
+			
 			if($i !== false)
 				unset($this->items[$i]);
-			if($hard)
+			if($i !== false && $hard)
 				$item->delete();
-			return;
+			
+			return $i;
 			
 			
 			foreach($this->items as $key => $i)

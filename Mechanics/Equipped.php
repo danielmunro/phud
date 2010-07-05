@@ -147,8 +147,8 @@
 				$i++;
 				if($this->equipment[$position] === null)
 				{
-					$actor->getInventory()->remove($item);
-					$this->inventory->add($item);
+					if($actor->getInventory()->remove($item) !== false)
+						$this->inventory->add($item);
 					$this->equipment[$position] = $item;
 					$actor->addAffects($item->getAffects());
 					$equipped = $item;
@@ -284,6 +284,8 @@
 			
 			if($this->equipment[$position] instanceof \Items\Equipment)
 			{
+				$this->getInventory()->remove($item);
+				$actor->removeAffects($item->getAffects());
 				$item = $this->equipment[$position];
 				$actor->getInventory()->add($item);
 				$this->equipment[$position] = null;

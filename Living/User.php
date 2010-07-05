@@ -94,7 +94,11 @@
 			$this->id = $row->id;
 			$this->thirst = $row->thirst;
 			$this->nourishment = $row->nourishment;
+			
 			parent::__construct($this->getRoom()->getId());
+			
+			$discipline = 'Disciplines\\' . $row->discipline;
+			$this->discipline = new $discipline($this);
 		}
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }

@@ -24,19 +24,20 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics; 
-	abstract class Discipline
+	namespace Disciplines;
+	class Crusader extends \Mechanics\Discipline
 	{
-		
-		protected $actor = null;
-		
-		public function __construct(Actor $actor)
+	
+		protected function assignGroup()
 		{
 			
-			$this->actor = $actor;
-			$this->assignGroup();
+			$this->actor->getSkillset()->addSkill(new \Skills\Kick(0, $this->actor->getId()));
+			//new Skill(0, Perform::find('Spell_Cure_Light')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Cure_Serious')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Cure_Critical')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Heal')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//Skill::saveSet($actor->getAlias());
 		}
 		
-		abstract protected function assignGroup();
 	}
 ?>

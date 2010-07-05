@@ -45,13 +45,7 @@
 			{
 				$skill = 'Skills\\' . ucfirst($row->skill);
 				$instance = new $skill($row->percent, $row->fk_user_id);
-				$aliases = $skill::getAliases();
-				
-				if(!is_array($aliases))
-					throw new \Exceptions\Skillset('Expecting array of aliases', Exceptions\Skillset::BAD_CONFIG);
-				
-				foreach($aliases as $alias)
-					$this->skills[$alias] = $instance;
+				$this->addSkill($instance);
 			}
 		}
 		
@@ -63,6 +57,21 @@
 				self::$instances[$i] = new self($actor);
 			
 			return self::$instances[$i];
+		}
+		
+		public function addSkill(Skill $instance)
+		{
+			
+			$aliases = $instance::getAliases();
+				
+			if(!is_array($aliases))
+				throw new \Exceptions\Skillset('Expecting array of aliases', Exceptions\Skillset::BAD_CONFIG);
+			
+			if(isset($this->skills[$aliases[0]]))
+				return;
+			
+			foreach($aliases as $alias)
+				$this->skills[$alias] = $instance;
 		}
 		
 		public function isValidSkill($input)

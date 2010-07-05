@@ -45,10 +45,7 @@
 				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
 			}
 			else
-			{
-				\Mechanics\Server::out($actor, 'You are not wearing anything like that.');
-			}
-		
+				return \Mechanics\Server::out($actor, 'You are not wearing anything like that.');
 		}
 	
 	}

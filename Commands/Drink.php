@@ -36,33 +36,33 @@
 		
 		public static function perform(&$actor, $args = null)
 		{
-			Debug::addDebugLine($actor->getAlias(true) . " is drinking... ", false);
+			\Mechanics\Debug::addDebugLine($actor->getAlias(true) . " is drinking... ", false);
 			$item = null;
 			
 			if(sizeof($args) > 1)
 				$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof Item))
+			if(!($item instanceof \Items\Item))
 			{
 				$items = $actor->getRoom()->getInventory()->getItems();
 				foreach($items as $i)
-					if($i instanceof Drink)
+					if($i instanceof \Items\Drink)
 						$item = $i;
 			}
 			
-			if(!($item instanceof Item))
-				return Server::out($actor, "Nothing like that is here.");
+			if(!($item instanceof \Items\Item))
+				return \Mechanics\Server::out($actor, "Nothing like that is here.");
 			
-			if(!($item instanceof Drink))
-				return Server::out($actor, "You can't drink that!");
+			if(!($item instanceof \Items\Drink))
+				return \Mechanics\Server::out($actor, "You can't drink that!");
 			
 			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()->getFull())
-				return Server::out($actor, "You are too full.");
+				return \Mechanics\Server::out($actor, "You are too full.");
 			
 			$actor->increaseThirst($item->getThirst());
 			
-			Debug::addDebugLine('water from ' . $item->getShort() . '.');
-			Server::out($actor, "You drink water from " . $item->getShort() . ".");
+			\Mechanics\Debug::addDebugLine('water from ' . $item->getShort() . '.');
+			\Mechanics\Server::out($actor, "You drink water from " . $item->getShort() . ".");
 		}
 	}
 ?>

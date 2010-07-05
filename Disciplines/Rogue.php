@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,19 +24,22 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics; 
-	abstract class Discipline
+	namespace Disciplines;
+	class Rogue extends \Mechanics\Discipline
 	{
 		
-		protected $actor = null;
-		
-		public function __construct(Actor $actor)
+		protected function assignGroup()
 		{
 			
-			$this->actor = $actor;
-			$this->assignGroup();
+			$this->actor->increaseHitDam(1, 1);
+			
+			$this->actor->getSkillset()->addSkill(new \Skills\Kick(0, $this->actor->getId()));
+			//new Skill(0, Perform::find('Spell_Cure_Light')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Cure_Serious')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Cure_Critical')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//new Skill(0, Perform::find('Spell_Heal')->getName(), 0, $actor->getAlias(), $actor->getId());
+			//Skill::saveSet($actor->getAlias());
 		}
 		
-		abstract protected function assignGroup();
 	}
 ?>
