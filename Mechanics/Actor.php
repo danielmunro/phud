@@ -29,6 +29,7 @@
 	{
 	
 		const MAX_LEVEL = 51;
+		const MAX_ATTRIBUTE = 25;
 	
 		protected $alias;
 		protected $password = '';
@@ -77,7 +78,11 @@
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
 			ActorObserver::instance()->add($this);
+			
 			$this->room = Room::find($room_id);
+			
+			$this->hit_roll = $this->race->getHitRoll();
+			$this->dam_roll = $this->race->getDamRoll();
 			
 			if($this instanceof \Living\User)
 			{
@@ -372,6 +377,18 @@
 			
 			return true;
 		}
+		
+		public function increaseHitDam($hit = 0, $dam = 0)
+		{
+			$this->hit_roll += $hit;
+			$this->dam_roll += $dam;
+		}
+		public function decreaseHitDam($hit = 0, $dam = 0)
+		{
+			$this->hit_roll -= $hit;
+			$this->dam_roll -= $dam;
+		}
+		
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
 		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
 
@@ -394,29 +411,66 @@
 			else
 				$verb = $this->getRace()->getUnarmedVerb();
 		
+			// ATTACKING
+			$hit_roll = $this->hit_roll;
+			$dam_roll = $this->dam_roll;
+			
+			$hit_roll += ($this->dex / self::MAX_ATTRIBUTE) * 4;
+			// Size modifier
+			$dam_roll += $this->getRace()->getSize();
+			
+			// DEFENDING
+			$def_roll = ($actor->getDex() / self::MAX_ATTRIBUTE) * 4;
+			// Size modifier
+			$def_roll += 5 - $actor->getRace()->getSize();
+			
+			$roll['attack'] = rand(0, $hit_roll);
+			$roll['defense'] = rand(0, $def_roll);
+			
+			if($this instanceof \Living\User)
+				print $roll['attack'] . ' : ' . $roll['defense'];
+			
+			// Lost the hit roll -- miss
+			if($roll['attack'] <= $roll['defense'])
+				$dam_roll = 0;
+			
+			print ': ' . $dam_roll . "\n";
+			
+			if($dam_roll < 5)
+				$descriptor = 'clumsy';
+			elseif($dam_roll < 10)
+				$descriptor = 'amateur';
+			elseif($dam_roll < 15)
+				$descriptor = 'competent';
+			else
+				$descriptor = 'skillful';
+			
+			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
+			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
+			
 			// Attack - hit or miss?
-			if($this->str <= $actor->getDex())
-				$attack = 1;
-			if($this->str > $actor->getDex())
-				$attack = $this->str - $actor->getDex();
+			//if($this->str <= $actor->getDex())
+			//	$attack = 1;
+			//if($this->str > $actor->getDex())
+			//	$attack = $this->str - $actor->getDex();
 			
-			$die = 5;
-			$roll = rand(0, $die);
+			//$die = 5;
+			//$roll = rand(0, $die);
 			
-			if($roll >= $attack)
-				$attack = 0;
+			//if($roll >= $attack)
+			//	$attack = 0;
 			
 			// Verb
-			if($attack < 5)
-				$descriptor = 'clumsy';
-			else
-				$descriptor = 'WICKED';
+			//if($attack < 5)
+			//	$descriptor = 'clumsy';
+			//else
+			//	$descriptor = 'WICKED';
 			
 			$actors = ActorObserver::instance()->getActorsInRoom($this->room->getId());
 			
-			if($this->damage($actor, $attack))
+			if($this->damage($actor, $dam_roll))
 				foreach($actors as $actor_sub)
-					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($attack > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 			
 			if($actor->getHp() > 0)
 			{

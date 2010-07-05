@@ -117,6 +117,7 @@
 			
 		}
 		
+		public function getSize() { return $this->size; }
 		public function getRaceStr() { return get_class($this); }
 		public function getMaxStr() { return $this->max_str; }
 		public function getMaxInt() { return $this->max_int; }

@@ -170,6 +170,13 @@
 				}
 			}
 			
+			if($item instanceof \Items\Weapon)
+			{
+				if(isset($item_remove))
+					$actor->decreaseHitDam($item_remove->getHitRoll(), $item_remove->getDamRoll());
+				$actor->increaseHitDam($item->getHitRoll(), $item->getDamRoll());
+			}
+			
 			if(!$display_message)
 				return;
 			
