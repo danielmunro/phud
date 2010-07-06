@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Faerie extends Race
+	namespace Races;
+	class Faerie extends \Mechanics\Race
 	{
 	
 		public function __construct()

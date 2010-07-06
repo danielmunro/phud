@@ -28,7 +28,7 @@
 	class Wizard extends \Mechanics\Discipline
 	{
 		
-		protected function assignGroup()
+		public function assignGroup()
 		{
 			
 			$this->actor->getSkillset()->addSkill(new \Skills\Kick(0, $this->actor->getId()));

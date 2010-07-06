@@ -96,6 +96,8 @@
 		
 			if(!empty($instance) && $instance instanceof self)
 				return self::$instances[$race] = $instance;
+			
+			throw new Exception('Race not found');
 		}
 		
 		public function applyRacialAttributeModifiers(&$actor)
@@ -136,5 +138,11 @@
 		public function getAcBash() { return $this->ac_bash; }
 		public function getAcPierce() { return $this->ac_pierce; }
 		public function getAcMagic() { return $this->ac_magic; }
+		
+		public function __toString()
+		{
+			$class = get_class($this);
+			return substr($class, strpos($class, '\\') + 1);
+		}
 	}
 ?>

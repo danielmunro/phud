@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,23 +24,22 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics; 
-	abstract class Discipline
+	namespace Commands;
+	class Who extends \Mechanics\Command
 	{
-		
-		protected $actor = null;
-		
-		public function __construct(Actor &$actor)
+	
+		protected function __construct()
 		{
-			$this->actor = $actor;
+		
+			\Mechanics\Command::addAlias(__CLASS__, array('wh', 'who'));
 		}
-		
-		abstract public function assignGroup();
-		
-		public function __toString()
+	
+		public static function perform(&$actor, $args = null)
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			
+			\Mechanics\ActorObserver::instance()->whoList($actor);
 		}
+	
 	}
+
 ?>

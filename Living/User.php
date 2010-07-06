@@ -129,14 +129,13 @@
 		
 		public function getId() { return $this->id; }
 		
-		public function save($inv = true)
+		public function save()
 		{
 			\Mechanics\Debug::addDebugLine("Saving actor " . $this->getAlias(true));
 			
-			if($inv)
-				$this->inventory->save();
-			
+			$this->inventory->save();
 			$this->equipped->save();
+			$this->skillset->save();
 			
 			if($this->id)
 				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
@@ -185,8 +184,8 @@
 											$this->id));
 			else
 			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id, discipline) VALUES
+															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
 																$this->getAlias(),
 																$this->hp,
 																$this->max_hp,
@@ -204,9 +203,10 @@
 																$this->wis,
 																$this->dex,
 																$this->con,
-																$this->getRaceStr(),
-																$this->getRoom()->getId()
-															), true);
+																(string)$this->race,
+																$this->getRoom()->getId(),
+																(string)$this->discipline
+															));
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
 		}
@@ -283,7 +283,7 @@
 				{
 					$this->login['race'] = false;
 					\Mechanics\Server::out($this, 'Alright! What race are you?');
-					\Mechanics\Server::out($this, '[human undead faerie] ', false);
+					\Mechanics\Server::out($this, '[human undead faerie elf ogre] ', false);
 				}
 				else
 				{
@@ -297,22 +297,25 @@
 			if(isset($this->login['race']) && $this->login['race'] === false)
 			{
 				$this->login['race'] = $input;
-				switch($this->login['race'])
+				
+				try
 				{
-					case 'human':
-						$this->setRace('human');
-						\Mechanics\Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
-						\Mechanics\Server::out($this, "Now let's figure out your attributes...");
-						$this->login['attr'] = 0;
-						\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-						\Mechanics\Server::out($this,
-							'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
-						\Mechanics\Server::out($this, "Add a point to: ", false);
-						return;
-					default:
-						\Mechanics\Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
-						$this->login['race'] = false;
+					$this->setRace($this->login['race']);
 				}
+				catch(Exception $e)
+				{
+					\Mechanics\Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
+					$this->login['race'] = false;
+					return;
+				}
+				
+				\Mechanics\Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
+				\Mechanics\Server::out($this, "Now let's figure out your attributes...");
+				$this->login['attr'] = 0;
+				\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+				\Mechanics\Server::out($this,
+					'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
+				\Mechanics\Server::out($this, "Add a point to: ", false);
 			}
 			
 			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
@@ -394,7 +397,7 @@
 					$this->login['discipline'] = false;
 					$this->login['attr'] = true;
 					\Mechanics\Server::out($this, "Please select your primary discipline:");
-					\Mechanics\Server::out($this, "[Berserker Crusader Elementalist Gladiator Rogue Sorcerer]");
+					\Mechanics\Server::out($this, "[barbarian crusader rogue wizard]");
 					return;
 				}
 			}
@@ -402,34 +405,14 @@
 			if(isset($this->login['discipline']) && $this->login['discipline'] === false)
 			{
 				$this->login['discipline'] = $input;
-				$this->login['finish'] = false;
-				/**
-				switch($this->login['caster'])
+				
+				$discipline = 'Disciplines\\' . ucfirst($this->login['discipline']);
+				
+				if(class_exists($discipline))
 				{
-					case 'cru':
-					case 'crusader':
-						$this->setDiscipline(new Crusader());
-						break;
-					default:
-						$this->login['caster'] = false;
-						Server::out($this, "That is not a casting discipline.");
-						return;
+					$this->discipline = new $discipline($this);
+					$this->login['finish'] = false;
 				}
-				Server::out($this, "Please select a fighting discipline:");
-				Server::out($this, "[Myrmidon Berserker Monk Rogue]");
-				*/
-				return;
-			}
-			
-			if(isset($this->login['fighter']) && $this->login['fighter'] === false)
-			{
-				$this->login['fighter'] = $input;
-				//switch($this->login['fighter'])
-				//{
-				//	case
-				//}
-				$this->login['fighter'] = $input;
-				$this->login['finish'] = false;
 			}
 			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)
@@ -450,11 +433,15 @@
 				$this->level = 1;
 				$this->thirst = 5;
 				$this->nourishment = 5;
-				$this->setRoom(Room::find(1));
+				$this->setRoom(\Mechanics\Room::find(3));
 				
-				$this->save(false);
-				\Commands\Look::perform($this);
 				parent::__construct($this->getRoom()->getId());
+				$this->save();
+				
+				$this->discipline->assignGroup();
+				$this->skillset->save();
+				
+				\Commands\Look::perform($this);
 			}
 		}
 	}

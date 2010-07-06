@@ -88,5 +88,13 @@
 			
 			$this->skills[$args[0]]->perform($this->actor, $args);
 		}
+		
+		public function save()
+		{
+		
+			$skills_unique = array_unique($this->skills);
+			foreach($skills_unique as $skill)
+				$skill->save();
+		}
 	}
 ?>

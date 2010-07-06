@@ -28,7 +28,7 @@
 	class Rogue extends \Mechanics\Discipline
 	{
 		
-		protected function assignGroup()
+		public function assignGroup()
 		{
 			
 			$this->actor->increaseHitDam(1, 1);

@@ -208,9 +208,9 @@
 			$players = 0;
 			foreach($this->actors as $actors)
 			{
-				if(!($actors instanceof User))
+				if(!($actors instanceof \Living\User))
 					continue;
-				Server::out($actor, '[' . $actors->getLevel() . ' ' . $actors->race->getRaceStr() . ' ' . $actors->_class->getClassStr() . '] ' . $actors->getAlias());
+				Server::out($actor, '[' . $actors->getLevel() . ' ' . $actors->getRace() . ' ' . $actors->getDiscipline() . '] ' . $actors->getAlias());
 				$players++;
 			}
 			Server::out($actor, $players . ' player' . (sizeof($this->actors) != 1 ? 's' : '') . ' found.');

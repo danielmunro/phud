@@ -326,11 +326,11 @@
 		public function setRace($race)
 		{
 			$race = Race::getInstance($race);
-			//if($race instanceof \Mechanics\Race)
-			//{
+			if($race instanceof Race)
+			{
 				$this->race = $race;
 				$this->race->applyRacialAttributeModifiers($this);
-			//}
+			}
 		
 		}
 		public function decreaseFunds($value)

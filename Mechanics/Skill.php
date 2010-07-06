@@ -35,7 +35,7 @@
 		public function __construct($percent, $user_id = null)
 		{
 		
-			$this->name = strtolower(__CLASS__);
+			$this->name = strtolower($this);
 			$this->percent = $percent;
 			$this->user_id = $user_id;
 		}
@@ -44,13 +44,19 @@
 		{
 			if($this->user_id)
 				Db::getInstance()->query('
-					INSERT INTO skills (skill, percent, fk_user_id) VALUES (?, ?, ?)
+					INSERT INTO skillsets (skill, percent, fk_user_id) VALUES (?, ?, ?)
 					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->percent));
 		}
 	
 		public function getName() { return $this->name; }
 		public function getPercent() { return $this->percent; }
 		public function setPercent($percent) { $this->percent = $percent; }
+		
+		public function __toString()
+		{
+			$class = get_class($this);
+			return substr($class, strpos($class, '\\') + 1);
+		}
 	}
 
 ?>
