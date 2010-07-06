@@ -135,7 +135,8 @@
 			
 			$this->inventory->save();
 			$this->equipped->save();
-			$this->skillset->save();
+			if($this->id)
+				$this->skillset->save();
 			
 			if($this->id)
 				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 

@@ -51,27 +51,10 @@
 			$m->getInventory()->add(array(
 				new \Items\Armor(0, 'a wooden torch is here.', 'a wooden torch', 'wooden torch', 1, 1, \Items\Equipment::TYPE_LIGHT, 0, 0, 0, 0, 100, 1, null, \Mechanics\Affect::TYPE_LIGHT)
 			));
-			/**
-			$m = new \Living\Mob
-			(
-				'a giant rat',
-				'giant rat',
-				'A behemoth of a rat scurries about before you.',
-				'temple midgaard',
-				3,
-				1,
-				'human',
-				20,
-				5,
-				6,
-				100,
-				100
-			);
-			$m->getInventory()->add(new \Items\Item(0, "White, red, and blue poker chips are here.", "Sid's poker chips", 'poker chips', 0, 1, 100, 'quest'));
-			\Mechanics\Room::find(2)->getInventory()->add();
-			\Mechanics\Room::find(2)->getInventory()->add();
-			\Mechanics\Room::find(2)->getInventory()->add();
-			*/
+			$m = new \Living\Shopkeeper('Annir the bartender', 'annir bartender', 'Annir, the faerie bartender buzzes before you.', 'midgaard', 79, 1, 'faerie');
+			$m->getInventory()->add(array(
+				new \Items\Drink(0, 'a small leather canteen is here', 'a small leather canteen', 'leather canteen', 5, 1)
+			));
 		}
 	}
 ?>
