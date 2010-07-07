@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Skill
+	class Ability
 	{
 	
 		private $name = '';
