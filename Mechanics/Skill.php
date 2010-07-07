@@ -31,6 +31,10 @@
 		private $name = '';
 		private $percent = 0;
 		private $user_id = 0;
+		private $type;
+		
+		const TYPE_SKILL = 1;
+		const TYPE_SPELL = 2;
 	
 		public function __construct($percent, $user_id = null)
 		{
@@ -38,14 +42,15 @@
 			$this->name = strtolower($this);
 			$this->percent = $percent;
 			$this->user_id = $user_id;
+			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
 		}
 		
 		public function save()
 		{
 			if($this->user_id)
 				Db::getInstance()->query('
-					INSERT INTO skillsets (skill, percent, fk_user_id) VALUES (?, ?, ?)
-					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->percent));
+					INSERT INTO abilities (`name`, percent, fk_user_id, `type`) VALUES (?, ?, ?, ?)
+					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->percent, $this->type));
 		}
 	
 		public function getName() { return $this->name; }

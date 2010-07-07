@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Skills;
-	class Kick extends \Mechanics\Skill
+	class Kick extends \Mechanics\Ability
 	{
 	
 		private static $base_chance = 99;
