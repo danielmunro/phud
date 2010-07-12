@@ -36,7 +36,7 @@
 			new \Living\Mob('a snail', 'snail', 'A snail is desperately trying to get out of your way.', 'temple_arena', 28, 1, 'human', 20, 1, 10, 100, 100);
 			new \Living\Mob('a snail', 'snail', 'A snail is desperately trying to get out of your way.', 'temple_arena', 35, 1, 'human', 20, 1, 10, 100, 100);
 			new \Living\Mob('a snail', 'snail', 'A snail is desperately trying to get out of your way.', 'temple_arena', 42, 1, 'human', 20, 1, 10, 100, 100);
-			/**
+			
 			new \Living\Mob('a fox', 'fox', 'A fox is eying you from a distance.', 'temple_arena', 31, 3, 'human', 50, 2, 15, 100, 100);
 			new \Living\Mob('a fox', 'fox', 'A fox is eying you from a distance.', 'temple_arena', 50, 3, 'human', 50, 2, 15, 100, 100);
 			new \Living\Mob('a fox', 'fox', 'A fox is eying you from a distance.', 'temple_arena', 31, 3, 'human', 50, 2, 15, 100, 100);
@@ -57,7 +57,7 @@
 			new \Living\Mob('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100);
 			new \Living\Mob('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100);
 			new \Living\Mob('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100);
-			new \Living\Mob('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100);*/
+			new \Living\Mob('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100);
 		}
 	}
 ?>
