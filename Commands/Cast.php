@@ -35,56 +35,42 @@
 		
 		public static function perform(&$actor, $args = null)
 		{
-			if($args[1] == 'cure')
+			
+			// DETERMINE THE SPELL
+			// Get rid of 'cast'
+			array_shift($args);
+			$input = implode(' ', $args);
+			
+			$spell = $actor->getAbilitySet()->isValidSpell($input);
+			if(!$spell)
 			{
-				if(isset($args[2]) && strpos($args[2], 'l') === 0)
-					$spell_name = 'Cure_Light';
-				else
-					$spell_name = 'Cure_Light';
+				// Either target or spell
+				$last = array_pop($args);
+				$spell = $actor->getAbilitySet()->isValidSpell($input);
 			}
 			
-			/**
-			 * Find all applicable spells and perform classes
-			 */
-			$spell = Skill::findByAliasAndName($actor->getAlias(), $spell_name);
-			$perform = Perform::find('Spell_' . $spell_name);
-			if(empty($spell))
-				return Server::out($actor, "You can't cast that.");
+			if(!$spell)
+				return \Mechanics\Server::out($actor, "You don't know that spell.");
 			
-			/**
-			 * Figure out mana cost
-			 */
-			$mana_cost = 50;
+			// DETERMINE THE TARGET
+			$actor_target = $actor->getTarget();
+			$specified_target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $last);
+			$real_target = null;
 			
-			if($actor->getLevel() > $perform->getLevel())
-				$mana_cost = $perform->getModifiedManaCost($actor);
+			// Target the fighter
+			if($actor_target)
+				$real_target = $actor_target;
 			
-			if($actor->getMana() < $mana_cost)
-				return Server::out($actor, "You don't have enough mana for that.");
+			// Target the specified actor
+			if($specified_target)
+				$real_target = $specified_target;
 			
-			/**
-			 * Concentration test
-			 */
-			if(rand(0, 100) > $spell->getProficiency())
-			{
-				$actor->setMana($actor->getMana() - ($mana_cost / 2));
-				return Server::out($actor, "You lost your concentration.");	
-			}
+			// Target the caster
+			if(!$real_target)
+				$real_target = $actor;
 			
-			/**
-			 * Announce to everyone
-			 */
-			$actors = ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
-			foreach($actors as $a)
-				if($a->getAlias() != $actor->getAlias())
-					Server::out($a, $actor->getAlias(true) . " utters the words, '" . $perform->getName($actor) . "'");
-			
-			/**
-			 * Perform
-			 */
-			$perform->perform($actor, $spell, $args);
-			$perform->checkGain($actor, $spell);
-			$actor->setMana($actor->getMana() - $mana_cost);
+			\Mechanics\Server::out($actor, 'You utter the words, "' . $spell->getDisplayName(1) . '"');
+			\Mechanics\Server::out($real_target, $spell->perform($actor, $real_target));
 		}
 	}
 ?>

@@ -25,24 +25,26 @@
 	 *
 	 */
 	namespace Spells;
-	class Cure_Light extends \Mechanics\Spell
+	class Cure_Light extends \Mechanics\Ability
 	{
 	
-		protected $level = 1;
 		protected $display_name = array('cure light', 'frzzz');
-		protected $improve_by_practice = 0;
+		private static $base_chance = 99;
+		private static $aliases = array('cure light', 'cure');
 	
-		public static function perform(Actor &$actor, Skill $spell, $args = null)
+		public static function perform(Actor &$actor, Actor &$target, $args = null)
 		{
 		
 			$amount = 1 + $actor->getLevel() / 2;
-			$actor->setHp($actor->getHp() + (int) $amount);
+			$target->setHp($target->getHp() + (int) $amount);
 			
-			Server::out($actor, "You feel better!");
+			return "You feel better!";
 		}
 		
-		public function getName() { return 'Cure_Light'; }
-		
+		public function getDisplayName($index = 1)
+		{
+			return self::$display_name[$index];
+		}
 	}
 
 ?>

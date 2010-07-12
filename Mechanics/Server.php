@@ -37,9 +37,11 @@
 		private $clients = array();
 		static $instance = null;
 		static $tick = 0;
+		private static $last_pulse;
 		
 		private function __construct()
 		{
+			self::$last_pulse = date('U');
 			$this->initSocket();
 		}
 		
@@ -105,11 +107,10 @@
 					self::out($this->clients[$added], 'Welcome to mud. What is yer name? ', false);
 				}
 				
-				// Tick
-				if(date('U') > $seconds + 2)
+				// Pulse
+				if(date('U') == self::$last_pulse + 2)
 				{
-					ActorObserver::instance()->walk();
-					ActorObserver::instance()->battles();
+					ActorObserver::instance()->checkEvents();
 					
 					if(!isset(self::$tick))
 						self::$tick = date('U') + rand(self::TICK_MIN, self::TICK_MAX);
@@ -122,7 +123,7 @@
 								$instance->reload();
 						self::$tick = date('U') + rand(self::TICK_MIN, self::TICK_MAX);
 					}
-					$seconds = date('U');
+					self::$last_pulse = date('U');
 				}
 				
 				// Input
@@ -173,10 +174,11 @@
 						catch(\Exceptions\Command $e)
 						{
 						
-							if($this->clients[$i]->getSkillset()->isValidSkill($args[0]))
+							// Skills -- See the cast command for spells
+							if($skill = $this->clients[$i]->getAbilitySet()->isValidSkill($args[0]))
 							{
-								$this->clients[$i]->getSkillset()->perform($args);
-								Server::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+								$skill->perform($this->clients[$i], $args);
+								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 								continue;
 							}
 							
@@ -207,6 +209,8 @@
 			}
 		}
 		
+		public static function getLastPulse() { return self::$last_pulse; }
+		
 		public function initSocket()
 		{
 		
@@ -233,13 +237,21 @@
 		{
 			
 			//new QuestmasterSid();
-			$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
-			$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
+			//$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
+			//$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
 		}
 		
 		public function getSocket()
 		{
 			return $this->socket;
+		}
+		
+		public static function randomizePulse($pulse, $mod = 0.5)
+		{
+		
+			$low_mod = $mod * $pulse;
+			$high_mod = $pulse + $low_mod;
+			return rand($low_mod, $high_mod);
 		}
 		
 	}

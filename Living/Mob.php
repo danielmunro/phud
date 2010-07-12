@@ -60,34 +60,43 @@
 			$this->movement = $this->max_movement = $movement;
 			parent::__construct($room_id);
 			
+			if($movement_speed)
+			{
+				$pulse = \Mechanics\Server::randomizePulse($movement_speed);
+				\Mechanics\ActorObserver::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
+			}
 		}
 		
 		public function move($index = 0)
 		{
 		
-			if($this->room->getId() == Room::PURGATORY_ROOM_ID || $index > 4)
+			if($this->room->getId() == \Mechanics\Room::PURGATORY_ROOM_ID || $index > 4)
 				return;
 			
-			if(time() - $this->last_move > $this->movement_speed)
+			$direction = rand(0, 5);
+			$directions = array(
+							'North' => $this->room->getNorth(),
+							'South' => $this->room->getSouth(),
+							'East' => $this->room->getEast(),
+							'West' => $this->room->getWest(),
+							'Up' => $this->room->getUp(),
+							'Down' => $this->room->getDown());
+			
+			$directions = array_filter($directions);
+			$i = array_rand($directions);
+			
+			$areas = explode(' ', $this->area);
+			if(!in_array(\Mechanics\Room::find($directions[$i])->getArea(), $areas))
 			{
-				$direction = rand(0, 5);
-				$directions = array('North', 'South', 'East', 'West', 'Up', 'Down');
-				$new_room = $this->room->{'get'  . $directions[$direction]}();
-				if($new_room == 0)
-				{
-					$this->move($index++);
-					return;
-				}
-				$areas = explode(' ', $this->area);
-				if(!in_array(Room::find($new_room)->getArea(), $areas))
-				{
-					$this->move($index++);
-					return;
-				}
-				Debug::addDebugLine($this->getAlias() . ' is moving ' . $directions[$direction] . '.');
-				$event = Command::find('Command_' . $directions[$direction])->perform($this);
-				$this->last_move = time();
+				$this->move($index++);
+				return;
 			}
+			
+			\Mechanics\Debug::addDebugLine($this->getAlias() . ' is moving to room #' . $directions[$i] . '.');
+			$event = \Mechanics\Command::find($i)->perform($this);
+			
+			$pulse = \Mechanics\Server::randomizePulse($this->movement_speed);
+			\Mechanics\ActorObserver::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
 			
 		}
 		public function handleRespawn()

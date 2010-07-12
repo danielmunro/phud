@@ -32,6 +32,7 @@
 		private $percent = 0;
 		private $user_id = 0;
 		private $type;
+		private static $aliases = array('kick');
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -39,7 +40,7 @@
 		public function __construct($percent, $user_id = null)
 		{
 		
-			$this->name = strtolower($this);
+			$this->name = (string)$this;
 			$this->percent = $percent;
 			$this->user_id = $user_id;
 			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
@@ -53,9 +54,15 @@
 					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->percent, $this->type));
 		}
 	
+		public function getType() { return $this->type; }
 		public function getName() { return $this->name; }
 		public function getPercent() { return $this->percent; }
 		public function setPercent($percent) { $this->percent = $percent; }
+		
+		public static function getAliases()
+		{
+			return self::$aliases;
+		}
 		
 		public function __toString()
 		{

@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,30 +24,16 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class Debug
+	namespace Exceptions;
+	class Ability_Set extends \Exception
 	{
-		
-		private static $enabled = true;
 	
-		public static function newLog()
+		const ABILITY_NOT_FOUND = 1;
+		const BAD_CONFIG = 2;
+	
+		public function __construct($msg, $no)
 		{
-			if(!self::$enabled)
-				return;
-			
-			$fp = fopen('debug.log', 'w');
-			fwrite($fp, 'Truncated log, new log starting ' . date('Y-m-d H:i:s') . "\n");
-			fclose($fp);
-		}
-		
-		public static function addDebugLine($msg, $new_line = true)
-		{
-			if(!self::$enabled)
-				return;
-			
-			$fp = fopen('debug.log', 'a');
-			fwrite($fp, $msg . ($new_line === true ? " [mem: " . memory_get_usage(true) . ", actors: " . sizeof(ActorObserver::instance()->getActors()) . "]\n" : ''));
-			fclose($fp);
+			parent::__construct($msg, $no);
 		}
 	}
 ?>

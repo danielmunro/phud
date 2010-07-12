@@ -64,13 +64,14 @@
 		protected $ac_pierce = 0;
 		protected $ac_magic = 0;
 		protected $affects = array();
+		protected $target = null;
 		
 		protected $discipline = null;
 		protected $race = null;
 		protected $room = null;
 		protected $inventory = null;
 		protected $equipped = null;
-		protected $skillset = null;
+		protected $ability_set = null;
 		
 		static $instances;
 		
@@ -96,7 +97,7 @@
 				$this->equipped = new Equipped();
 			}
 			
-			$this->skillset = Skillset::findByActor($this);
+			$this->ability_set = Ability_Set::findByActor($this);
 		}
 		
 		public function removeAffects($affects)
@@ -110,7 +111,7 @@
 		}
 		public function addAffects($affects) { $this->affects = array_merge($this->affects, $affects); }
 		public function getAffects() { return $this->affects; }
-		public function getSkillset() { return $this->skillset; }
+		public function getAbilitySet() { return $this->ability_set; }
 		public function getStr() { return $this->str; }
 		public function getInt() { return $this->int; }
 		public function getWis() { return $this->wis; }
@@ -169,26 +170,19 @@
 		public function getFighter($fighter_alias)
 		{
 			
-			foreach($this->fighting as $index => $fighter)
-				if($fighter->getAlias() == $fighter_alias)
-					return $fighter;
-		}
-		public function getTarget()
-		{
-			$fighters = $this->getFighters();
-			if($fighters === null)
-				return null;
-			
-			$fighter = array_shift($fighters);
-			while(!($fighter instanceof Actor))
+			if($fighter_alias instanceof self)
 			{
-				if(sizeof($fighters) == 0)
-					return null;
-				
-				$fighter = array_shift($fighters);
+				$i = array_search($this->fighting, $fighter_alias);
+				if($i)
+					return $this->fighting[$i];
 			}
-			return $fighter;
+			else
+				foreach($this->fighting as $index => $fighter)
+					if($fighter->getAlias() == $fighter_alias)
+						return $fighter;
 		}
+		public function getTarget() { return $this->target; }
+		public function setTarget(Actor $target = null) { $this->target = $target; }
 		public function getHpPercent()
 		{
 			return ($this->hp / $this->max_hp) * 100;
@@ -393,9 +387,14 @@
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
 		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
 
-		public function attack(Actor &$actor)
+		public function attack()
 		{
 		
+			$actor = $this->getTarget();
+			if(!$actor)
+				return;
+		
+			$this->decrementDelay();
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
 			
 			$attacking_weapon = null;
@@ -422,6 +421,7 @@
 			
 			// DEFENDING
 			$def_roll = ($actor->getDex() / self::MAX_ATTRIBUTE) * 4;
+			
 			// Size modifier
 			$def_roll += 5 - $actor->getRace()->getSize();
 			
@@ -435,8 +435,6 @@
 			if($roll['attack'] <= $roll['defense'])
 				$dam_roll = 0;
 			
-			print ': ' . $dam_roll . "\n";
-			
 			if($dam_roll < 5)
 				$descriptor = 'clumsy';
 			elseif($dam_roll < 10)
@@ -449,37 +447,27 @@
 			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 			
-			// Attack - hit or miss?
-			//if($this->str <= $actor->getDex())
-			//	$attack = 1;
-			//if($this->str > $actor->getDex())
-			//	$attack = $this->str - $actor->getDex();
-			
-			//$die = 5;
-			//$roll = rand(0, $die);
-			
-			//if($roll >= $attack)
-			//	$attack = 0;
-			
-			// Verb
-			//if($attack < 5)
-			//	$descriptor = 'clumsy';
-			//else
-			//	$descriptor = 'WICKED';
-			
 			$actors = ActorObserver::instance()->getActorsInRoom($this->room->getId());
 			
 			if($this->damage($actor, $dam_roll))
 				foreach($actors as $actor_sub)
 					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 			
-			if($actor->getHp() > 0)
+			if($actor->checkAlive($this))
 			{
-				$actor_target = $actor->getTarget();
-				if(!($actor_target instanceof self))
-					$actor->addFighter($this);
+			
+				$fn = function($actor) { $actor->attack(); };
+			
+				// Counter-attack
+				if(!$actor->getTarget())
+				{
+					$actor->setTarget($this);
+					ActorObserver::instance()->registerEvent(1, $fn, $actor);
+				}
+				
+				// Killer attacking victim
+				ActorObserver::instance()->registerEvent(1, $fn, $this);
 			}
-			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
 		}
 		
@@ -519,13 +507,13 @@
 			// Check for parry, dodge, and shield block
 			if($type === Damage::TYPE_HIT)
 			{
-				if($target->getSkillset()->isValidSkill('dodge') && $target->getSkillset()->perform('dodge'))
+				if($target->getAbilitySet()->isValidSkill('dodge') && $target->getAbilitySet()->perform('dodge'))
 				{
 					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
 					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
 					return false;
 				}
-				if($target->getSkillset()->isValidSkill('shield_block') && $target->getSkillset()->perform('shield_block'))
+				if($target->getAbilitySet()->isValidSkill('shield_block') && $target->getAbilitySet()->perform('shield_block'))
 				{
 					
 					Server::out($this, $target->getAlias(true) . " blocks your attack with " . $target->getDisplaySex() . " shield!");
@@ -555,8 +543,8 @@
 			if(!$this->isAlive())
 			{
 			
-				$this->clearFighters();
-				$killer->clearFighters();
+				$this->setTarget(null);
+				$killer->setTarget(null);
 			
 				if($killer instanceof Actor && $this->getAlias() != $killer->getAlias())
 				{
@@ -594,8 +582,9 @@
 					$this->handleRespawn();
 				
 				//$target = $this->getTarget();
+				return false;
 			}
-		
+			return true;
 		}
 		
 		public function applyExperienceFrom(Actor $actor)

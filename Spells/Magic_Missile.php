@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,16 +24,28 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Exceptions;
-	class Skillset extends \Exception
+	namespace Spells;
+	class Magic_Missile extends \Mechanics\Ability
 	{
 	
-		const SKILL_NOT_FOUND = 1;
-		const BAD_CONFIG = 2;
+		protected $display_name = array('magic missile', 'oqisasi');
+		private static $base_chance = 99;
+		private static $aliases = array('mag', 'magic', 'magic missile');
 	
-		public function __construct($msg, $no)
+		public static function perform(Actor &$actor, Spell $spell, $args = null)
 		{
-			parent::__construct($msg, $no);
+		
+			$target = $actor->getTarget();
+			if(!$target)
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			if(!$target)
+				return \Mechanics\Server::out($actor, "They aren't here.");
+			
+			$target->setHp($target->getHp() - 5);
+			
+			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
+			\Mechanics\Server::out($target, $actor->getAlias() . ' smites you!');
 		}
 	}
+
 ?>

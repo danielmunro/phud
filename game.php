@@ -28,6 +28,7 @@
 	 */
 
 	date_default_timezone_set('America/Los_Angeles');
+	gc_enable();
 
 	\Mechanics\Debug::newLog();
 	

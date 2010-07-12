@@ -25,12 +25,12 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Skillset
+	class Ability_Set
 	{
 		
 		private static $instances = array();
 		private $actor = null;
-		private $skills = array();
+		private $abilities = array();
 		
 		protected function __construct(Actor $actor)
 		{
@@ -40,12 +40,15 @@
 			if(!($this->actor instanceof \Living\User))
 				return;
 			
-			$rows = Db::getInstance()->query('SELECT * FROM skillsets WHERE fk_user_id = ?', $this->actor->getId())->fetch_objects();
+			$rows = Db::getInstance()->query('SELECT * FROM abilities WHERE fk_user_id = ?', $this->actor->getId())->fetch_objects();
 			foreach($rows as $row)
 			{
-				$skill = 'Skills\\' . ucfirst($row->skill);
-				$instance = new $skill($row->percent, $row->fk_user_id);
-				$this->addSkill($instance);
+				
+				$ability = $row->type == Ability::TYPE_SKILL ? 'Skills' : 'Spells';
+				
+				$ability = $ability . '\\' . ucfirst($row->name);
+				$instance = new $ability($row->percent, $row->fk_user_id);
+				$this->addAbility($instance);
 			}
 		}
 		
@@ -59,42 +62,56 @@
 			return self::$instances[$i];
 		}
 		
-		public function addSkill(Skill $instance)
+		public function addAbility(Ability $instance)
 		{
 			
 			$aliases = $instance::getAliases();
 				
 			if(!is_array($aliases))
-				throw new \Exceptions\Skillset('Expecting array of aliases', Exceptions\Skillset::BAD_CONFIG);
+				throw new \Exceptions\Ability_Set('Expecting array of aliases', Exceptions\Ability_Set::BAD_CONFIG);
 			
-			if(isset($this->skills[$aliases[0]]))
+			$i = $instance->getType();
+			
+			if(isset($this->abilities[$i][$aliases[0]]))
 				return;
 			
 			foreach($aliases as $alias)
-				$this->skills[$alias] = $instance;
+				$this->abilities[$i][$alias] = $instance;
 		}
 		
 		public function isValidSkill($input)
 		{
 		
-			return isset($this->skills[$input]);
+			return isset($this->abilities[Ability::TYPE_SKILL][$input]) ? $this->abilities[Ability::TYPE_SKILL][$input] : null;
 		}
 		
-		public function perform($args)
+		public function isValidSpell($input)
 		{
 		
-			if(!$this->isValidSkill($args[0]))
-				throw new Exceptions\Skillset('Skill not found.', Exceptions\Skillset::SKILL_NOT_FOUND);
-			
-			$this->skills[$args[0]]->perform($this->actor, $args);
+			return isset($this->abilities[Ability::TYPE_SPELL][$input]) ? $this->abilities[Ability::TYPE_SPELL][$input] : null;
 		}
+		
+		//public function perform(Ability $ability, $args)
+		//{
+		
+			//$ability->perform($this->actor, $args);
+			//if(!$this->isValidSkill($args[0]) && !$this->isValidSpell($args[0]))
+			//	throw new Exceptions\Ability_Set('Ability not found.', Exceptions\Ability_Set::ABILITY_NOT_FOUND);
+			
+			//$i = $this->isValidSkill($args[0]) ? Ability::TYPE_SKILL : Ability::TYPE_SPELL;
+			
+			//$this->skills[$i][$args[0]]->perform($this->actor, $args);
+		//}
 		
 		public function save()
 		{
 		
-			$skills_unique = array_unique($this->skills);
-			foreach($skills_unique as $skill)
-				$skill->save();
+			foreach($this->abilities as $ability_type)
+			{
+				$uniques = array_unique($ability_type);
+				foreach($uniques as $unique)
+					$unique->save();
+			}
 		}
 	}
 ?>

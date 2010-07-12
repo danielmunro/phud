@@ -136,7 +136,7 @@
 			$this->inventory->save();
 			$this->equipped->save();
 			if($this->id)
-				$this->skillset->save();
+				$this->ability_set->save();
 			
 			if($this->id)
 				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
@@ -440,7 +440,7 @@
 				$this->save();
 				
 				$this->discipline->assignGroup();
-				$this->skillset->save();
+				$this->ability_set->save();
 				
 				\Commands\Look::perform($this);
 			}

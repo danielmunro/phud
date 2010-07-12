@@ -29,7 +29,6 @@
 	{
 	
 		private static $base_chance = 99;
-		private static $aliases = array('kick');
 	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
@@ -61,11 +60,6 @@
 				\Mechanics\Server::out($actor, 'You kick ' . $final_target->getAlias() . ', causing him pain!');
 				\Mechanics\Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
 			}
-		}
-		
-		public static function getAliases()
-		{
-			return self::$aliases;
 		}
 	}
 

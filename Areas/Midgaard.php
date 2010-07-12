@@ -30,7 +30,7 @@
 	
 		protected static function instantiate()
 		{
-		
+		/**
 			new \Living\Mob('a town crier', 'town crier', 'You see a town crier before you.', 'temple midgaard', 3, 1, 'human', 27, 1, 20, 100, 100);
 			new \Living\Mob('the zombified remains of the mayor of Midgaard', 'zombie corpse mayor', 'The partially decomposed, moaning zombie corpse of the mayor of Midgaard stands before you.', 'temple midgaard', 3, 1, 'undead', 14, 5, 20, 100, 100);
 			$m = new \Living\Shopkeeper('Erog the blacksmith', 'erog blacksmith', 'A large ogre stands before you with a giant smelting iron by his side.', 'midgaard', 12, 1, 'ogre');
@@ -55,6 +55,10 @@
 			$m->getInventory()->add(array(
 				new \Items\Drink(0, 'a small leather canteen is here', 'a small leather canteen', 'leather canteen', 5, 1)
 			));
+			$m = new \Living\Shopkeeper('The banker', 'banker', 'The banker sits behind a counter, reading ledgers.', 'midgaard', 15, 1, 'human');
+			$m->getInventory()->add(array(
+				new \Items\Drink(0, 'a small leather canteen is here', 'a small leather canteen', 'leather canteen', 5, 1)
+			));*/
 		}
 	}
 ?>

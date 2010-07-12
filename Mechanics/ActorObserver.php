@@ -33,6 +33,8 @@
 		private $actors;
 		private $queue;
 		
+		private $events = array();
+		
 		public function __construct()
 		{
 		}
@@ -52,14 +54,6 @@
 			$this->actors[] = $instance;	
 		}
 		
-		public function walk()
-		{
-			Debug::addDebugLine('Walk routine called.');
-			foreach($this->actors as $actor)
-				if($actor instanceof Mob && $actor->getMovementSpeed() > 0)
-					$actor->move();
-		}
-		
 		public function getActorsInRoom($room_id)
 		{
 			
@@ -77,7 +71,8 @@
 			
 			if(empty($input[1]))
 				return;
-			$input[1] = strtolower($input[1]);
+			
+			$person = strtolower(array_pop($input));
 			foreach($this->actors as $actor)
 			{
 			
@@ -90,7 +85,7 @@
 					$look_for = array($actor->getAlias());
 				
 				foreach($look_for as $look)
-					if(stripos($look, $input[1]) === 0)
+					if(stripos($look, $person) === 0)
 						return $actor;
 			}
 			return null;
@@ -166,41 +161,6 @@
 					Server::out($actor, $actor_alias . " arrives in a puff of smoke.");
 		}
 		
-		public function battles()
-		{
-		
-			foreach($this->actors as $actor)
-			{
-			
-				$actor->decrementDelay();
-				
-				$target = $actor->getTarget();
-				
-				if($target instanceof Actor)
-				{
-					Debug::addDebugLine($actor->getAlias(true) . ' is attacking ' . $target->getAlias());
-					$actor->attack($target);
-				}
-			
-			}
-			
-			foreach($this->actors as $actor)
-			{
-			
-				$target = $actor->getTarget();
-				if($target instanceof Actor)
-				{
-					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . '.');
-					if($actor instanceof \Living\User)
-					{
-						Server::out($actor, "\n" . $actor->prompt(), false);
-					}
-				}
-			
-			}
-		
-		}
-		
 		public function whoList($actor)
 		{
 		
@@ -215,6 +175,32 @@
 			}
 			Server::out($actor, $players . ' player' . (sizeof($this->actors) != 1 ? 's' : '') . ' found.');
 		
+		}
+		
+		public function checkEvents()
+		{
+		
+			$pulse = date('U');
+			if(isset($this->events[$pulse]))
+			{
+				foreach($this->events[$pulse] as $event)
+					$event['fn']($event['args']);
+				unset($this->events[$pulse]);
+			}
+			
+			// Target statuses for fighters
+			foreach($this->actors as $actor)
+				if($target = $actor->getTarget())
+					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . '.');
+		}
+		
+		public function registerEvent($pulses, $fn, $args)
+		{
+		
+			$pulses = Server::getLastPulse() + 2 + ($pulses * 2);
+			if(!isset($this->events[$pulses]))
+				$this->events[$pulses] = array();
+			$this->events[$pulses][] = array('fn' => $fn, 'args' => $args);
 		}
 	
 		public function getActors() { return $this->actors; }

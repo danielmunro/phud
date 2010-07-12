@@ -36,20 +36,17 @@
 	
 		public static function perform(&$actor, $args = null)
 		{
-			$target = $actor->getTarget();
-			if($target instanceof \Mechanics\Actor)
+		
+			if($actor->getTarget())
 				\Mechanics\Server::out($actor, "Whoa! Don't you think one is enough?");
 			
 			$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
 			
 			if(!($target instanceof \Mechanics\Actor))
-			{
-				\Mechanics\Server::out($actor, 'Nothing is here.');
-				return;
-			}
-						
-			$actor->addFighter($target);
-			return;
+				return \Mechanics\Server::out($actor, 'Nothing is here.');
+			
+			$actor->setTarget($target);
+			$actor->attack();
 		}
 	
 	}
