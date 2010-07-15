@@ -49,10 +49,10 @@
 		const DAMAGE_PIERCE = 2;
 		const DAMAGE_POUND = 3;
 		
-		public function __construct($id, $long, $short, $nouns, $verb, $value, $weight, $weapon_type, $damage_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null, $affects = '')
+		public function __construct($id, $long, $short, $nouns, $verb, $value, $weight, $weapon_type, $damage_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id, $affects);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id);
 			$this->weapon_type = $weapon_type;
 			$this->damage_type = $damage_type;
 			$this->hit_roll = $hit_roll;

@@ -31,7 +31,8 @@
 		protected static function instantiate()
 		{
 		
-			new \Living\Mob('a town crier', 'town crier', 'You see a town crier before you.', 'temple midgaard', 3, 1, 'human', 27, 1, 20, 100, 100);
+			$m = new \Living\Mob('a town crier', 'town crier', 'You see a town crier before you.', 'temple midgaard', 3, 1, 'human', 27, 1, 20, 100, 100);
+			$m->getAbilitySet()->addAbility(new \Skills\Dodge(100));
 			new \Living\Mob('the zombified remains of the mayor of Midgaard', 'zombie corpse mayor', 'The partially decomposed, moaning zombie corpse of the mayor of Midgaard stands before you.', 'temple midgaard', 3, 1, 'undead', 14, 5, 20, 100, 100);
 			$m = new \Living\Shopkeeper('Erog the blacksmith', 'erog blacksmith', 'A large ogre stands before you with a giant smelting iron by his side.', 'midgaard', 12, 1, 'ogre');
 			$m->getInventory()->add(array(
@@ -48,8 +49,10 @@
 				new \Items\Armor(0, 'a pair of sub issue boots are here.', 'a pair of sub issue boots', 'sub boots', 0, 5, \Items\Equipment::TYPE_FEET, -5, -5, -5, 0)
 			));
 			$m = new \Living\Shopkeeper('Alfred the store clerk', 'alfred clerk', 'Alfred smiles and offers you to look around.', 'midgaard', 59, 1, 'human');
+			$i = new \Items\Armor(0, 'a wooden torch is here.', 'a wooden torch', 'wooden torch', 1, 1, \Items\Equipment::TYPE_LIGHT, 0, 0, 0, 0);
+			new \Mechanics\Affect($i, \Mechanics\Affect::GLOW);
 			$m->getInventory()->add(array(
-				new \Items\Armor(0, 'a wooden torch is here.', 'a wooden torch', 'wooden torch', 1, 1, \Items\Equipment::TYPE_LIGHT, 0, 0, 0, 0, 100, 1, null, \Mechanics\Affect::TYPE_LIGHT)
+				$i
 			));
 			$m = new \Living\Shopkeeper('Annir the bartender', 'annir bartender', 'Annir, the faerie bartender buzzes before you.', 'midgaard', 79, 1, 'faerie');
 			$m->getInventory()->add(array(

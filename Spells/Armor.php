@@ -25,22 +25,45 @@
 	 *
 	 */
 	namespace Spells;
-	class Magic_Missile extends \Mechanics\Ability
+	class Armor extends \Mechanics\Ability
 	{
 	
-		private static $display_name = array('magic missile', 'oqisasi');
+		protected static $display_name = array('armor', 'plysoxix');
 		private static $base_chance = 99;
-		private static $aliases = array('mag', 'magic', 'magic missile');
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
+		
+			$this->apply($actor, $target);
+			return "You feel more protected!";
+		}
+		
+		public function apply($caster, $target, $timeout = null)
+		{
 			
-			$target->setHp($target->getHp() - 5);
+			if(!$timeout)
+				$timeout = $caster->getLevel();
 			
-			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
-			\Mechanics\Server::out($target, $actor->getAlias() . ' smites you!');
-			
-			return true;
+			return new Affect(
+								$target,
+								__CLASS__,
+								function($target)
+								{
+									$target->setAcSlash($target->getAcSlash() - 15);
+									$target->setAcBash($target->getAcBash() - 15);
+									$target->setAcPierce($target->getAcPierce() - 15);
+									$target->setAcMagic($target->getAcMagic() - 15);
+								},
+								function($target)
+								{
+									$target->setAcSlash($target->getAcSlash() + 15);
+									$target->setAcBash($target->getAcBash() + 15);
+									$target->setAcPierce($target->getAcPierce() + 15);
+									$target->setAcMagic($target->getAcMagic() + 15);
+								},
+								$timeout,
+								'You feel less protected.'
+							);
 		}
 		
 		public function getDisplayName($index = 1)

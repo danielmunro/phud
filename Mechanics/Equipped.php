@@ -150,7 +150,8 @@
 					if($actor->getInventory()->remove($item) !== false)
 						$this->inventory->add($item);
 					$this->equipment[$position] = $item;
-					$actor->addAffects($item->getAffects());
+					foreach($item->getAffects() as $affect)
+						$actor->addAffect($affect);
 					$equipped = $item;
 					$equipped_position = $position;
 					break;
@@ -160,6 +161,10 @@
 					$item_remove = $this->equipment[$position];
 					$this->inventory->remove($item_remove);
 					$this->inventory->add($item);
+					foreach($item_remove->getAffects() as $affect)
+						$actor->removeAffect($affect);
+					foreach($item->getAffects() as $affect)
+						$actor->addAffect($affect);
 					$actor->getInventory()->add($item_remove);
 					$actor->getInventory()->remove($item);
 					$this->equipment[$position] = $item;
@@ -303,7 +308,8 @@
 			{
 				$this->getInventory()->remove($item);
 				$actor->getInventory()->add($item);
-				$actor->removeAffects($item->getAffects());
+				foreach($item->getAffects() as $affect)
+					$actor->removeAffect($affect);
 				$this->equipment[$i] = null;
 			}
 			else

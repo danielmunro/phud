@@ -39,7 +39,7 @@
 			if($actor instanceof \Living\User)
 			{
 				$actor->save();
-				Server::out($actor, "Good bye!\r\n");
+				\Mechanics\Server::out($actor, "Good bye!\r\n");
 				$actor->setClient(null);
 				die;
 			}

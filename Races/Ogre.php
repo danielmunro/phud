@@ -65,6 +65,7 @@
 			$this->move_verb = 'walks';
 			
 			$this->size = self::SIZE_LARGE;
+			$this->playable = true;
 			
 			$this->effects_resist = array(\Mechanics\Effect::FIRE, \Mechanics\Effect::COLD);
 			

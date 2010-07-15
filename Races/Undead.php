@@ -63,6 +63,7 @@
 			$this->unarmed_verb = 'swipe';
 			
 			$this->move_verb = 'limps';
+			$this->playable = true;
 			
 			parent::__construct();
 		

@@ -45,8 +45,8 @@
 			if(!($target instanceof \Mechanics\Actor))
 				return \Mechanics\Server::out($actor, 'Nothing is here.');
 			
-			$actor->setTarget($target);
-			$actor->attack();
+			\Mechanics\Server::out($actor, "You scream and attack!");
+			$actor->attack($target);
 		}
 	
 	}

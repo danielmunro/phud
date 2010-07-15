@@ -30,7 +30,7 @@
 		
 		private static $instances = array();
 		private $actor = null;
-		private $abilities = array();
+		private $abilities = array(Ability::TYPE_SKILL => array(), Ability::TYPE_SPELL => array());
 		
 		protected function __construct(Actor $actor)
 		{
@@ -65,30 +65,24 @@
 		public function addAbility(Ability $instance)
 		{
 			
-			$aliases = $instance::getAliases();
-				
-			if(!is_array($aliases))
-				throw new \Exceptions\Ability_Set('Expecting array of aliases', Exceptions\Ability_Set::BAD_CONFIG);
+			$type = $instance->getType();
+			$name = (string)$instance;
+			$name = strtolower(str_replace('_', ' ', $name));
 			
-			$i = $instance->getType();
-			
-			if(isset($this->abilities[$i][$aliases[0]]))
-				return;
-			
-			foreach($aliases as $alias)
-				$this->abilities[$i][$alias] = $instance;
+			$this->abilities[$type][$name] = $instance;
 		}
 		
-		public function isValidSkill($input)
+		public function isValidSkill($input) { return $this->isValidAbility($input, Ability::TYPE_SKILL); }
+		
+		public function isValidSpell($input) { return $this->isValidAbility($input, Ability::TYPE_SPELL); }
+		
+		private function isValidAbility($input, $type)
 		{
 		
-			return isset($this->abilities[Ability::TYPE_SKILL][$input]) ? $this->abilities[Ability::TYPE_SKILL][$input] : null;
-		}
-		
-		public function isValidSpell($input)
-		{
-		
-			return isset($this->abilities[Ability::TYPE_SPELL][$input]) ? $this->abilities[Ability::TYPE_SPELL][$input] : null;
+			foreach($this->abilities[$type] as $name => $ability)
+				if(strpos($name, $input) === 0)
+					return $ability;
+			return false;
 		}
 		
 		//public function perform(Ability $ability, $args)

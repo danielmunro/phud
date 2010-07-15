@@ -65,6 +65,8 @@
 			(
 			);
 			
+			$this->playable = true;
+			
 			parent::__construct();
 		
 		}

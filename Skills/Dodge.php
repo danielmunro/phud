@@ -24,19 +24,18 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Skill_Dodge extends Perform
+	namespace Skills;
+	class Dodge extends \Mechanics\Ability
 	{
 	
-		public static function perform(Actor &$actor, Skill $skill, $args = null)
+		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
 			
 			$chance = rand(0, 100);
-			return $chance < $skill->getProficiency() / 2;
+			$mod = 5 + $actor->getRace()->getSize();
+			return $chance < $this->getPercent() / $mod;
 			
 		}
-		
-		public function getName() { return 'Dodge'; }
 	
 	}
 

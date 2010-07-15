@@ -73,6 +73,8 @@
 		
 		protected $damages_vuln = array();
 		
+		protected $playable = false;
+		
 		const SIZE_TINY = 0;
 		const SIZE_SMALL = 1;
 		const SIZE_NORMAL = 2;
@@ -138,6 +140,7 @@
 		public function getAcBash() { return $this->ac_bash; }
 		public function getAcPierce() { return $this->ac_pierce; }
 		public function getAcMagic() { return $this->ac_magic; }
+		public function getPlayable() { return $this->playable; }
 		
 		public function __toString()
 		{

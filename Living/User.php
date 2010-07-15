@@ -99,6 +99,16 @@
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
+			$rows = \Mechanics\Db::getInstance()->query('SELECT * FROM affects WHERE fk_user_id = ?', $this->id)->fetch_objects();
+			foreach($rows as $row)
+			{
+				$ability = $this->ability_set->isValidSkill($row->affect);
+				if($ability)
+					$ability->apply($this, $row->pulse_timeout);
+				$ability = $this->ability_set->isValidSpell($row->affect);
+				if($ability)
+					$ability->apply($this, $row->pulse_timeout);
+			}
 		}
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }
@@ -135,6 +145,11 @@
 			
 			$this->inventory->save();
 			$this->equipped->save();
+			
+			foreach($this->affects as $affect)
+				if($affect->getPulseStart())
+					$affect->save('users', $this->id);
+			
 			if($this->id)
 				$this->ability_set->save();
 			

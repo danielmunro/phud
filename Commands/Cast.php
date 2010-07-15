@@ -46,31 +46,29 @@
 			{
 				// Either target or spell
 				$last = array_pop($args);
-				$spell = $actor->getAbilitySet()->isValidSpell($input);
+				$input = implode(' ', $args);
+				if($input)
+					$spell = $actor->getAbilitySet()->isValidSpell($input);
 			}
 			
 			if(!$spell)
 				return \Mechanics\Server::out($actor, "You don't know that spell.");
 			
 			// DETERMINE THE TARGET
-			$actor_target = $actor->getTarget();
-			$specified_target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $last);
-			$real_target = null;
+			$target = $actor->getTarget();
 			
-			// Target the fighter
-			if($actor_target)
-				$real_target = $actor_target;
-			
-			// Target the specified actor
-			if($specified_target)
-				$real_target = $specified_target;
+			if(!$target && isset($last))
+				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $last);
 			
 			// Target the caster
-			if(!$real_target)
-				$real_target = $actor;
+			if(!$target)
+				$target = $actor;
 			
 			\Mechanics\Server::out($actor, 'You utter the words, "' . $spell->getDisplayName(1) . '"');
-			\Mechanics\Server::out($real_target, $spell->perform($actor, $real_target));
+			
+			// Returns true on offensive spells
+			if($spell->perform($actor, $target))
+				$actor->registerAttackRound($target);
 		}
 	}
 ?>

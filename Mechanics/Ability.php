@@ -31,8 +31,7 @@
 		private $name = '';
 		private $percent = 0;
 		private $user_id = 0;
-		private $type;
-		private static $aliases = array('kick');
+		private $type = 0;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -51,7 +50,7 @@
 			if($this->user_id)
 				Db::getInstance()->query('
 					INSERT INTO abilities (`name`, percent, fk_user_id, `type`) VALUES (?, ?, ?, ?)
-					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->percent, $this->type));
+					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->type, $this->percent));
 		}
 	
 		public function getType() { return $this->type; }
@@ -59,14 +58,9 @@
 		public function getPercent() { return $this->percent; }
 		public function setPercent($percent) { $this->percent = $percent; }
 		
-		public static function getAliases()
-		{
-			return self::$aliases;
-		}
-		
 		public function __toString()
 		{
-			$class = get_class($this);
+			$class = get_called_class();
 			return substr($class, strpos($class, '\\') + 1);
 		}
 	}

@@ -28,17 +28,18 @@
 	class Cure_Light extends \Mechanics\Ability
 	{
 	
-		protected $display_name = array('cure light', 'frzzz');
+		protected static $display_name = array('cure light', 'frzzz');
 		private static $base_chance = 99;
 		private static $aliases = array('cure light', 'cure');
 	
-		public static function perform(Actor &$actor, Actor &$target, $args = null)
+		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 		
 			$amount = 1 + $actor->getLevel() / 2;
 			$target->setHp($target->getHp() + (int) $amount);
-			
-			return "You feel better!";
+			\Mechanics\Server::out($target, "You feel better!");
+			\Mechanics\Server::out($actor, $target->getAlias(true) . " feels better!");
+			return false;
 		}
 		
 		public function getDisplayName($index = 1)

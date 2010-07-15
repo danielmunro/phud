@@ -30,15 +30,17 @@
 		
 		public function assignGroup()
 		{
-			
+			$id = $this->actor->getId();
 			$this->actor->increaseHitDam(1, 2);
 			
-			$this->actor->getSkillset()->addSkill(new \Skills\Kick(0, $this->actor->getId()));
-			//new Skill(0, Perform::find('Spell_Cure_Light')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Cure_Serious')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Cure_Critical')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Heal')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//Skill::saveSet($actor->getAlias());
+			$this->actor->getAbilitySet()->addAbility(new \Skills\Kick(0, $id));
+			$this->actor->getAbilitySet()->addAbility(new \Skills\Dodge(0, $id));
+			$this->actor->getAbilitySet()->addAbility(new \Skills\Shield_Block(0, $id));
+			$this->actor->getAbilitySet()->addAbility(new \Skills\Bash(0, $id));
+			
+			$this->actor->getAbilitySet()->addAbility(new \Spells\Armor(0, $id));
+			$this->actor->getAbilitySet()->addAbility(new \Spells\Cure_Light(0, $id));
+			$this->actor->getAbilitySet()->addAbility(new \Spells\Magic_Missile(0, $id));
 		}
 		
 	}

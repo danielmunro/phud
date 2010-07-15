@@ -65,7 +65,7 @@
 			$this->move_verb = 'flies';
 			
 			$this->size = self::SIZE_TINY;
-			
+			$this->playable = true;
 			
 			
 			parent::__construct();

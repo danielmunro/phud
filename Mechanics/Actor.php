@@ -100,16 +100,13 @@
 			$this->ability_set = Ability_Set::findByActor($this);
 		}
 		
-		public function removeAffects($affects)
+		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
+		public function removeAffect(Affect $affect)
 		{
-			foreach($affects as $affect)
-			{
-				$i = array_search($affect, $this->affects);
-				if($i !== false)
-					unset($this->affects[$i]);
-			}
+			$i = array_search($affect, $this->affects);
+			if($i !== false)
+				unset($this->affects[$i]);
 		}
-		public function addAffects($affects) { $this->affects = array_merge($this->affects, $affects); }
 		public function getAffects() { return $this->affects; }
 		public function getAbilitySet() { return $this->ability_set; }
 		public function getStr() { return $this->str; }
@@ -202,7 +199,7 @@
 			);
 			
 			$hp_percent = $this->getHpPercent();
-			
+			$descriptor = '';
 			foreach($statuses as $index => $status)
 				if($hp_percent <= $index)
 					$descriptor = $status;
@@ -216,6 +213,10 @@
 		public function setAcBash($ac_bash) { $this->ac_bash = $ac_bash; }
 		public function setAcPierce($ac_pierce) { $this->ac_pierce = $ac_pierce; }
 		public function setAcMagic($ac_magic) { $this->ac_magic = $ac_magic; }
+		public function getAcSlash() { return $this->ac_slash; }
+		public function getAcBash() { return $this->ac_bash; }
+		public function getAcPierce() { return $this->ac_pierce; }
+		public function getAcMagic() { return $this->ac_magic; }
 		public function increaseCopper($amount) { $this->copper += $amount; }
 		public function decreaseCopper($amount) { $this->copper -= $amount; }
 		public function increaseSilver($amount) { $this->silver += $amount; }
@@ -249,15 +250,6 @@
 		{
 			while($this->level < $level)
 				$this->levelUp(false);
-		}
-		public function addFighter(Actor &$fighting)
-		{
-			if(!$fighting->getFightable())
-				return Server::out($this, "You can't fight them!");
-			
-			Debug::addDebugLine("User " . $this->getAlias() . " adding fighter " . $fighting->getAlias() . ".");
-			Server::out($this, 'You scream and attack!');
-			$this->fighting[] = $fighting;
 		}
 		public function setExpPerLevel($exp) { $this->exp_per_level = $exp; }
 		public function clearFighters() { $this->fighting = null; }
@@ -320,7 +312,7 @@
 		public function setRace($race)
 		{
 			$race = Race::getInstance($race);
-			if($race instanceof Race)
+			if($race instanceof Race && $race->getPlayable())
 			{
 				$this->race = $race;
 				$this->race->applyRacialAttributeModifiers($this);
@@ -387,10 +379,11 @@
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
 		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
 
-		public function attack()
+		public function attack($actor = null)
 		{
 		
-			$actor = $this->getTarget();
+			if(!$actor)
+				$actor = $this->getTarget();
 			if(!$actor)
 				return;
 		
@@ -428,9 +421,6 @@
 			$roll['attack'] = rand(0, $hit_roll);
 			$roll['defense'] = rand(0, $def_roll);
 			
-			if($this instanceof \Living\User)
-				print $roll['attack'] . ' : ' . $roll['defense'];
-			
 			// Lost the hit roll -- miss
 			if($roll['attack'] <= $roll['defense'])
 				$dam_roll = 0;
@@ -454,21 +444,28 @@
 					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 			
 			if($actor->checkAlive($this))
-			{
+				$this->registerAttackRound($actor);
 			
-				$fn = function($actor) { $actor->attack(); };
-			
-				// Counter-attack
-				if(!$actor->getTarget())
-				{
-					$actor->setTarget($this);
-					ActorObserver::instance()->registerEvent(1, $fn, $actor);
-				}
-				
-				// Killer attacking victim
-				ActorObserver::instance()->registerEvent(1, $fn, $this);
-			}
 			Debug::addDebugLine(' Round done computing.');
+		}
+		
+		public function registerAttackRound($actor)
+		{
+		
+			$fn = function($actor) { $actor->attack(); };
+			
+			// Counter-attack
+			if(!$actor->getTarget())
+			{
+				$actor->setTarget($this);
+				ActorObserver::instance()->registerPulseEvent(1, $fn, $actor);
+			}
+			
+			if(!$this->getTarget())
+				$this->setTarget($actor);
+			
+			// Killer attacking victim
+			ActorObserver::instance()->registerPulseEvent(1, $fn, $this);
 		}
 		
 		public function isSafe()
@@ -498,22 +495,18 @@
 			if($target->isSafe())
 				return false;
 			
-			// Update fighters list
-			if(!$target->getFighter($this->getAlias()))
-				$target->addFighter($this);
-			if(!$this->getFighter($target->getAlias()))
-				$this->addFighter($target);
-			
 			// Check for parry, dodge, and shield block
 			if($type === Damage::TYPE_HIT)
 			{
-				if($target->getAbilitySet()->isValidSkill('dodge') && $target->getAbilitySet()->perform('dodge'))
+				$skill = $target->getAbilitySet()->isValidSkill('dodge');
+				if($skill && $skill->perform($target))
 				{
 					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
 					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
 					return false;
 				}
-				if($target->getAbilitySet()->isValidSkill('shield_block') && $target->getAbilitySet()->perform('shield_block'))
+				$skill = $target->getAbilitySet()->isValidSkill('shield block');
+				if($skill && $skill->perform($target))
 				{
 					
 					Server::out($this, $target->getAlias(true) . " blocks your attack with " . $target->getDisplaySex() . " shield!");

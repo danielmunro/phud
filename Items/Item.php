@@ -48,7 +48,7 @@
 		
 		private static $instances = array();
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own = true, $door_unlock_id = null, $affects = '')
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own = true, $door_unlock_id = null)
 		{
 		
 			$this->id = $id;
@@ -60,7 +60,6 @@
 			$this->type = $type;
 			$this->can_own = $can_own;
 			$this->door_unlock_id = $door_unlock_id;
-			$this->affects = explode(' ', $affects);
 		}
 		
 		public static function getInstance($id)
@@ -78,29 +77,29 @@
 			{
 			
 				case self::TYPE_ARMOR:
-					return self::$instances[$id] = new Armor($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->equipment_type, $row->ac_slash, $row->ac_bash, $row->ac_pierce, $row->ac_magic, $row->item_condition, $row->can_own, $row->fk_door_unlock_id, $row->affects);
+					return self::$instances[$id] = new Armor($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->equipment_type, $row->ac_slash, $row->ac_bash, $row->ac_pierce, $row->ac_magic, $row->item_condition, $row->can_own, $row->fk_door_unlock_id);
 			
 				case self::TYPE_WEAPON:
-					return self::$instances[$id] = new Weapon($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->verb, $row->value, $row->weight, $row->weapon_type, $row->damage_type, $row->hit_roll, $row->dam_roll, $row->item_condition, true, $row->fk_door_unlock_id, $row->affects);
+					return self::$instances[$id] = new Weapon($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->verb, $row->value, $row->weight, $row->weapon_type, $row->damage_type, $row->hit_roll, $row->dam_roll, $row->item_condition, true, $row->fk_door_unlock_id);
 				
 				case self::TYPE_CONTAINER:
-					return self::$instances[$id] = new Container($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, Inventory::findById($row->fk_inventory_id), $row->can_own, $row->affects);
+					return self::$instances[$id] = new Container($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, Inventory::findById($row->fk_inventory_id), $row->can_own);
 				
 				case self::TYPE_FOOD:
-					return self::$instances[$id] = new Food($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->nourishment, $row->can_own, $row->fk_door_unlock_id, $row->affects);
+					return self::$instances[$id] = new Food($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->nourishment, $row->can_own, $row->fk_door_unlock_id);
 				
 				case self::TYPE_DRINK:
-					return self::$instances[$id] = new Drink($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->thirst, $row->can_own, $row->fk_door_unlock_id, $row->affects);
+					return self::$instances[$id] = new Drink($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->thirst, $row->can_own, $row->fk_door_unlock_id);
 				
 				default:
-					return self::$instances[$id] = new Item($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->item_type, $row->can_own, $row->fk_door_unlock_id, $row->affects);
+					return self::$instances[$id] = new Item($row->id, $row->long_desc, $row->short_desc, $row->nouns, $row->value, $row->weight, $row->item_type, $row->can_own, $row->fk_door_unlock_id);
 			}
 		}
 		public function save($inv_inside_id)
 		{
-		
+			
 			if($this->id)
-				return \Mechanics\Db::getInstance()->query(
+				\Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -111,31 +110,30 @@
 						can_own = ?,
 						fk_inv_inside_id = ?,
 						fk_door_unlock_id = ?,
-						affects = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
-						$this->door_unlock_id, implode(' ', $this->affects), $this->id));
-			
-			\Mechanics\Db::getInstance()->query(
-				'INSERT INTO items (
-					short_desc,
-					long_desc,
-					nouns,
-					value,
-					weight,
-					item_type,
-					can_own,
-					fk_inv_inside_id,
-					fk_door_unlock_id,
-					affects)
-				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id, implode(' ', $this->affects)));
+						$this->door_unlock_id, $this->id));
+			else
+				\Mechanics\Db::getInstance()->query(
+					'INSERT INTO items (
+						short_desc,
+						long_desc,
+						nouns,
+						value,
+						weight,
+						item_type,
+						can_own,
+						fk_inv_inside_id,
+						fk_door_unlock_id)
+					VALUES
+						(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
+					$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id));
 			$this->id = \Mechanics\Db::getInstance()->insert_id;
+			foreach($this->affects as $affect)
+				$affect->save('items', $this->id);
 		}
-		public function getAffects() { return $this->affects; }
 		public function getShort() { return $this->short; }
 		public function getLong() { return $this->long; }
 		public function getNouns() { return $this->nouns; }
@@ -146,6 +144,12 @@
 		public function getDoorUnlockId() { return $this->door_unlock_id; }
 		public function getId() { return $this->id; }
 		public function setId($id) { $this->id = $id; }
+		public function addAffect(\Mechanics\Affect $affect) { $this->affects[] = $affect; }
+		public function removeAffect(\Mechanics\Affect $affect)
+		{
+			return;
+		}
+		public function getAffects() { return $this->affects; }
 		public function lookDescribe()
 		{
 			return $this->long;

@@ -110,7 +110,7 @@
 				// Pulse
 				if(date('U') == self::$last_pulse + 2)
 				{
-					ActorObserver::instance()->checkEvents();
+					ActorObserver::instance()->checkPulseEvents();
 					
 					if(!isset(self::$tick))
 						self::$tick = date('U') + rand(self::TICK_MIN, self::TICK_MAX);
@@ -177,7 +177,8 @@
 							// Skills -- See the cast command for spells
 							if($skill = $this->clients[$i]->getAbilitySet()->isValidSkill($args[0]))
 							{
-								$skill->perform($this->clients[$i], $args);
+								$n = null;
+								$skill->perform($this->clients[$i], $n, $args);
 								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 								continue;
 							}

@@ -40,7 +40,7 @@
 			if($args === null || sizeof($args) == 1) // The actor is looking
 			{
 				
-				if(!$actor->getRoom()->getVisibility() && !in_array(\Mechanics\Affect::TYPE_LIGHT, $actor->getAffects()))
+				if(!$actor->getRoom()->getVisibility() && !\Mechanics\Affect::isAffecting($actor, \Mechanics\Affect::GLOW))
 					return \Mechanics\Server::out($actor, "You can't see anything, it's so dark!");
 				
 				$doors = \Mechanics\Door::findByRoomId($actor->getRoom()->getId());

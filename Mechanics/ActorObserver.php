@@ -35,14 +35,12 @@
 		
 		private $events = array();
 		
-		public function __construct()
-		{
-		}
+		private function __construct() {}
 		
 		public static function instance()
 		{
 		
-			if(self::$instance === null)
+			if(!self::$instance)
 				self::$instance = new ActorObserver();
 			
 			return self::$instance;
@@ -72,7 +70,10 @@
 			if(empty($input[1]))
 				return;
 			
-			$person = strtolower(array_pop($input));
+			if(is_array($input))
+				$input = array_pop($input);
+			
+			$person = strtolower($input);
 			foreach($this->actors as $actor)
 			{
 			
@@ -177,7 +178,7 @@
 		
 		}
 		
-		public function checkEvents()
+		public function checkPulseEvents()
 		{
 		
 			$pulse = date('U');
@@ -191,10 +192,10 @@
 			// Target statuses for fighters
 			foreach($this->actors as $actor)
 				if($target = $actor->getTarget())
-					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . '.');
+					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . ".\n\n" . ($actor instanceof \Living\User ? $actor->prompt() : ''), false);
 		}
 		
-		public function registerEvent($pulses, $fn, $args)
+		public function registerPulseEvent($pulses, $fn, $args)
 		{
 		
 			$pulses = Server::getLastPulse() + 2 + ($pulses * 2);

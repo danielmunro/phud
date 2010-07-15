@@ -63,7 +63,7 @@
 			if($movement_speed)
 			{
 				$pulse = \Mechanics\Server::randomizePulse($movement_speed);
-				\Mechanics\ActorObserver::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
+				\Mechanics\ActorObserver::instance()->registerPulseEvent($pulse, function($actor) { $actor->move(); }, $this);
 			}
 		}
 		
@@ -96,7 +96,7 @@
 			$event = \Mechanics\Command::find($i)->perform($this);
 			
 			$pulse = \Mechanics\Server::randomizePulse($this->movement_speed);
-			\Mechanics\ActorObserver::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
+			\Mechanics\ActorObserver::instance()->registerPulseEvent($pulse, function($actor) { $actor->move(); }, $this);
 			
 		}
 		public function handleRespawn()

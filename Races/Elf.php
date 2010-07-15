@@ -65,6 +65,7 @@
 			$this->move_verb = 'walks';
 			
 			$this->size = self::SIZE_NORMAL;
+			$this->playable = true;
 			
 			parent::__construct();
 		

@@ -33,10 +33,10 @@
 		protected $ac_pierce = 0;
 		protected $ac_magic = 0;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $equipment_type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null, $affects = '')
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $equipment_type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_ARMOR, $equipment_type, $condition, $can_own, $door_unlock_id, $affects);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_ARMOR, $equipment_type, $condition, $can_own, $door_unlock_id);
 			$this->ac_slash = $ac_slash;
 			$this->ac_bash = $ac_bash;
 			$this->ac_pierce = $ac_pierce;
@@ -44,8 +44,9 @@
 		}
 		public function save($inv_inside_id)
 		{
+			
 			if($this->id)
-				return \Mechanics\Db::getInstance()->query(
+				\Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -60,36 +61,38 @@
 						ac_bash = ?,
 						ac_pierce = ?,
 						ac_magic = ?,
-						affects = ?,
 						equipment_type = ?
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
 						$this->weight, $this->type, $this->can_own, $inv_inside_id,
-						$this->door_unlock_id, $this->ac_slash, $this->ac_bash, $this->ac_pierce, $this->ac_magic, implode(' ', $this->affects), $this->equipment_type, $this->id));
-			
-			\Mechanics\Db::getInstance()->query(
-				'INSERT INTO items (
-					short_desc,
-					long_desc,
-					nouns,
-					value,
-					weight,
-					item_type,
-					can_own,
-					fk_inv_inside_id,
-					fk_door_unlock_id,
-					ac_slash,
-					ac_bash,
-					ac_pierce,
-					ac_magic,
-					affects,
-					equipment_type)
-				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id, $this->ac_slash,
-				$this->ac_bash, $this->ac_pierce, $this->ac_magic, implode(' ', $this->affects), $this->equipment_type));
-			$this->id = \Mechanics\Db::getInstance()->insert_id;
+						$this->door_unlock_id, $this->ac_slash, $this->ac_bash, $this->ac_pierce, $this->ac_magic, $this->equipment_type, $this->id));
+			else
+			{
+				\Mechanics\Db::getInstance()->query(
+					'INSERT INTO items (
+						short_desc,
+						long_desc,
+						nouns,
+						value,
+						weight,
+						item_type,
+						can_own,
+						fk_inv_inside_id,
+						fk_door_unlock_id,
+						ac_slash,
+						ac_bash,
+						ac_pierce,
+						ac_magic,
+						equipment_type)
+					VALUES
+						(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+					array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
+					$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id, $this->ac_slash,
+					$this->ac_bash, $this->ac_pierce, $this->ac_magic, $this->equipment_type));
+				$this->id = \Mechanics\Db::getInstance()->insert_id;
+			}
+			foreach($this->affects as $affect)
+				$affect->save('items', $this->id);
 		}
 		public function getACSlash() { return $this->ac_slash; }
 		public function getACBash() { return $this->ac_bash; }

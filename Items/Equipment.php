@@ -47,10 +47,10 @@
 		const TYPE_HOLD = 13;
 		const TYPE_FLOAT = 14;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $equipment_type, $condition, $can_own, $door_unlock_id, $affects)
+		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $equipment_type, $condition, $can_own, $door_unlock_id)
 		{
 			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own, $door_unlock_id, $affects);
+			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own, $door_unlock_id);
 			$this->condition = $condition;
 			$this->equipment_type = $equipment_type;
 		}
