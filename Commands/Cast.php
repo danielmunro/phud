@@ -66,8 +66,10 @@
 			
 			\Mechanics\Server::out($actor, 'You utter the words, "' . $spell->getDisplayName(1) . '"');
 			
+			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
+			
 			// Returns true on offensive spells
-			if($spell->perform($actor, $target))
+			if($spell::perform($actor, $target))
 				$actor->registerAttackRound($target);
 		}
 	}

@@ -24,53 +24,18 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Races;
-	class Human extends \Mechanics\Race
+	namespace Mechanics;
+	class Spell extends \Mechanics\Ability
 	{
 	
-		protected function __construct()
-		{
-		
-			$this->str = 17;
-			$this->int = 19;
-			$this->wis = 18;
-			$this->dex = 19;
-			$this->con = 17;
-			
-			$this->max_str = 21;
-			$this->max_int = 23;
-			$this->max_wis = 22;
-			$this->max_dex = 23;
-			$this->max_con = 21;
-			
-			$this->movement_cost = 2;
-			
-			$this->decrease_thirst = 1;
-			$this->decrease_nourishment = 1;
-			$this->full = 40;
-			
-			$this->ac_bash = 100;
-			$this->ac_slash = 100;
-			$this->ac_pierce = 100;
-			$this->ac_magic = 100;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 2;
-			
-			$this->move_verb = 'walks';
-			
-			$this->unarmed_verb = 'punch';
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->playable = true;
-			
-			parent::__construct();
-		
-		}
+		protected $level = 1;
 	
+		public function getManaCost($actor_level)
+		{
+			return max($this->min_mana, 100 / (2 + $actor_level - $this->level));
+		}
+		
+		public function getLevel() { return $this->level; }
 	}
 
 ?>

@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Spells;
-	class Cure_Light extends \Mechanics\Ability
+	class Cure_Light extends \Mechanics\Spell
 	{
 	
 		protected static $display_name = array('cure light', 'frzzz');

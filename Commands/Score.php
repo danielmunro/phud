@@ -55,6 +55,38 @@
 			\Mechanics\Server::out($actor,
 				$actor->getGold() . ' gold, ' . $actor->getSilver() . ' silver, ' . $actor->getCopper() . ' copper.');
 		
+			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcBash()) . 'against bashing.');
+			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcSlash()) . 'against slashing.');
+			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcPierce()) . 'against piercing.');
+			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcMagic()) . 'against magic.');
+		
+		}
+		
+		private static function getAcString($ac)
+		{
+			if($ac >= 100)
+				return " hopelessly vulnerable to ";
+			if($ac >= 80)
+				return " defenseless against ";
+			if($ac >= 60)
+				return " barely protected from ";
+			if($ac >= 40)
+				return " slightly armored against ";
+			if($ac >= 20)
+				return " somewhat armored against ";
+			if($ac >= 0)
+				return " armored against ";
+			if($ac >= -20)
+				return " well-armored against ";
+			if($ac >= -40)
+				return " very well-armored against ";
+			if($ac >= -60)
+				return " heavily armored against ";
+			if($ac >= -80)
+				return " superbly armored against ";
+			if($ac >= -100)
+				return " almost invulnerable to ";
+			return " divinely armored against ";
 		}
 	
 	}

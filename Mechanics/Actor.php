@@ -400,17 +400,21 @@
 				$attacking_weapon = $hand_r;
 			
 			if($attacking_weapon)
+			{
 				$verb = $attacking_weapon->getVerb();
+				$dam_type = $attacking_weapon->getDamageType();
+			}
 			else
+			{
 				$verb = $this->getRace()->getUnarmedVerb();
+				$dam_type = Damage::TYPE_BASH;
+			}
 		
 			// ATTACKING
 			$hit_roll = $this->hit_roll;
 			$dam_roll = $this->dam_roll;
 			
 			$hit_roll += ($this->dex / self::MAX_ATTRIBUTE) * 4;
-			// Size modifier
-			$dam_roll += $this->getRace()->getSize();
 			
 			// DEFENDING
 			$def_roll = ($actor->getDex() / self::MAX_ATTRIBUTE) * 4;
@@ -418,9 +422,20 @@
 			// Size modifier
 			$def_roll += 5 - $actor->getRace()->getSize();
 			
-			$roll['attack'] = rand(0, $hit_roll);
-			$roll['defense'] = rand(0, $def_roll);
+			if($dam_type == Damage::TYPE_BASH)
+				$ac = $actor->getAcBash();
+			elseif($dam_type == Damage::TYPE_PIERCE)
+				$ac = $actor->getAcPierce();
+			elseif($dam_type == Damage::TYPE_SLASH)
+				$ac = $actor->getAcSlash();
+			else
+				$ac = $actor->getAcMagic();
 			
+			$ac = $ac / 100;	
+			
+			$roll['attack'] = rand(0, $hit_roll);
+			$roll['defense'] = rand(0, $def_roll) - $ac;
+			print $ac . ': ' . $roll['defense'] . "\n";
 			// Lost the hit roll -- miss
 			if($roll['attack'] <= $roll['defense'])
 				$dam_roll = 0;

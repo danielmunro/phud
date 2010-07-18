@@ -30,8 +30,10 @@
 		
 		const ADDRESS = '127.0.0.1';
 		const PORT = 9000;
-		const TICK_MIN = 30;
-		const TICK_MAX = 45;
+		const TICK_MIN = 50;
+		const TICK_MAX = 50;
+		const TICK = 50;
+		const PULSES_PER_TICK = 25;
 		
 		private $socket = null;
 		private $clients = array();
@@ -232,6 +234,11 @@
 			
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
 		
+		}
+		
+		public function getCommandFromClass($class)
+		{
+			return strtolower(str_replace('_', ' ', $class));
 		}
 		
 		public function initializeEnvironment()

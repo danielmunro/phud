@@ -25,34 +25,41 @@
 	 *
 	 */
 	namespace Spells;
-	class Armor extends \Mechanics\Ability
+	class Armor extends \Mechanics\Spell
 	{
 	
 		protected static $display_name = array('armor', 'plysoxix');
 		private static $base_chance = 99;
+		protected $level = 1;
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 		
-			$this->apply($actor, $target);
-			return "You feel more protected!";
+			self::apply($actor, $target);
+			\Mechanics\Server::out($target, "You feel more protected!");
+			return false;
 		}
 		
-		public function apply($caster, $target, $timeout = null)
+		public static function apply($caster, $target, $timeout = null)
 		{
 			
-			if(!$timeout)
-				$timeout = $caster->getLevel();
+			if(!$timeout && is_numeric($target))
+				$timeout = $target;
 			
-			return new Affect(
+			if($timeout === null)
+				$timeout = $caster->getLevel() * \Mechanics\Server::PULSES_PER_TICK;
+			
+			return new \Mechanics\Affect(
 								$target,
-								__CLASS__,
+								'armor',
 								function($target)
 								{
-									$target->setAcSlash($target->getAcSlash() - 15);
-									$target->setAcBash($target->getAcBash() - 15);
-									$target->setAcPierce($target->getAcPierce() - 15);
-									$target->setAcMagic($target->getAcMagic() - 15);
+									$mod_ac = -15;
+									$target->setAcSlash($target->getAcSlash() + $mod_ac);
+									$target->setAcBash($target->getAcBash() + $mod_ac);
+									$target->setAcPierce($target->getAcPierce() + $mod_ac);
+									$target->setAcMagic($target->getAcMagic() + $mod_ac);
+									return $mod_ac . ' to AC';
 								},
 								function($target)
 								{

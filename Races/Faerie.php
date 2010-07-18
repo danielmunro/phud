@@ -48,10 +48,10 @@
 			$this->decrease_nourishment = 0.5;
 			$this->full = 40;
 			
-			$this->ac_bash = 0;
-			$this->ac_slash = 0;
-			$this->ac_pierce = 0;
-			$this->ac_magic = -15;
+			$this->ac_bash = 100;
+			$this->ac_slash = 100;
+			$this->ac_pierce = 100;
+			$this->ac_magic = 85;
 			
 			$this->hit_roll = 1;
 			$this->dam_roll = 1;

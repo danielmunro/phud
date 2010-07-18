@@ -109,6 +109,7 @@
 		public function getWeaponType() { return $this->weapon_type; }
 		public function getHitRoll() { return $this->hit_roll; }
 		public function getDamRoll() { return $this->dam_roll; }
+		public function getDamageType() { return $this->damage_type; }
 	
 	}
 

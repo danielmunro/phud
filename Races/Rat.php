@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Races;
-	class Human extends \Mechanics\Race
+	class Rat extends \Mechanics\Race
 	{
 	
 		protected function __construct()
@@ -43,7 +43,7 @@
 			$this->max_dex = 23;
 			$this->max_con = 21;
 			
-			$this->movement_cost = 2;
+			$this->movement_cost = 1;
 			
 			$this->decrease_thirst = 1;
 			$this->decrease_nourishment = 1;
@@ -61,11 +61,7 @@
 			
 			$this->unarmed_verb = 'punch';
 			
-			$this->weapons = array
-			(
-			);
-			
-			$this->playable = true;
+			$this->weapons = array();
 			
 			parent::__construct();
 		

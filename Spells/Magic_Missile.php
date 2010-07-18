@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Spells;
-	class Magic_Missile extends \Mechanics\Ability
+	class Magic_Missile extends \Mechanics\Spell
 	{
 	
 		private static $display_name = array('magic missile', 'oqisasi');
