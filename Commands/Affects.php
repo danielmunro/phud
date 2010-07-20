@@ -38,9 +38,12 @@
 		{
 		
 			\Mechanics\Server::out($actor, 'You are affected by: ');
-			foreach($actor->getAffects() as $affect)
-				if($affect->getAffectMessage())
-					\Mechanics\Server::out($actor, $affect->getAffectMessage());
+			$affects = \Mechanics\Affect::getAffects($actor);
+			print_r($affects);
+			if(is_array($affects))
+				foreach($affects as $affect)
+					if($affect->getMessage())
+						\Mechanics\Server::out($actor, $affect->getMessage() . '. ' . $affect->getTickTimeout() . ' ticks.');
 		}
 	}
 ?>

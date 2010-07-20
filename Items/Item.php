@@ -38,6 +38,7 @@
 		protected $can_own = true;
 		protected $door_unlock_id = null;
 		protected $affects = array();
+		private $unique_identifier = 0;
 		
 		const TYPE_ITEM = 1;
 		const TYPE_CONTAINER = 2;
@@ -60,7 +61,10 @@
 			$this->type = $type;
 			$this->can_own = $can_own;
 			$this->door_unlock_id = $door_unlock_id;
+			$this->unique_identifier = microtime(true);
 		}
+		
+		public function getUniqueIdentifier() { return $this->unique_identifier; }
 		
 		public static function getInstance($id)
 		{
@@ -171,6 +175,11 @@
 		public function delete()
 		{
 			Db::getInstance()->query('DELETE FROM items WHERE id = ?', $this->id);
+		}
+		public function __toString()
+		{
+			$class = get_class($this);
+			return substr($class, strpos($class, '\\') + 1);
 		}
 	}
 

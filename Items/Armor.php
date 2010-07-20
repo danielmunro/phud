@@ -98,7 +98,6 @@
 		public function getACBash() { return $this->ac_bash; }
 		public function getACPierce() { return $this->ac_pierce; }
 		public function getACMagic() { return $this->ac_magic; }
-	
 	}
 
 ?>

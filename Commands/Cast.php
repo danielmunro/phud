@@ -64,7 +64,9 @@
 			if(!$target)
 				$target = $actor;
 			
-			\Mechanics\Server::out($actor, 'You utter the words, "' . $spell->getDisplayName(1) . '"');
+			foreach(\Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId()) as $rm_actor)
+				if($rm_actor instanceof \Living\User)
+					\Mechanics\Server::out($rm_actor, ($rm_actor->getId() == $actor->getId() ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor->getId() == $actor->getId() ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
 			
 			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
 			

@@ -43,7 +43,7 @@
 			return true;
 		}
 		
-		public function getDisplayName($index = 1)
+		public function getDisplayName($index = 0)
 		{
 			return self::$display_name[$index];
 		}

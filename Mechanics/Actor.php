@@ -65,6 +65,7 @@
 		protected $ac_magic = 0;
 		protected $affects = array();
 		protected $target = null;
+		protected $unique_identifier = 0;
 		
 		protected $discipline = null;
 		protected $race = null;
@@ -98,8 +99,9 @@
 			}
 			
 			$this->ability_set = Ability_Set::findByActor($this);
+			$this->unique_identifier = microtime(true);
 		}
-		
+		public function getUniqueIdentifier() { return $this->unique_identifier; }
 		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
 		public function removeAffect(Affect $affect)
 		{
@@ -680,6 +682,11 @@
 		public function getNoun()
 		{
 			return $this->alias;
+		}
+		public function __toString()
+		{
+			$class = get_class($this);
+			return substr($class, strpos($class, '\\') + 1);
 		}
 	}
 	

@@ -73,13 +73,12 @@
 		
 			$seconds = date('U');
 		
-			while(!empty(self::$instance))
+			while(1)
 			{
-				$read = array();
-				$read[0] = $this->socket;
+				$read = array($this->socket);
 				
-				for($i = 0; $i < sizeof($this->clients); $i ++)
-					if($this->clients[$i] instanceof \Living\User)
+				foreach($this->clients as $i => $client)
+					if(isset($this->clients[$i]) && $this->clients[$i]->getSocket())
 						$read[$i + 1] = $this->clients[$i]->getSocket();
 				
 				$null = null;
@@ -89,22 +88,20 @@
 				if(in_array($this->socket, $read))
 				{
 					$added = false;
-					
 					for($i = 0; $i < sizeof($this->clients); $i ++)
-						if($this->clients[$i] === null)
+						if(!isset($this->clients[$i]))
 						{
 							$socket = socket_accept($this->socket);
 							$this->clients[$i] = new \Living\User($socket);
 							$added = $i;
-							
 							break;
 						}
 					
 					if($added === false)
 					{
 						$socket = socket_accept($this->socket);
-						$this->clients[] = new \Living\User($socket);
-						$added = sizeof($this->clients) - 1;
+						$this->clients[] = $user = new \Living\User($socket);
+						$added = array_search($user, $this->clients);
 					}
 					self::out($this->clients[$added], 'Welcome to mud. What is yer name? ', false);
 				}
@@ -129,9 +126,9 @@
 				}
 				
 				// Input
-				for($i = 0; $i < sizeof($this->clients); $i ++)
+				foreach($this->clients as $i => $client)
 				{
-					if(!($this->clients[$i] instanceof \Living\User))
+					if(!isset($this->clients[$i]))
 						continue;
 					
 					if(in_array($this->clients[$i]->getSocket(), $read))
@@ -205,11 +202,12 @@
 						
 						// Perform command
 						$command->perform($this->clients[$i], $args);
-						self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
-						
+						if(isset($this->clients[$i]))
+							self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 					}
 				}
 			}
+			print 'done';
 		}
 		
 		public static function getLastPulse() { return self::$last_pulse; }
@@ -247,6 +245,12 @@
 			//new QuestmasterSid();
 			//$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
 			//$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
+		}
+		
+		public function closeSocket(\Living\User $user)
+		{
+			socket_close($user->getSocket());
+			$user->clearSocket();
 		}
 		
 		public function getSocket()

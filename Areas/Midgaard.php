@@ -50,7 +50,7 @@
 			));
 			$m = new \Living\Shopkeeper('Alfred the store clerk', 'alfred clerk', 'Alfred smiles and offers you to look around.', 'midgaard', 59, 1, 'human');
 			$i = new \Items\Armor(0, 'a wooden torch is here.', 'a wooden torch', 'wooden torch', 1, 1, \Items\Equipment::TYPE_LIGHT, 0, 0, 0, 0);
-			new \Mechanics\Affect($i, \Mechanics\Affect::GLOW);
+			new \Mechanics\Affect(\Mechanics\Affect::GLOW, $i);
 			$m->getInventory()->add(array(
 				$i
 			));

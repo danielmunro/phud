@@ -8,70 +8,76 @@
 		const STUN = 'stun';
 		
 		private $affect = '';
+		private $message = '';
+		private $target = null;
 		private $pulse_start = 0;
-		private $pulse_timeout = 0;
-		private $message_timeout = '';
-		private $affect_message = '';
+		private $args = array();
+		private static $instances = array();
 		
-		public function __construct(&$target, $affect, $start = null, $end = null, $pulse_timeout = null, $message_timeout = '')
+		public function __construct($affect, &$target, $message = '', $args = array())
 		{
 		
 			$this->affect = $affect;
+			$this->target = $target;
+			$this->message = $message;
+			$this->target->addAffect($this);
+			$this->args = $args;
 			
-			if($pulse_timeout)
-			{
+			$class = get_class($target);
+			self::$instances[$class][$target->getId()][] = $this;
+			
+			if($this->args)
+				$this->initialize();
+		}
+		public function initialize()
+		{
+			
+			if($this->pulse_start)
+				$this->args['timeout'] = $this->args['timeout'] - (Server::getLastPulse() - $this->pulse_start);
+			else
 				$this->pulse_start = Server::getLastPulse();
-				$this->pulse_timeout = $pulse_timeout;
-				$this->message_timeout = $message_timeout;
-			}
-			$target->addAffect($this);
-	
-			$msg = '';
-			if($start)
-				$msg = $start($target);
-			if($msg)
-				$this->affect_message = $msg;
-	
-			if($end && $pulse_timeout)
-				ActorObserver::instance()->registerPulseEvent
-				(
-					$this->pulse_timeout,
-					function($args)
-					{
-						$args[0]->removeAffect($args[1]);
-						$args[2]($args[0]);
-						if($args[3])
-							Server::out($args[0], $args[3]);
-					},
-					array($target, $this, $end, $this->message_timeout)
-				);
+			
+			if($this->args['timeout'] <= 0)
+				return false;
+			
+			$affect = $this->affect;
+			$affect::apply($this->target, $this->args);
+			
+			return true;
 		}
 		public function getAffect() { return $this->affect; }
-		public function getPulseStart() { return $this->pulse_start; }
-		public function save($table, $id)
+		public function getMessage() { return $this->message; }
+		public function getTickTimeout()
 		{
-		
-			$pulse_timeout = $this->pulse_timeout - (Server::getLastPulse() - $this->pulse_start) / 2;
-			Db::getInstance()->query('INSERT INTO affects (fk_table, fk_id, affect, pulse_timeout) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE pulse_timeout = ?', array($table, $id, $this->affect, $pulse_timeout, $pulse_timeout));
+			return floor((Server::getLastPulse() - $this->pulse_start) / Server::PULSES_PER_TICK);
 		}
-		public function getAffectMessage()
+		public static function reapply($target)
 		{
-			$ticks = floor(($this->pulse_timeout - ((Server::getLastPulse() - $this->pulse_start) / 2)) / \Mechanics\Server::TICK);
-			$ticks = $ticks < 1 ? 0 : $ticks;
-			return $ticks . ' tick' . ($ticks == 1 ? '' : 's') . ': ' . $this->affect . ': ' . $this->affect_message;
+			$class = get_class($target);
+			foreach(self::$instances[$class][$target->getId()] as $instance)
+				if(!$instance->initialize())
+					unset($instance);
 		}
-		
 		public static function isAffecting($target, $affect)
 		{
-			
 			foreach($target->getAffects() as $a)
 				if($a->getAffect() == $affect)
 					return true;
 		}
-		
-		public static function clearAffectsDb($user_id)
+		public static function removeAffect($target, $affect)
 		{
-			Db::getInstance()->query('DELETE FROM affects WHERE fk_table = ? AND fk_id = ?', array('users', $user_id));
+			foreach($target->getAffects() as $a)
+				if($a->getAffect() == $affect)
+					$target->removeAffect($a);
+		}
+		public static function getAffects($target)
+		{
+			$class = get_class($target);
+			print_r(self::$instances[$class][$target->getId()]);
+			if(isset(self::$instances[$class][$target->getId()]))
+				return self::$instances[$class][$target->getId()];
+			else
+				return array();
 		}
 	}
 ?>

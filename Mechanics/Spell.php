@@ -29,6 +29,9 @@
 	{
 	
 		protected $level = 1;
+		protected $name_familiar = '';
+		protected $name_unfamiliar = '';
+		protected $min_mana = 15;
 	
 		public function getManaCost($actor_level)
 		{
@@ -36,6 +39,20 @@
 		}
 		
 		public function getLevel() { return $this->level; }
+		public function getNameFamiliar() { return $this->name_familiar; }
+		public function getNameUnfamiliar() { return $this->name_unfamiliar; }
+		public function getName(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
+		{
+			if($observer->getLevel() >= $this->level && $observer->getDiscipline() == $caster->getDiscipline())
+				return $this->name_familiar;
+			else
+				return $this->name_unfamiliar;
+		}
+		public function __toString()
+		{
+			$class = get_class($this);
+			return substr($class, strpos($class, '\\') + 1);
+		}
 	}
 
 ?>

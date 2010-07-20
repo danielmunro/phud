@@ -67,6 +67,7 @@
 		
 		public function loadByAliasAndPassword($alias, $password)
 		{
+			
 			$row = \Mechanics\Db::getInstance()->query('SELECT * FROM users WHERE LOWER(alias) = ? AND pass = ?', array(strtolower($alias), sha1('mud password salt!' . $password)))->getResult()->fetch_object();
 			if(empty($row))
 				throw new \Exception('No user found');
@@ -99,22 +100,13 @@
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
-			$rows = \Mechanics\Db::getInstance()->query('SELECT * FROM affects WHERE fk_id = ?', $this->id)->fetch_objects();
-			foreach($rows as $row)
-			{
-				$ability = $this->ability_set->isValidSkill($row->affect);
-				if($ability)
-					$ability->apply($this, $this, $row->pulse_timeout);
-				$ability = $this->ability_set->isValidSpell($row->affect);
-				if($ability)
-					$ability->apply($this, $this, $row->pulse_timeout);
-			}
+			
+			\Mechanics\Affect::reapply($this);
 		}
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }
 		public function getLastInput() { return $this->last_input; }
 		public function getSocket() { return $this->socket; }
-		public function __toString() { return $this->socket; }
 		public function decreaseRacialNourishmentAndThirst()
 		{
 			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
@@ -145,11 +137,6 @@
 			
 			$this->inventory->save();
 			$this->equipped->save();
-			
-			\Mechanics\Affect::clearAffectsDb($this->id);
-			foreach($this->affects as $affect)
-				if($affect->getPulseStart())
-					$affect->save('users', $this->id);
 			
 			if($this->id)
 				$this->ability_set->save();
@@ -227,6 +214,8 @@
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
 		}
+		
+		public function resetLogin() { $this->login = array('alias' => false); }
 		
 		public function handleLogin($input)
 		{
@@ -460,6 +449,10 @@
 				
 				\Commands\Look::perform($this);
 			}
+		}
+		public function clearSocket()
+		{
+			$this->socket = null;
 		}
 	}
 
