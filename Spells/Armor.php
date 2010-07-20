@@ -37,7 +37,7 @@
 			if(!($target instanceof \Mechanics\Actor))
 				return Server::out($actor, "You cannot cast that on that.");
 			
-			$timeout = isset($args['timeout']) ? $args['timeout'] : $actor->getLevel() * \Mechanics\Server::PULSES_PER_TICK;
+			$timeout = (isset($args['timeout']) ? $args['timeout'] : $actor->getLevel() * \Mechanics\Server::PULSES_PER_TICK) + 1;
 			
 			$modifier = max(floor($actor->getLevel() / 10), 1);
 			$mod_ac = -15 * $modifier;

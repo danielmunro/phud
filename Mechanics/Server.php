@@ -227,7 +227,7 @@
 		public static function out($client, $message, $break_line = true)
 		{
 			
-			if(!($client instanceof \Living\User))
+			if(!($client instanceof \Living\User) || is_null($client->getSocket()))
 				return;
 			
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));

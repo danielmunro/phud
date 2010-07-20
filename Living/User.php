@@ -101,7 +101,7 @@
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
 			
-			\Mechanics\Affect::reapply($this);
+			\Mechanics\Affect::reapplyFromMemory($this);
 		}
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }

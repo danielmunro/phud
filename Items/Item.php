@@ -62,6 +62,7 @@
 			$this->can_own = $can_own;
 			$this->door_unlock_id = $door_unlock_id;
 			$this->unique_identifier = microtime(true);
+			\Mechanics\Affect::reapplyFromDb($this);
 		}
 		
 		public function getUniqueIdentifier() { return $this->unique_identifier; }

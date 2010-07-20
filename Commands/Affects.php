@@ -39,7 +39,6 @@
 		
 			\Mechanics\Server::out($actor, 'You are affected by: ');
 			$affects = \Mechanics\Affect::getAffects($actor);
-			print_r($affects);
 			if(is_array($affects))
 				foreach($affects as $affect)
 					if($affect->getMessage())
