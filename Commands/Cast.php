@@ -66,7 +66,7 @@
 				$target = $actor->getTarget();
 			
 			// Target the caster
-			if(!$target && $spell->getSpellType() == \Mechanics\Spell::TYPE_PASSIVE)
+			if(!$target && $spell::getSpellType() == \Mechanics\Spell::TYPE_PASSIVE)
 				$target = $actor;
 			
 			if(!$target)
@@ -75,7 +75,7 @@
 			// CONCENTRATION
 			if(rand(0, 100) > $spell->getPercent())
 			{
-				$actor->setMana($actor->getMana() - ($spell->getManaCost($actor->getLevel()) / 2));
+				$actor->setMana($actor->getMana() - ceil($spell->getManaCost($actor->getLevel()) / 2));
 				return \Mechanics\Server::out($actor, "You lost your concentration.");
 			}
 			
@@ -87,7 +87,7 @@
 			
 			$spell::perform($actor, $target);
 			
-			if($spell->getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
+			if($spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
 				$actor->registerAttackRound($target);
 		}
 	}

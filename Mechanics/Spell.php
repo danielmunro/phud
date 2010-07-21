@@ -34,19 +34,18 @@
 		protected $name_familiar = '';
 		protected $name_unfamiliar = '';
 		protected $min_mana = 15;
-		protected $spell_type = self::TYPE_PASSIVE;
+		protected static $spell_type = self::TYPE_PASSIVE;
 	
 		public function getManaCost($actor_level)
 		{
-			return max($this->min_mana, 100 / (2 + $actor_level - $this->level));
+			return ceil(max($this->min_mana, 100 / (2 + $actor_level - self::$level)));
 		}
 		
 		public function getNameFamiliar() { return $this->name_familiar; }
 		public function getNameUnfamiliar() { return $this->name_unfamiliar; }
-		public function getSpellType() { return $this->spell_type; }
 		public function getName(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
 		{
-			if($observer->getLevel() >= $this->level && $observer->getDiscipline() == $caster->getDiscipline())
+			if($observer->getLevel() >= self::$level && $observer->getDiscipline() == $caster->getDiscipline())
 				return $this->name_familiar;
 			else
 				return $this->name_unfamiliar;
@@ -56,6 +55,7 @@
 			$base = $min + ($level ^ $exponent);
 			return ceil(rand($base / 2, $base * 2));
 		}
+		public static function getSpellType() { return self::$spell_type; }
 		public function __toString()
 		{
 			$class = get_class($this);

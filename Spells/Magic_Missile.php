@@ -30,18 +30,13 @@
 	
 		protected $name_familiar = 'magic missile';
 		protected $name_unfamiliar = 'oqisasi';
-		protected $spell_type = self::TYPE_OFFENSIVE;
+		protected static $spell_type = self::TYPE_OFFENSIVE;
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			
 			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));
 			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
-		}
-		
-		public function getDisplayName($index = 0)
-		{
-			return self::$display_name[$index];
 		}
 	}
 
