@@ -28,19 +28,15 @@
 	class Magic_Missile extends \Mechanics\Spell
 	{
 	
-		private static $display_name = array('magic missile', 'oqisasi');
-		private static $base_chance = 99;
-		private static $aliases = array('mag', 'magic', 'magic missile');
+		protected $name_familiar = 'magic missile';
+		protected $name_unfamiliar = 'oqisasi';
+		protected $spell_type = self::TYPE_OFFENSIVE;
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			
-			$target->setHp($target->getHp() - 5);
-			
+			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));
 			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
-			\Mechanics\Server::out($target, $actor->getAlias() . ' smites you!');
-			
-			return true;
 		}
 		
 		public function getDisplayName($index = 0)

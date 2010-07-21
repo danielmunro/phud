@@ -66,9 +66,7 @@
 		{
 			
 			$type = $instance->getType();
-			$name = (string)$instance;
-			$name = strtolower(str_replace('_', ' ', $name));
-			
+			$name = $instance instanceof \Mechanics\Ability ? strtolower(str_replace('_', ' ', (string)$instance)) : $instance->getNameFamiliar();
 			$this->abilities[$type][$name] = $instance;
 		}
 		
@@ -78,7 +76,6 @@
 		
 		private function isValidAbility($input, $type)
 		{
-		
 			foreach($this->abilities[$type] as $name => $ability)
 				if(strpos($name, $input) === 0)
 					return $ability;

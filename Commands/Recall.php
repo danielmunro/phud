@@ -36,7 +36,7 @@
 	
 		public static function perform(&$actor, $args = null)
 		{
-			$actor->setRoom(Room::find(1));
+			$actor->setRoom(\Mechanics\Room::find(1));
 		}
 	}
 ?>

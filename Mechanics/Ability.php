@@ -33,6 +33,9 @@
 		private $user_id = 0;
 		private $type = 0;
 		
+		// Level of the ability: when the actor can use it among other things
+		protected static $level = 1;
+		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
 	
@@ -57,6 +60,7 @@
 		public function getName() { return $this->name; }
 		public function getPercent() { return $this->percent; }
 		public function setPercent($percent) { $this->percent = $percent; }
+		public static function getLevel() { return self::$level; }
 		
 		public function __toString()
 		{

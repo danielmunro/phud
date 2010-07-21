@@ -65,7 +65,6 @@
 		protected $ac_magic = 0;
 		protected $affects = array();
 		protected $target = null;
-		protected $unique_identifier = 0;
 		
 		protected $discipline = null;
 		protected $race = null;
@@ -99,9 +98,7 @@
 			}
 			
 			$this->ability_set = Ability_Set::findByActor($this);
-			$this->unique_identifier = microtime(true);
 		}
-		public function getUniqueIdentifier() { return $this->unique_identifier; }
 		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
 		public function removeAffect(Affect $affect)
 		{
@@ -437,7 +434,7 @@
 			
 			$roll['attack'] = rand(0, $hit_roll);
 			$roll['defense'] = rand(0, $def_roll) - $ac;
-			print $ac . ': ' . $roll['defense'] . "\n";
+			
 			// Lost the hit roll -- miss
 			if($roll['attack'] <= $roll['defense'])
 				$dam_roll = 0;

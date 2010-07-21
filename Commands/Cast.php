@@ -44,7 +44,6 @@
 			$spell = $actor->getAbilitySet()->isValidSpell($input);
 			if(!$spell)
 			{
-				// Either target or spell
 				$last = array_pop($args);
 				$input = implode(' ', $args);
 				if($input)
@@ -55,14 +54,30 @@
 				return \Mechanics\Server::out($actor, "You don't know that spell.");
 			
 			// DETERMINE THE TARGET
-			$target = $actor->getTarget();
+			$target = null;
 			
-			if(!$target && isset($last))
+			if(isset($last))
 				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $last);
 			
-			// Target the caster
+			if(isset($last) && !$target)
+				return \Mechanics\Server::out($actor, "You don't see them."); // Specified target not found
+			
 			if(!$target)
+				$target = $actor->getTarget();
+			
+			// Target the caster
+			if(!$target && $spell->getSpellType() == \Mechanics\Spell::TYPE_PASSIVE)
 				$target = $actor;
+			
+			if(!$target)
+				return \Mechanics\Server::out($actor, "Who do you want to cast that on?"); // No target specified and no default
+			
+			// CONCENTRATION
+			if(rand(0, 100) > $spell->getPercent())
+			{
+				$actor->setMana($actor->getMana() - ($spell->getManaCost($actor->getLevel()) / 2));
+				return \Mechanics\Server::out($actor, "You lost your concentration.");
+			}
 			
 			foreach(\Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId()) as $rm_actor)
 				if($rm_actor instanceof \Living\User)
@@ -70,8 +85,9 @@
 			
 			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
 			
-			// Returns true on offensive spells
-			if($spell::perform($actor, $target))
+			$spell::perform($actor, $target);
+			
+			if($spell->getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
 				$actor->registerAttackRound($target);
 		}
 	}

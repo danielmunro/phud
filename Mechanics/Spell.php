@@ -28,25 +28,33 @@
 	class Spell extends \Mechanics\Ability
 	{
 	
-		protected $level = 1;
+		const TYPE_OFFENSIVE = 1;
+		const TYPE_PASSIVE = 2;
+	
 		protected $name_familiar = '';
 		protected $name_unfamiliar = '';
 		protected $min_mana = 15;
+		protected $spell_type = self::TYPE_PASSIVE;
 	
 		public function getManaCost($actor_level)
 		{
 			return max($this->min_mana, 100 / (2 + $actor_level - $this->level));
 		}
 		
-		public function getLevel() { return $this->level; }
 		public function getNameFamiliar() { return $this->name_familiar; }
 		public function getNameUnfamiliar() { return $this->name_unfamiliar; }
+		public function getSpellType() { return $this->spell_type; }
 		public function getName(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
 		{
 			if($observer->getLevel() >= $this->level && $observer->getDiscipline() == $caster->getDiscipline())
 				return $this->name_familiar;
 			else
 				return $this->name_unfamiliar;
+		}
+		protected static function calculateStandardDamage($level, $min, $exponent)
+		{
+			$base = $min + ($level ^ $exponent);
+			return ceil(rand($base / 2, $base * 2));
 		}
 		public function __toString()
 		{

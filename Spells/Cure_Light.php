@@ -28,9 +28,8 @@
 	class Cure_Light extends \Mechanics\Spell
 	{
 	
-		protected static $display_name = array('cure light', 'frzzz');
-		private static $base_chance = 99;
-		private static $aliases = array('cure light', 'cure');
+		protected $name_familiar = 'cure light';
+		protected $name_unfamiliar = 'frzzz';
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
@@ -38,13 +37,7 @@
 			$amount = 1 + $actor->getLevel() / 2;
 			$target->setHp($target->getHp() + (int) $amount);
 			\Mechanics\Server::out($target, "You feel better!");
-			\Mechanics\Server::out($actor, $target->getAlias(true) . " feels better!");
 			return false;
-		}
-		
-		public function getDisplayName($index = 1)
-		{
-			return self::$display_name[$index];
 		}
 	}
 
