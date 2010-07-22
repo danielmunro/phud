@@ -105,11 +105,11 @@
 		public function applyRacialAttributeModifiers(&$actor)
 		{
 			
-			$actor->setStr($this->str);
-			$actor->setInt($this->int);
-			$actor->setWis($this->wis);
-			$actor->setDex($this->dex);
-			$actor->setCon($this->con);
+			$actor->setStr($this->str, true);
+			$actor->setInt($this->int, true);
+			$actor->setWis($this->wis, true);
+			$actor->setDex($this->dex, true);
+			$actor->setCon($this->con, true);
 			
 			$actor->setHitRoll($this->hit_roll);
 			$actor->setDamRoll($this->dam_roll);
@@ -123,11 +123,11 @@
 		
 		public function getSize() { return $this->size; }
 		public function getRaceStr() { return get_class($this); }
-		public function getMaxStr() { return $this->max_str; }
-		public function getMaxInt() { return $this->max_int; }
-		public function getMaxWis() { return $this->max_wis; }
-		public function getMaxDex() { return $this->max_dex; }
-		public function getMaxCon() { return $this->max_con; }
+		public function getMaxStr($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
+		public function getMaxInt($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
+		public function getMaxWis($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
+		public function getMaxDex($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
+		public function getMaxCon($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
 		public function getMovementCost() { return $this->movement_cost; }
 		public function getUnarmedVerb() { return $this->unarmed_verb; }
 		public function getMoveVerb() { return $this->move_verb; }

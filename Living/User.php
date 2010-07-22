@@ -83,11 +83,11 @@
 			$this->silver = $row->silver;
 			$this->gold = $row->gold;
 			$this->password = $row->pass;
-			$this->str = $row->str;
-			$this->int = $row->int;
-			$this->wis = $row->wis;
-			$this->dex = $row->dex;
-			$this->con = $row->con;
+			$this->base_str = $this->current_str = $row->str;
+			$this->base_int = $this->current_int = $row->int;
+			$this->base_wis = $this->current_wis = $row->wis;
+			$this->base_dex = $this->current_dex = $row->dex;
+			$this->base_con = $this->current_con = $row->con;
 			$this->setRace($row->race);
 			$this->setRoom(\Mechanics\Room::find($row->fk_room_id));
 			$this->experience = $row->experience;
@@ -100,7 +100,7 @@
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
-			
+			$this->ability_set->addAbility(new \Skills\Berserk(100, $this->id));
 			\Mechanics\Affect::reapplyFromMemory($this);
 		}
 		public function getTable() { return 'users'; }
@@ -176,11 +176,11 @@
 											$this->silver,
 											$this->gold,
 											$this->password,
-											$this->str,
-											$this->int,
-											$this->wis,
-											$this->dex,
-											$this->con,
+											$this->base_str,
+											$this->base_int,
+											$this->base_wis,
+											$this->base_dex,
+											$this->base_con,
 											$this->getRaceStr(),
 											$this->experience,
 											$this->exp_per_level,
@@ -202,11 +202,11 @@
 																$this->silver,
 																$this->gold,
 																$this->password,
-																$this->str,
-																$this->int,
-																$this->wis,
-																$this->dex,
-																$this->con,
+																$this->base_str,
+																$this->base_int,
+																$this->base_wis,
+																$this->base_dex,
+																$this->base_con,
 																(string)$this->race,
 																$this->getRoom()->getId(),
 																(string)$this->discipline
@@ -320,7 +320,7 @@
 				$this->login['attr'] = 0;
 				\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 				\Mechanics\Server::out($this,
-					'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
+					'Str ' . $this->getStr(true) . ' Int ' . $this->getInt(true) . ' Wis ' . $this->getWis(true) . ' Dex ' . $this->getDex(true) . ' Con ' . $this->getCon(true));
 				\Mechanics\Server::out($this, "Add a point to: ", false);
 			}
 			
@@ -332,7 +332,7 @@
 					case 'str':
 						try
 						{
-							$this->setStr($this->getStr() + 1);
+							$this->setStr($this->getStr(true) + 1, true);
 						}
 						catch(\Mechanics\Actor_Exception $e)
 						{
@@ -343,7 +343,7 @@
 					case 'int':
 						try
 						{
-							$this->setInt($this->getInt() + 1);
+							$this->setInt($this->getInt(true) + 1, true);
 						}
 						catch(\Mechanics\Actor_Exception $e)
 						{
@@ -354,7 +354,7 @@
 					case 'wis':
 						try
 						{
-							$this->setWis($this->getWis() + 1);
+							$this->setWis($this->getWis(true) + 1, true);
 						}
 						catch(\Mechanics\Actor_Exception $e)
 						{
@@ -365,7 +365,7 @@
 					case 'dex':
 						try
 						{
-							$this->setDex($this->getDex() + 1);
+							$this->setDex($this->getDex(true) + 1, true);
 						}
 						catch(\Mechanics\Actor_Exception $e)
 						{
@@ -376,7 +376,7 @@
 					case 'con':
 						try
 						{
-							$this->setCon($this->getCon() + 1);
+							$this->setCon($this->getCon(true) + 1, true);
 						}
 						catch(\Mechanics\Actor_Exception $e)
 						{
@@ -395,7 +395,7 @@
 				{
 					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 					\Mechanics\Server::out($this,
-						'Str ' . $this->getStr() . ' Int ' . $this->getInt() . ' Wis ' . $this->getWis() . ' Dex ' . $this->getDex() . ' Con ' . $this->getCon());
+						'Str ' . $this->getStr(true) . ' Int ' . $this->getInt(true) . ' Wis ' . $this->getWis(true) . ' Dex ' . $this->getDex(true) . ' Con ' . $this->getCon(true));
 					\Mechanics\Server::out($this, "Add a point to: ", false);
 				}
 				else
@@ -424,12 +424,6 @@
 			if(isset($this->login['finish']) && $this->login['finish'] === false)
 			{
 				$this->alias = $this->login['alias'];
-				$this->hp = 20;
-				$this->max_hp = 20;
-				$this->mana = 100;
-				$this->max_mana = 100;
-				$this->movement = 100;
-				$this->max_movement = 100;
 				$this->copper = 20;
 				$this->silver = 0;
 				$this->gold = 0;

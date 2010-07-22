@@ -47,7 +47,7 @@
 			return false;
 		}
 		
-		public static function apply(&$target, $args)
+		public static function apply(&$target, $args, $affect)
 		{
 			
 			$target->setAcSlash($target->getAcSlash() + $args['mod_ac']);
@@ -60,14 +60,14 @@
 				$args['timeout'],
 				function($args)
 				{
-					$args[0]->removeAffect('armor');
+					$args[2]->removeAffectFrom($args[0]);
 					$args[0]->setAcSlash($args[0]->getAcSlash() - $args[1]);
 					$args[0]->setAcBash($args[0]->getAcBash() - $args[1]);
 					$args[0]->setAcPierce($args[0]->getAcPierce() - $args[1]);
 					$args[0]->setAcMagic($args[0]->getAcMagic() - $args[1]);
 					$args[0]->save();
 				},
-				array($target, $args['mod_ac'])
+				array($target, $args['mod_ac'], $affect)
 			);
 		}
 	}

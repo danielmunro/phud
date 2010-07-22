@@ -182,6 +182,7 @@
 		{
 		
 			$pulse = date('U');
+			print $pulse . "\n";
 			if(isset($this->events[$pulse]))
 			{
 				foreach($this->events[$pulse] as $event)
@@ -199,6 +200,7 @@
 		{
 		
 			$pulses = Server::getLastPulse() + 2 + ($pulses * 2);
+			print 'REGISTER EVENT ON (' . $pulses . ")\n";
 			if(!isset($this->events[$pulses]))
 				$this->events[$pulses] = array();
 			$this->events[$pulses][] = array('fn' => $fn, 'args' => $args);

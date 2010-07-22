@@ -31,30 +31,19 @@
 		const MAX_LEVEL = 51;
 		const MAX_ATTRIBUTE = 25;
 	
-		protected $alias;
+		protected $alias = '';
 		protected $password = '';
 		protected $long = '';
-		protected $hp;
-		protected $max_hp;
-		protected $mana;
-		protected $max_mana;
-		protected $movement;
-		protected $max_movement;
-		protected $level;
-		protected $gold;
-		protected $silver;
-		protected $copper;
-		protected $str;
-		protected $int;
-		protected $wis;
-		protected $dex;
-		protected $con;
+		protected $level = 1;
+		protected $gold = 0;
+		protected $silver = 0;
+		protected $copper = 0;
 		protected $fighting = array();
-		protected $sex;
+		protected $sex = null;
 		protected $disposition; // sitting, sleeping, standing
-		protected $experience;
-		protected $exp_per_level;
-		protected $concentration;
+		protected $experience = 0;
+		protected $exp_per_level = 0;
+		protected $concentration = 0;
 		protected $delay = 0;
 		protected $fightable = true;
 		protected $hit_roll = 0;
@@ -63,9 +52,7 @@
 		protected $ac_bash = 0;
 		protected $ac_pierce = 0;
 		protected $ac_magic = 0;
-		protected $affects = array();
 		protected $target = null;
-		
 		protected $discipline = null;
 		protected $race = null;
 		protected $room = null;
@@ -73,7 +60,68 @@
 		protected $equipped = null;
 		protected $ability_set = null;
 		
-		static $instances;
+		/**
+		 * VITALS
+		 */
+		protected $hp = 20;
+		protected $max_hp = 20;
+		protected $mana = 100;
+		protected $max_mana = 100;
+		protected $movement = 100;
+		protected $max_movement = 100;
+		public function getHp() { return $this->hp; }
+		public function getMaxHp() { return $this->max_hp; }
+		public function getMana() { return $this->mana; }
+		public function getMaxMana() { return $this->max_mana; }
+		public function getMovement() { return $this->movement; }
+		public function getMaxMovement() { return $this->max_movement; }
+		
+		/**
+		 * AFFECTS - array of affects (object type Affect) currently applied to the actor
+		 */
+		protected $affects = array();
+		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
+		public function removeAffect(Affect $affect)
+		{
+			$i = array_search($affect, $this->affects);
+			if($i !== false)
+				unset($this->affects[$i]);
+		}
+		public function getAffects() { return $this->affects; }
+		
+		/**
+		 * ATTRIBUTES - str, int, wis, dex, con. Base & current (modified).
+		 */
+		protected $base_str = 0;
+		protected $base_int = 0;
+		protected $base_wis = 0;
+		protected $base_dex = 0;
+		protected $base_con = 0;
+		protected $current_str = 0;
+		protected $current_int = 0;
+		protected $current_wis = 0;
+		protected $current_dex = 0;
+		protected $current_con = 0;
+		public function getStr($base = false) { return $base ? $this->base_str : $this->current_str; }
+		public function getInt($base = false) { return $base ? $this->base_int : $this->current_int; }
+		public function getWis($base = false) { return $base ? $this->base_wis : $this->current_wis; }
+		public function getDex($base = false) { return $base ? $this->base_dex : $this->current_dex; }
+		public function getCon($base = false) { return $base ? $this->base_con : $this->current_con; }
+		public function setStr($str, $base = false) { return $this->setAttribute('str', $str, $base ? 'base' : 'current'); }
+		public function setInt($int, $base = false) { return $this->setAttribute('int', $int, $base ? 'base' : 'current'); }
+		public function setWis($wis, $base = false) { return $this->setAttribute('wis', $wis, $base ? 'base' : 'current'); }
+		public function setDex($dex, $base = false) { return $this->setAttribute('dex', $dex, $base ? 'base' : 'current'); }
+		public function setCon($con, $base = false) { return $this->setAttribute('con', $con, $base ? 'base' : 'current'); }
+		private function setAttribute($attribute, $value, $which)
+		{
+			$method = 'getMax' . ucfirst($attribute);
+			if($value > $this->race->$method($which == 'base'))
+				return false;
+			if($which == 'base')
+				$this->{'base_' . $attribute} = $value;
+			$this->{'current_' . $attribute} = $value;
+			return true;
+		}
 		
 		public function __construct($room_id)
 		{
@@ -99,34 +147,15 @@
 			
 			$this->ability_set = Ability_Set::findByActor($this);
 		}
-		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
-		public function removeAffect(Affect $affect)
-		{
-			$i = array_search($affect, $this->affects);
-			if($i !== false)
-				unset($this->affects[$i]);
-		}
-		public function getAffects() { return $this->affects; }
+		
 		public function getAbilitySet() { return $this->ability_set; }
-		public function getStr() { return $this->str; }
-		public function getInt() { return $this->int; }
-		public function getWis() { return $this->wis; }
-		public function getDex() { return $this->dex; }
-		public function getCon() { return $this->con; }
-		public function getDiscipline() { return $this->discipline; }
+		
 		public function getAlias($upper = null)
 		{
-		
 			if($upper === null)
-				if($this instanceof User)
-					return ucfirst($this->alias);
-				else
-					return $this->alias;
-			
-			if($upper)
-				return ucfirst($this->alias);
+				return $this instanceof \Living\User ? ucfirst($this->alias) : $this->alias;
 			else
-				return $this->alias;
+				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
 		public function getRaceStr()
 		{
@@ -134,15 +163,9 @@
 			return substr($class, strpos($class, '\\') + 1);
 		}
 		public function getClassStr() { return $this->_class->getClassStr(); }
+		public function getDiscipline() { return $this->discipline; }
 		public function getLevel() { return $this->level; }
-		
 		public function getLong() { return $this->long; }
-		public function getHp() { return $this->hp; }
-		public function getMaxHp() { return $this->max_hp; }
-		public function getMana() { return $this->mana; }
-		public function getMaxMana() { return $this->max_mana; }
-		public function getMovement() { return $this->movement; }
-		public function getMaxMovement() { return $this->max_movement; }
 		public function getInventory() { return $this->inventory; }
 		public function getEquipped() { return $this->equipped; }
 		public function getRoomId() { return $this->room->getId(); }
@@ -273,41 +296,7 @@
 		
 		public function setAlias($alias) { $this->alias = $alias; }
 		
-		public function setStr($str)
-		{
-			if($str > $this->race->getMaxStr())
-				throw new Actor_Exception();
-			
-			$this->str = $str;
-		}
-		public function setInt($int)
-		{
-			if($int > $this->race->getMaxInt())
-				throw new Actor_Exception();
-			
-			$this->int = $int;
-		}
-		public function setWis($wis)
-		{
-			if($wis > $this->race->getMaxWis())
-				throw new Actor_Exception();
-			
-			$this->wis = $wis;
-		}
-		public function setDex($dex)
-		{
-			if($dex > $this->race->getMaxDex())
-				throw new Actor_Exception();
-			
-			$this->dex = $dex;
-		}
-		public function setCon($con)
-		{
-			if($con > $this->race->getMaxCon())
-				throw new Actor_Exception();
-			
-			$this->con = $con;
-		}
+		
 		public function setRace($race)
 		{
 			$race = Race::getInstance($race);
@@ -413,7 +402,7 @@
 			$hit_roll = $this->hit_roll;
 			$dam_roll = $this->dam_roll;
 			
-			$hit_roll += ($this->dex / self::MAX_ATTRIBUTE) * 4;
+			$hit_roll += ($this->getDex() / self::MAX_ATTRIBUTE) * 4;
 			
 			// DEFENDING
 			$def_roll = ($actor->getDex() / self::MAX_ATTRIBUTE) * 4;

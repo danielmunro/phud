@@ -38,11 +38,11 @@
 		{
 		
 			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a(n) ' . $actor->getRaceStr());
-			\Mechanics\Server::out($actor, 'Attributes: Str (' . $actor->getStr() . ') ' .
-			'Int (' . $actor->getInt() . ') ' . 
-			'Wis (' . $actor->getWis() . ') ' .
-			'Dex (' . $actor->getDex() . ') ' .
-			'Con (' . $actor->getCon() . ')');
+			\Mechanics\Server::out($actor, 'Attributes: Str ' . $actor->getStr(true) . '(' . $actor->getStr() . ') ' .
+			'Int ' . $actor->getInt(true) . '(' . $actor->getInt() . ') ' . 
+			'Wis ' . $actor->getWis(true) . '(' . $actor->getWis() . ') ' .
+			'Dex ' . $actor->getDex(true) . '(' . $actor->getDex() . ') ' .
+			'Con ' . $actor->getCon(true) . '(' . $actor->getCon() . ')');
 			
 			\Mechanics\Server::out(
 				$actor, 'Hp: ' . $actor->getHp() . '/' . $actor->getMaxHp() .

@@ -65,7 +65,7 @@
 				return false;
 			
 			$affect = $this->affect;
-			$affect::apply($this->target, $this->args);
+			$affect::apply($this->target, $this->args, $this);
 			
 			return true;
 		}
@@ -100,11 +100,13 @@
 				if($a->getAffect() == $affect)
 					return true;
 		}
-		public static function removeAffect($target, $affect)
+		public function removeAffectFrom($target)
 		{
-			foreach($target->getAffects() as $a)
-				if($a->getAffect() == $affect)
-					$target->removeAffect($a);
+			$target->removeAffect($this);
+			$class = get_class($target);
+			$i = array_search($this, self::$instances[$class][$target->getId()]);
+			if($i !== false)
+				unset(self::$instances[$class][$target->getId()][$i]);
 		}
 		public static function getAffects($target)
 		{
