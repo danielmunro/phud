@@ -41,26 +41,19 @@
 		static $tick = 0;
 		private static $last_pulse;
 		
-		private function __construct()
-		{
-			self::$last_pulse = date('U');
-			$this->initSocket();
-		}
-		
-		public static function getInstance()
-		{
-			return self::$instance;
-		}
+		private function __construct() { $this->openSocket(); }
+		private function __destruct() { $this->closeSocket($this->socket); }
 		
 		public static function start()
 		{
 		
-			set_time_limit(0);
+			Debug::addDebugLine("Initializing environment...");
+			\Mechanics\Command::runInstantiation();
+			\Mechanics\Area::runInstantiation();
 			
 			Debug::addDebugLine("Starting server...");
 			self::$instance = new Server();
-			Debug::addDebugLine("Initializing environment...");
-			self::$instance->initializeEnvironment();
+			
 			Debug::addDebugLine("Running main loop...");
 			self::$instance->run();
 			
@@ -210,9 +203,24 @@
 			print 'done';
 		}
 		
-		public static function getLastPulse() { return self::$last_pulse; }
+		public static function out($client, $message, $break_line = true)
+		{
+			
+			if(!($client instanceof \Living\User) || is_null($client->getSocket()))
+				return;
+			
+			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
 		
-		public function initSocket()
+		}
+		public static function randomizePulse($pulse, $mod = 0.5)
+		{
+		
+			$low_mod = $mod * $pulse;
+			$high_mod = $pulse + $low_mod;
+			return rand($low_mod, $high_mod);
+		}
+		
+		private function openSocket()
 		{
 		
 			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
@@ -223,49 +231,18 @@
 			socket_listen($this->socket);
 		
 		}
+		private function closeSocket($socket) { socket_close($socket); }
+		public function disconnectUser(\Living\User $user) { $this->closeSocket($user->getSocket()); }
 		
-		public static function out($client, $message, $break_line = true)
+		public static function getLastPulse()
 		{
 			
-			if(!($client instanceof \Living\User) || is_null($client->getSocket()))
-				return;
-			
-			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
-		
+			if(!self::$last_pulse)
+				self::$last_pulse = date('U');
+			return self::$last_pulse;
 		}
-		
-		public function getCommandFromClass($class)
-		{
-			return strtolower(str_replace('_', ' ', $class));
-		}
-		
-		public function initializeEnvironment()
-		{
-			
-			//new QuestmasterSid();
-			//$m = new \Living\Shopkeeper('Arlen', 'arlen shopkeeper', 'A short man covered in flower stands before you.', 'temple', 5, 1, 'human');
-			//$m->getInventory()->add(new \Items\Food(0, 'a delicious pumpkin pie is here.', ' a pumpkin pie', 'pumpkin pie', 4, 0.5, 10));
-		}
-		
-		public function closeSocket(\Living\User $user)
-		{
-			socket_close($user->getSocket());
-			$user->clearSocket();
-		}
-		
-		public function getSocket()
-		{
-			return $this->socket;
-		}
-		
-		public static function randomizePulse($pulse, $mod = 0.5)
-		{
-		
-			$low_mod = $mod * $pulse;
-			$high_mod = $pulse + $low_mod;
-			return rand($low_mod, $high_mod);
-		}
-		
+		public static function getInstance() { return self::$instance; }
+		public function getCommandFromClass($class) { return strtolower(str_replace('_', ' ', $class)); }
+		public function getSocket() { return $this->socket; }
 	}
-
 ?>

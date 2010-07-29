@@ -29,44 +29,17 @@
 
 	date_default_timezone_set('America/Los_Angeles');
 	gc_enable();
+	set_time_limit(0);
 
 	\Mechanics\Debug::newLog();
-	
-	// Load all commands
-	\Mechanics\Command::runInstantiation();
-
-	// Load all areas
-	\Mechanics\Area::runInstantiation();
+	\Mechanics\Server::start();
 	
 	// Autoloader
 	function __autoload($class)
 	{
 		
-		if(strpos($class, "\\"))
-		{
-			list($namespace, $class) = explode("\\", $class);
-			if(file_exists($namespace . '/' . $class . '.php'))
-				return require_once($namespace . '/' . $class . '.php');
-		}
-		$dirs = array
-		(
-			'Mechanics/',
-			'Living/',
-			'Races/',
-			'Items/',
-			'',
-			'Interfaces/',
-			'Skills/',
-			'Spells/',
-			'Disciplines/'
-		);
-	
-		foreach($dirs as $dir)
-			if(file_exists($dir . $class . '.php'))
-				return require_once($dir . $class . '.php');
-	
+		list($namespace, $class) = explode("\\", $class);
+		if(file_exists($namespace . '/' . $class . '.php'))
+			require_once($namespace . '/' . $class . '.php');
 	}
-
-	\Mechanics\Server::start();
-
 ?>

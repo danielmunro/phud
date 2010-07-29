@@ -40,8 +40,8 @@
 			{
 				$actor->save();
 				\Mechanics\Server::out($actor, "Good bye!\r\n");
-				\Mechanics\Server::getInstance()->closeSocket($actor);
-				//$actor->resetLogin();
+				\Mechanics\Server::getInstance()->disconnectUser($actor);
+				$actor->clearSocket();
 				unset($actor);
 			}
 		}

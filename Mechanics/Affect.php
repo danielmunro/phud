@@ -73,7 +73,8 @@
 		public function getMessage() { return $this->message; }
 		public function getTickTimeout()
 		{
-			return floor((Server::getLastPulse() - $this->pulse_start) / Server::PULSES_PER_TICK);
+			
+			return ceil(($this->args['timeout'] - (Server::getLastPulse() - $this->pulse_start)) / Server::PULSES_PER_TICK);
 		}
 		public static function reapplyFromMemory($target)
 		{

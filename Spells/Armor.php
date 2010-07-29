@@ -35,9 +35,9 @@
 		{
 		
 			if(!($target instanceof \Mechanics\Actor))
-				return Server::out($actor, "You cannot cast that on that.");
+				return \Mechanics\Server::out($actor, "You cannot cast that on that.");
 			
-			$timeout = (isset($args['timeout']) ? $args['timeout'] : $actor->getLevel() * \Mechanics\Server::PULSES_PER_TICK) + 1;
+			$timeout = floor((10 * \Mechanics\Server::PULSES_PER_TICK) + (20 * \Mechanics\Server::PULSES_PER_TICK * ($actor->getLevel() / \Mechanics\Actor::MAX_LEVEL)));
 			
 			$modifier = max(floor($actor->getLevel() / 10), 1);
 			$mod_ac = -15 * $modifier;
@@ -60,12 +60,12 @@
 				$args['timeout'],
 				function($args)
 				{
+					\Mechanics\Server::out($args[0], "You feel less protected.");
 					$args[2]->removeAffectFrom($args[0]);
 					$args[0]->setAcSlash($args[0]->getAcSlash() - $args[1]);
 					$args[0]->setAcBash($args[0]->getAcBash() - $args[1]);
 					$args[0]->setAcPierce($args[0]->getAcPierce() - $args[1]);
 					$args[0]->setAcMagic($args[0]->getAcMagic() - $args[1]);
-					$args[0]->save();
 				},
 				array($target, $args['mod_ac'], $affect)
 			);

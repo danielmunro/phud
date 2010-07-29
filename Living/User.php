@@ -327,69 +327,16 @@
 			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
 			{
 				
-				switch($input)
-				{
-					case 'str':
-						try
-						{
-							$this->setStr($this->getStr(true) + 1, true);
-						}
-						catch(\Mechanics\Actor_Exception $e)
-						{
-							$this->login['attr']--;
-							\Mechanics\Server::out($this, 'This attribute is maxed!');
-						}
-						break;
-					case 'int':
-						try
-						{
-							$this->setInt($this->getInt(true) + 1, true);
-						}
-						catch(\Mechanics\Actor_Exception $e)
-						{
-							$this->login['attr']--;
-							\Mechanics\Server::out($this, 'This attribute is maxed!');
-						}
-						break;
-					case 'wis':
-						try
-						{
-							$this->setWis($this->getWis(true) + 1, true);
-						}
-						catch(\Mechanics\Actor_Exception $e)
-						{
-							$this->login['attr']--;
-							\Mechanics\Server::out($this, 'This attribute is maxed!');
-						}
-						break;
-					case 'dex':
-						try
-						{
-							$this->setDex($this->getDex(true) + 1, true);
-						}
-						catch(\Mechanics\Actor_Exception $e)
-						{
-							$this->login['attr']--;
-							\Mechanics\Server::out($this, 'This attribute is maxed!');
-						}
-						break;
-					case 'con':
-						try
-						{
-							$this->setCon($this->getCon(true) + 1, true);
-						}
-						catch(\Mechanics\Actor_Exception $e)
-						{
-							$this->login['attr']--;
-							\Mechanics\Server::out($this, 'This attribute is maxed!');
-						}
-						break;
-					default:
-						\Mechanics\Server::out($this, 'Which attribute is that? ', false);
-						return;
-				}
+				$method_get = 'get' . $input;
+				$method_set = 'set' . $input;
 				
-				$this->login['attr']++;
+				if(!method_exists($this, $method_get) || !method_exists($this, $method_set))
+					return \Mechanics\Server::out($this, 'Which attribute is that? ', false);
+				
+				if($this->$method_set($this->$method_get(true) + 1, true))
+					$this->login['attr']++;
+				else
+					\Mechanics\Server::out($this, 'This attribute is maxed!');
 				
 				if($this->login['attr'] < 10)
 				{

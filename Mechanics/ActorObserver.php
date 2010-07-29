@@ -198,7 +198,7 @@
 		
 		public function registerPulseEvent($pulses, $fn, $args)
 		{
-		
+			
 			$pulses = Server::getLastPulse() + 2 + ($pulses * 2);
 			print 'REGISTER EVENT ON (' . $pulses . ")\n";
 			if(!isset($this->events[$pulses]))
