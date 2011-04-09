@@ -60,7 +60,6 @@
 					($actor->getRoom()->getWest()  != 0 ? ' W ' : '') .
 					($actor->getRoom()->getUp()    != 0 ? ' U ' : '') .
 					($actor->getRoom()->getDown()  != 0 ? ' D ' : '') . ']');
-				\Mechanics\ActorObserver::instance()->updateRoomChange($actor, 'looking');
 				$items = $actor->getRoom()->getInventory()->getItems();
 				
 				if(is_array($items) && sizeof($items) > 0)
@@ -68,11 +67,15 @@
 						\Mechanics\Server::out($actor, 
 							ucfirst($item->getShort()) . ' is here.');
 				
+				$people = $actor->getRoom()->getActors();
+				foreach($people as $a)
+					if($a->getUniqueId() != $actor->getUniqueId())
+						\Mechanics\Server::out($actor, $a->getAlias(true) . ' is here.');
 				return;
 			}
 			
 			// Actor is looking at something... find out what it is
-			$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			$target = $actor->getRoom()->getActorByInput($args);
 			
 			if(empty($target))
 				$target = $actor->getRoom()->getInventory()->getItemByInput($args);

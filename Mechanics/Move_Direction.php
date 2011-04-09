@@ -50,12 +50,12 @@
 				{
 					if($actor->getLevel() < Actor::MAX_LEVEL)
 						$actor->setMovement($actor->getMovement() - $actor->getRace()->getMovementCost());
-					ActorObserver::instance()->updateRoomChange($actor, 'leaving ' . $args[1]);
+					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' ' . $actor->getRace()->getMoveVerb() . ' ' . $args[1] . '.');
 					$actor->setRoom(Room::find($args[0]));
 					if($actor instanceof \Living\User)
 						Command::find('Look')->perform($actor);
 					
-					ActorObserver::instance()->updateRoomChange($actor, 'arriving');
+					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					
 					return;
 				}

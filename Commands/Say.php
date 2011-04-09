@@ -37,7 +37,7 @@
 		public static function perform(&$actor, $args = null)
 		{
 			
-			$actors = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
+			$actors = $actor->getRoom()->getActors();
 			
 			if(is_array($args))
 			{

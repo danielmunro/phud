@@ -57,7 +57,7 @@
 			$target = null;
 			
 			if(isset($last))
-				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $last);
+				$target = $actor->getRoom()->getActorByInput($args);
 			
 			if(isset($last) && !$target)
 				return \Mechanics\Server::out($actor, "You don't see them."); // Specified target not found
@@ -79,7 +79,8 @@
 				return \Mechanics\Server::out($actor, "You lost your concentration.");
 			}
 			
-			foreach(\Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId()) as $rm_actor)
+			$actors = $actor->getRoom()->getActors();
+			foreach($actors as $rm_actor)
 				if($rm_actor instanceof \Living\User)
 					\Mechanics\Server::out($rm_actor, ($rm_actor->getId() == $actor->getId() ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor->getId() == $actor->getId() ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
 			

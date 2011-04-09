@@ -25,46 +25,22 @@
 	 *
 	 */
 	namespace Commands;
-	class Buy extends \Mechanics\Command
+	class AttSet extends \Mechanics\Command
 	{
-	
+		
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'buy');
+			
+			\Mechanics\Command::addAlias(__CLASS__, array('attset'));
 		}
-	
+		
 		public static function perform(&$actor, $args = null)
 		{
-		
-			if(sizeof($args) == 3)
-				$target = $actor->getRoom()->getActorByInput();
-			else
+			if($args[1] == 'hp')
 			{
-				$targets = $actor->getRoom()->getActors();
-				foreach($targets as $potential_target)
-					if($potential_target instanceof \Living\Shopkeeper)
-						$target = $potential_target;
+				$actor->setHp($args[2]);
+				\Mechanics\Server::out($actor, "You feel a calming sensation run over you.");
 			}
-			
-			if(!($target instanceof \Mechanics\Actor))
-				return \Mechanics\Server::out($actor, "They are not here.");
-			
-			if(!($target instanceof \Living\Shopkeeper))
-				return \Mechanics\Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
-			
-			$item = $target->getInventory()->getItemByInput($args);
-			
-			if(!($item instanceof \Items\Item))
-				return Say::perform($target, $target->getNoItemMessage());
-			
-			if($actor->decreaseFunds($item->getValue()) === false)
-				return Say::perform($target, $target->getNotEnoughMoneyMessage());
-			
-			$item->copyTo($actor);
-			
-			\Mechanics\Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
-			
 		}
 	}
 ?>

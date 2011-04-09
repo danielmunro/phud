@@ -92,17 +92,27 @@
 				return;
 			}
 			
-			\Mechanics\Debug::addDebugLine($this->getAlias() . ' is moving to room #' . $directions[$i] . '.');
-			$event = \Mechanics\Command::find($i)->perform($this);
+			\Mechanics\Debug::addDebugLine($this->getAlias() . ' is moving to room #' . $directions[$i] . ' with an index of ('.$index.').');
+			$event = \Mechanics\Command::find($i)->perform($this); // Move the damn thing
 			
 			$pulse = \Mechanics\Server::randomizePulse($this->movement_speed);
-			\Mechanics\ActorObserver::instance()->registerPulseEvent($pulse, function($actor) { $actor->move(); }, $this);
+			\Mechanics\ActorObserver::instance()->registerPulseEvent($pulse, function($actor) { $actor->move(); }, $this); // Move it again later
 			
 		}
-		public function handleRespawn()
+		public function handleDeath()
 		{
-			$this->dead = true;
+			parent::handleDeath(false);
 			$this->setRoom(\Mechanics\Room::find(\Mechanics\Room::PURGATORY_ROOM_ID));
+			$respawn_pulses = \Mechanics\Server::randomizePulse(60, 0.1);
+			\Mechanics\ActorObserver::instance()->registerPulseEvent(
+				$respawn_pulses, 
+				function($mob)
+				{
+					$mob->setRoom($mob->getDefaultRoomId());
+					$mob->getRoom()->announce($mob, $mob->getAlias(true).' arrives in a puff of smoke.');
+				},
+				$this
+			);
 		}
 		public function decreaseRespawnTime()
 		{

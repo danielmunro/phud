@@ -31,6 +31,8 @@
 		protected static function instantiate()
 		{
 		
+			//use \Living\Mob as Mob;
+			
 			// Arena
 			new \Living\Mob('a snail', 'snail', 'A snail is desperately trying to get out of your way.', 'temple_arena', 53, 1, 'human', 20, 1, 10, 100, 100);
 			new \Living\Mob('a snail', 'snail', 'A snail is desperately trying to get out of your way.', 'temple_arena', 28, 1, 'human', 20, 1, 10, 100, 100);

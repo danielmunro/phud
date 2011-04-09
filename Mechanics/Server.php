@@ -200,7 +200,7 @@
 					}
 				}
 			}
-			print 'done';
+			Debug::addDebugLine('done');
 		}
 		
 		public static function out($client, $message, $break_line = true)

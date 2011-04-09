@@ -40,13 +40,13 @@
 			if($actor->getTarget())
 				\Mechanics\Server::out($actor, "Whoa! Don't you think one is enough?");
 			
-			$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+			$target = $actor->getRoom()->getActorByInput($args);
 			
 			if(!($target instanceof \Mechanics\Actor))
 				return \Mechanics\Server::out($actor, 'Nothing is here.');
 			
 			\Mechanics\Server::out($actor, "You scream and attack!");
-			$actor->attack($target);
+			$actor->initiateBattle($target);
 		}
 	
 	}

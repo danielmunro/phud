@@ -34,7 +34,7 @@
 		{
 			
 			$actor_target = $actor->getTarget();
-			$specified_target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoomId(), $args);
+			$specified_target = $actor->getRoom()->getActorByInput($args);
 			
 			$final_target = null;
 			

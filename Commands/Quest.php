@@ -48,9 +48,12 @@
 			}
 			
 			if(!($target instanceof Questmaster))
-				foreach(ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId()) as $t)
+			{
+				$actors = $actor->getRoom()->getActors();
+				foreach($actors as $t)
 					if($t instanceof Questmaster)
 						$target = $t;
+			}
 			
 			if(!($target instanceof Questmaster))
 				return Server::out($actor, "There are no " . Tag::apply('Questmasters') . "here.");

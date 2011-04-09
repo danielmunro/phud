@@ -44,8 +44,8 @@
 			{
 				$give_amount = $args[1];
 				$currency = $args[2];
-				$actors = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
-				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[3]));
+				$actors = $actor->getRoom()->getActors();
+				$target = $actor->getRoom()->getActorByInput($args);
 				
 				if(!($target instanceof \Mechanics\Actor))
 					return \Mechanics\Server::out($actor, "They aren't here.");
@@ -74,8 +74,7 @@
 			else
 			{
 				$item = $actor->getInventory()->getItemByInput($args);
-				array_shift($args);
-				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+				$target = $actor->getRoom()->getActorByInput($args);
 			
 				if(empty($item))
 					return \Mechanics\Server::out($actor, "You don't appear to have that.");

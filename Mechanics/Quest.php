@@ -57,7 +57,7 @@
 		public function getAwardObtained() { return $this->award_obtained; }
 		
 		public function addPoint() { $this->points++; $this->save(); }
-		public function setComplete($complete) { $this->complete = $complete;print 'complete: ' . $this->complete; $this->save(); }
+		public function setComplete($complete) { $this->complete = $complete; $this->save(); }
 		public function setAccepted($accepted) { $this->accepted = $accepted; $this->save(); }
 		public function setAwardObtained($award) { $this->award_obtained = $award; $this->save(); }
 	}

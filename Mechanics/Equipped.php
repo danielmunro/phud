@@ -279,7 +279,8 @@
 			}
 			
 			Server::out($actor, $msg_you);
-			foreach(ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId()) as $a)
+			$actors = $actor->getRoom()->getActors();
+			foreach($actors as $a)
 				if($actor->getAlias() != $a->getAlias())
 					Server::out($a, $msg_others);
 		}

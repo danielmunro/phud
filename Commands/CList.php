@@ -38,10 +38,10 @@
 		{
 			
 			if(sizeof($args) == 3)
-				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
+				$target = $actor->getRoom()->getActorByInput($args);
 			else
 			{
-				$targets = \Mechanics\ActorObserver::instance()->getActorsInRoom($actor->getRoom()->getId());
+				$targets = $actor->getRoom()->getActors();
 				foreach($targets as $potential_target)
 					if($potential_target instanceof \Living\Shopkeeper)
 						$target = $potential_target;

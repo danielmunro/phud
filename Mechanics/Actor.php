@@ -59,6 +59,8 @@
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $ability_set = null;
+		protected $battle = null;
+		protected $unique_id = 0;
 		
 		/**
 		 * VITALS
@@ -127,9 +129,9 @@
 		{
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
-			ActorObserver::instance()->add($this);
+			$this->unique_id = ActorObserver::instance()->add($this);
 			
-			$this->room = Room::find($room_id);
+			$this->setRoom(Room::find($room_id));
 			
 			$this->hit_roll = $this->race->getHitRoll();
 			$this->dam_roll = $this->race->getDamRoll();
@@ -162,6 +164,7 @@
 			$class = get_class($this->race);
 			return substr($class, strpos($class, '\\') + 1);
 		}
+		public function getUniqueId() { return $this->unique_id; }
 		public function getClassStr() { return $this->_class->getClassStr(); }
 		public function getDiscipline() { return $this->discipline; }
 		public function getLevel() { return $this->level; }
@@ -176,10 +179,15 @@
 		public function addSilver($silver) { $this->silver += $silver; }
 		public function getGold() { return $this->gold; }
 		public function getSex() { return $this->sex; }
-		public function setRoom($room)
+		public function setRoom(&$room)
 		{
 			if($room instanceof Room)
+			{
+				if($this->room)
+					$this->room->actorRemove($this);
+				$room->actorAdd($this);
 				$this->room = $room;
+			}
 		}
 		public function getRace() { return $this->race; }
 		public function getFighters() { return $this->fighting; }
@@ -201,7 +209,10 @@
 						return $fighter;
 		}
 		public function getTarget() { return $this->target; }
-		public function setTarget(Actor $target = null) { $this->target = $target; }
+		public function setTarget(Actor $target = null)
+		{
+			$this->target = $target;
+		}
 		public function getHpPercent()
 		{
 			return ($this->hp / $this->max_hp) * 100;
@@ -440,35 +451,14 @@
 			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 			
-			$actors = ActorObserver::instance()->getActorsInRoom($this->room->getId());
+			$actors = $this->room->getActors();
 			
 			if($this->damage($actor, $dam_roll))
 				foreach($actors as $actor_sub)
 					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 			
-			if($actor->checkAlive($this))
-				$this->registerAttackRound($actor);
-			
+			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
-		}
-		
-		public function registerAttackRound($actor)
-		{
-		
-			$fn = function($actor) { $actor->attack(); };
-			
-			// Counter-attack
-			if(!$actor->getTarget())
-			{
-				$actor->setTarget($this);
-				ActorObserver::instance()->registerPulseEvent(1, $fn, $actor);
-			}
-			
-			if(!$this->getTarget())
-				$this->setTarget($actor);
-			
-			// Killer attacking victim
-			ActorObserver::instance()->registerPulseEvent(1, $fn, $this);
 		}
 		
 		public function isSafe()
@@ -571,20 +561,43 @@
 					$this->inventory->save();
 				}
 				
-				$this->setHp(1);
-				Debug::addDebugLine($this->getAlias(true) . ' died.');
-				Server::out($this, 'You have been KILLED!');
-				if($this instanceof \Living\Mob)
-					$this->handleRespawn();
-				
-				//$target = $this->getTarget();
+				$this->handleDeath();
 				return false;
 			}
 			return true;
 		}
 		
+		protected function handleDeath($move_soul = true)
+		{
+			if($move_soul)
+				$this->setRoom(Room::find(1));
+			$this->setHp(1);
+			Debug::addDebugLine($this->getAlias(true) . ' died.');
+			Server::out($this, 'You have been KILLED!');
+		}
+		
+		public function initiateBattle(Actor &$actor)
+		{
+			$this->setTarget($actor);
+			if($actor->getBattle())
+				return $actor->getBattle()->addActor($this);
+			$this->setBattle(new Battle($this));
+		}
+		
+		public function setBattle(Battle &$battle)
+		{
+			$this->battle = $battle;
+		}
+		
+		public function getBattle()
+		{
+			return $this->battle;
+		}
+		
 		public function applyExperienceFrom(Actor $actor)
 		{
+			if(!$this->exp_per_level) // Mobs have 0 exp per level
+				return 0;
 			Debug::addDebugLine("Applying experience from " . $actor->getAlias() . ' to ' . $this->getAlias() . '.');
 			$experience = $actor->getKillExperience();
 			$level_diff = $this->level - $actor->getLevel();

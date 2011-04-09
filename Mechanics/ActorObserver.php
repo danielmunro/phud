@@ -30,7 +30,7 @@
 	
 		static $instance = null;
 		
-		private $actors;
+		private $actors = array();
 		private $queue;
 		
 		private $events = array();
@@ -49,68 +49,8 @@
 		
 		public function add(Actor &$instance)
 		{
-			$this->actors[] = $instance;	
-		}
-		
-		public function getActorsInRoom($room_id)
-		{
-			
-			$actors = array();
-			foreach($this->actors as $actor)
-				if($actor->getRoom()->getId() == $room_id)
-					$actors[] = $actor;
-			
-			return $actors;
-			
-		}
-		
-		public function getActorByRoomAndInput($room_id, $input)
-		{
-			
-			if(empty($input[1]))
-				return;
-			
-			if(is_array($input))
-				$input = array_pop($input);
-			
-			$person = strtolower($input);
-			foreach($this->actors as $actor)
-			{
-			
-				if($actor->getRoom()->getId() != $room_id)
-					continue;
-				
-				if(property_exists($actor, 'noun'))
-					$look_for = explode(' ', $actor->getNoun());
-				else
-					$look_for = array($actor->getAlias());
-				
-				foreach($look_for as $look)
-					if(stripos($look, $person) === 0)
-						return $actor;
-			}
-			return null;
-		}
-		
-		public function updateRoomChange(Actor $actor_changed, $details)
-		{
-			
-			foreach($this->actors as $actor)
-			{
-				
-				if($actor->getRoom()->getId() == $actor_changed->getRoom()->getId() && $actor->getAlias() != $actor_changed->getAlias())
-				{
-					if($details == 'arriving')
-						Server::out($actor, $actor_changed->getAlias(true) . ' has arrived.');
-					
-					if(strpos($details, 'leaving') !== false)
-						Server::out($actor, $actor_changed->getAlias(true) . ' ' . $actor_changed->getRace()->getMoveVerb() . ' ' . strtolower(substr($details, 8)) . '.');
-					
-					if($details == 'looking')
-						Server::out($actor_changed, ($actor instanceof \Living\Questmaster ? Tag::apply('Questmaster') : '') . $actor->getAlias(true) . ' is here.');
-				}
-			}
-		
+			$this->actors[] = $instance;
+			return sizeof($this->actors);
 		}
 		
 		public function tick()
@@ -119,18 +59,23 @@
 			foreach($this->actors as $actor)
 			{
 				
-				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * .1));
+				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * 0.1));
 				if($actor->getHp() > $actor->getMaxHp())
 					$actor->setHp($actor->getMaxHp());
 				
-				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * .1));
+				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * 0.1));
 				if($actor->getMana() > $actor->getMaxMana())
 					$actor->setMana($actor->getMaxMana());
 				
-				$actor->setMovement($actor->getMovement() + ($actor->getMaxMovement() * .1));
+				$actor->setMovement($actor->getMovement() + ($actor->getMaxMovement() * 0.1));
 				if($actor->getMovement() > $actor->getMaxMovement())
 					$actor->setMovement($actor->getMaxMovement());
 
+				
+				
+				
+				
+				// TAKE BOTH OF THESE AND TURN THEM INTO PULSE EVENTS
 				if($actor instanceof \Living\User)
 				{
 					$actor->decreaseRacialNourishmentAndThirst();
@@ -141,25 +86,13 @@
 					$actor->save();
 					Server::out($actor, "\n" . $actor->prompt(), false);
 				}
+				// END TAKE
 				
-				if($actor instanceof \Living\Mob && $actor->getDead())
-					if($actor->decreaseRespawnTime() < 1)
-					{
-						$actor->setRoom(Room::find($actor->getDefaultRoomId()));
-						$actor->resetRespawnTime();
-						$actor->setDead(false);
-						self::announceToOthersInRoom($actor->getRoom()->getId(), $actor->getAlias(true));
-					}
+				
+				
+				
 			}
 		
-		}
-		
-		public static function announceToOthersInRoom($room_id, $actor_alias)
-		{
-			$actors = self::instance()->getActorsInRoom($room_id);
-			foreach($actors as $actor)
-				if($actor->getAlias(true) != $actor_alias)
-					Server::out($actor, $actor_alias . " arrives in a puff of smoke.");
 		}
 		
 		public function whoList($actor)
@@ -182,28 +115,26 @@
 		{
 		
 			$pulse = date('U');
-			print $pulse . "\n";
+			Debug::addDebugLine('Pulse on '.$pulse);
+			
+			// Cycle through events
 			if(isset($this->events[$pulse]))
 			{
 				foreach($this->events[$pulse] as $event)
 					$event['fn']($event['args']);
 				unset($this->events[$pulse]);
 			}
-			
-			// Target statuses for fighters
-			foreach($this->actors as $actor)
-				if($target = $actor->getTarget())
-					Server::out($actor, $target->getAlias(true) . ' ' . $target->getStatus() . ".\n\n" . ($actor instanceof \Living\User ? $actor->prompt() : ''), false);
 		}
 		
 		public function registerPulseEvent($pulses, $fn, $args)
 		{
 			
 			$pulses = Server::getLastPulse() + 2 + ($pulses * 2);
-			print 'REGISTER EVENT ON (' . $pulses . ")\n";
+			Debug::addDebugLine('Registering event ('.$pulses.')');
 			if(!isset($this->events[$pulses]))
 				$this->events[$pulses] = array();
 			$this->events[$pulses][] = array('fn' => $fn, 'args' => $args);
+			return sizeof($this->events[$pulses]);
 		}
 	
 		public function getActors() { return $this->actors; }

@@ -89,14 +89,13 @@
 			$this->base_dex = $this->current_dex = $row->dex;
 			$this->base_con = $this->current_con = $row->con;
 			$this->setRace($row->race);
-			$this->setRoom(\Mechanics\Room::find($row->fk_room_id));
 			$this->experience = $row->experience;
 			$this->exp_per_level = $row->exp_per_level;
 			$this->id = $row->id;
 			$this->thirst = $row->thirst;
 			$this->nourishment = $row->nourishment;
 			
-			parent::__construct($this->getRoom()->getId());
+			parent::__construct($row->fk_room_id);
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
@@ -390,6 +389,11 @@
 				
 				\Commands\Look::perform($this);
 			}
+		}
+		public function handleDeath()
+		{
+			parent::handleDeath();
+			\Commands\Look::perform($this);
 		}
 		public function clearSocket()
 		{

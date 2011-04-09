@@ -43,6 +43,7 @@
 		private $inventory = null;
 		private $area = '';
 		private $visibility = 1;
+		private $actors = array();
 	
 		const PURGATORY_ROOM_ID = 7;
 	
@@ -144,6 +145,45 @@
 		public function setWest($west) { $this->west = $west; }
 		public function setUp($up) { $this->up = $up; }
 		public function setDown($down) { $this->down = $down; }
+		
+		public function actorAdd(Actor &$actor)
+		{
+			$this->actors[$actor->getUniqueId()] = $actor;
+		}
+		public function actorRemove(Actor $actor)
+		{
+			unset($this->actors[$actor->getUniqueId()]);
+		}
+		public function getActors()
+		{
+			return $this->actors;
+		}
+		
+		public function announce(Actor $actor, $message)
+		{
+			foreach($this->actors as $a)
+				if($a->getUniqueId() != $actor->getUniqueId())
+					Server::out($a, $message);
+		}
+		
+		public function getActorByInput($input)
+		{
+			if(empty($input[1]))
+				return;
+			
+			if(is_array($input))
+				$input = array_pop($input);
+			
+			$person = strtolower($input);
+			foreach($this->actors as $actor)
+			{
+				$look_for = property_exists($actor, 'noun') ? explode(' ', $actor->getNoun()) : array($actor->getAlias());
+				foreach($look_for as $look)
+					if(stripos($look, $person) === 0)
+						return $actor;
+			}
+			return null;
+		}
 		
 		public function save()
 		{

@@ -45,7 +45,7 @@
 		 */
 		protected function __construct()
 		{
-			parent::__construct('localhost', 'root', '7dks2ld0s2k1mndiud-2503203s', 'mud');
+			parent::__construct('localhost', 'root', 'Gx9rm11r', 'mud');
 		}
 		
 		/**
@@ -78,7 +78,7 @@
 								parent::query($this->sanitize($query_str, $parameters)) :
 								parent::query($query_str);
 			if($debug)
-				print $this->sanitize($query_str, $parameters);
+				Debug::addDebugLine($this->sanitize($query_str, $parameters));
 			
 			return $this;
 		}

@@ -37,7 +37,7 @@
 			if(!$target)
 				$target = $actor->getTarget();
 			if(!$target)
-				$target = \Mechanics\ActorObserver::instance()->getActorByRoomAndInput($actor->getRoom()->getId(), $args);
+				$target = $actor->getRoom()->getActorByInput($args);
 			if(!$target)
 				return \Mechanics\Server::out($actor, "You bash around, all to yourself!");
 			
