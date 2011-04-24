@@ -36,7 +36,24 @@
 		
 		public static function perform(&$actor, $args = null)
 		{
-			return Server::out($actor, "Not implemented");
+			if(sizeof($args))
+			{
+				$target = $actor->getRoom()->getActorByInput($args);
+				if($target && method_exists($target, 'save'))
+				{
+					$target->save();
+					return \Mechanics\Server::out($actor, 'Done.');
+				}
+				else
+					return \Mechanics\Server::out($actor, 'Cannot do that.');
+			}
+			if($actor && method_exists($actor, 'save'))
+			{
+				$actor->save();
+				return \Mechanics\Server::out($actor, 'Done.');
+			}
+			else
+				return \Mechanics\Server::out($actor, 'Cannot do that.');
 		}
 	}
 ?>

@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Items;
-	class Item
+	class Item implements \Mechanics\Affectable
 	{
 	
 		protected $id = 0;

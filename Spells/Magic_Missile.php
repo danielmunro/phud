@@ -32,6 +32,11 @@
 		protected $name_unfamiliar = 'oqisasi';
 		protected static $spell_type = self::TYPE_OFFENSIVE;
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('magic missile', 'magic', 'mis', 'ma'));
+		}
+	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			

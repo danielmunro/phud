@@ -93,7 +93,7 @@
 			self::POSITION_FLOAT => 	'<floating nearby>    '
 		);
 		
-		public function __construct(\Living\User $user = null)
+		public function __construct(Actor $user = null)
 		{
 			
 			$this->equipment = array
@@ -121,7 +121,7 @@
 			if($user)
 			{
 				$this->user = $user;
-				$this->inventory = Inventory::find('users_eq', $this->user->getId());
+				$this->inventory = Inventory::find($this->user->getTable().'_eq', $this->user->getId());
 				foreach($this->inventory->getItems() as $item)
 					$this->equip($this->user, $item, false);
 			}

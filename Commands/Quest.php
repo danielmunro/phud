@@ -42,7 +42,7 @@
 			
 			if(sizeof($args) == 3)
 			{
-				$target = ActorObserver::findByRoomAndInput($actor->getRoom()->getId(), array('', $args[2]));
+				$target = $actor->getRoom()->getActorByInput($args);
 				if(!($target instanceof Questmaster))
 					return Server::out($actor, "You don't see them anywhere.");
 			}

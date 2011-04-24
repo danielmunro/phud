@@ -25,39 +25,77 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Ability
+	abstract class Ability
 	{
 	
 		private $name = '';
+		private $clean_name = '';
+		private $clean_name_fitted = '';
 		private $percent = 0;
-		private $user_id = 0;
+		private $actor_id = 0;
+		private $actor_type = '';
 		private $type = 0;
 		
 		// Level of the ability: when the actor can use it among other things
 		protected static $level = 1;
+		private static $aliases = array();
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
 	
-		public function __construct($percent, $user_id = null)
+		public function __construct($percent, $type, $actor_id, $actor_type, $aliases)
 		{
 		
 			$this->name = (string)$this;
 			$this->percent = $percent;
-			$this->user_id = $user_id;
+			$this->actor_id = $actor_id;
+			$this->actor_type = $actor_type;
 			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
+			if($aliases !== null)
+			{
+				if(!is_array($aliases))
+					$aliases = array($aliases);
+				foreach($aliases as $alias)
+					if(!isset(self::$aliases[$type][$alias]))
+						self::$aliases[$type][$alias] = get_class($this);
+			}
 		}
 		
 		public function save()
 		{
-			if($this->user_id)
+			if($this->actor_id)
 				Db::getInstance()->query('
-					INSERT INTO abilities (`name`, percent, fk_user_id, `type`) VALUES (?, ?, ?, ?)
-					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->user_id, $this->type, $this->percent));
+					INSERT INTO abilities (`name`, percent, actor_type, fk_actor_id, `type`) VALUES (?, ?, ?, ?, ?)
+					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->actor_type, $this->actor_id, $this->type, $this->percent), true);
+		}
+		
+		public static function exists($alias)
+		{
+			foreach(self::$aliases as $type)
+				if(isset($type[$alias]))
+					return $type[$alias];
+			return false;
 		}
 	
 		public function getType() { return $this->type; }
 		public function getName() { return $this->name; }
+		public function getCleanName($space = false, $strtolower = true)
+		{
+			if(!$this->clean_name)
+			{
+				$this->clean_name = $this->clean_name_fitted = str_replace('_', ' ', $this->name);
+				$clean_name_len = strlen($this->clean_name);
+				for($i = 0; $i < 40 - $clean_name_len; $i++)
+					$this->clean_name_fitted .= ' ';
+			}
+			
+			if($strtolower)
+			{
+				return $space ? strtolower($this->clean_name_fitted) : strtolower($this->clean_name);
+			}
+			
+			return $space ? $this->clean_name_fitted : $this->clean_name;
+		}
 		public function getPercent() { return $this->percent; }
 		public function setPercent($percent) { $this->percent = $percent; }
 		public static function getLevel() { return self::$level; }

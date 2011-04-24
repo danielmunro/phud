@@ -88,10 +88,14 @@
 				if(!$instance->initialize())
 					unset($instance);
 		}
-		public static function reapplyFromDb($target)
+		public static function reapplyFromDb(&$target, $table = '')
 		{
-			$class = get_class($target);
-			$rows = Db::getInstance()->query('SELECT * FROM affects WHERE fk_table = ? AND fk_id = ?', array($class, $target->getId()))->fetch_objects();
+			if(!$table && $target instanceof \Items\Item)
+				$table =  'items';
+			else
+				$table = '';
+			$rows = Db::getInstance()->query('SELECT * FROM affects WHERE fk_table = ? AND fk_id = ?', array($table, $target->getId()), true)->fetch_objects();
+			Debug::addDebugLine("AFFECT COUNT: ".sizeof($rows));
 			foreach($rows as $row)
 				new Affect($row->affect, $target);
 		}

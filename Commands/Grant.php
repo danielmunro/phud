@@ -24,50 +24,29 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class ActorObserver
+	namespace Commands;
+	class Grant extends \Mechanics\Command
 	{
 	
-		static $instance = null;
-		
-		private $actors = array();
-		private $queue;
-		
-		private function __construct() {}
-		
-		public static function instance()
+		protected function __construct()
 		{
 		
-			if(!self::$instance)
-				self::$instance = new ActorObserver();
-			
-			return self::$instance;
-		
-		}
-		
-		public function add(Actor &$instance)
-		{
-			$this->actors[] = $instance;
-			return sizeof($this->actors);
-		}
-		
-		public function whoList($actor)
-		{
-		
-			Server::out($actor, 'Who list:');
-			$players = 0;
-			foreach($this->actors as $actors)
-			{
-				if(!($actors instanceof \Living\User))
-					continue;
-				Server::out($actor, '[' . $actors->getLevel() . ' ' . $actors->getRace() . ' ' . $actors->getDiscipline() . '] ' . $actors->getAlias());
-				$players++;
-			}
-			Server::out($actor, $players . ' player' . (sizeof($this->actors) != 1 ? 's' : '') . ' found.');
-		
+			\Mechanics\Command::addAlias(__CLASS__, array('grant'));
 		}
 	
-		public function getActors() { return $this->actors; }
+		public static function perform(&$actor, $args = null)
+		{
+			$target = $actor->getRoom()->getActorByInput($args);
+			$ability = \Mechanics\Ability::exists($args[1]);
+			if($ability)
+			{
+				$a = new $ability($args[2], $target->getId(), $target->getType());
+				$target->getAbilitySet()->addAbility($a);
+				\Mechanics\Server::out($target, $actor->getAlias(true)." has bestowed the knowledge of ".$a->getCleanName()." on you.");
+				return \Mechanics\Server::out($actor, "You've granted ".$a->getCleanName()." to ".$target->getAlias().".");
+			}
+			\Mechanics\Server::out($actor, "Ability not found.");
+		}
+	
 	}
-
 ?>

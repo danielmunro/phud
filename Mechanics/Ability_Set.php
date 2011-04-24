@@ -36,30 +36,27 @@
 		{
 		
 			$this->actor = $actor;
-			
-			if(!($this->actor instanceof \Living\User))
-				return;
-			
-			$rows = Db::getInstance()->query('SELECT * FROM abilities WHERE fk_user_id = ?', $this->actor->getId())->fetch_objects();
+			$rows = Db::getInstance()->query('SELECT * FROM abilities WHERE actor_type = ? AND fk_actor_id = ?', array($this->actor->getType(), $this->actor->getId()))->fetch_objects();
 			foreach($rows as $row)
 			{
 				
 				$ability = $row->type == Ability::TYPE_SKILL ? 'Skills' : 'Spells';
 				
 				$ability = $ability . '\\' . ucfirst($row->name);
-				$instance = new $ability($row->percent, $row->fk_user_id);
+				$instance = new $ability($row->percent, $row->fk_actor_id, $row->actor_type);
 				$this->addAbility($instance);
 			}
 		}
 		
+		public function getSkills() { return $this->abilities[Ability::TYPE_SKILL]; }
+		public function getSpells() { return $this->abilities[Ability::TYPE_SPELL]; }
+		
 		public static function findByActor(Actor $actor)
 		{
-		
-			$i = $actor->getAlias();
-			if(!isset(self::$instances[$i]))
-				self::$instances[$i] = new self($actor);
+			if(!isset(self::$instances[$actor->getType()][$actor->getId()]))
+				self::$instances[$actor->getType()][$actor->getId()] = new self($actor);
 			
-			return self::$instances[$i];
+			return self::$instances[$actor->getType()][$actor->getId()];
 		}
 		
 		public function addAbility(Ability $instance)

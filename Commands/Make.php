@@ -24,50 +24,32 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class ActorObserver
+	namespace Commands;
+	class Make extends \Mechanics\Command
 	{
 	
-		static $instance = null;
-		
-		private $actors = array();
-		private $queue;
-		
-		private function __construct() {}
-		
-		public static function instance()
+		protected function __construct()
 		{
 		
-			if(!self::$instance)
-				self::$instance = new ActorObserver();
-			
-			return self::$instance;
-		
-		}
-		
-		public function add(Actor &$instance)
-		{
-			$this->actors[] = $instance;
-			return sizeof($this->actors);
-		}
-		
-		public function whoList($actor)
-		{
-		
-			Server::out($actor, 'Who list:');
-			$players = 0;
-			foreach($this->actors as $actors)
-			{
-				if(!($actors instanceof \Living\User))
-					continue;
-				Server::out($actor, '[' . $actors->getLevel() . ' ' . $actors->getRace() . ' ' . $actors->getDiscipline() . '] ' . $actors->getAlias());
-				$players++;
-			}
-			Server::out($actor, $players . ' player' . (sizeof($this->actors) != 1 ? 's' : '') . ' found.');
-		
+			\Mechanics\Command::addAlias(__CLASS__, array('mk', 'make'));
 		}
 	
-		public function getActors() { return $this->actors; }
+		public static function perform(&$actor, $args = null)
+		{
+			$target = $actor->getRoom()->getActorByInput(array(null, $args[1]));
+			$command = \Mechanics\Command::find($args[2]);
+			array_shift($args);
+			array_shift($args);
+			if($target && $command)
+			{
+				$command->perform($target, $args);
+				\Mechanics\Server::out($actor, "Done.");
+			}
+			else
+			{
+				\Mechanics\Server::out($actor, "Cannot be done.");
+			}
+		}
+	
 	}
-
 ?>

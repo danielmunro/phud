@@ -57,7 +57,7 @@
 				$battle->registerAttackRound();
 			};
 			if(sizeof($this->actors))
-				ActorObserver::instance()->registerPulseEvent(1, $fn, $this);
+				Pulse::instance()->registerEvent(1, $fn, $this);
 		}
 	}
 ?>

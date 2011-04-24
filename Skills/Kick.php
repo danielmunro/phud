@@ -30,6 +30,11 @@
 	
 		private static $base_chance = 99;
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type, array('ki', 'kick'));
+		}
+	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
 			

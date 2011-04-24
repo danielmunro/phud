@@ -30,10 +30,7 @@
 	
 		protected static function instantiate()
 		{
-		
-			$m = new \Living\Mob('a town crier', 'town crier', 'You see a town crier before you.', 'temple midgaard', 3, 1, 'human', 27, 1, 20, 100, 100);
-			$m->getAbilitySet()->addAbility(new \Skills\Dodge(100));
-			new \Living\Mob('the zombified remains of the mayor of Midgaard', 'zombie corpse mayor', 'The partially decomposed, moaning zombie corpse of the mayor of Midgaard stands before you.', 'temple midgaard', 3, 1, 'undead', 14, 5, 20, 100, 100);
+			/**
 			$m = new \Living\Shopkeeper('Erog the blacksmith', 'erog blacksmith', 'A large ogre stands before you with a giant smelting iron by his side.', 'midgaard', 12, 1, 'ogre');
 			$m->getInventory()->add(array(
 				new \Items\Weapon(0, 'a sub issue sword is here.', 'a sub issue sword', 'sub sword', 'slash', 100, 4, \Items\Weapon::TYPE_SWORD, \Items\Weapon::DAMAGE_SLASH, 1, 2),
@@ -42,11 +39,11 @@
 			));
 			$m = new \Living\Shopkeeper('Halek the armorsmith', 'halek armorsmith', 'A cautious looking elf stands before you.', 'midgaard', 57, 1, 'elf');
 			$m->getInventory()->add(array(
-				new \Items\Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 0, 5, \Items\Equipment::TYPE_WIELD, -5, -5, -5, 0),
-				new \Items\Armor(0, 'a pair of sub issue gloves are here.', 'a pair of sub issue gloves', 'sub gloves', 0, 5, \Items\Equipment::TYPE_HANDS, -5, -5, -5, 0),
-				new \Items\Armor(0, 'a sub issue belt is here.', 'a sub issue belt', 'sub belt', 0, 5, \Items\Equipment::TYPE_WAIST, -5, -5, -5, 0),
-				new \Items\Armor(0, 'a sub issue helmet is here.', 'a sub issue helmet', 'sub helmet', 0, 5, \Items\Equipment::TYPE_HEAD, -5, -5, -5, 0),
-				new \Items\Armor(0, 'a pair of sub issue boots are here.', 'a pair of sub issue boots', 'sub boots', 0, 5, \Items\Equipment::TYPE_FEET, -5, -5, -5, 0)
+				new \Items\Armor(0, 'a sub issue shield is here.', 'a sub issue shield', 'sub shield', 20, 5, \Items\Equipment::TYPE_WIELD, -5, -5, -5, 0),
+				new \Items\Armor(0, 'a pair of sub issue gloves are here.', 'a pair of sub issue gloves', 'sub gloves', 20, 5, \Items\Equipment::TYPE_HANDS, -5, -5, -5, 0),
+				new \Items\Armor(0, 'a sub issue belt is here.', 'a sub issue belt', 'sub belt', 20, 5, \Items\Equipment::TYPE_WAIST, -5, -5, -5, 0),
+				new \Items\Armor(0, 'a sub issue helmet is here.', 'a sub issue helmet', 'sub helmet', 20, 5, \Items\Equipment::TYPE_HEAD, -5, -5, -5, 0),
+				new \Items\Armor(0, 'a pair of sub issue boots are here.', 'a pair of sub issue boots', 'sub boots', 20, 5, \Items\Equipment::TYPE_FEET, -5, -5, -5, 0)
 			));
 			$m = new \Living\Shopkeeper('Alfred the store clerk', 'alfred clerk', 'Alfred smiles and offers you to look around.', 'midgaard', 59, 1, 'human');
 			$i = new \Items\Armor(0, 'a wooden torch is here.', 'a wooden torch', 'wooden torch', 1, 1, \Items\Equipment::TYPE_LIGHT, 0, 0, 0, 0);
@@ -62,6 +59,7 @@
 			$m->getInventory()->add(array(
 				new \Items\Drink(0, 'a small leather canteen is here', 'a small leather canteen', 'leather canteen', 5, 1)
 			));
+			*/
 		}
 	}
 ?>

@@ -31,6 +31,11 @@
 		protected $name_familiar = 'cure light';
 		protected $name_unfamiliar = 'frzzz';
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('c', 'cure', 'cure light'));
+		}
+	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 		

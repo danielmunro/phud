@@ -28,6 +28,11 @@
 	class Berserk extends \Mechanics\Ability
 	{
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type, array('bers', 'berserk'));
+		}
+	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
 			
@@ -47,7 +52,7 @@
 		{
 		
 			$target->setStr($target->getStr() + 2);
-			\Mechanics\ActorObserver::instance()->registerPulseEvent
+			\Mechanics\Pulse::instance()->registerEvent
 			(
 				$args['timeout'],
 				function($args)

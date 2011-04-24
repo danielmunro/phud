@@ -24,50 +24,23 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class ActorObserver
+	namespace Commands;
+	class Skill extends \Mechanics\Command
 	{
 	
-		static $instance = null;
-		
-		private $actors = array();
-		private $queue;
-		
-		private function __construct() {}
-		
-		public static function instance()
+		protected function __construct()
 		{
-		
-			if(!self::$instance)
-				self::$instance = new ActorObserver();
-			
-			return self::$instance;
-		
-		}
-		
-		public function add(Actor &$instance)
-		{
-			$this->actors[] = $instance;
-			return sizeof($this->actors);
-		}
-		
-		public function whoList($actor)
-		{
-		
-			Server::out($actor, 'Who list:');
-			$players = 0;
-			foreach($this->actors as $actors)
-			{
-				if(!($actors instanceof \Living\User))
-					continue;
-				Server::out($actor, '[' . $actors->getLevel() . ' ' . $actors->getRace() . ' ' . $actors->getDiscipline() . '] ' . $actors->getAlias());
-				$players++;
-			}
-			Server::out($actor, $players . ' player' . (sizeof($this->actors) != 1 ? 's' : '') . ' found.');
-		
+	
+			\Mechanics\Command::addAlias(__CLASS__, array('skill', 'sk'));
 		}
 	
-		public function getActors() { return $this->actors; }
+		public static function perform(&$actor, $args = null)
+		{
+			\Mechanics\Server::out($actor, "Skills: ");
+			$skills = $actor->getAbilitySet()->getSkills();
+			foreach($skills as $s)
+				\Mechanics\Server::out($actor, $s->getCleanName(true).': '.$s->getPercent().'%');
+		}
+	
 	}
-
 ?>

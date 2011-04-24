@@ -69,7 +69,7 @@
 	
 		public static function find($id)
 		{
-		
+			
 			if(isset(self::$instance[$id]) === true && self::$instance[$id] instanceof Room)
 				return self::$instance[$id];
 			

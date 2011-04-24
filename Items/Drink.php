@@ -40,7 +40,7 @@
 		public function save($inv_inside_id)
 		{
 			if($this->id)
-				return Db::getInstance()->query(
+				return \Mechanics\Db::getInstance()->query(
 					'UPDATE items SET
 						short_desc = ?,
 						long_desc = ?,
@@ -55,9 +55,9 @@
 					WHERE
 						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
 						$this->weight, $this->type, $this->can_own, $this->thirst, $inv_inside_id, 
-						$this->door_unlock_id, $this->id));
+						$this->door_unlock_id, $this->id), true);
 			
-			Db::getInstance()->query(
+			\Mechanics\Db::getInstance()->query(
 				'INSERT INTO items (
 					short_desc,
 					long_desc,
@@ -72,8 +72,8 @@
 				VALUES
 					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $this->thirst, $inv_inside_id, $this->door_unlock_id));
-			$this->id = Db::getInstance()->insert_id;
+				$this->type, $this->can_own, $this->thirst, $inv_inside_id, $this->door_unlock_id), true);
+			$this->id = \Mechanics\Db::getInstance()->insert_id;
 		}
 		
 		public function getThirst() { return $this->thirst; }

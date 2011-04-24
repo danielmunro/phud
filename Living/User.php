@@ -99,8 +99,8 @@
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
-			$this->ability_set->addAbility(new \Skills\Berserk(100, $this->id));
-			\Mechanics\Affect::reapplyFromMemory($this);
+			//$this->ability_set->addAbility(new \Skills\Berserk(100, $this->id));
+			\Mechanics\Affect::reapplyFromDb($this, 'users');
 		}
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }

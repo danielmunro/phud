@@ -31,6 +31,11 @@
 		private $fn_init = null;
 		private $fn_done = null;
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type, 'bash');
+		}
+	
 		public function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target = null, $args = null)
 		{
 			

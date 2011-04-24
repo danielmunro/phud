@@ -33,6 +33,11 @@
 		protected $improve_by_practice = 0;
 		protected $min_mana_cost = 35;
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('cure critical', 'cure crit', 'cure c'));
+		}
+	
 		public static function perform(Actor &$actor, Skill $spell, $args = null)
 		{
 		

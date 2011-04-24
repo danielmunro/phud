@@ -39,7 +39,7 @@
 			if($args[1] == 'hp')
 			{
 				$actor->setHp($args[2]);
-				\Mechanics\Server::out($actor, "You feel a calming sensation run over you.");
+				\Mechanics\Server::out($actor, "You feel different.");
 			}
 		}
 	}

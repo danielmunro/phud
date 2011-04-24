@@ -28,25 +28,74 @@
 	class Shopkeeper extends \Mechanics\Actor
 	{
 	
+		protected $id = 0;
+		protected $start_room_id = 0;
+		protected $noun = '';
 		private $list_item_message = "Here's what I have in stock now";
 		private $no_item_message = "I'm not selling that";
 		private $not_enough_money_message = "Come back when you have more money";
 	
-		public function __construct($alias, $noun, $description, $area, $room_id, $level, $race)
+		public function __construct($properties)
 		{
 			
-			$this->alias = $alias;
-			$this->noun = $noun;
-			$this->description = $description;
-			$this->area = $area;
-			$this->level = $level;
-			$this->hp = 1;
-			$this->max_hp = 1;
-			$this->setRace($race);
-			$this->fightable = false;
-			
-			parent::__construct($room_id);
+			foreach($properties as $property => $value)
+			{
+				if($property == 'race')
+					$this->setRace($value);
+				elseif($property == 'fk_room_id')
+					$this->start_room_id = $value;
+				elseif(property_exists($this, $property))
+					$this->$property = $value;
+			}
+			parent::__construct($this->start_room_id);
 		}
+		
+		public static function instantiate($data = null)
+		{
+			\Mechanics\Debug::addDebugLine('Initializing shopkeepers');
+			$results = \Mechanics\Db::getInstance()->query('SELECT * FROM shopkeepers')->fetch_objects();
+			\Mechanics\Debug::addDebugLine('shopkeepers: '.sizeof($results));
+			foreach($results as $shopkeeper)
+				new self($shopkeeper);
+		}
+		
+		public static function oldInstantiate($alias, $noun, $long, $room_id, $level, $race)
+		{
+			return new Shopkeeper(array
+			(
+				'alias' => $alias,
+				'noun' => $noun,
+				'long' => $long,
+				'fk_room_id' => $room_id,
+				'level' => $level,
+				'race' => $race
+			));
+		}
+		
+		public function save()
+		{
+			\Mechanics\Debug::addDebugLine("SAVING SHOPKEEPER");
+			if($this->id)
+			{
+				\Mechanics\Db::getInstance()->query('UPDATE shopkeepers SET alias = ?, noun = ?, `long` = ?, gold = ?, silver = ?, copper = ?, race = ?, 
+					fk_room_id = ?, level = ?, list_item_message = ?, no_item_message = ?, not_enough_money_message = ? WHERE id = ?', array ($this->alias, $this->noun,
+					$this->long, $this->gold, $this->silver, $this->copper, $this->race, $this->room->getId(),$this->level, $this->list_item_message,
+					$this->no_item_message, $this->not_enough_money_message, $this->id), true);
+			}
+			else
+			{
+				\Mechanics\Db::getInstance()->query('INSERT INTO shopkeepers (alias, noun, `long`, gold, silver, copper, race, fk_room_id, level, list_item_message,
+					no_item_message, not_enough_money_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array ($this->alias, $this->noun, $this->long, 
+					$this->gold, $this->silver, $this->copper, $this->race, $this->room->getId(), $this->level, $this->list_item_message, $this->no_item_message,
+					$this->not_enough_money_message), true);
+				$this->id = \Mechanics\Db::getInstance()->insert_id;
+				$this->inventory->setTableId($this->id);
+			}
+			$this->inventory->save();
+			$this->ability_set->save();
+		}
+		
+		public function getId() { return $this->id; }
 		
 		public function setListItemMessage($message) { $this->list_item_message = $message; }
 		public function getListItemMessage() { return $this->list_item_message; }

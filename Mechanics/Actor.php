@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	abstract class Actor
+	abstract class Actor implements Affectable
 	{
 	
 		const MAX_LEVEL = 51;
@@ -82,7 +82,7 @@
 		 * AFFECTS - array of affects (object type Affect) currently applied to the actor
 		 */
 		protected $affects = array();
-		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
+		public function addAffect(Affect $affect) { Debug::addDebugLine("ADDING AFFECTS"); $this->affects[] = $affect; }
 		public function removeAffect(Affect $affect)
 		{
 			$i = array_search($affect, $this->affects);
@@ -99,21 +99,30 @@
 		protected $base_wis = 0;
 		protected $base_dex = 0;
 		protected $base_con = 0;
+		protected $base_vit = 0;
+		protected $base_wil = 0;
 		protected $current_str = 0;
 		protected $current_int = 0;
 		protected $current_wis = 0;
 		protected $current_dex = 0;
 		protected $current_con = 0;
+		protected $current_vit = 0;
+		protected $current_wil = 0;
+		
 		public function getStr($base = false) { return $base ? $this->base_str : $this->current_str; }
 		public function getInt($base = false) { return $base ? $this->base_int : $this->current_int; }
 		public function getWis($base = false) { return $base ? $this->base_wis : $this->current_wis; }
 		public function getDex($base = false) { return $base ? $this->base_dex : $this->current_dex; }
 		public function getCon($base = false) { return $base ? $this->base_con : $this->current_con; }
+		public function getVit($base = false) { return $base ? $this->base_vit : $this->current_vit; }
+		public function getWil($base = false) { return $base ? $this->base_wil : $this->current_wil; }
 		public function setStr($str, $base = false) { return $this->setAttribute('str', $str, $base ? 'base' : 'current'); }
 		public function setInt($int, $base = false) { return $this->setAttribute('int', $int, $base ? 'base' : 'current'); }
 		public function setWis($wis, $base = false) { return $this->setAttribute('wis', $wis, $base ? 'base' : 'current'); }
 		public function setDex($dex, $base = false) { return $this->setAttribute('dex', $dex, $base ? 'base' : 'current'); }
 		public function setCon($con, $base = false) { return $this->setAttribute('con', $con, $base ? 'base' : 'current'); }
+		public function setVit($con, $base = false) { return $this->setAttribute('vit', $con, $base ? 'base' : 'current'); }
+		public function setWil($con, $base = false) { return $this->setAttribute('wil', $con, $base ? 'base' : 'current'); }
 		private function setAttribute($attribute, $value, $which)
 		{
 			$method = 'getMax' . ucfirst($attribute);
@@ -136,22 +145,30 @@
 			$this->hit_roll = $this->race->getHitRoll();
 			$this->dam_roll = $this->race->getDamRoll();
 			
-			if($this instanceof \Living\User)
-			{
-				$this->inventory = Inventory::find($this->getTable(), $this->id);
-				$this->equipped = new Equipped($this);
-			}
-			else
-			{
-				$this->inventory = new Inventory($this->getTable(), 0);
-				$this->equipped = new Equipped();
-			}
+			$this->loadInventory();
 			
 			$this->ability_set = Ability_Set::findByActor($this);
 		}
 		
-		public function getAbilitySet() { return $this->ability_set; }
+		protected function loadInventory()
+		{
+			$this->inventory = Inventory::find($this->getTable(), $this->id);
+			$this->equipped = new Equipped($this);
+			
+			/**
+			 * Old mob inventory routine
+			 
+			$this->inventory = new Inventory($this->getTable(), 0);
+			$this->equipped = new Equipped();
+			 */
+		}
 		
+		public function getAbilitySet() { return $this->ability_set; }
+		abstract public function getId();
+		public function getType()
+		{
+			return array_pop(explode("\\", get_class($this)));
+		}
 		public function getAlias($upper = null)
 		{
 			if($upper === null)
@@ -179,15 +196,12 @@
 		public function addSilver($silver) { $this->silver += $silver; }
 		public function getGold() { return $this->gold; }
 		public function getSex() { return $this->sex; }
-		public function setRoom(&$room)
+		public function setRoom(\Mechanics\Room &$room)
 		{
-			if($room instanceof Room)
-			{
-				if($this->room)
-					$this->room->actorRemove($this);
-				$room->actorAdd($this);
-				$this->room = $room;
-			}
+			if($this->room)
+				$this->room->actorRemove($this);
+			$room->actorAdd($this);
+			$this->room = $room;
 		}
 		public function getRace() { return $this->race; }
 		public function getFighters() { return $this->fighting; }

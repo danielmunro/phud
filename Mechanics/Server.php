@@ -30,15 +30,10 @@
 		
 		const ADDRESS = '127.0.0.1';
 		const PORT = 9000;
-		const TICK_MIN = 50;
-		const TICK_MAX = 50;
-		const TICK = 50;
-		const PULSES_PER_TICK = 25;
 		
 		private $socket = null;
 		private $clients = array();
 		static $instance = null;
-		static $tick = 0;
 		private static $last_pulse;
 		
 		private function __construct() { $this->openSocket(); }
@@ -49,11 +44,32 @@
 		
 			Debug::addDebugLine("Initializing environment...");
 			\Mechanics\Command::runInstantiation();
-			\Mechanics\Area::runInstantiation();
+			//\Mechanics\Area::runInstantiation();
+			
+			\Living\Mob::instantiate();
+			\Living\Shopkeeper::instantiate();
 			
 			Debug::addDebugLine("Starting server...");
 			self::$instance = new Server();
 			
+			// Old instantiation
+			//
+			/**
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 60, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 63, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 64, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 70, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 68, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 73, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 61, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 74, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 73, 6, 'human', 30, 2, 25, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 83, 10, 'human', 0, 2, 45, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100)->save();
+			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100)->save();
+			*/
 			Debug::addDebugLine("Running main loop...");
 			self::$instance->run();
 			
@@ -63,9 +79,8 @@
 		
 		public function run()
 		{
-		
 			$seconds = date('U');
-		
+			
 			while(1)
 			{
 				$read = array($this->socket);
@@ -100,21 +115,9 @@
 				}
 				
 				// Pulse
-				if(date('U') == self::$last_pulse + 2)
+				if(date('U') == Pulse::instance()->getLastPulse() + 2)
 				{
-					ActorObserver::instance()->checkPulseEvents();
-					
-					if(!isset(self::$tick))
-						self::$tick = date('U') + rand(self::TICK_MIN, self::TICK_MAX);
-					
-					if(self::$tick < date('U'))
-					{
-						ActorObserver::instance()->tick();
-						foreach(Door::getInstances() as $instance)
-							if($instance->decreaseReloadTick() < 1)
-								$instance->reload();
-						self::$tick = date('U') + rand(self::TICK_MIN, self::TICK_MAX);
-					}
+					Pulse::instance()->checkEvents();
 					self::$last_pulse = date('U');
 				}
 				
@@ -159,11 +162,16 @@
 							continue;
 						}
 						
-						try
+						
+						$command = Command::find($args[0]);
+						if($command)
 						{
-							$command = Command::find($args[0]);
+							// Perform command
+							$command->perform($this->clients[$i], $args);
+							if(isset($this->clients[$i]))
+								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 						}
-						catch(\Exceptions\Command $e)
+						else
 						{
 						
 							// Skills -- See the cast command for spells
@@ -192,11 +200,6 @@
 							self::out($this->clients[$i], "What was that?");
 							continue;
 						}
-						
-						// Perform command
-						$command->perform($this->clients[$i], $args);
-						if(isset($this->clients[$i]))
-							self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 					}
 				}
 			}
@@ -205,19 +208,16 @@
 		
 		public static function out($client, $message, $break_line = true)
 		{
+			if($client instanceof \Living\Mob)
+			{
+				Debug::addDebugLine($client->getAlias(true).': '.$message);
+			}
 			
 			if(!($client instanceof \Living\User) || is_null($client->getSocket()))
 				return;
 			
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
 		
-		}
-		public static function randomizePulse($pulse, $mod = 0.5)
-		{
-		
-			$low_mod = $mod * $pulse;
-			$high_mod = $pulse + $low_mod;
-			return rand($low_mod, $high_mod);
 		}
 		
 		private function openSocket()
@@ -233,14 +233,6 @@
 		}
 		private function closeSocket($socket) { socket_close($socket); }
 		public function disconnectUser(\Living\User $user) { $this->closeSocket($user->getSocket()); }
-		
-		public static function getLastPulse()
-		{
-			
-			if(!self::$last_pulse)
-				self::$last_pulse = date('U');
-			return self::$last_pulse;
-		}
 		public static function getInstance() { return self::$instance; }
 		public function getCommandFromClass($class) { return strtolower(str_replace('_', ' ', $class)); }
 		public function getSocket() { return $this->socket; }

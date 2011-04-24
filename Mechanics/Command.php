@@ -76,9 +76,7 @@
 			
 			$input = strtolower($input);
 			if(!isset(self::$aliases[$input]))
-				throw new \Exceptions\Command(
-								$input . ' unrecognized.',
-								\Exceptions\Command::INVALID_COMMAND);
+				return false;
 			
 			$alias = self::$aliases[$input];
 			

@@ -28,6 +28,11 @@
 	class Shield_Block extends \Mechanics\Ability
 	{
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type, array('shield block', 'shield'));
+		}
+	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
 			

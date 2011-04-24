@@ -31,6 +31,11 @@
 		protected $name_familiar = 'armor';
 		protected $name_unfamiliar = 'plysoxix';
 	
+		public function __construct($percent, $actor_id = null, $actor_type = '')
+		{
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('ar', 'armor'));
+		}
+	
 		public static function perform(\Mechanics\Actor &$actor, &$target, $args = null)
 		{
 		
@@ -55,7 +60,7 @@
 			$target->setAcPierce($target->getAcPierce() + $args['mod_ac']);
 			$target->setAcMagic($target->getAcMagic() + $args['mod_ac']);
 			
-			\Mechanics\ActorObserver::instance()->registerPulseEvent
+			\Mechanics\Pulse::instance()->registerEvent
 			(
 				$args['timeout'],
 				function($args)
