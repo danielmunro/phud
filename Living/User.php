@@ -35,6 +35,7 @@
 		protected $thirst = 0;
 		private $login = array('alias' => false);
 		private $command_buffer = array();
+		private static $instances = array();
 		
 		public function __construct($socket)
 		{
@@ -99,13 +100,29 @@
 			
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
+			self::$instances[$this->id] = $this;
 			//$this->ability_set->addAbility(new \Skills\Berserk(100, $this->id));
 			\Mechanics\Affect::reapplyFromDb($this, 'users');
 		}
+		public static function getInstances() { return self::$instances; }
 		public function getTable() { return 'users'; }
 		public function setLastInput($input) { $this->last_input = $input; }
 		public function getLastInput() { return $this->last_input; }
 		public function getSocket() { return $this->socket; }
+		public function tick($init = false)
+		{
+			parent::tick();
+			if(!$init)
+			{
+				$this->decreaseRacialNourishmentAndThirst();
+				if($this->nourishment < 0)
+					\Mechanics\Server::out($this, "You are hungry.");
+				if($this->thirst < 0)
+					\Mechanics\Server::out($this, "You are thirsty.");
+				$this->save();
+			}
+			\Mechanics\Server::out($this, "\n" . $this->prompt(), false);
+		}
 		public function decreaseRacialNourishmentAndThirst()
 		{
 			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
@@ -383,7 +400,7 @@
 				
 				parent::__construct($this->getRoom()->getId());
 				$this->save();
-				
+				self::$instances[$this->id] = $this;
 				$this->discipline->assignGroup();
 				$this->ability_set->save();
 				

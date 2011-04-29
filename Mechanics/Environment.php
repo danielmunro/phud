@@ -39,7 +39,7 @@
 		
 		private static $instances = array();
 		
-		const CONCEAL_DOOR = 1;
+		const TYPE_CONCEAL_DOOR = 1;
 		
 		private function __construct($id, $type, $command, $table, $table_id, $room_id, $message, $look_describe)
 		{
@@ -48,48 +48,39 @@
 			$this->command = $command;
 			$this->table = $table;
 			$this->table_id = $table_id;
-			$this->room_id = $room_id,
+			$this->room_id = $room_id;
 			$this->message = $message;
 			$this->look_describe = $look_describe;
 		}
 		
-		public static function findByRoomId($room_id)
+		public static function findByRoomIdAndType($room_id, $type)
 		{
-			if(isset(self::$instances[$room_id]))
-				return self::$instances[$room_id];
+			if(isset(self::$instances[$room_id.$type]))
+				return self::$instances[$room_id.$type];
 			
 			$instances = array();
-			$rows = Db::getInstance()->query('SELECT * FROM environment WHERE fk_room_id = ?', $room_id);
+			$rows = Db::getInstance()->query('SELECT * FROM environment WHERE fk_room_id = ? AND environment_type = ? LIMIT 1', array($room_id, $type));
 			if(empty($rows))
 			{
-				self::$instances[$room_id] = null;
+				self::$instances[$room_id.$type] = null;
 				return $instances;
 			}
-			$rows = $rows->fetch_objects();
-			foreach($rows as $row)
-				$instances[] = self::$instances[$room_id][] = new Environment(
-																		$row->id,
-																		$row->environment_type,
-																		$row->command,
-																		$row->fk_table,
-																		$row->fk_table_id,
-																		$row->fk_room_id,
-																		$row->message,
-																		$row->look_describe);
-			return $instances;
+			$row = $rows->getResult()->fetch_object();
+			$instance = self::$instances[$room_id.$type] = new Environment(
+																	$row->id,
+																	$row->environment_type,
+																	$row->command,
+																	$row->fk_table,
+																	$row->fk_table_id,
+																	$row->fk_room_id,
+																	$row->message,
+																	$row->look_describe);
+			return $instance;
 		}
 		
-		public static function concealDoors($doors, $room_id)
+		public function getMessage()
 		{
-			if(!isset(self::$instances[$room_id]) ||
-				(isset(self::$instances[$room_id]) && self::$instances[$room_id] === null))
-				return;
-			
-			
-			foreach(self::$instances[$room_id] as $env)
-				$env->conceal
+			return $this->message;
 		}
-		
-		public function concealDoorsByRoomId()
 	}
 ?>

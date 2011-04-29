@@ -95,6 +95,8 @@
 			$this->ability_set->save();
 		}
 		
+		public function tick() {}
+		
 		public function getId() { return $this->id; }
 		
 		public function setListItemMessage($message) { $this->list_item_message = $message; }

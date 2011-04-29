@@ -45,14 +45,13 @@
 			else
 				$message = $args;
 		
-			$actors = ActorObserver::instance()->getActors();
+			$actors = User::getInstances();
 			
 			foreach($actors as $a)
-				if($a instanceof User)
-					if($actor->getAlias() == $a->getAlias())
-						Server::out($a, "You gossip, \"" . $message . "\"" . ($a instanceof User ? "\n\n" . $a->prompt() : ''), false);
-					else
-						Server::out($a, $a->getAlias(true) . " gossips, \"" . $message . "\"" . ($a instanceof User ? "\n\n" . $a->prompt() : ''), false);
+				if($actor->getAlias() == $a->getAlias())
+					Server::out($a, "You gossip, \"" . $message . "\"\n\n" . $a->prompt(), false);
+				else
+					Server::out($a, $a->getAlias(true) . " gossips, \"" . $message . "\"\n\n" . $a->prompt(), false);
 		}
 	}
 ?>

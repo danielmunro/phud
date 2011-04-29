@@ -53,23 +53,6 @@
 			self::$instance = new Server();
 			
 			// Old instantiation
-			//
-			/**
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 60, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 63, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 64, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 70, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 68, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 73, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 61, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 74, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant gray rat', 'gray rat', 'A giant rat is here, staring nefariously at you.', 'midgaard_dungeon', 73, 6, 'human', 30, 2, 25, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 83, 10, 'human', 0, 2, 45, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 85, 10, 'human', 0, 2, 45, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100)->save();
-			\Living\Mob::oldInstantiate('a giant hissing black rat', 'hissing black rat', 'A giant hissing black rat is here, ready to defend the nest!', 'midgaard_rat_nest', 87, 10, 'human', 0, 2, 45, 100, 100)->save();
-			*/
 			Debug::addDebugLine("Running main loop...");
 			self::$instance->run();
 			
@@ -185,11 +168,13 @@
 							
 							$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
 							$input = trim($input);
+							$bail = false;
 							foreach($doors as $door)
 								if($door->getHidden() && $door->getHiddenShowCommand() == $input)
 								{
 									self::out($this->clients[$i], $door->getHiddenAction());
 									$door->setHidden(false);
+									$bail = true;
 									continue;
 								}
 								elseif(!$door->getHidden() && $door->getHiddenShowCommand() == $input)
@@ -197,8 +182,11 @@
 									self::out($this->clients[$i], "That is already done.");
 									continue;
 								}
-							self::out($this->clients[$i], "What was that?");
-							continue;
+							if(!$bail)
+							{
+								self::out($this->clients[$i], "What was that?");
+								continue;
+							}
 						}
 					}
 				}

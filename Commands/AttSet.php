@@ -41,6 +41,10 @@
 				$actor->setHp($args[2]);
 				\Mechanics\Server::out($actor, "You feel different.");
 			}
+			if($args[1] == 'movement')
+			{
+				$actor->setMovement($args[2]);
+			}
 		}
 	}
 ?>

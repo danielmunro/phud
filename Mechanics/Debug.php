@@ -46,7 +46,7 @@
 				return;
 			
 			$fp = fopen('debug.log', 'a');
-			fwrite($fp, $msg . ($new_line === true ? " [mem: " . memory_get_usage(true) . ", actors: " . sizeof(ActorObserver::instance()->getActors()) . "]\n" : ''));
+			fwrite($fp, $msg . ($new_line === true ? " [mem: " . memory_get_usage(true) . ", users: " . sizeof(\Living\User::getInstances()) . "]\n" : ''));
 			fclose($fp);
 		}
 	}

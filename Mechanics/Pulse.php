@@ -3,6 +3,7 @@
 	class Pulse
 	{
 		private $tick = 0;
+		private $next_tick = 0;
 		private $pick = 0;
 		private $events = array();
 		private static $instance = null;
@@ -28,42 +29,13 @@
 		public function tick()
 		{
 			Debug::addDebugLine("Tick starting at " . date('Y-m-d H:i:s'));
-			$actors = ActorObserver::instance()->getActors();
-			foreach($actors as $actor)
-			{
-				
-				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * 0.1));
-				if($actor->getHp() > $actor->getMaxHp())
-					$actor->setHp($actor->getMaxHp());
-				
-				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * 0.1));
-				if($actor->getMana() > $actor->getMaxMana())
-					$actor->setMana($actor->getMaxMana());
-				
-				$actor->setMovement($actor->getMovement() + ($actor->getMaxMovement() * 0.1));
-				if($actor->getMovement() > $actor->getMaxMovement())
-					$actor->setMovement($actor->getMaxMovement());
-		
-				// TAKE THIS AND CONSIDER PULSE EVENTS
-				if($actor instanceof \Living\User)
-				{
-					$actor->decreaseRacialNourishmentAndThirst();
-					if($actor->getNourishment() < 0)
-						Server::out($actor, "You are hungry.");
-					if($actor->getThirst() < 0)
-						Server::out($actor, "You are thirsty.");
-					$actor->save();
-					Server::out($actor, "\n" . $actor->prompt(), false);
-				}
-				// END TAKE
-			}
-			
+			$pulses = self::randomizePulse(self::PULSES_PER_TICK);
 			$this->tick = date('U');
-			$pulses = self::randomizePulse(self::PULSES_PER_TICK, 0.1);
+			$this->next_tick = $pulses;
 			self::registerEvent($pulses, function() { Pulse::instance()->tick(); }, null);
 		}
 		
-		public static function randomizePulse($pulse, $mod = 0.5)
+		public static function randomizePulse($pulse, $mod = 0.1)
 		{
 		
 			$low_mod = $mod * $pulse;
@@ -75,6 +47,7 @@
 		{
 		
 			$this->pulse = date('U');
+			$this->next_tick--;
 			Debug::addDebugLine('Pulse on '.$this->pulse);
 			
 			// Cycle through events
@@ -84,6 +57,11 @@
 					$event['fn']($event['args']);
 				unset($this->events[$this->pulse]);
 			}
+		}
+		
+		public function registerTickEvent($fn, $args)
+		{
+			$this->registerEvent($this->next_tick, $fn, $args);
 		}
 		
 		public function registerEvent($pulses, $fn, $args)

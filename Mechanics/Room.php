@@ -89,49 +89,19 @@
 		public function getId() { return $this->id; }
 		public function getTitle() { return $this->title; }
 		public function getDescription() { return $this->description; }
-		public function getNorth()
+		private function getDirection($direction_str, $direction_id)
 		{
-			$door = Door::findByRoomAndDirection($this->id, 'north');
-			
+			$door = Door::findByRoomAndDirection($this->id, $direction_str);
 			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
 				return 0;
-			return $this->north;
+			return $direction_id;
 		}
-		public function getSouth()
-		{
-			$door = Door::findByRoomAndDirection($this->id, 'south');
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;	
-			return $this->south;
-		}
-		public function getEast()
-		{
-			$door = Door::findByRoomAndDirection($this->id, 'east');
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;
-			return $this->east;
-		}
-		public function getWest()
-		{
-			$door = Door::findByRoomAndDirection($this->id, 'west');
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;
-			return $this->west;
-		}
-		public function getUp()
-		{
-			$door = Door::findByRoomAndDirection($this->id, 'up');
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;
-			return $this->up;
-		}
-		public function getDown()
-		{
-			$door = Door::findByRoomAndDirection($this->id, 'down');
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;
-			return $this->down;
-		}
+		public function getNorth() { return $this->getDirection('north', $this->north); }
+		public function getSouth() { return $this->getDirection('south', $this->south); }
+		public function getEast() { return $this->getDirection('east', $this->east); }
+		public function getWest() { return $this->getDirection('west', $this->west); }
+		public function getUp() { return $this->getDirection('up', $this->up); }
+		public function getDown() { return $this->getDirection('down', $this->down); }
 		public function getInventory() { return $this->inventory; }
 		public function setInventory(Inventory $inventory) { $this->inventory = $inventory; }
 		public function setArea($area) { $this->area = $area; }

@@ -50,7 +50,13 @@
 				
 				if(!empty($doors))
 					foreach($doors as $door)
-						if(!$door->getHidden($actor->getRoom()->getId()))
+						if($door->getHidden($actor->getRoom()->getId()))
+						{
+							$env = \Mechanics\Environment::findByRoomIdAndType($actor->getRoom()->getId(), \Mechanics\Environment::TYPE_CONCEAL_DOOR);
+							if($env)
+								\Mechanics\Server::out($actor, $env->getMessage());
+						}
+						else
 							\Mechanics\Server::out($actor, ucfirst($door->getLong($actor->getRoom()->getId())) . "\n");
 				
 				\Mechanics\Server::out($actor, 'Exits [' .
@@ -105,7 +111,9 @@
 			if(strpos($args[1], 'd') === 0)
 				return self::lookDirection($actor, $actor->getRoom()->getDown(), 'down');
 			
-			Server::out($actor, 'Nothing is there.');
+			//$env = \Mechanics\Environment
+			
+			\Mechanics\Server::out($actor, 'Nothing is there.');
 		}
 		
 		public static function lookDirection(&$actor, $room_id, $direction)

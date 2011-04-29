@@ -37,7 +37,14 @@
 		public static function perform(&$actor, $args = null)
 		{
 			
-			\Mechanics\ActorObserver::instance()->whoList($actor);
+			\Mechanics\Server::out($actor, 'Who list:');
+			$users = \Living\User::getInstances();
+			foreach($users as $user)
+			{
+				\Mechanics\Server::out($actor, '[' . $user->getLevel() . ' ' . $user->getRace() . ' ' . $user->getDiscipline() . '] ' . $user->getAlias());
+			}
+			$size = sizeof($users);
+			\Mechanics\Server::out($actor, $size . ' player' . ($size != 1 ? 's' : '') . ' found.');
 		}
 	
 	}

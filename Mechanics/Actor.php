@@ -138,7 +138,7 @@
 		{
 		
 			Debug::addDebugLine("Adding actor " . $this->getAlias() . " to observer list.");
-			$this->unique_id = ActorObserver::instance()->add($this);
+			$this->unique_id = sha1($this->alias.microtime().get_class($this).rand(0, 10000000));
 			
 			$this->setRoom(Room::find($room_id));
 			
@@ -148,19 +148,29 @@
 			$this->loadInventory();
 			
 			$this->ability_set = Ability_Set::findByActor($this);
+			$this->tick(true);
+			
+			list($namespace, $class) = explode("\\", get_class($this));
 		}
 		
 		protected function loadInventory()
 		{
 			$this->inventory = Inventory::find($this->getTable(), $this->id);
 			$this->equipped = new Equipped($this);
-			
-			/**
-			 * Old mob inventory routine
-			 
-			$this->inventory = new Inventory($this->getTable(), 0);
-			$this->equipped = new Equipped();
-			 */
+		}
+		
+		public function tick()
+		{
+			$this->hp += floor(rand($this->max_hp * 0.05, $this->max_hp * 0.1));
+			if($this->hp > $this->max_hp)
+				$this->hp = $this->max_hp;
+			$this->mana += floor(rand($this->max_mana * 0.05, $this->max_mana * 0.1));
+			if($this->mana > $this->max_mana)
+				$this->mana = $this->max_mana;
+			$this->movement += floor(rand($this->max_movement * 0.05, $this->max_movement * 0.1));
+			if($this->movement > $this->max_movement)
+				$this->movement = $this->max_movement;
+			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		
 		public function getAbilitySet() { return $this->ability_set; }
