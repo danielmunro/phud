@@ -44,20 +44,11 @@
 		
 			Debug::addDebugLine("Initializing environment...");
 			\Mechanics\Command::runInstantiation();
-			//\Mechanics\Area::runInstantiation();
-			
 			\Living\Mob::instantiate();
 			\Living\Shopkeeper::instantiate();
-			
-			Debug::addDebugLine("Starting server...");
 			self::$instance = new Server();
-			
-			// Old instantiation
-			Debug::addDebugLine("Running main loop...");
 			self::$instance->run();
-			
 			Debug::addDebugLine("Success...");
-		
 		}
 		
 		public function run()
