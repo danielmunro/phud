@@ -25,10 +25,9 @@
 	 *
 	 */
 	namespace Living;
-	class User extends \Mechanics\Actor
+	class User extends \Mechanics\Fighter
 	{
 	
-		protected $id;
 		private $socket;
 		protected $last_input = '';
 		protected $nourishment = 0;
@@ -65,6 +64,8 @@
 			else
 				return null;
 		}
+		
+		public function setId(int $id) {}
 		
 		public function loadByAliasAndPassword($alias, $password)
 		{
@@ -144,8 +145,6 @@
 			else
 				$this->thirst += $thirst;
 		}
-		
-		public function getId() { return $this->id; }
 		
 		public function save()
 		{

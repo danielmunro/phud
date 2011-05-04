@@ -28,7 +28,6 @@
 	class Shopkeeper extends \Mechanics\Actor
 	{
 	
-		protected $id = 0;
 		protected $start_room_id = 0;
 		protected $noun = '';
 		private $list_item_message = "Here's what I have in stock now";
@@ -97,8 +96,6 @@
 		
 		public function tick() {}
 		
-		public function getId() { return $this->id; }
-		
 		public function setListItemMessage($message) { $this->list_item_message = $message; }
 		public function getListItemMessage() { return $this->list_item_message; }
 		
@@ -112,6 +109,7 @@
 		{
 			return 'shop';
 		}
+		protected function levelUp() {}
 	}
 
 ?>

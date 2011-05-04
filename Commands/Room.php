@@ -37,8 +37,9 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			if($actor->getLevel() < \Mechanics\Actor::MAX_LEVEL)
-				return \Mechanics\Server::out($actor, "You cannot do that.");
+			// Technically yes...
+			//if($actor->getLevel() < \Mechanics\Actor::MAX_LEVEL)
+			//	return \Mechanics\Server::out($actor, "You cannot do that.");
 			
 			if($args[1] == 'new')
 			{

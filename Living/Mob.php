@@ -25,10 +25,9 @@
 	 *
 	 */
 	namespace Living;
-	class Mob extends \Mechanics\Actor
+	class Mob extends \Mechanics\Fighter
 	{
 	
-		protected $id = 0;
 		protected $movement_speed;
 		protected $last_move;
 		protected $noun;
@@ -86,11 +85,6 @@
 				$pulse = \Mechanics\Pulse::randomizePulse($this->movement_speed);
 				\Mechanics\Pulse::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
 			}
-		}
-		
-		public function getId()
-		{
-			return $this->id;
 		}
 		
 		public static function oldInstantiate($alias, $noun, $long, $area, $room_id, $level, $race, $movement_speed, $respawn_time, $hp, $mana, $movement)
