@@ -34,11 +34,6 @@
 			$this->actor->increaseHitDam(1, 1);
 			
 			$this->actor->getAbilitySet()->addAbility(new \Skill\Kick(0, $this->actor->getId()));
-			//new Skill(0, Perform::find('Spell_Cure_Light')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Cure_Serious')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Cure_Critical')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//new Skill(0, Perform::find('Spell_Heal')->getName(), 0, $actor->getAlias(), $actor->getId());
-			//Skill::saveSet($actor->getAlias());
 		}
 		
 	}

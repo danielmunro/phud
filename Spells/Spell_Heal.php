@@ -24,8 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-
-	class Spell_Heal extends Perform
+	namespace Spells;
+	class Spell_Heal extends \Mechanics\Spell
 	{
 	
 		protected $level = 45;
