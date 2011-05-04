@@ -128,24 +128,9 @@
 			parent::setRace($race);
 			$this->race->applyRacialAttributeModifiers($this);
 		}
-		public function getFighters() { return $this->fighting; }
 		public function getExperience() { return $this->experience; }
 		public function getExpPerLevel() { return $this->exp_per_level; }
 		public function getConcentration() { return $this->concentration; }
-		public function getFighter($fighter_alias)
-		{
-			
-			if($fighter_alias instanceof self)
-			{
-				$i = array_search($this->fighting, $fighter_alias);
-				if($i)
-					return $this->fighting[$i];
-			}
-			else
-				foreach($this->fighting as $index => $fighter)
-					if($fighter->getAlias() == $fighter_alias)
-						return $fighter;
-		}
 		public function getTarget() { return $this->target; }
 		public function setTarget(Actor $target = null)
 		{
@@ -230,7 +215,6 @@
 		public function setMovement($movement) { $this->movement = $movement; }
 		public function setMaxMovement($max_movement) { $this->max_movement = $max_movement; }
 		public function setExpPerLevel($exp) { $this->exp_per_level = $exp; }
-		public function clearFighters() { $this->fighting = null; }
 		public function setExperience($experience)
 		{
 			$this->experience = $experience;
@@ -243,12 +227,6 @@
 			if($this->experience <= 0)
 				$this->levelUp();
 		}
-		public function clearFighter($fighter_alias)
-		{
-			foreach($this->fighting as $index => $fighter)
-				if($fighter->getAlias() == $fighter_alias)
-					unset($this->fighting[$index]);
-		}
 		public function increaseHitDam($hit = 0, $dam = 0)
 		{
 			$this->hit_roll += $hit;
@@ -259,10 +237,8 @@
 			$this->hit_roll -= $hit;
 			$this->dam_roll -= $dam;
 		}
-		
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
 		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
-
 		public function attack($actor = null)
 		{
 		
