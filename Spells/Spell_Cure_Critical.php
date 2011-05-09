@@ -28,10 +28,8 @@
 	class Spell_Cure_Critical extends \Mechanics\Spell
 	{
 	
-		protected $level = 30;
-		protected $display_name = array('cure critical', 'frzzz fsklads');
-		protected $improve_by_practice = 0;
-		protected $min_mana_cost = 35;
+		protected static $name_familiar = 'cure critical';
+		protected static $name_unfamiliar = 'tztzz frzzz';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
@@ -46,9 +44,5 @@
 			
 			Server::out($actor, "You feel better!");
 		}
-		
-		public function getName() { return 'Cure_Light'; }
-		
 	}
-
 ?>

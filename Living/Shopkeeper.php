@@ -58,19 +58,6 @@
 				new self($shopkeeper);
 		}
 		
-		public static function oldInstantiate($alias, $noun, $long, $room_id, $level, $race)
-		{
-			return new Shopkeeper(array
-			(
-				'alias' => $alias,
-				'noun' => $noun,
-				'long' => $long,
-				'fk_room_id' => $room_id,
-				'level' => $level,
-				'race' => $race
-			));
-		}
-		
 		public function save()
 		{
 			\Mechanics\Debug::addDebugLine("SAVING SHOPKEEPER");

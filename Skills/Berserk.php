@@ -42,27 +42,18 @@
 			if($chance > $this->getPercent())
 				return \Mechanics\Server::out($actor, "Your face gets really red!");
 			
-			$timeout = 10;
-			$args = array('timeout' => $timeout);
-			new \Mechanics\Affect(__CLASS__, $actor, 'Skill: berserk',  $args);
+			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
+			$timeout = ceil(10 * $p);
+			$str = ceil(4 * $p);
+			$dex = ceil(2 * $p);
+			$a = new \Mechanics\Affect();
+			$a->setAffect('berserk');
+			$a->setMessageAffect('Affect: berserk.');
+			$a->setMessageEnd('You cool down.');
+			$a->setTimeout($timeout);
+			$a->setArgs(array('str' => $str, 'dex' => $dex));
+			$actor->addAffect($a);
 			\Mechanics\Server::out($actor, "You fly into a rage!");
-		}
-		
-		public static function apply(&$target, $args, $affect)
-		{
-		
-			$target->setStr($target->getStr() + 2);
-			\Mechanics\Pulse::instance()->registerEvent
-			(
-				$args['timeout'],
-				function($args)
-				{
-					$args[1]->removeAffectFrom($args[0]);
-					$args[0]->setStr($args[0]->getStr() - 2);
-					\Mechanics\Server::out($args[0], "You feel your pulse slow down.");
-				},
-				array($target, $affect)
-			);
 		}
 	}
 

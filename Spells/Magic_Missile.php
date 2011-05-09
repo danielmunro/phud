@@ -28,8 +28,8 @@
 	class Magic_Missile extends \Mechanics\Spell
 	{
 	
-		protected $name_familiar = 'magic missile';
-		protected $name_unfamiliar = 'oqisasi';
+		protected static $name_familiar = 'magic missile';
+		protected static $name_unfamiliar = 'oqisasi';
 		protected static $spell_type = self::TYPE_OFFENSIVE;
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')

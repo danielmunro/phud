@@ -28,8 +28,8 @@
 	class Cure_Light extends \Mechanics\Spell
 	{
 	
-		protected $name_familiar = 'cure light';
-		protected $name_unfamiliar = 'frzzz';
+		protected static $name_familiar = 'cure light';
+		protected static $name_unfamiliar = 'frzzz';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

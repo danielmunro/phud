@@ -45,6 +45,9 @@
 			if(!($target instanceof \Mechanics\Actor))
 				return \Mechanics\Server::out($actor, 'Nothing is here.');
 			
+			if(!($target instanceof \Mechanics\Fighter))
+				return \Mechanics\Server::out($actor, $target->getAlias(true)." wouldn't like that very much.");
+			
 			\Mechanics\Server::out($actor, "You scream and attack!");
 			$actor->initiateBattle($target);
 		}

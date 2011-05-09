@@ -31,8 +31,8 @@
 		const TYPE_OFFENSIVE = 1;
 		const TYPE_PASSIVE = 2;
 	
-		protected $name_familiar = '';
-		protected $name_unfamiliar = '';
+		protected static $name_familiar = '';
+		protected static $name_unfamiliar = '';
 		protected $min_mana = 15;
 		protected static $spell_type = self::TYPE_PASSIVE;
 	
@@ -41,14 +41,14 @@
 			return ceil(max($this->min_mana, 100 / (2 + $actor_level - self::$level)));
 		}
 		
-		public function getNameFamiliar() { return $this->name_familiar; }
-		public function getNameUnfamiliar() { return $this->name_unfamiliar; }
+		public static function getNameFamiliar() { return self::$name_familiar; }
+		public static function getNameUnfamiliar() { return self::$name_unfamiliar; }
 		public function getName(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
 		{
 			if($observer->getLevel() >= self::$level && $observer->getDiscipline() == $caster->getDiscipline())
-				return $this->name_familiar;
+				return static::$name_familiar;
 			else
-				return $this->name_unfamiliar;
+				return static::$name_unfamiliar;
 		}
 		protected static function calculateStandardDamage($level, $min, $exponent)
 		{

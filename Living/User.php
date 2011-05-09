@@ -85,11 +85,11 @@
 			$this->silver = $row->silver;
 			$this->gold = $row->gold;
 			$this->password = $row->pass;
-			$this->base_str = $this->current_str = $row->str;
-			$this->base_int = $this->current_int = $row->int;
-			$this->base_wis = $this->current_wis = $row->wis;
-			$this->base_dex = $this->current_dex = $row->dex;
-			$this->base_con = $this->current_con = $row->con;
+			$this->str = $row->str;
+			$this->_int = $row->int;
+			$this->wis = $row->wis;
+			$this->dex = $row->dex;
+			$this->con = $row->con;
 			$this->setRace($row->race);
 			$this->experience = $row->experience;
 			$this->exp_per_level = $row->exp_per_level;
@@ -153,6 +153,9 @@
 			$this->inventory->save();
 			$this->equipped->save();
 			
+			foreach($this->affects as $affect)
+				$affect->save('users', $this->id);
+			
 			if($this->id)
 				$this->ability_set->save();
 			
@@ -191,11 +194,11 @@
 											$this->silver,
 											$this->gold,
 											$this->password,
-											$this->base_str,
-											$this->base_int,
-											$this->base_wis,
-											$this->base_dex,
-											$this->base_con,
+											$this->str,
+											$this->_int,
+											$this->wis,
+											$this->dex,
+											$this->con,
 											$this->getRaceStr(),
 											$this->experience,
 											$this->exp_per_level,
@@ -217,11 +220,11 @@
 																$this->silver,
 																$this->gold,
 																$this->password,
-																$this->base_str,
-																$this->base_int,
-																$this->base_wis,
-																$this->base_dex,
-																$this->base_con,
+																$this->str,
+																$this->_int,
+																$this->wis,
+																$this->dex,
+																$this->con,
 																(string)$this->race,
 																$this->getRoom()->getId(),
 																(string)$this->discipline

@@ -41,31 +41,6 @@
 		
 		const FLEE_PERCENT = 10;
 		
-		/**
-		public function __construct($alias, $noun, $long, $area, $room_id, $level, $race, $movement_speed, $respawn_time, $hp, $mana, $movement)
-		{
-			$this->alias = $alias;
-			$this->noun = $noun;
-			$this->long = $long;
-			$this->level = $level;
-			$this->movement_speed = $movement_speed;
-			$this->setRace($race);
-			$this->respawn_time = $this->default_respawn_time = $respawn_time;
-			$this->start_room_id = $room_id;
-			$this->last_move = time();
-			$this->area = $area;
-			$this->hp = $this->max_hp = $hp;
-			$this->mana = $this->max_mana = $mana;
-			$this->movement = $this->max_movement = $movement;
-			parent::__construct($room_id);
-			
-			if($movement_speed)
-			{
-				$pulse = \Mechanics\Pulse::randomizePulse($movement_speed);
-				\Mechanics\Pulse::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
-			}
-		}
-		*/
 		public function __construct($properties)
 		{
 			foreach($properties as $property => $value)
@@ -85,28 +60,6 @@
 				$pulse = \Mechanics\Pulse::randomizePulse($this->movement_speed);
 				\Mechanics\Pulse::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
 			}
-		}
-		
-		public static function oldInstantiate($alias, $noun, $long, $area, $room_id, $level, $race, $movement_speed, $respawn_time, $hp, $mana, $movement)
-		{
-			return new Mob(array
-			(
-				'alias' => $alias,
-				'noun' => $noun,
-				'long' => $long,
-				'area' => $area,
-				'fk_room_id' => $room_id,
-				'level' => $level,
-				'race' => $race,
-				'movement_speed' => $movement_speed,
-				'respawn_time' => $respawn_time,
-				'hp' => $hp,
-				'max_hp' => $hp,
-				'mana' => $mana,
-				'max_mana' => $mana,
-				'movement' => $movement,
-				'max_movement' => $movement
-			));
 		}
 		
 		public static function instantiate($data = null)

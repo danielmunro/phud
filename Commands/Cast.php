@@ -72,6 +72,9 @@
 			if(!$target)
 				return \Mechanics\Server::out($actor, "Who do you want to cast that on?"); // No target specified and no default
 			
+			if(!($target instanceof Fighter) && $spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE) // Can't cast an offensive spell on a non fighter
+				return \Mechanics\Server::out($actor, "They wouldn't like that very much.");
+			
 			// CONCENTRATION
 			if(rand(0, 100) > $spell->getPercent())
 			{
@@ -89,7 +92,7 @@
 			$spell::perform($actor, $target);
 			
 			if($spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
-				$actor->registerAttackRound($target);
+				$actor->initiateBattle($target);
 		}
 	}
 ?>

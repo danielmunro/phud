@@ -58,20 +58,13 @@
 		protected $max_movement = 100;
 		
 		// Attributes
-		protected $base_str = 0;
-		protected $base_int = 0;
-		protected $base_wis = 0;
-		protected $base_dex = 0;
-		protected $base_con = 0;
-		protected $base_vit = 0;
-		protected $base_wil = 0;
-		protected $current_str = 0;
-		protected $current_int = 0;
-		protected $current_wis = 0;
-		protected $current_dex = 0;
-		protected $current_con = 0;
-		protected $current_vit = 0;
-		protected $current_wil = 0;
+		protected $str = 0;
+		protected $_int = 0;
+		protected $wis = 0;
+		protected $dex = 0;
+		protected $con = 0;
+		protected $vit = 0;
+		protected $wil = 0;
 	
 		public function __construct($room_id)
 		{
@@ -86,30 +79,68 @@
 		public function getMaxMana() { return $this->max_mana; }
 		public function getMovement() { return $this->movement; }
 		public function getMaxMovement() { return $this->max_movement; }
-		public function getStr($base = false) { return $base ? $this->base_str : $this->current_str; }
-		public function getInt($base = false) { return $base ? $this->base_int : $this->current_int; }
-		public function getWis($base = false) { return $base ? $this->base_wis : $this->current_wis; }
-		public function getDex($base = false) { return $base ? $this->base_dex : $this->current_dex; }
-		public function getCon($base = false) { return $base ? $this->base_con : $this->current_con; }
-		public function getVit($base = false) { return $base ? $this->base_vit : $this->current_vit; }
-		public function getWil($base = false) { return $base ? $this->base_wil : $this->current_wil; }
-		public function setStr($str, $base = false) { return $this->setAttribute('str', $str, $base ? 'base' : 'current'); }
-		public function setInt($int, $base = false) { return $this->setAttribute('int', $int, $base ? 'base' : 'current'); }
-		public function setWis($wis, $base = false) { return $this->setAttribute('wis', $wis, $base ? 'base' : 'current'); }
-		public function setDex($dex, $base = false) { return $this->setAttribute('dex', $dex, $base ? 'base' : 'current'); }
-		public function setCon($con, $base = false) { return $this->setAttribute('con', $con, $base ? 'base' : 'current'); }
-		public function setVit($con, $base = false) { return $this->setAttribute('vit', $con, $base ? 'base' : 'current'); }
-		public function setWil($con, $base = false) { return $this->setAttribute('wil', $con, $base ? 'base' : 'current'); }
-		private function setAttribute($attribute, $value, $which)
+		public function getStr($base = false)
 		{
-			$method = 'getMax' . ucfirst($attribute);
-			if($value > $this->race->$method($which == 'base'))
-				return false;
-			if($which == 'base')
-				$this->{'base_' . $attribute} = $value;
-			$this->{'current_' . $attribute} = $value;
-			return true;
+			if($base)
+				return $this->str;
+			$str = $this->str;
+			if(array_key_exists('stun', $this->affects))
+				$str -= 3;
+			if(array_key_exists('berserk', $this->affects))
+				$str += $this->affects['berserk']->getArgs('str');
+			return $str;
 		}
+		public function getInt($base = false)
+		{
+			if($base)
+				return $this->_int;
+			$int = $this->_int;
+			return $int;
+		}
+		public function getWis($base = false)
+		{
+			if($base)
+				return $this->wis;
+			$wis = $this->wis;
+			return $wis;
+		}
+		public function getDex($base = false)
+		{
+			if($base)
+				return $this->dex;
+			$dex = $this->dex;
+			if(array_key_exists('berserk', $this->affects))
+				$dex += $this->affects['berserk']->getArgs('dex');
+			return $dex;
+		}
+		public function getCon($base = false)
+		{
+			if($base)
+				return $this->con;
+			$con = $this->con;
+			return $con;
+		}
+		public function getVit($base = false)
+		{
+			if($base)
+				return $this->vit;
+			$vit = $this->vit;
+			return $vit;
+		}
+		public function getWil($base = false)
+		{
+			if($base)
+				return $this->wil;
+			$wil = $this->wil;
+			return $wil;
+		}
+		public function setStr($str) { $this->str = $str; }
+		public function setInt($int) { $this->_int = $int; }
+		public function setWis($wis) { $this->wis = $wis; }
+		public function setDex($dex) { $this->dex = $dex; }
+		public function setCon($con) { $this->con = $con }
+		public function setVit($vit) { $this->vil = $vit; }
+		public function setWil($wil) { $this->wil = $wil; }
 		public function tick()
 		{
 			$this->hp += floor(rand($this->max_hp * 0.05, $this->max_hp * 0.1));
@@ -187,10 +218,17 @@
 		public function setAcBash($ac_bash) { $this->ac_bash = $ac_bash; }
 		public function setAcPierce($ac_pierce) { $this->ac_pierce = $ac_pierce; }
 		public function setAcMagic($ac_magic) { $this->ac_magic = $ac_magic; }
-		public function getAcSlash() { return $this->ac_slash; }
-		public function getAcBash() { return $this->ac_bash; }
-		public function getAcPierce() { return $this->ac_pierce; }
-		public function getAcMagic() { return $this->ac_magic; }
+		public function getAcSlash() { return $this->getAc('ac_slash'); }
+		public function getAcBash() { return $this->getAc('ac_bash'); }
+		public function getAcPierce() { return $this->getAc('ac_pierce'); }
+		public function getAcMagic() { return $this->getAc('ac_magic'); }
+		private function getAc($ac_class)
+		{
+			$ac = $this->$ac_class;
+			if(array_key_exists('armor', $this->affects))
+				$ac += $this->affects['armor']->getArgs('mod_ac');
+			return $ac;
+		}
 		public function isAlive()
 		{
 			if($this->max_hp == 0)
@@ -375,7 +413,7 @@
 				$this->setTarget(null);
 				$killer->setTarget(null);
 			
-				if($killer instanceof Actor && $this->getAlias() != $killer->getAlias())
+				if($this->getAlias() != $killer->getAlias())
 				{
 					Debug::addDebugLine($killer->getAlias(true) . ' killed ' . $this->getAlias() . ".");
 					Server::out($killer, 'You have KILLED ' . $this->getAlias() . '.');

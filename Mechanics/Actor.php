@@ -62,7 +62,11 @@
 		/**
 		 * AFFECTS - array of affects (object type Affect) currently applied to the actor
 		 */
-		public function addAffect(Affect $affect) { $this->affects[] = $affect; }
+		public function addAffect(Affect $affect)
+		{
+			$i = $affect->getAffect();
+			$this->affects[$i] = $affect;
+		}
 		public function removeAffect(Affect $affect)
 		{
 			$i = array_search($affect, $this->affects);
@@ -87,6 +91,16 @@
 		
 		public function tick()
 		{
+			foreach($this->affects as $i => $affect)
+			{
+				if(!$affect->getTimeout())
+				{
+					if($affect->getMessageEnd())
+						Server::out($this, $affect->getMessageEnd());
+					unset($this->affects[$i]);
+				}
+				$affect->decreaseTime();
+			}
 			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		

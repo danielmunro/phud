@@ -28,8 +28,8 @@
 	class Armor extends \Mechanics\Spell
 	{
 	
-		protected $name_familiar = 'armor';
-		protected $name_unfamiliar = 'plysoxix';
+		protected static $name_familiar = 'armor';
+		protected static $name_unfamiliar = 'plysoxix';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
@@ -42,38 +42,21 @@
 			if(!($target instanceof \Mechanics\Actor))
 				return \Mechanics\Server::out($actor, "You cannot cast that on that.");
 			
-			$timeout = floor((10 * \Mechanics\Server::PULSES_PER_TICK) + (20 * \Mechanics\Server::PULSES_PER_TICK * ($actor->getLevel() / \Mechanics\Actor::MAX_LEVEL)));
+			$timeout = 1 + ceil($actor->getLevel() * 0.9);
 			
 			$modifier = max(floor($actor->getLevel() / 10), 1);
 			$mod_ac = -15 * $modifier;
 			
-			new \Mechanics\Affect(__CLASS__, $target, 'Spell: armor: ' . $mod_ac . ' to armor class',  array('mod_ac' => $mod_ac, 'timeout' => $timeout));
+			// new \Mechanics\Affect(self::$name_familiar, 'Spell: armor: ' . $mod_ac . ' to armor class', $timeout, array('mod_ac' => $mod_ac))
+			$a = new \Mechanics\Affect();
+			$a->setAffect(self::$name_familiar);
+			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
+			$a->setMessageEnd('You feel less protected.');
+			$a->setTimeout($timeout);
+			$a->setArgs(array('mod_ac' => $mod_ac));
+			$target->addAffect($a);
 			\Mechanics\Server::out($target, "You feel more protected!");
 			return false;
-		}
-		
-		public static function apply(&$target, $args, $affect)
-		{
-			
-			$target->setAcSlash($target->getAcSlash() + $args['mod_ac']);
-			$target->setAcBash($target->getAcBash() + $args['mod_ac']);
-			$target->setAcPierce($target->getAcPierce() + $args['mod_ac']);
-			$target->setAcMagic($target->getAcMagic() + $args['mod_ac']);
-			
-			\Mechanics\Pulse::instance()->registerEvent
-			(
-				$args['timeout'],
-				function($args)
-				{
-					\Mechanics\Server::out($args[0], "You feel less protected.");
-					$args[2]->removeAffectFrom($args[0]);
-					$args[0]->setAcSlash($args[0]->getAcSlash() - $args[1]);
-					$args[0]->setAcBash($args[0]->getAcBash() - $args[1]);
-					$args[0]->setAcPierce($args[0]->getAcPierce() - $args[1]);
-					$args[0]->setAcMagic($args[0]->getAcMagic() - $args[1]);
-				},
-				array($target, $args['mod_ac'], $affect)
-			);
 		}
 	}
 ?>

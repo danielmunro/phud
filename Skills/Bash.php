@@ -64,15 +64,10 @@
 		
 		public function apply($target, $timeout = null)
 		{
-			if(!$timeout)
-				$timeout = 2;
-			return new Affect(
-								$target,
-								Affect::STUN,
-								function($target) { $target->setStr($target->getStr() - 5); },
-								function($target) { $target->setStr($target->getStr() + 5); },
-								$timeout
-							);
+			$a = new Affect();
+			$a->setAffect('stun');
+			$a->setTimeout(0);
+			$target->addAffect($a);
 		}
 	}
 ?>
