@@ -53,7 +53,11 @@
 			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
 			$a->setMessageEnd('You feel less protected.');
 			$a->setTimeout($timeout);
-			$a->setArgs(array('mod_ac' => $mod_ac));
+			$atts = $a->getAttributes();
+			$atts->setAcBash($mod_ac);
+			$atts->setAcSlash($mod_ac);
+			$atts->setAcPierce($mod_ac);
+			$atts->setAcMagic($mod_ac);
 			$target->addAffect($a);
 			\Mechanics\Server::out($target, "You feel more protected!");
 			return false;

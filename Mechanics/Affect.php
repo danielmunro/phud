@@ -36,9 +36,15 @@
 		private $message_end = '';
 		private $timeout = 0;
 		private $args = array();
+		private $attributes = null;
 		
 		public function __construct()
 		{
+			$this->attributes = new Attributes();
+		}
+		public function getAttributes()
+		{
+			return $this->attributes;
 		}
 		public function setAffect($affect)
 		{
@@ -107,7 +113,13 @@
 		}
 		public function save($table, $id)
 		{
-			Db::getInstance()->query('INSERT INTO affects (fk_table, fk_id, affect, message_affect, message_end, timeout, args) VALUES (?, ?, ?, ?, ?, ?, ?)', array($table, $id, $this->affect, $this->message_affect, $this->message_end, $this->timeout, serialize($this->args)));
+			Db::getInstance()->query('INSERT INTO affects (fk_table, fk_id, affect, message_affect, message_end, timeout, args) VALUES (?, ?, ?, ?, ?, ?, ?)
+				ON DUPLICATE KEY UPDATE timeout = ?', array($table, $id, $this->affect, $this->message_affect, $this->message_end, $this->timeout, 
+				serialize($this->args), $this->timeout));
+		}
+		public function removeFromDb($table, $id)
+		{
+			Db::getInstance()->query('DELETE FROM affects WHERE fk_table = ? AND fk_id = ? AND affect = ?', array($table, $id, $this->affect));
 		}
 	}
 ?>

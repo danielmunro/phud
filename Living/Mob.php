@@ -76,24 +76,20 @@
 			if($this->id)
 			{
 				\Mechanics\Db::getInstance()->query('UPDATE mobs SET alias = ?, noun = ?, `long` = ?, auto_flee = ?, `unique` = ?, area = ?, movement_speed = ?, 
-					respawn_time = ?, str = ?, `int` = ?, wis = ?, dex = ?, con = ?, vit = ?, wil = ?, hp = ?, max_hp = ?, mana = ?, max_mana = ?, movement = ?, 
-					max_movement = ?, gold = ?, silver = ?, copper = ?, race = ?, fk_room_id = ?, level = ? WHERE id = ?', array ($this->alias, $this->noun,
-					$this->long, $this->auto_flee ? 1 : 0, $this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->base_str, 
-					$this->base_int, $this->base_wis, $this->base_dex, $this->base_con, $this->base_vit, $this->base_wil, $this->hp, $this->max_hp, $this->mana,
-					$this->max_mana, $this->movement, $this->max_movement, $this->gold, $this->silver, $this->copper, $this->race, $this->room->getId(),
-					$this->level, $this->id), true);
+					respawn_time = ?, gold = ?, silver = ?, copper = ?, race = ?, fk_room_id = ?, level = ? WHERE id = ?', array ($this->alias, $this->noun,
+					$this->long, $this->auto_flee ? 1 : 0, $this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->gold, 
+					$this->silver, $this->copper, $this->race, $this->room->getId(), $this->level, $this->id));
 			}
 			else
 			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO mobs (alias, noun, `long`, auto_flee, `unique`, area, movement_speed, respawn_time, str, `int`, wis, dex, 
-					con, vit, wil, hp, max_hp, mana, max_mana, movement, max_movement, gold, silver, copper, race, fk_room_id, level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 
-					?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array ($this->alias, $this->noun, $this->long, $this->auto_flee ? 1 : 0, 
-					$this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->base_str, $this->base_int, $this->base_wis, $this->base_dex, 
-					$this->base_con, $this->base_vit, $this->base_wil, $this->hp, $this->max_hp, $this->mana, $this->max_mana, $this->movement, $this->max_movement, 
-					$this->gold, $this->silver, $this->copper, $this->race, $this->room->getId(), $this->level), true);
+				\Mechanics\Db::getInstance()->query('INSERT INTO mobs (alias, noun, `long`, auto_flee, `unique`, area, movement_speed, respawn_time, 
+					gold, silver, copper, race, fk_room_id, level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array ($this->alias, $this->noun, 
+					$this->long, $this->auto_flee ? 1 : 0, $this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->gold, 
+					$this->silver, $this->copper, $this->race, $this->room->getId(), $this->level));
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 				$this->inventory->setTableId($this->id);
 			}
+			$this->attributes->save($this->getTable(), $this->id);
 			$this->inventory->save();
 			$this->ability_set->save();
 		}

@@ -35,130 +35,159 @@
 		protected $concentration = 0;
 		protected $delay = 0;
 		protected $fightable = true;
-		protected $hit_roll = 0;
-		protected $dam_roll = 0;
-		
-		// Armor
-		protected $ac_slash = 0;
-		protected $ac_bash = 0;
-		protected $ac_pierce = 0;
-		protected $ac_magic = 0;
-		
+		protected $attributes = null;
 		protected $discipline = null;
 		protected $battle = null;
 		protected $target = null;
 		protected $fighting = array();
-		
-		// Vitals
-		protected $hp = 20;
-		protected $max_hp = 20;
-		protected $mana = 100;
-		protected $max_mana = 100;
-		protected $movement = 100;
-		protected $max_movement = 100;
-		
-		// Attributes
-		protected $str = 0;
-		protected $_int = 0;
-		protected $wis = 0;
-		protected $dex = 0;
-		protected $con = 0;
-		protected $vit = 0;
-		protected $wil = 0;
 	
 		public function __construct($room_id)
 		{
-			$this->hit_roll = $this->race->getHitRoll();
-			$this->dam_roll = $this->race->getDamRoll();
+			$this->attributes = new Attributes();
+			if($this->getId())
+			{
+				$this->attributes->load($this->getTable(), $this->getId());
+			}
+			else
+			{
+				$this->race->applyRacialAttributeModifiers($this);
+			}
 			parent::__construct($room_id);
 		}
-		
-		public function getHp() { return $this->hp; }
-		public function getMaxHp() { return $this->max_hp; }
-		public function getMana() { return $this->mana; }
-		public function getMaxMana() { return $this->max_mana; }
-		public function getMovement() { return $this->movement; }
-		public function getMaxMovement() { return $this->max_movement; }
-		public function getStr($base = false)
+		public function getAttributes()
 		{
-			if($base)
-				return $this->str;
-			$str = $this->str;
-			if(array_key_exists('stun', $this->affects))
-				$str -= 3;
-			if(array_key_exists('berserk', $this->affects))
-				$str += $this->affects['berserk']->getArgs('str');
+			return $this->attributes;
+		}
+		public function getHp()
+		{
+			return $this->attributes->getHp();
+		}
+		public function getMaxHp()
+		{
+			$hp = $this->attributes->getMaxHp();
+			foreach($this->affects as $a)
+				$hp += $a->getAttributes()->getMaxHp();
+			return $hp;
+		}
+		public function getMana()
+		{
+			return $this->attributes->getMana();
+		}
+		public function getMaxMana()
+		{
+			$mana = $this->attributes->getMaxMana();
+			foreach($this->affects as $a)
+				$mana += $a->getAttributes()->getMaxMana();
+			return $mana;
+		}
+		public function getMovement()
+		{
+			return $this->attributes->getMovement();
+		}
+		public function getMaxMovement()
+		{
+			$movement = $this->attributes->getMaxMovement();
+			foreach($this->affects as $a)
+				$movement += $a->getAttributes()->getMaxMovement();
+			return $movement;
+		}
+		public function setStr($str)
+		{
+			$this->attributes->setStr($str);
+		}
+		public function setInt($int)
+		{
+			$this->attributes->setInt($int);
+		}
+		public function setWis($wis)
+		{
+			$this->attributes->setWis($wis);
+		}
+		public function setDex($dex)
+		{
+			$this->attributes->setDex($dex);
+		}
+		public function setCon($con)
+		{
+			$this->attributes->setCon($con);
+		}
+		public function getStr()
+		{
+			$str = $this->attributes->getStr();
+			foreach($this->affects as $a)
+				$str += $a->getAttributes()->getStr();
 			return $str;
 		}
-		public function getInt($base = false)
+		public function getInt()
 		{
-			if($base)
-				return $this->_int;
-			$int = $this->_int;
+			$int = $this->attributes->getInt();
+			foreach($this->affects as $a)
+				$int += $a->getAttributes()->getInt();
 			return $int;
 		}
-		public function getWis($base = false)
+		public function getWis()
 		{
-			if($base)
-				return $this->wis;
-			$wis = $this->wis;
+			$wis = $this->attributes->getWis();
+			foreach($this->affects as $a)
+				$wis += $a->getAttributes()->getWis();
 			return $wis;
 		}
-		public function getDex($base = false)
+		public function getDex()
 		{
-			if($base)
-				return $this->dex;
-			$dex = $this->dex;
-			if(array_key_exists('berserk', $this->affects))
-				$dex += $this->affects['berserk']->getArgs('dex');
+			$dex = $this->attributes->getDex();
+			foreach($this->affects as $a)
+				$dex += $a->getAttributes()->getDex();
 			return $dex;
 		}
-		public function getCon($base = false)
+		public function getCon()
 		{
-			if($base)
-				return $this->con;
-			$con = $this->con;
+			$con = $this->attributes->getCon();
+			foreach($this->affects as $a)
+				$con += $a->getAttributes()->getCon();
 			return $con;
 		}
-		public function getVit($base = false)
+		
+		public function getBaseStr()
 		{
-			if($base)
-				return $this->vit;
-			$vit = $this->vit;
-			return $vit;
+			return $this->attributes->getStr();
 		}
-		public function getWil($base = false)
+		public function getBaseInt()
 		{
-			if($base)
-				return $this->wil;
-			$wil = $this->wil;
-			return $wil;
+			return $this->attributes->getInt();
 		}
-		public function setStr($str) { $this->str = $str; }
-		public function setInt($int) { $this->_int = $int; }
-		public function setWis($wis) { $this->wis = $wis; }
-		public function setDex($dex) { $this->dex = $dex; }
-		public function setCon($con) { $this->con = $con }
-		public function setVit($vit) { $this->vil = $vit; }
-		public function setWil($wil) { $this->wil = $wil; }
+		public function getBaseWis()
+		{
+			return $this->attributes->getWis();
+		}
+		public function getBaseDex()
+		{
+			return $this->attributes->getDex();
+		}
+		public function getBaseCon()
+		{
+			return $this->attributes->getCon();
+		}
+		
 		public function tick()
 		{
-			$this->hp += floor(rand($this->max_hp * 0.05, $this->max_hp * 0.1));
-			if($this->hp > $this->max_hp)
-				$this->hp = $this->max_hp;
-			$this->mana += floor(rand($this->max_mana * 0.05, $this->max_mana * 0.1));
-			if($this->mana > $this->max_mana)
-				$this->mana = $this->max_mana;
-			$this->movement += floor(rand($this->max_movement * 0.05, $this->max_movement * 0.1));
-			if($this->movement > $this->max_movement)
-				$this->movement = $this->max_movement;
+			$this->attributes->setHp($this->attributes->getHp() + floor(rand($this->attributes->getMaxHp() * 0.05, $this->attributes->getMaxHp() * 0.1)));
+			if($this->attributes->getHp() > $this->attributes->getMaxHp())
+				$this->attributes->setHp($this->attributes->getMaxHp());
+			$this->attributes->setMana($this->attributes->getMana() + floor(rand($this->attributes->getMaxMana() * 0.05, $this->attributes->getMaxMana() * 0.1)));
+			if($this->attributes->getMana() > $this->attributes->getMaxMana())
+				$this->attributes->setMana($this->attributes->getMaxMana());
+			$this->attributes->setMovement($this->attributes->getMovement() + floor(rand($this->attributes->getMaxMovement() * 0.05, $this->attributes->getMaxMovement() * 0.1)));
+			if($this->attributes->getMovement() > $this->attributes->getMaxMovement())
+				$this->attributes->setMovement($this->attributes->getMaxMovement());
 			parent::tick();
 		}
+		/**
 		public function setRace($race)
 		{
 			parent::setRace($race);
 			$this->race->applyRacialAttributeModifiers($this);
 		}
+		*/
 		public function getExperience() { return $this->experience; }
 		public function getExpPerLevel() { return $this->exp_per_level; }
 		public function getConcentration() { return $this->concentration; }
@@ -169,7 +198,7 @@
 		}
 		public function getHpPercent()
 		{
-			return ($this->hp / $this->max_hp) * 100;
+			return ($this->attributes->getHp() / $this->attributes->getMaxHp()) * 100;
 		}
 		public function getStatus()
 		{
@@ -212,21 +241,56 @@
 					$this->getAlias(true) . ' ' . $this->getStatus() . '.';
 		
 		}
-		public function setHitRoll($hit_roll) { $this->hit_roll = $hit_roll; }
-		public function setDamRoll($dam_roll) { $this->dam_roll = $dam_roll; }
-		public function setAcSlash($ac_slash) { $this->ac_slash = $ac_slash; }
-		public function setAcBash($ac_bash) { $this->ac_bash = $ac_bash; }
-		public function setAcPierce($ac_pierce) { $this->ac_pierce = $ac_pierce; }
-		public function setAcMagic($ac_magic) { $this->ac_magic = $ac_magic; }
-		public function getAcSlash() { return $this->getAc('ac_slash'); }
-		public function getAcBash() { return $this->getAc('ac_bash'); }
-		public function getAcPierce() { return $this->getAc('ac_pierce'); }
-		public function getAcMagic() { return $this->getAc('ac_magic'); }
-		private function getAc($ac_class)
+		public function setHit($hit)
 		{
-			$ac = $this->$ac_class;
-			if(array_key_exists('armor', $this->affects))
-				$ac += $this->affects['armor']->getArgs('mod_ac');
+			$this->attributes->setHit($hit);
+		}
+		public function setDam($dam)
+		{
+			$this->attributes->setDam($dam);
+		}
+		public function setAcSlash($ac_slash)
+		{
+			$this->attributes->setAcSlash($ac_slash);
+		}
+		public function setAcBash($ac_bash)
+		{
+			$this->attributes->setAcBash($ac_bash);
+		}
+		public function setAcPierce($ac_pierce)
+		{
+			$this->attributes->setAcPierce($ac_pierce);
+		}
+		public function setAcMagic($ac_magic)
+		{
+			$this->attributes->setAcMagic($ac_magic);
+		}
+		public function getAcSlash()
+		{
+			$ac = $this->attributes->getAcSlash();
+			foreach($this->affects as $a)
+				$ac += $a->getAttributes()->getAcSlash();
+			return $ac;
+		}
+		public function getAcBash()
+		{
+			$ac = $this->attributes->getAcBash();
+			foreach($this->affects as $a)
+				$ac += $a->getAttributes()->getAcBash();
+			return $ac;
+		}
+		public function getAcPierce()
+		{
+			$ac = $this->attributes->getAcPierce();
+			foreach($this->affects as $a)
+				$ac += $a->getAttributes()->getAcPierce();
+			return $ac;
+		}
+		public function getAcMagic()
+		{
+			$ac = $this->attributes->getAcMagic();
+			foreach($this->affects as $a)
+				$ac += $a->getAttributes()->getAcMagic();
 			return $ac;
 		}
 		public function isAlive()
@@ -267,13 +331,27 @@
 		}
 		public function increaseHitDam($hit = 0, $dam = 0)
 		{
-			$this->hit_roll += $hit;
-			$this->dam_roll += $dam;
+			$this->attributes->setHit($this->attributes->getHit() + $hit);
+			$this->attributes->setDam($this->attributes->getDam() + $dam);
 		}
 		public function decreaseHitDam($hit = 0, $dam = 0)
 		{
-			$this->hit_roll -= $hit;
-			$this->dam_roll -= $dam;
+			$this->attributes->setHit($this->attributes->getHit() - $hit);
+			$this->attributes->setDam($this->attributes->getDam() - $dam);
+		}
+		public function getHit()
+		{
+			$hit = $this->attributes->getHit();
+			foreach($this->affects as $a)
+				$hit += $a->getHit();
+			return $hit;
+		}
+		public function getDam()
+		{
+			$dam = $this->attributes->getDam();
+			foreach($this->affects as $a)
+				$dam += $a->getDam();
+			return $dam;
 		}
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
 		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
@@ -309,8 +387,8 @@
 			}
 		
 			// ATTACKING
-			$hit_roll = $this->hit_roll;
-			$dam_roll = $this->dam_roll;
+			$hit_roll = $this->getHit();
+			$dam_roll = $this->getDam();
 			
 			$hit_roll += ($this->getDex() / self::MAX_ATTRIBUTE) * 4;
 			

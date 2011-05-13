@@ -85,7 +85,7 @@
 						$this->clients[] = $user = new \Living\User($socket);
 						$added = array_search($user, $this->clients);
 					}
-					self::out($this->clients[$added], 'Welcome to mud. What is yer name? ', false);
+					self::out($this->clients[$added], 'By what name do you wish to be known? ', false);
 				}
 				
 				// Pulse

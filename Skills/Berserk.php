@@ -48,10 +48,12 @@
 			$dex = ceil(2 * $p);
 			$a = new \Mechanics\Affect();
 			$a->setAffect('berserk');
-			$a->setMessageAffect('Affect: berserk.');
+			$a->setMessageAffect('Affect: berserk');
 			$a->setMessageEnd('You cool down.');
 			$a->setTimeout($timeout);
-			$a->setArgs(array('str' => $str, 'dex' => $dex));
+			$att = $a->getAttributes();
+			$att->setStr($str);
+			$att->setDex($dex);
 			$actor->addAffect($a);
 			\Mechanics\Server::out($actor, "You fly into a rage!");
 		}

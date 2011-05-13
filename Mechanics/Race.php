@@ -105,14 +105,14 @@
 		public function applyRacialAttributeModifiers(&$actor)
 		{
 			
-			$actor->setStr($this->str, true);
-			$actor->setInt($this->int, true);
-			$actor->setWis($this->wis, true);
-			$actor->setDex($this->dex, true);
-			$actor->setCon($this->con, true);
+			$actor->setStr($this->str);
+			$actor->setInt($this->int);
+			$actor->setWis($this->wis);
+			$actor->setDex($this->dex);
+			$actor->setCon($this->con);
 			
-			$actor->setHitRoll($this->hit_roll);
-			$actor->setDamRoll($this->dam_roll);
+			$actor->setHit($this->hit_roll);
+			$actor->setDam($this->dam_roll);
 			
 			$actor->setAcSlash($this->ac_slash);
 			$actor->setAcBash($this->ac_bash);

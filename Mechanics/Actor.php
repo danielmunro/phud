@@ -97,9 +97,12 @@
 				{
 					if($affect->getMessageEnd())
 						Server::out($this, $affect->getMessageEnd());
+					$affect->removeFromDb($this->getTable(), $this->getId());
 					unset($this->affects[$i]);
+					continue;
 				}
 				$affect->decreaseTime();
+				$affect->save($this->getTable(), $this->getId());
 			}
 			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
 		}

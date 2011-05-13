@@ -74,22 +74,11 @@
 			if(empty($row))
 				throw new \Exception('No user found');
 			$this->alias = $row->alias;
-			$this->hp = $row->hp;
-			$this->max_hp = $row->max_hp;
-			$this->mana = $row->mana;
-			$this->max_mana = $row->max_mana;
-			$this->movement = $row->movement;
-			$this->max_movement = $row->max_movement;
 			$this->level = $row->level;
 			$this->copper = $row->copper;
 			$this->silver = $row->silver;
 			$this->gold = $row->gold;
 			$this->password = $row->pass;
-			$this->str = $row->str;
-			$this->_int = $row->int;
-			$this->wis = $row->wis;
-			$this->dex = $row->dex;
-			$this->con = $row->con;
 			$this->setRace($row->race);
 			$this->experience = $row->experience;
 			$this->exp_per_level = $row->exp_per_level;
@@ -102,8 +91,7 @@
 			$discipline = 'Disciplines\\' . $row->discipline;
 			$this->discipline = new $discipline($this);
 			self::$instances[$this->id] = $this;
-			//$this->ability_set->addAbility(new \Skills\Berserk(100, $this->id));
-			\Mechanics\Affect::reapplyFromDb($this, 'users');
+			\Mechanics\Affect::reapplyFromDb($this, $this->getTable());
 		}
 		public static function getInstances() { return self::$instances; }
 		public function getTable() { return 'users'; }
@@ -149,56 +137,24 @@
 		public function save()
 		{
 			\Mechanics\Debug::addDebugLine("Saving actor " . $this->getAlias(true));
-			
-			$this->inventory->save();
-			$this->equipped->save();
-			
-			foreach($this->affects as $affect)
-				$affect->save('users', $this->id);
-			
-			if($this->id)
-				$this->ability_set->save();
-			
 			if($this->id)
 				\Mechanics\Db::getInstance()->query('UPDATE ' . $this->getTable() . ' SET 
 											alias = ?,
-											hp = ?,
-											max_hp = ?,
-											mana = ?,
-											max_mana = ?,
-											movement = ?,
-											max_movement = ?,
 											level = ?,
 											copper = ?,
 											silver = ?,
 											gold = ?,
 											pass = ?,
-											str = ?,
-											`int` = ?,
-											wis = ?,
-											dex = ?,
-											con = ?,
 											race = ?,
 											experience = ?,
 											exp_per_level = ?,
 											fk_room_id = ? WHERE id = ?', array(
 											$this->getAlias(),
-											$this->hp,
-											$this->max_hp,
-											$this->mana,
-											$this->max_mana,
-											$this->movement,
-											$this->max_movement,
 											$this->level,
 											$this->copper,
 											$this->silver,
 											$this->gold,
 											$this->password,
-											$this->str,
-											$this->_int,
-											$this->wis,
-											$this->dex,
-											$this->con,
 											$this->getRaceStr(),
 											$this->experience,
 											$this->exp_per_level,
@@ -206,31 +162,26 @@
 											$this->id));
 			else
 			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, hp, max_hp, mana, max_mana, movement, max_movement, level, copper, silver, gold, pass, str, `int`, wis, dex, con, race, fk_room_id, discipline) VALUES
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, level, copper, silver, gold, pass, race, fk_room_id, discipline) VALUES
 															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
 																$this->getAlias(),
-																$this->hp,
-																$this->max_hp,
-																$this->mana,
-																$this->max_mana,
-																$this->movement,
-																$this->max_movement,
 																$this->level,
 																$this->copper,
 																$this->silver,
 																$this->gold,
 																$this->password,
-																$this->str,
-																$this->_int,
-																$this->wis,
-																$this->dex,
-																$this->con,
 																(string)$this->race,
 																$this->getRoom()->getId(),
 																(string)$this->discipline
 															));
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
+			$this->inventory->save();
+			$this->equipped->save();
+			$this->ability_set->save();
+			$this->attributes->save($this->getTable(), $this->id);
+			foreach($this->affects as $affect)
+				$affect->save($this->getTable(), $this->id);
 		}
 		
 		public function resetLogin() { $this->login = array('alias' => false); }
@@ -245,14 +196,12 @@
 					$this->login['alias'])->getResult()->fetch_object();
 				if(!empty($row))
 				{
-					\Mechanics\Server::out($this, 'Please give me yer secret password: ', false);
+					\Mechanics\Server::out($this, 'Password: ', false);
 					$this->login['pass'] = false;
 				}
 				else
 				{
-					\Mechanics\Server::out($this, 'Ah, a newcomer to our realm! I will help get you set up to begin your adventure.');
-					\Mechanics\Server::out($this, 'My senses are old and weary, but I must keep up the records!');
-					\Mechanics\Server::out($this, 'First things first, did I hear ye right, yer name is ' . $this->login['alias'] . '? (y/n) ', false);
+					\Mechanics\Server::out($this, 'Did I get that right, ' . $this->login['alias'] . '? (y/n) ', false);
 					$this->login['confirm_new'] = false;
 				}
 				return;
@@ -266,8 +215,9 @@
 			
 				if($this->id == 0)
 				{
-					\Mechanics\Server::out($this, 'Hmm... Did I hear you right? Try again.');
-					$this->login = array('alias' => false);
+					\Mechanics\Server::out($this, 'Wrong password.');
+					\Mechanics\Server::getInstance()->disconnectUser($this);
+					$this->clearSocket();
 				}
 				else
 					\Commands\Look::perform($this);
@@ -283,13 +233,14 @@
 					case 'y':
 					case 'yes':
 						$this->login['new_pass'] = false;
-						return \Mechanics\Server::out($this, "Alright, good. Now I'll need a secret password from ye so I'll recognize you later. What is that password? ", false);
+						\Mechanics\Server::out($this, "New character.");
+						return \Mechanics\Server::out($this, "Give me a password for ".$this->login['alias'].": ", false);
 					case 'n':
 					case 'no':
 						$this->login = array('alias' => false);
-						return \Mechanics\Server::out($this, "Must've misheard ye. What is yer name again? ", false);
+						return \Mechanics\Server::out($this, "Ok, what IS it then? ", false);
 					default:
-						return \Mechanics\Server::out($this, 'Eh? It was a yes or no question, so which is it? ', false);
+						return \Mechanics\Server::out($this, 'Please type Yes or No: ', false);
 				}
 			}
 			
@@ -297,7 +248,7 @@
 			{
 				$this->login['new_pass'] = $input;
 				$this->login['new_pass_2'] = false;
-				return \Mechanics\Server::out($this, 'Can I get that again? ', false);
+				return \Mechanics\Server::out($this, 'Please retype password: ', false);
 			}
 			
 			if(isset($this->login['new_pass_2']) && $this->login['new_pass_2'] === false)
@@ -306,14 +257,14 @@
 				if($this->login['new_pass'] == $this->login['new_pass_2'])
 				{
 					$this->login['race'] = false;
-					\Mechanics\Server::out($this, 'Alright! What race are you?');
-					\Mechanics\Server::out($this, '[human undead faerie elf ogre] ', false);
+					$this->racesAvailable();
 				}
 				else
 				{
 					unset($this->login['new_pass_2']);
 					$this->login['new_pass'] = false;
-					\Mechanics\Server::out($this, "Yer passwords don't match. What is yer password? ", false);
+					\Mechanics\Server::out($this, "Passwords don't match.");
+					\Mechanics\Server::out($this, "Retype password: ", false);
 				}
 				return;
 			}
@@ -328,19 +279,110 @@
 				}
 				catch(Exception $e)
 				{
-					\Mechanics\Server::out($this, "I'm not familiar with that race, please tell me again? ", false);
+					\Mechanics\Server::out($this, "That's not a valid race.");
+					$this->racesAvailable();
 					$this->login['race'] = false;
 					return;
 				}
 				
-				\Mechanics\Server::out($this, "Ah! Right, you'll have to forgive my vision. I can see you now.");
+				\Mechanics\Server::out($this, "What is your sex (m/f)? ", false);
+				$this->login['sex'] = '';
+			}
+			
+			if(isset($this->login['sex']) && $this->login['sex'] === '')
+			{
+				if($input == 'm' || $input == 'male')
+					$this->login['sex'] = 'm';
+				else if($input == 'f' || $input == 'female')
+					$this->login['sex'] = 'f';
+				else
+					\Mechanics\Server::out($this, "That's not a sex.\nWhat IS your sex? ", false);
+				
+				if($this->login['sex'])
+				{
+					\Mechanics\Server::out($this, "Select a class [barbarian crusader rogue wizard]: ", false);
+					$this->login['discipline'] = false;
+					return;
+				}
+			}
+			
+			if(isset($this->login['discipline']) && $this->login['discipline'] === false)
+			{
+				
+				$discipline = 'Disciplines\\' . ucfirst($input);
+				
+				if(class_exists($discipline))
+				{
+					$this->discipline = new $discipline($this);
+					$this->login['discipline'] = true;
+					$this->login['align'] = false;
+					\Mechanics\Server::out($this, "\nYou may be good, neutral, or evil.\nWhich alignment (g/n/e)? ", false);
+				}
+				else
+				{
+					\Mechanics\Server::out($this, "That's not a class.\nWhat IS your class? ", false);
+				}
+				return;
+			}
+			
+			if(isset($this->login['align']) && $this->login['align'] === false)
+			{
+				if($input == 'g' || $input == 'good')
+					$this->login['align'] = 500;
+				else if($input == 'n' || $input == 'neutral')
+					$this->login['align'] = 0;
+				else if($input == 'e' || $input == 'evil')
+					$this->login['align'] = -500;
+				else
+					return \Mechanics\Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
+				
+				$this->login['custom'] = false;
+				return \Mechanics\Server::out($this, "Customization takes time, but allows a wider range of skills and abilities.\nCustomize (y/n)? ", false);
+			}
+			
+			if(isset($this->login['custom']) && $this->login['custom'] === false)
+			{
+				if($input == 'y' || $input == 'yes')
+					$this->login['custom'] = 1;
+				else if($input == 'n' || $input == 'no')
+					$this->login['custom'] = 2;
+				else
+					return \Mechanics\Server::out($this, "\nCustomize (y/n)? ", false);
+			}
+			
+			if(isset($this->login['custom']) && $this->login['custom'] === 1)
+			{
+				if(!isset($this->login['custom_start']))
+				{
+					$this->login['custom_start'] = 1;
+					return $this->customizeList();
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 				\Mechanics\Server::out($this, "Now let's figure out your attributes...");
 				$this->login['attr'] = 0;
 				\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 				\Mechanics\Server::out($this,
 					'Str ' . $this->getStr(true) . ' Int ' . $this->getInt(true) . ' Wis ' . $this->getWis(true) . ' Dex ' . $this->getDex(true) . ' Con ' . $this->getCon(true));
 				\Mechanics\Server::out($this, "Add a point to: ", false);
-			}
 			
 			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
 			{
@@ -365,24 +407,8 @@
 				}
 				else
 				{
-					$this->login['discipline'] = false;
 					$this->login['attr'] = true;
-					\Mechanics\Server::out($this, "Please select your primary discipline:");
-					\Mechanics\Server::out($this, "[barbarian crusader rogue wizard]");
 					return;
-				}
-			}
-			
-			if(isset($this->login['discipline']) && $this->login['discipline'] === false)
-			{
-				$this->login['discipline'] = $input;
-				
-				$discipline = 'Disciplines\\' . ucfirst($this->login['discipline']);
-				
-				if(class_exists($discipline))
-				{
-					$this->discipline = new $discipline($this);
-					$this->login['finish'] = false;
 				}
 			}
 			
@@ -408,6 +434,17 @@
 				
 				\Commands\Look::perform($this);
 			}
+		}
+		private function racesAvailable()
+		{
+			\Mechanics\Server::out($this, 'The following races are available: ');
+			\Mechanics\Server::out($this, '[human undead faerie elf ogre] ');
+			\Mechanics\Server::out($this, 'What is your race (help for more information)? ', false);
+		}
+		private function customizeList()
+		{
+			\Mechanics\Server::out($this, "\nThe following skills and groups are available to your character:\n(this list may be seen again by typing list)");
+			
 		}
 		public function handleDeath()
 		{

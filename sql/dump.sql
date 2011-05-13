@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.1.49, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.1.54, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: mud
 -- ------------------------------------------------------
--- Server version	5.1.49-1ubuntu8.1
+-- Server version	5.1.54-1ubuntu4
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -56,6 +56,10 @@ CREATE TABLE `affects` (
   `skill` varchar(32) DEFAULT NULL,
   `spell` varchar(32) DEFAULT NULL,
   `level` int(3) DEFAULT NULL,
+  `timeout` smallint(4) NOT NULL DEFAULT '-1',
+  `args` text,
+  `message_affect` varchar(255) DEFAULT NULL,
+  `message_end` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`fk_table`,`fk_id`,`affect`),
   UNIQUE KEY `fk_user_id` (`fk_id`,`affect`),
   UNIQUE KEY `fk_table` (`fk_table`,`fk_id`,`affect`)
@@ -68,8 +72,49 @@ CREATE TABLE `affects` (
 
 LOCK TABLES `affects` WRITE;
 /*!40000 ALTER TABLE `affects` DISABLE KEYS */;
-INSERT INTO `affects` VALUES (2,'glow','items',NULL,NULL,NULL),(3,'glow','items',NULL,NULL,NULL),(4,'glow','items',NULL,NULL,NULL),(5,'glow','items',NULL,NULL,NULL),(25,'glow','items',NULL,NULL,NULL),(29,'glow','items',NULL,NULL,NULL);
+INSERT INTO `affects` VALUES (2,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(3,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(4,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(5,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(25,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(29,'glow','items',NULL,NULL,NULL,-1,NULL,NULL,NULL),(1,'glow','users',NULL,NULL,NULL,-1,'b:0;','',NULL),(1,'berserk','users',NULL,NULL,NULL,1,'a:0:{}','Affect: berserk','You cool down.');
 /*!40000 ALTER TABLE `affects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `attributes`
+--
+
+DROP TABLE IF EXISTS `attributes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `attributes` (
+  `fk_table` varchar(32) NOT NULL,
+  `fk_id` int(10) unsigned NOT NULL,
+  `str` int(2) unsigned NOT NULL,
+  `int` int(2) unsigned NOT NULL,
+  `wis` int(2) unsigned NOT NULL,
+  `dex` int(2) unsigned NOT NULL,
+  `con` int(2) unsigned NOT NULL,
+  `hp` int(4) unsigned NOT NULL,
+  `max_hp` int(4) unsigned NOT NULL,
+  `mana` int(4) unsigned NOT NULL,
+  `max_mana` int(4) unsigned NOT NULL,
+  `movement` int(4) unsigned NOT NULL,
+  `max_movement` int(4) unsigned NOT NULL,
+  `ac_bash` int(3) unsigned NOT NULL,
+  `ac_slash` int(3) unsigned NOT NULL,
+  `ac_pierce` int(3) unsigned NOT NULL,
+  `ac_magic` int(3) unsigned NOT NULL,
+  `hit` int(2) NOT NULL,
+  `dam` int(2) NOT NULL,
+  UNIQUE KEY `fk_table` (`fk_table`,`fk_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `attributes`
+--
+
+LOCK TABLES `attributes` WRITE;
+/*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
+INSERT INTO `attributes` VALUES ('users',1,20,15,15,13,21,20,20,40,100,100,100,0,0,0,0,0,0),('mobs',1,17,19,18,19,17,20,20,100,100,100,100,100,100,100,100,1,1),('mobs',2,20,15,15,13,21,20,20,100,100,100,100,100,100,100,100,1,1),('mobs',3,17,19,18,19,17,10,10,100,100,100,100,100,100,100,100,1,1),('mobs',4,17,19,18,19,17,10,10,100,100,100,100,100,100,100,100,1,1),('mobs',5,17,19,18,19,17,10,10,100,100,100,100,100,100,100,100,1,1),('mobs',6,17,19,18,19,17,10,10,100,100,100,100,100,100,100,100,1,1),('mobs',7,17,19,18,19,17,15,15,100,100,100,100,100,100,100,100,1,1),('mobs',8,17,19,18,19,17,15,15,100,100,100,100,100,100,100,100,1,1),('mobs',9,17,19,18,19,17,15,15,100,100,100,100,100,100,100,100,1,1),('mobs',10,17,19,18,19,17,20,20,100,100,100,100,100,100,100,100,1,1),('mobs',11,17,19,18,19,17,20,20,100,100,100,100,100,100,100,100,1,1),('mobs',12,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',13,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',14,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',15,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',16,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',17,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',18,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',19,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',20,17,19,18,19,17,25,25,100,100,100,100,100,100,100,100,1,1),('mobs',21,17,19,18,19,17,45,45,100,100,100,100,100,100,100,100,1,1),('mobs',22,17,19,18,19,17,45,45,100,100,100,100,100,100,100,100,1,1),('mobs',23,17,19,18,19,17,45,45,100,100,100,100,100,100,100,100,1,1),('mobs',24,17,19,18,19,17,45,45,100,100,100,100,100,100,100,100,1,1),('mobs',25,17,19,18,19,17,45,45,100,100,100,100,100,100,100,100,1,1);
+/*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -225,7 +270,7 @@ CREATE TABLE `items` (
   `affects` varchar(255) NOT NULL,
   `damage_type` int(1) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -234,7 +279,7 @@ CREATE TABLE `items` (
 
 LOCK TABLES `items` WRITE;
 /*!40000 ALTER TABLE `items` DISABLE KEYS */;
-INSERT INTO `items` VALUES (1,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(2,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,18,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(3,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(4,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(5,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(6,'a sub issue sword','a sub issue sword is here.','sub sword',100,4.0,0,'5',1,NULL,'slash',NULL,1,0,NULL,0,1,1,2,NULL,NULL,NULL,NULL,'',1),(21,'a pair of sub issue gloves','a pair of sub issue gloves are here.','sub gloves',20,5.0,0,'6',1,7,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(20,'a sub issue shield','a sub issue shield is here.','sub shield',20,5.0,0,'6',1,12,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(19,'a sub issue mace','a sub issue mace is here.','sub mace',100,4.0,0,'5',1,NULL,'pound',NULL,18,0,NULL,0,3,1,2,NULL,NULL,NULL,NULL,'',3),(18,'a sub issue dagger','a sub issue dagger is here.','sub dagger',100,4.0,0,'5',1,NULL,'stab',NULL,25,0,NULL,0,6,1,2,NULL,NULL,NULL,NULL,'',2),(17,'a sub issue mace','a sub issue mace is here.','sub mace',100,4.0,0,'5',1,NULL,'pound',NULL,25,0,NULL,0,3,1,2,NULL,NULL,NULL,NULL,'',3),(16,'a sub issue sword','a sub issue sword is here.','sub sword',100,4.0,0,'5',1,NULL,'slash',NULL,25,0,NULL,0,1,1,2,NULL,NULL,NULL,NULL,'',1),(22,'a sub issue belt','a sub issue belt is here.','sub belt',20,5.0,0,'6',1,10,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(23,'a sub issue helmet','a sub issue helmet is here.','sub helmet',20,5.0,0,'6',1,4,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(24,'a pair of sub issue boots','a pair of sub issue boots are here.','sub boots',20,5.0,0,'6',1,6,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(25,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,27,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(26,'a small leather canteen','a small leather canteen is here','leather canteen',5,1.0,0,'4',1,NULL,'',NULL,29,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL),(27,'a small leather canteen','a small leather canteen is here','leather canteen',5,1.0,0,'4',1,NULL,'',NULL,1,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL),(28,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(29,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL);
+INSERT INTO `items` VALUES (1,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(2,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,18,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(3,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(4,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(5,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(6,'a sub issue sword','a sub issue sword is here.','sub sword',100,4.0,0,'5',1,NULL,'slash',NULL,1,0,NULL,0,1,1,2,NULL,NULL,NULL,NULL,'',1),(21,'a pair of sub issue gloves','a pair of sub issue gloves are here.','sub gloves',20,5.0,0,'6',1,7,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(20,'a sub issue shield','a sub issue shield is here.','sub shield',20,5.0,0,'6',1,12,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(19,'a sub issue mace','a sub issue mace is here.','sub mace',100,4.0,0,'5',1,NULL,'pound',NULL,18,0,NULL,0,3,1,2,NULL,NULL,NULL,NULL,'',3),(18,'a sub issue dagger','a sub issue dagger is here.','sub dagger',100,4.0,0,'5',1,NULL,'stab',NULL,25,0,NULL,0,6,1,2,NULL,NULL,NULL,NULL,'',2),(17,'a sub issue mace','a sub issue mace is here.','sub mace',100,4.0,0,'5',1,NULL,'pound',NULL,25,0,NULL,0,3,1,2,NULL,NULL,NULL,NULL,'',3),(16,'a sub issue sword','a sub issue sword is here.','sub sword',100,4.0,0,'5',1,NULL,'slash',NULL,25,0,NULL,0,1,1,2,NULL,NULL,NULL,NULL,'',1),(22,'a sub issue belt','a sub issue belt is here.','sub belt',20,5.0,0,'6',1,10,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(23,'a sub issue helmet','a sub issue helmet is here.','sub helmet',20,5.0,0,'6',1,4,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(24,'a pair of sub issue boots','a pair of sub issue boots are here.','sub boots',20,5.0,0,'6',1,6,'',NULL,26,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL),(25,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,27,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(26,'a small leather canteen','a small leather canteen is here','leather canteen',5,1.0,0,'4',1,NULL,'',NULL,29,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL),(27,'a small leather canteen','a small leather canteen is here','leather canteen',5,1.0,0,'4',1,NULL,'',NULL,1,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL),(28,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(29,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,1,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(30,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,0,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(31,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,0,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(32,'a wooden torch','a wooden torch is here.','wooden torch',1,1.0,0,'6',1,0,'',NULL,0,0,NULL,0,NULL,NULL,NULL,0,0,0,0,'',NULL),(33,'a sub issue shield','a sub issue shield is here.','sub shield',20,5.0,0,'6',1,12,'',NULL,18,0,NULL,0,NULL,NULL,NULL,-5,-5,-5,0,'',NULL);
 /*!40000 ALTER TABLE `items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,7 +320,7 @@ CREATE TABLE `mobs` (
   `fk_room_id` int(10) unsigned NOT NULL,
   `level` int(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -413,6 +458,8 @@ CREATE TABLE `users` (
   `nourishment` int(3) NOT NULL,
   `thirst` int(3) NOT NULL,
   `discipline` enum('Crusader','Barbarian','Wizard','Rogue') DEFAULT NULL,
+  `sex` varchar(1) NOT NULL DEFAULT 'm',
+  `alignment` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -423,7 +470,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Dan','f3b5a11fa6c78370ac0f0b31b30c44849b058718',20,15,15,21,13,0,0,20,20,100,100,84,100,0,0,793,'Undead',NULL,4,1,585,0,0,0,'Barbarian'),(2,'dan2','2e60ff0c8179070eac9516680b9fddfefda04a10',16,20,23,17,23,0,0,20,20,100,100,100,100,0,0,1000,'Elf',NULL,3,1,0,0,0,0,'Rogue');
+INSERT INTO `users` VALUES (1,'Dan','f3b5a11fa6c78370ac0f0b31b30c44849b058718',20,15,15,21,13,0,0,20,20,40,100,100,100,0,0,773,'Undead',NULL,16,1,585,1000,0,0,'Barbarian','m',0),(2,'dan2','2e60ff0c8179070eac9516680b9fddfefda04a10',16,20,23,17,23,0,0,20,20,100,100,100,100,0,0,1000,'Elf',NULL,3,1,0,1000,0,0,'Rogue','m',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -436,4 +483,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2011-04-30  0:05:16
+-- Dump completed on 2011-05-13  6:55:26
