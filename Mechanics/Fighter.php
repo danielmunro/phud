@@ -295,9 +295,9 @@
 		}
 		public function isAlive()
 		{
-			if($this->max_hp == 0)
+			if($this->attributes->getMaxHp() == 0)
 				return true; // Creation
-			return $this->hp > 0;
+			return $this->attributes->getHp() > 0;
 		}
 		public function incrementDelay($delay)
 		{
@@ -310,12 +310,30 @@
 		}
 		public function getDelay() { return $this->delay; }
 		public function getFightable() { return $this->fightable; }
-		public function setHp($hp, $killer = null) { $this->hp = $hp; }
-		public function setMaxHp($max_hp) { $this->max_hp = $max_hp; }
-		public function setMana($mana) { $this->mana = $mana; }
-		public function setMaxMana($max_mana) { $this->max_mana = $max_mana; }
-		public function setMovement($movement) { $this->movement = $movement; }
-		public function setMaxMovement($max_movement) { $this->max_movement = $max_movement; }
+		public function setHp($hp)
+		{
+			$this->attributes->setHp($hp);
+		}
+		public function setMaxHp($max_hp)
+		{
+			$this->attributes->setHp($max_hp);
+		}
+		public function setMana($mana)
+		{
+			$this->attributes->setMana($mana);
+		}
+		public function setMaxMana($max_mana)
+		{
+			$this->attributes->setMovement($max_mana);
+		}
+		public function setMovement($movement)
+		{
+			$this->attributes->setMovement($movement);
+		}
+		public function setMaxMovement($max_movement)
+		{
+			$this->attributes->setMaxMovement($max_movement);
+		}
 		public function setExpPerLevel($exp) { $this->exp_per_level = $exp; }
 		public function setExperience($experience)
 		{
@@ -343,14 +361,14 @@
 		{
 			$hit = $this->attributes->getHit();
 			foreach($this->affects as $a)
-				$hit += $a->getHit();
+				$hit += $a->getAttributes()->getHit();
 			return $hit;
 		}
 		public function getDam()
 		{
 			$dam = $this->attributes->getDam();
 			foreach($this->affects as $a)
-				$dam += $a->getDam();
+				$dam += $a->getAttributes()->getDam();
 			return $dam;
 		}
 		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
@@ -503,15 +521,22 @@
 				elseif($this instanceof \Living\Mob)
 					$nouns = $this->getNoun();
 				
+				$corpse_inv = new Inventory('corpse', 0);
+				$items = $this->inventory->getItems();
+				foreach($items as $item)
+				{
+					$this->inventory->remove($item);
+					$corpse_inv->add($item);
+				}
 				$corpse = new \Items\Container(0,
 										'A corpse of ' . $this->getAlias() . ' lies here.',
 										'a corpse of ' . $this->getAlias(),
 										'corpse ' . $this->getAlias(),
 										100,
 										'corpse',
-										$this->inventory,
+										$corpse_inv,
 										false);
-				
+				$this->afterDeath($killer);
 				$this->room->getInventory()->add($corpse);
 				
 				if($this instanceof \Living\User)
@@ -524,6 +549,39 @@
 				return false;
 			}
 			return true;
+		}
+		
+		protected function afterDeath($killer)
+		{
+			$r = round(rand(0, 2));
+			if($r <= 1)
+			{
+				return $this->getRoom()->announce($this, "You hear ".$this->getAlias()."'s death cry.");
+			}
+			else
+			{
+				$parts = array(
+					'brains' => "'s brains splash all over you!",
+					'guts' => 'spills '.$this->getDisplaySex().' guts all over the floor.',
+					'heart' => "'s heart is torn from ".$this->getDisplaySex(). " chest."
+				);
+				$r = round(rand(0, sizeof($parts)-1));
+				if($r == 1)
+				{
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The brains of '.$this->getAlias(), 'brains', 'brains', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['brains']);
+				}
+				else if($r == 2)
+				{
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The entrails of '.$this->getAlias(), 'entrails', 'entrails', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['guts']);
+				}
+				else if($r == 3)
+				{
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The heart of '.$this->getAlias(), 'heart', 'heart', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['guts']);
+				}
+			}
 		}
 		
 		protected function handleDeath($move_soul = true)
