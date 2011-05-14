@@ -38,12 +38,13 @@
 		
 		// Level of the ability: when the actor can use it among other things
 		protected static $level = 1;
-		private static $aliases = array();
+		protected static $aliases = array();
+		private static $abilities = array();
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
 	
-		public function __construct($percent, $type, $actor_id, $actor_type, $aliases)
+		public function __construct($percent, $type, $actor_id, $actor_type)
 		{
 		
 			$this->name = (string)$this;
@@ -51,14 +52,28 @@
 			$this->actor_id = $actor_id;
 			$this->actor_type = $actor_type;
 			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
-			if($aliases !== null)
+		}
+		
+		public function runInstantiation()
+		{
+		
+			$dirs = array('Skills', 'Spells');
+			foreach($dirs as $dir)
 			{
-				if(!is_array($aliases))
-					$aliases = array($aliases);
-				foreach($aliases as $alias)
-					if(!isset(self::$aliases[$type][$alias]))
-						self::$aliases[$type][$alias] = get_class($this);
+				$d = dir(dirname(__FILE__) . '/../'.$dir);
+				while($ability = $d->read())
+					if(strpos($ability, '.php') !== false)
+						self::instantiate($dir, substr($ability, 0, strpos($ability, '.')));
 			}
+		}
+	
+		private static function instantiate($dir, $ability)
+		{
+			
+			$class = $dir.'\\'.$ability;
+			$aliases = $class::getAliases();
+			foreach($aliases as $alias)
+				self::$abilities[$alias] = $class;
 		}
 		
 		public function save()
@@ -71,12 +86,10 @@
 		
 		public static function exists($alias)
 		{
-			foreach(self::$aliases as $type)
-				if(isset($type[$alias]))
-					return $type[$alias];
-			return false;
+			return isset(self::$abilities[$alias]) ? self::$abilities[$alias] : false;
 		}
 	
+		public static function getAliases() { return static::$aliases; }
 		public function getType() { return $this->type; }
 		public function getName() { return $this->name; }
 		public function getCleanName($space = false, $strtolower = true)

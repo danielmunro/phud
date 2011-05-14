@@ -28,14 +28,16 @@
 	class Spell_Heal extends \Mechanics\Spell
 	{
 	
-		protected $level = 45;
-		protected $display_name = array('heal', 'frzzz plfsa');
+		protected static $level = 45;
 		protected $improve_by_practice = 0;
 		protected $min_mana_cost = 50;
+		protected static $name_familiar = 'heal';
+		protected static $name_unfamiliar = 'oezes';
+		protected static $aliases = array('heal', 'h', 'he', 'hea');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('heal', 'h'));
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
 		}
 	
 		public static function perform(Actor &$actor, Skill $spell, $args = null)
@@ -46,9 +48,5 @@
 			
 			Server::out($actor, "You feel better!");
 		}
-		
-		public function getName() { return 'Heal'; }
-		
 	}
-
 ?>

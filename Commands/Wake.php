@@ -39,7 +39,11 @@
 			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_STANDING)
 				return \Mechanics\Server::out($actor, "You are already awake.");
 			
+			if(array_key_exists('sleep', $actor->getAffects()))
+				return \Mechanics\Server::out($actor, "You can't wake up!");
+			
 			\Mechanics\Server::out($actor, "You wake up and stand up.");
+			$actor->getRoom()->announce($actor, $actor->getAlias(true)." wakes up and stands up.");
 			$actor->setDisposition(\Mechanics\Actor::DISPOSITION_STANDING);
 		}
 	

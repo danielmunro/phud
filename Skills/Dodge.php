@@ -28,9 +28,11 @@
 	class Dodge extends \Mechanics\Ability
 	{
 	
+		protected static $aliases = array('dodge', 'dod');
+		
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
-			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type, array('dodge', 'dod'));
+			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type);
 		}
 	
 		public function perform(\Mechanics\Actor &$actor, $args = null)

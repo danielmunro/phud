@@ -25,13 +25,13 @@
 	 *
 	 */
 	namespace Spells;
-	class Magic_Missile extends \Mechanics\Spell
+	class Sleep extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'magic missile';
-		protected static $name_unfamiliar = 'oqisasi';
+		protected static $name_familiar = 'sleep';
+		protected static $name_unfamiliar = 'teruo';
 		protected static $spell_type = self::TYPE_OFFENSIVE;
-		protected static $aliases = array('magic missile', 'magic', 'mis', 'ma');
+		protected static $aliases = array('sleep', 'sle', 'slee');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
@@ -41,8 +41,15 @@
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			
-			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));
-			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
+			$timeout = 1 + ceil($actor->getLevel() * 0.9);
+			$target->setDisposition(\Mechanics\Actor::DISPOSITION_SLEEPING);
+			$a = new \Mechanics\Affect();
+			$a->setAffect(self::$name_familiar);
+			$a->setMessageAffect('Spell: sleep');
+			$a->setTimeout($timeout);
+			$target->addAffect($a);
+			$target->getRoom()->announce($target, $target->getAlias(true)." goes to sleep.");
+			\Mechanics\Server::out($target, "You go to sleep.");
 		}
 	}
 

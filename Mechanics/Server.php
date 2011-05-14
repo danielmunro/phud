@@ -43,7 +43,8 @@
 		{
 		
 			Debug::addDebugLine("Initializing environment...");
-			\Mechanics\Command::runInstantiation();
+			Ability::runInstantiation();
+			Command::runInstantiation();
 			\Living\Mob::instantiate();
 			\Living\Shopkeeper::instantiate();
 			self::$instance = new Server();

@@ -36,6 +36,9 @@
 		
 		public static function perform(&$actor, $args = null)
 		{
+			if(array_key_exists('sleep', $actor->getAffects()))
+				return \Mechanics\Server::out($actor, "You need to be able to wake up first.");
+			
 			if($actor instanceof \Living\User)
 			{
 				$actor->save();

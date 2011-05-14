@@ -30,10 +30,11 @@
 	
 		protected static $name_familiar = 'cure light';
 		protected static $name_unfamiliar = 'frzzz';
+		protected static $aliases = array('c', 'cure', 'cure light');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('c', 'cure', 'cure light'));
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
 		}
 	
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)

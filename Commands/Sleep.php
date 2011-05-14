@@ -40,6 +40,7 @@
 				return \Mechanics\Server::out($actor, "You are already sleeping.");
 			
 			\Mechanics\Server::out($actor, "You lie down and go to sleep.");
+			$actor->getRoom()->announce($actor, $actor->getAlias(true)." lies down and goes to sleep.");
 			$actor->setDisposition(\Mechanics\Actor::DISPOSITION_SLEEPING);
 		}
 	

@@ -30,10 +30,11 @@
 	
 		protected static $name_familiar = 'cure critical';
 		protected static $name_unfamiliar = 'tztzz frzzz';
+		protected static $aliases = array('cure critical', 'cure crit', 'cure c');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type, array('cure critical', 'cure crit', 'cure c'));
+			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
 		}
 	
 		public static function perform(Actor &$actor, Skill $spell, $args = null)
