@@ -85,6 +85,7 @@
 			$this->id = $row->id;
 			$this->thirst = $row->thirst;
 			$this->nourishment = $row->nourishment;
+			$this->disposition = \Mechanics\Actor::DISPOSITION_STANDING;
 			
 			parent::__construct($row->fk_room_id);
 			
@@ -148,7 +149,8 @@
 											race = ?,
 											experience = ?,
 											exp_per_level = ?,
-											fk_room_id = ? WHERE id = ?', array(
+											fk_room_id = ?,
+											disposition = ? WHERE id = ?', array(
 											$this->getAlias(),
 											$this->level,
 											$this->copper,
@@ -159,11 +161,12 @@
 											$this->experience,
 											$this->exp_per_level,
 											$this->getRoom()->getId(),
+											$this->disposition,
 											$this->id));
 			else
 			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, level, copper, silver, gold, pass, race, fk_room_id, discipline) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, level, copper, silver, gold, pass, race, fk_room_id, discipline, disposition) VALUES
+															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
 																$this->getAlias(),
 																$this->level,
 																$this->copper,
@@ -172,7 +175,8 @@
 																$this->password,
 																(string)$this->race,
 																$this->getRoom()->getId(),
-																(string)$this->discipline
+																(string)$this->discipline,
+																$this->disposition
 															));
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}

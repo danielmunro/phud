@@ -553,8 +553,8 @@
 		
 		protected function afterDeath($killer)
 		{
-			$r = round(rand(0, 2));
-			if($r <= 1)
+			$r = ceil(rand(0, 3));
+			if($r < 0)
 			{
 				return $this->getRoom()->announce($this, "You hear ".$this->getAlias()."'s death cry.");
 			}
@@ -562,24 +562,24 @@
 			{
 				$parts = array(
 					'brains' => "'s brains splash all over you!",
-					'guts' => 'spills '.$this->getDisplaySex().' guts all over the floor.',
+					'guts' => ' spills '.$this->getDisplaySex().' guts all over the floor.',
 					'heart' => "'s heart is torn from ".$this->getDisplaySex(). " chest."
 				);
 				$r = round(rand(0, sizeof($parts)-1));
 				if($r == 1)
 				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The brains of '.$this->getAlias(), 'brains', 'brains', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['brains']);
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The brains of '.$this->getAlias().' is here.', 'the brains of '.$this->getAlias(), 'brains', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['brains']);
 				}
 				else if($r == 2)
 				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The entrails of '.$this->getAlias(), 'entrails', 'entrails', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['guts']);
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The entrails of '.$this->getAlias().' is here.', 'the entrails of '.$this->getAlias(), 'entrails', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['guts']);
 				}
 				else if($r == 3)
 				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The heart of '.$this->getAlias(), 'heart', 'heart', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true)." ".$parts['guts']);
+					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The heart of '.$this->getAlias().' is here.', 'the heart of '.$this->getAlias(), 'heart', 0, 1, 1));
+					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['heart']);
 				}
 			}
 		}

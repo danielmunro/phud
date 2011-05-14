@@ -140,10 +140,17 @@
 						$command = Command::find($args[0]);
 						if($command)
 						{
-							// Perform command
-							$command->perform($this->clients[$i], $args);
-							if(isset($this->clients[$i]))
-								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							if(!sizeof($command::getDispositions()) || in_array($this->clients[$i]->getDisposition(), $command::getDispositions()))
+							{
+								// Perform command
+								$command->perform($this->clients[$i], $args);
+								if(isset($this->clients[$i]))
+									self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							}
+							else if($this->clients[$i]->getDisposition() === Actor::DISPOSITION_SITTING)
+								self::out($this->clients[$i], "You need to stand up.");
+							else if($this->clients[$i]->getDisposition() === Actor::DISPOSITION_SLEEPING)
+								self::out($this->clients[$i], "You are asleep!");
 						}
 						else
 						{

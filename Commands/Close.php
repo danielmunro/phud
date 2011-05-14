@@ -28,6 +28,8 @@
 	class Close extends \Mechanics\Command
 	{
 	
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+	
 		protected function __construct()
 		{
 			\Mechanics\Command::addAlias(__CLASS__, array('cl', 'close'));

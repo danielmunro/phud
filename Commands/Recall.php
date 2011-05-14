@@ -28,6 +28,8 @@
 	class Recall extends \Mechanics\Command
 	{
 	
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+	
 		protected function __construct()
 		{
 		

@@ -28,6 +28,8 @@
 	class Eat extends \Mechanics\Command
 	{
 	
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+	
 		protected function __construct()
 		{
 		
@@ -36,20 +38,21 @@
 	
 		public static function perform(&$actor, $args = null)
 		{
+			
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof Item))
-				return Server::out($actor, "Nothing like that is here.");
+			if(!($item instanceof \Items\Item))
+				return \Mechanics\Server::out($actor, "Nothing like that is here.");
 			
-			if(!($item instanceof Food))
-				return Server::out($actor, "You can't eat that!");
+			if(!($item instanceof \Items\Food))
+				return \Mechanics\Server::out($actor, "You can't eat that!");
 			
 			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()->getFull())
-				return Server::out($actor, "You are too full.");
+				return \Mechanics\Server::out($actor, "You are too full.");
 			
 			$actor->increaseNourishment($item->getNourishment());
 			$actor->getInventory()->remove($item, true);
-			Server::out($actor, "You eat " . $item->getShort() . ".");
+			\Mechanics\Server::out($actor, "You eat " . $item->getShort() . ".");
 		}
 	}
 ?>

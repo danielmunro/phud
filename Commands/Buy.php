@@ -28,6 +28,8 @@
 	class Buy extends \Mechanics\Command
 	{
 	
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+	
 		protected function __construct()
 		{
 		

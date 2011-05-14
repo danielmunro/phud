@@ -29,6 +29,9 @@
 	{
 	
 		const MAX_LEVEL = 51;
+		const DISPOSITION_STANDING = 0;
+		const DISPOSITION_SLEEPING = 1;
+		const DISPOSITION_SITTING = 2;
 		
 		protected $id = 0;
 		protected $alias = '';
@@ -39,7 +42,7 @@
 		protected $silver = 0;
 		protected $copper = 0;
 		protected $sex = null;
-		protected $disposition; // sitting, sleeping, standing
+		protected $disposition = 0; // sitting, sleeping, standing
 		protected $race = null;
 		protected $room = null;
 		protected $inventory = null;
@@ -58,6 +61,17 @@
 			$this->tick(true);
 		}
 		
+		public function getDisposition()
+		{
+			return $this->disposition;
+		}
+		
+		public function setDisposition($disposition)
+		{
+			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
+				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
+			$this->disposition = $disposition;
+		}
 		
 		/**
 		 * AFFECTS - array of affects (object type Affect) currently applied to the actor

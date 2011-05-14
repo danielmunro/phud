@@ -28,6 +28,8 @@
 	class Drop extends \Mechanics\Command
 	{
 	
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+	
 		protected function __construct()
 		{
 		
@@ -36,7 +38,6 @@
 	
 		public static function perform(&$actor, $args = null)
 		{
-		
 			$item = $actor->getInventory()->getItemByInput($args);
 			
 			if(!($item instanceof \Items\Item))

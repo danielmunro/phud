@@ -132,7 +132,7 @@
 		public function announce(Actor $actor, $message)
 		{
 			foreach($this->actors as $a)
-				if($a->getUniqueId() != $actor->getUniqueId())
+				if($a->getUniqueId() != $actor->getUniqueId() && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
 					Server::out($a, $message);
 		}
 		

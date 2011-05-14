@@ -29,8 +29,8 @@
 	{
 	
 		public static $instances = array();
-	
 		public static $aliases = array();
+		protected static $dispositions = array();
 		
 		public static function addAlias($command, $alias)
 		{
@@ -81,6 +81,11 @@
 			$alias = self::$aliases[$input];
 			
 			return self::$instances[$alias];
+		}
+		
+		public static function getDispositions()
+		{
+			return static::$dispositions;
 		}
 		
 		public static function findObjectByArgs($objects, $args)

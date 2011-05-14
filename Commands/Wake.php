@@ -25,31 +25,23 @@
 	 *
 	 */
 	namespace Commands;
-	class Remove extends \Mechanics\Command
+	class Wake extends \Mechanics\Command
 	{
-	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('rem', 'remove'));
+	
+			\Mechanics\Command::addAlias(__CLASS__, array('wake', 'wa', 'wak'));
 		}
 	
 		public static function perform(&$actor, $args = null)
 		{
-		
-			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
+			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_STANDING)
+				return \Mechanics\Server::out($actor, "You are already awake.");
 			
-			if($equipment instanceof \Items\Equipment)
-			{
-				$actor->getEquipped()->remove($actor, $equipment);
-				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
-			}
-			else
-				return \Mechanics\Server::out($actor, 'You are not wearing anything like that.');
+			\Mechanics\Server::out($actor, "You wake up and stand up.");
+			$actor->setDisposition(\Mechanics\Actor::DISPOSITION_STANDING);
 		}
 	
 	}
-
 ?>

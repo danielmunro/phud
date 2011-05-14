@@ -175,7 +175,7 @@
 		}
 		public function delete()
 		{
-			Db::getInstance()->query('DELETE FROM items WHERE id = ?', $this->id);
+			\Mechanics\Db::getInstance()->query('DELETE FROM items WHERE id = ?', $this->id);
 		}
 		public function __toString()
 		{

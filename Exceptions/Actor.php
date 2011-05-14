@@ -31,6 +31,7 @@
 		const NON_NUMERIC_ID = 1;
 		const MAX_ATTRIBUTE = 2;
 		const INVALID_RACE = 3;
+		const INVALID_ATTRIBUTE = 4;
 	
 		public function __construct($msg, $no)
 		{

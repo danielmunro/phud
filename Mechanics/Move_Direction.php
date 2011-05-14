@@ -28,8 +28,15 @@
 	abstract class Move_Direction extends Command
 	{
 
+		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+
 		public static function perform(&$actor, $args = null)
 		{
+		
+			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SITTING)
+				return \Mechanics\Server::out($actor, "You need to stand up to do that.");
+			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SLEEPING)
+				return \Mechanics\Server::out($actor, "You can't do anything, you're sleeping!");
 		
 			if($actor->getTarget() instanceof Actor)
 				return Server::out($actor, 'You cannot leave a fight!');
