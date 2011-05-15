@@ -31,6 +31,7 @@
 		protected static $name_familiar = 'cure critical';
 		protected static $name_unfamiliar = 'tztzz frzzz';
 		protected static $aliases = array('cure critical', 'cure crit', 'cure c');
+		protected static $group = 'curative';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

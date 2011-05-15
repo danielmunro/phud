@@ -55,11 +55,7 @@
 					$this->$property = $value;
 			}
 			parent::__construct($this->start_room_id);
-			if($this->movement_speed)
-			{
-				$pulse = \Mechanics\Pulse::randomizePulse($this->movement_speed);
-				\Mechanics\Pulse::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this);
-			}
+			$this->registerMove();
 		}
 		
 		public static function instantiate($data = null)
@@ -94,6 +90,15 @@
 			$this->ability_set->save();
 		}
 		
+		private function registerMove()
+		{
+			if($this->movement_speed)
+			{
+				$seconds = \Mechanics\Pulse::getRandomSeconds($this->movement_speed);
+				\Mechanics\Pulse::instance()->registerEvent($seconds, function($actor) { $actor->move(); }, $this);
+			}
+		}
+		
 		public function move($index = 0)
 		{
 		
@@ -108,31 +113,24 @@
 							'West' => $this->room->getWest(),
 							'Up' => $this->room->getUp(),
 							'Down' => $this->room->getDown());
-			
 			$directions = array_filter($directions);
 			$i = array_rand($directions);
-			
 			$areas = explode(' ', $this->area);
 			if(!in_array(\Mechanics\Room::find($directions[$i])->getArea(), $areas))
 			{
 				$this->move($index++);
 				return;
 			}
-			
-			\Mechanics\Debug::addDebugLine($this->getAlias() . ' is moving to room #' . $directions[$i] . ' with an index of ('.$index.').');
-			$event = \Mechanics\Command::find($i)->perform($this); // Move the damn thing
-			
-			$pulse = \Mechanics\Pulse::randomizePulse($this->movement_speed);
-			\Mechanics\Pulse::instance()->registerEvent($pulse, function($actor) { $actor->move(); }, $this); // Move it again later
-			
+			\Mechanics\Command::find($i)->perform($this); // Move the damn thing
+			$this->registerMove();
 		}
 		public function handleDeath()
 		{
 			parent::handleDeath(false);
 			$this->setRoom(\Mechanics\Room::find(\Mechanics\Room::PURGATORY_ROOM_ID));
-			$respawn_pulses = \Mechanics\Pulse::randomizePulse($this->respawn_time, 0.1);
+			$seconds = \Mechanics\Pulse::getRandomSeconds($this->respawn_time);
 			\Mechanics\Pulse::instance()->registerEvent(
-				$respawn_pulses, 
+				$seconds,
 				function($mob)
 				{
 					$mob->setRoom(\Mechanics\Room::find($mob->getDefaultRoomId()));
@@ -159,6 +157,10 @@
 		public function getDead() { return $this->dead; }
 		public function setDead($dead) { $this->dead = $dead; }
 		public function getDefaultRoomId() { return $this->start_room_id; }
+		public function getAutoFlee() { return $this->auto_flee; }
+		public function isUnique() { return $this->unique; }
+		public function getRespawnTime() { return $this->respawn_time; }
+		public function getArea() { return $this->area; }
 	}
 
 ?>

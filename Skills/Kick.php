@@ -30,6 +30,7 @@
 	
 		private static $base_chance = 99;
 		protected static $aliases = array('ki', 'kick');
+		protected static $to_disciplines = array('barbarian', 'rogue');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

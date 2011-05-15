@@ -32,6 +32,7 @@
 		protected static $name_unfamiliar = 'oqisasi';
 		protected static $spell_type = self::TYPE_OFFENSIVE;
 		protected static $aliases = array('magic missile', 'magic', 'mis', 'ma');
+		protected static $group = 'attack';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

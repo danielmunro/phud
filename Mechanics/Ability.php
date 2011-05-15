@@ -54,7 +54,7 @@
 			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
 		}
 		
-		public function runInstantiation()
+		public static function runInstantiation()
 		{
 		
 			$dirs = array('Skills', 'Spells');
@@ -67,13 +67,15 @@
 			}
 		}
 	
-		private static function instantiate($dir, $ability)
+		protected static function instantiate($dir, $ability)
 		{
 			
 			$class = $dir.'\\'.$ability;
 			$aliases = $class::getAliases();
 			foreach($aliases as $alias)
 				self::$abilities[$alias] = $class;
+			if(method_exists($class, 'extraInstantiate'))
+				$class::extraInstantiate();
 		}
 		
 		public function save()

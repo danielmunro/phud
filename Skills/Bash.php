@@ -31,6 +31,7 @@
 		private $fn_init = null;
 		private $fn_done = null;
 		protected static $aliases = array('bash', 'b', 'ba', 'bas');
+		protected static $to_disciplines = array('barbarian');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

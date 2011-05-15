@@ -29,6 +29,7 @@
 	{
 	
 		protected static $aliases = array('shield block', 'shield');
+		protected static $to_disciplines = array('barbarian', 'rogue', 'crusader', 'wizard');
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

@@ -31,16 +31,14 @@
 		private $next_tick = 0;
 		private $pick = 0;
 		private $events = array();
+		private $seconds = 0;
 		private static $instance = null;
 		
-		const TICK_MIN = 50;
-		const TICK_MAX = 50;
-		const TICK = 50;
-		const PULSES_PER_TICK = 25;
+		const SECONDS_PER_TICK = 30;
 		
 		private function __construct()
 		{
-			$this->pulse = $this->tick = date('U');
+			$this->seconds = $this->tick = date('U');
 			$this->tick();
 		}
 		
@@ -54,33 +52,30 @@
 		public function tick()
 		{
 			Debug::addDebugLine("Tick starting at " . date('Y-m-d H:i:s'));
-			$pulses = self::randomizePulse(self::PULSES_PER_TICK);
+			$seconds = self::getRandomSeconds(self::SECONDS_PER_TICK);
 			$this->tick = date('U');
-			$this->next_tick = $pulses;
-			self::registerEvent($pulses, function() { Pulse::instance()->tick(); }, null);
+			$this->next_tick = $seconds;
+			self::registerEvent($seconds, function() { Pulse::instance()->tick(); }, null);
 		}
 		
-		public static function randomizePulse($pulse, $mod = 0.1)
+		public static function getRandomSeconds($seconds, $mod = 0.1)
 		{
-		
-			$low_mod = $mod * $pulse;
-			$high_mod = $pulse + $low_mod;
+			$modifier = $mod * $seconds;
+			$low_mod = $seconds - $modifier;
+			$high_mod = $seconds + $modifier;
 			return rand($low_mod, $high_mod);
 		}
 		
-		public function checkEvents()
+		public function checkEvents($seconds)
 		{
-		
-			$this->pulse = date('U');
+			$this->seconds = $seconds;
 			$this->next_tick--;
-			Debug::addDebugLine('Pulse on '.$this->pulse);
-			
 			// Cycle through events
-			if(isset($this->events[$this->pulse]))
+			if(isset($this->events[$this->seconds]))
 			{
-				foreach($this->events[$this->pulse] as $event)
+				foreach($this->events[$this->seconds] as $event)
 					$event['fn']($event['args']);
-				unset($this->events[$this->pulse]);
+				unset($this->events[$this->seconds]);
 			}
 		}
 		
@@ -89,20 +84,19 @@
 			$this->registerEvent($this->next_tick, $fn, $args);
 		}
 		
-		public function registerEvent($pulses, $fn, $args)
+		public function registerEvent($seconds, $fn, $args)
 		{
-			
-			$pulses = $this->pulse + 2 + ($pulses * 2);
-			Debug::addDebugLine('Registering event ('.$pulses.')');
-			if(!isset($this->events[$pulses]))
-				$this->events[$pulses] = array();
-			$this->events[$pulses][] = array('fn' => $fn, 'args' => $args);
-			return sizeof($this->events[$pulses]);
+			$seconds = $this->seconds + $seconds;
+			Debug::addDebugLine('Registering event ('.$seconds.')');
+			if(!isset($this->events[$seconds]))
+				$this->events[$seconds] = array();
+			$this->events[$seconds][] = array('fn' => $fn, 'args' => $args);
+			return sizeof($this->events[$seconds]);
 		}
 		
 		public function getLastPulse()
 		{
-			return $this->pulse;
+			return $this->seconds;
 		}
 	}
 ?>

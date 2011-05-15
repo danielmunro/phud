@@ -29,6 +29,7 @@
 	{
 	
 		protected static $aliases = array('dodge', 'dod');
+		protected static $to_disciplines = array('barbarian', 'crusader', 'rogue', 'wizard');
 		
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

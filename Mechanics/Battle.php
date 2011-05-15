@@ -3,6 +3,9 @@
 	namespace Mechanics;
 	class Battle
 	{
+	
+		const SECONDS_PER_BATTLE_ROUND = 2;
+		
 		protected $actors = array();
 		
 		public function __construct(Actor $initiator)
@@ -57,7 +60,7 @@
 				$battle->registerAttackRound();
 			};
 			if(sizeof($this->actors))
-				Pulse::instance()->registerEvent(1, $fn, $this);
+				Pulse::instance()->registerEvent(self::SECONDS_PER_BATTLE_ROUND, $fn, $this);
 		}
 	}
 ?>

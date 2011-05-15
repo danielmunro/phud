@@ -87,7 +87,7 @@
 			return self::$instances[$table][$table_id];
 		}
 		
-		public function add($item)
+		public function add(\Items\Item $item)
 		{
 		
 			if(is_array($item))
@@ -179,6 +179,15 @@
 			else
 				$buffer = "Nothing.";
 			return trim($buffer);
+		}
+		
+		public function transferItemsFrom(Inventory $inventory)
+		{
+			$items = $inventory->getItems();
+			foreach($items as $item)
+			{
+				$this->add($item);
+			}
 		}
 		
 		public function save()

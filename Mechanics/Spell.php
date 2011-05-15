@@ -35,6 +35,7 @@
 		protected static $name_unfamiliar = '';
 		protected $min_mana = 15;
 		protected static $spell_type = self::TYPE_PASSIVE;
+		protected static $groups = array();
 	
 		public function getManaCost($actor_level)
 		{
@@ -61,6 +62,11 @@
 			$class = get_class($this);
 			return substr($class, strpos($class, '\\') + 1);
 		}
+		protected static function extraInstantiate()
+		{
+			self::$groups[static::$group][] = static::$name_familiar;
+		}
+		public static function getGroups() { return self::$groups; }
 	}
 
 ?>

@@ -34,7 +34,6 @@
 		private $socket = null;
 		private $clients = array();
 		static $instance = null;
-		private static $last_pulse;
 		
 		private function __construct() { $this->openSocket(); }
 		private function __destruct() { $this->closeSocket($this->socket); }
@@ -54,8 +53,6 @@
 		
 		public function run()
 		{
-			$seconds = date('U');
-			
 			while(1)
 			{
 				$read = array($this->socket);
@@ -90,11 +87,10 @@
 				}
 				
 				// Pulse
-				if(date('U') == Pulse::instance()->getLastPulse() + 2)
-				{
-					Pulse::instance()->checkEvents();
-					self::$last_pulse = date('U');
-				}
+				$seconds = date('U');
+				$next_pulse = Pulse::instance()->getLastPulse() + 1;
+				if($seconds == $next_pulse)
+					Pulse::instance()->checkEvents($next_pulse);
 				
 				// Input
 				foreach($this->clients as $i => $client)

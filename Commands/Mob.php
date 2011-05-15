@@ -37,20 +37,29 @@
 		public static function perform(&$actor, $args = null)
 		{
 		
-			throw new Exception("NO TOUCH");
-		
-		
 			if($args[1] == 'copy')
 			{
 				$target = $actor->getRoom()->getActorByInput(array(null, $args[2]));
 				if($target)
 				{
-					//$class_name = get_class($target);
-					//$new_instance = new $class_name();
-					
-					
-					$new_instance = clone $target;
-					$new_instance->setId(0);
+					$class_name = get_class($target);
+					$new_instance = new $class_name(array(
+						'alias' => $target->getAlias(),
+						'noun' => $target->getNoun(),
+						'long' => $target->getLong(),
+						'auto_flee' => $target->getAutoFlee(),
+						'race' => $target->getRaceStr(),
+						'unique' => $target->isUnique(),
+						'area' => $target->getArea(),
+						'movement_speed' => $target->getMovementSpeed(),
+						'respawn_time' => $target->getRespawnTime(),
+						'gold' => $target->getGold(),
+						'silver' => $target->getSilver(),
+						'copper' => $target->getCopper(),
+						'fk_room_id' => $target->getRoomId(),
+						'level' => $target->getLevel()
+					));
+					$new_instance->getInventory()->transferItemsFrom($target->getInventory());
 					$new_instance->setRoom($new_instance->getRoom());
 					$new_instance->save();
 					return \Mechanics\Server::out($actor, $new_instance->getAlias(true)." arrives in a puff of smoke!");

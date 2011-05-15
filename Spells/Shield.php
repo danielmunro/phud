@@ -25,12 +25,12 @@
 	 *
 	 */
 	namespace Spells;
-	class Armor extends \Mechanics\Spell
+	class Shield extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'armor';
-		protected static $name_unfamiliar = 'plysoxix';
-		protected static $aliases = array('ar', 'armor');
+		protected static $name_familiar = 'shield';
+		protected static $name_unfamiliar = 'plysoxixithix';
+		protected static $aliases = array('sh', 'shi', 'shie', 'shiel', 'shield');
 		protected static $group = 'protective';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
@@ -43,12 +43,11 @@
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);
 			
 			$modifier = max(floor($actor->getLevel() / 10), 1);
-			$mod_ac = -15 * $modifier;
+			$mod_ac = -30 * $modifier;
 			
-			// new \Mechanics\Affect(self::$name_familiar, 'Spell: armor: ' . $mod_ac . ' to armor class', $timeout, array('mod_ac' => $mod_ac))
 			$a = new \Mechanics\Affect();
 			$a->setAffect(self::$name_familiar);
-			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
+			$a->setMessageAffect('Spell: shield: '.$mod_ac.' to armor class');
 			$a->setMessageEnd('You feel less protected.');
 			$a->setTimeout($timeout);
 			$atts = $a->getAttributes();

@@ -32,6 +32,7 @@
 		protected static $name_unfamiliar = 'teruo';
 		protected static $spell_type = self::TYPE_OFFENSIVE;
 		protected static $aliases = array('sleep', 'sle', 'slee');
+		protected static $group = 'maladictions';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{

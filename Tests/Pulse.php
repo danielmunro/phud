@@ -24,32 +24,25 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	class Grant extends \Mechanics\Command
+	namespace Tests;
+	class Pulse extends \PHPUnit_Framework_TestCase
 	{
 	
-		protected function __construct()
+		public function setUp()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('grant'));
+			\Mechanics\Debug::newLog();
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function testPulse()
 		{
-			$target = $actor->getRoom()->getActorByInput($args);
-			$ability = \Mechanics\Ability::exists($args[1]);
-			$percent = $args[2];
-			if(!is_numeric($percent) || $percent < 1 || $percent > 100)
-				$percent = 1;
-			if($ability)
+			for($i = 1; $i < 10000; $i ++)
 			{
-				$a = new $ability($args[2], $target->getId(), $target->getType());
-				$target->getAbilitySet()->addAbility($a);
-				\Mechanics\Server::out($target, $actor->getAlias(true)." has bestowed the knowledge of ".$a->getCleanName()." on you.");
-				return \Mechanics\Server::out($actor, "You've granted ".$a->getCleanName()." to ".$target->getAlias().".");
+				$seconds = \Mechanics\Pulse::getRandomSeconds($i);
+				$mod = $i * 0.1;
+				$low = $i - $mod;
+				$high = $i + $mod;
+				$this->assertTrue(is_int($seconds));
 			}
-			\Mechanics\Server::out($actor, "Ability not found.");
 		}
-	
 	}
 ?>

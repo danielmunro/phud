@@ -34,6 +34,7 @@
 		protected static $name_familiar = 'cure serious';
 		protected static $name_unfamiliar = 'frzzz flam';
 		protected static $aliases = array('cure serious', 'cure s');
+		protected static $group = 'curative';
 	
 		public function __construct($percent, $actor_id = null, $actor_type = '')
 		{
