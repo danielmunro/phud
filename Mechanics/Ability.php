@@ -28,30 +28,42 @@
 	abstract class Ability
 	{
 	
-		private $name = '';
-		private $clean_name = '';
-		private $clean_name_fitted = '';
-		private $percent = 0;
-		private $actor_id = 0;
-		private $actor_type = '';
+		protected $level = 1;
+		protected $aliases = array();
+		private static $alias_ref = array();
+		protected static $instance = null;
+		private $creation_points = 0;
 		private $type = 0;
-		
-		// Level of the ability: when the actor can use it among other things
-		protected static $level = 1;
-		protected static $aliases = array();
-		private static $abilities = array();
+		protected $fail_message = '';
+		protected $base_class = null;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
+		
+		const TARGET_FIGHTING = 1;
+		const TARGET_ARGS = 2;
+		const TARGET_SELF = 3;
 	
-		public function __construct($percent, $type, $actor_id, $actor_type)
+		protected function __construct($type)
 		{
 		
-			$this->name = (string)$this;
-			$this->percent = $percent;
-			$this->actor_id = $actor_id;
-			$this->actor_type = $actor_type;
-			$this->type = strpos(get_class($this), 'Skills') === 0 ? self::TYPE_SKILL : self::TYPE_SPELL;
+			if(!is_array($this->aliases) || !sizeof($this->aliases))
+				throw new \Exceptions\Ability("Cannot instantiate class (".__CLASS__.") without aliases", \Exceptions\Ability::MISSING_ARGUMENTS);
+		
+			foreach($this->aliases as $alias)
+				if(self::lookup($alias))
+					throw new \Exceptions\Ability("Cannot overwrite alias (".$alias.")", \Exceptions\Ability::ALIAS_CONFLICT);
+				else
+					self::$alias_ref[$alias] = $this;
+			
+			$this->type = $type;
+		}
+		
+		public static function instance()
+		{
+			if(!isset(static::$instance))
+				static::$instance = new static();
+			return static::$instance;
 		}
 		
 		public static function runInstantiation()
@@ -63,10 +75,24 @@
 				$d = dir(dirname(__FILE__) . '/../'.$dir);
 				while($ability = $d->read())
 					if(strpos($ability, '.php') !== false)
-						self::instantiate($dir, substr($ability, 0, strpos($ability, '.')));
+					{
+						$class = $dir.'\\'.substr($ability, 0, strpos($ability, '.'));
+						$class::instance();
+					}
 			}
 		}
+		
+		public function getFailMessage()
+		{
+			return $this->fail_message;
+		}
+		
+		public function getCreationPoints()
+		{
+			return $this->creation_points;
+		}
 	
+		/**
 		protected static function instantiate($dir, $ability)
 		{
 			
@@ -83,15 +109,26 @@
 			if($this->actor_id)
 				Db::getInstance()->query('
 					INSERT INTO abilities (`name`, percent, actor_type, fk_actor_id, `type`) VALUES (?, ?, ?, ?, ?)
-					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->actor_type, $this->actor_id, $this->type, $this->percent), true);
+					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->actor_type, $this->actor_id, $this->type, $this->percent));
 		}
 		
-		public static function exists($alias)
+		public function remove()
 		{
-			return isset(self::$abilities[$alias]) ? self::$abilities[$alias] : false;
+			Db::getInstance()->query('DELETE FROM abilities WHERE fk_actor_id = ? AND actor_type = ? AND `name` = ?', array($this->actor_id, $this->actor_type, $this->name));
+		}
+		*/
+		
+		public static final function lookup($alias)
+		{
+			return isset(self::$alias_ref[$alias]) ? self::$alias_ref[$alias] : false;
+		}
+		
+		public function getBaseClass()
+		{
+			return $this->base_class;
 		}
 	
-		public static function getAliases() { return static::$aliases; }
+		public function getAliases() { return $this->aliases; }
 		public function getType() { return $this->type; }
 		public function getName() { return $this->name; }
 		public function getCleanName($space = false, $strtolower = true)

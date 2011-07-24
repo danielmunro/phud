@@ -57,7 +57,7 @@
 			$this->unique_id = sha1($this->alias.microtime().get_class($this).rand(0, 10000000));
 			$this->setRoom(Room::find($room_id));
 			$this->loadInventory();
-			$this->ability_set = Ability_Set::findByActor($this);
+			$this->ability_set = new Ability_Set($this);
 			$this->tick(true);
 		}
 		
@@ -121,7 +121,19 @@
 			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		
-		public function getAbilitySet() { return $this->ability_set; }
+		public function getAbilitySet()
+		{
+			return $this->ability_set;
+		}
+		
+		public function perform(Ability $ability, $args = array())
+		{
+			$learned_ability = $this->ability_set->getLearnedAbility($ability);
+			if($learned_ability)
+				return $learned_ability->perform($args);
+			return $ability->getFailMessage();
+		}
+		
 		public function getType()
 		{
 			return array_pop(explode("\\", get_class($this)));
@@ -176,7 +188,7 @@
 		public function setRace($race)
 		{
 			$race = Race::getInstance($race);
-			if($race instanceof Race && $race->getPlayable())
+			if($race instanceof Race && $race->isPlayable())
 				$this->race = $race;
 			else
 				throw new \Exceptions\Actor("Trying to instantiate race with bad value.", \Exceptions\Actor::INVALID_RACE);

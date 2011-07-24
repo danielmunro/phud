@@ -189,7 +189,15 @@
 		}
 		*/
 		public function getExperience() { return $this->experience; }
-		public function getExpPerLevel() { return $this->exp_per_level; }
+		public function getExpPerLevel()
+		{
+			$abilities = array_merge($this->ability_set->getSkills(), $this->ability_set->getSpells());
+			//$experience = "{$this->race}"::getBaseCreationCost();
+			foreach($abilities as $ability)
+				$experience += $this->discipline->getExperienceCost($ability);
+			//return $this->exp_per_level;
+			return 0;
+		}
 		public function getConcentration() { return $this->concentration; }
 		public function getTarget() { return $this->target; }
 		public function setTarget(Actor $target = null)
@@ -381,8 +389,11 @@
 			if(!$actor)
 				return;
 		
-			$this->decrementDelay();
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
+			
+			// Get necessary skills
+			$ab_second = $this->ability_set->getLearnedAbility(\Skills\SecondAttack::instance());
+			$ab_third = $this->ability_set->getLearnedAbility(\Skills\ThirdAttack::instance());
 			
 			$attacking_weapon = null;
 			$hand_l = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
@@ -448,9 +459,16 @@
 			
 			$actors = $this->room->getActors();
 			
-			if($this->damage($actor, $dam_roll))
-				foreach($actors as $actor_sub)
-					Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+			$attacks = 1;
+			if($ab_second)
+				$attacks++;
+			if($ab_third)
+				$attacks++;
+			
+			for($i = 0; $i < $attacks; $i++)
+				if($this->damage($actor, $dam_roll))
+					foreach($actors as $actor_sub)
+						Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 			
 			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
@@ -459,11 +477,9 @@
 		{
 		
 			// Don't do anything if dead
-			if(!$target->isAlive() || !$this->isAlive())
-				return false;
-			
 			// Don't hit yerself
-			if($this->getAlias() == $target->getAlias())
+			// Check for safe rooms, imms, non mobs & non players, etc
+			if(!$target->isAlive() || !$this->isAlive() || $this == $target || $target->isSafe())
 				return false;
 			
 			// Damage reduction
@@ -472,21 +488,17 @@
 			if ($damage > 80)
 				$damage = ($damage - 80) / 2 + 80;
 			
-			// Check for safe rooms, imms, non mobs & non players, etc
-			if($target->isSafe())
-				return false;
-			
 			// Check for parry, dodge, and shield block
 			if($type === Damage::TYPE_HIT)
 			{
-				$skill = $target->getAbilitySet()->isValidSkill('dodge');
+				$skill = $target->getAbilitySet()->getLearnedAbility(\Skills\Dodge::instance());
 				if($skill && $skill->perform($target))
 				{
 					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
 					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
 					return false;
 				}
-				$skill = $target->getAbilitySet()->isValidSkill('shield block');
+				$skill = $target->getAbilitySet()->getLearnedAbility(\Skills\Shield_Block::instance());
 				if($skill && $skill->perform($target))
 				{
 					
@@ -595,6 +607,8 @@
 		
 		public function initiateBattle(Actor &$actor)
 		{
+			if($actor == $this)
+				return false;
 			$this->setTarget($actor);
 			if($actor->getBattle())
 				return $actor->getBattle()->addActor($this);

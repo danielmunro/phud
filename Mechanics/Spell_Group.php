@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,15 +24,35 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics; 
-	abstract class Discipline
+	namespace Mechanics;
+	class Spell_Group
 	{
 		
-		protected $ability_set = null;
-		protected static $instance = null;
+		const GROUP_PROTECTIVE = 1;
+		const GROUP_HEALING = 2;
+		const GROUP_TRANSPORTATION = 3;
+		const GROUP_CURATIVE = 4;
+		const GROUP_MALADICTIONS = 5;
+		const GROUP_PLAGUE = 6;
+		const GROUP_ELEMENTAL = 7;
 		
-		protected function __construct()
+		protected $creation_points = 0;
+		protected $spells = array();
+		private static $instances = array(
+			self::GROUP_PROTECTIVE => null,
+			self::GROUP_HEALING => null,
+			self::GROUP_TRANSPORTATION => null,
+			self::GROUP_CURATIVE => null,
+			self::GROUP_MALADICTIONS => null,
+			self::GROUP_PLAGUE => null,
+			self::GROUP_ELEMENTAL => null
+		);
+		private $instance_type = 0;
+		private $spells = array();
+		
+		protected function __construct($instance_type)
 		{
+			$this->instance_type = $instance_type;
 		}
 		
 		public static function instance()
@@ -42,18 +62,14 @@
 			return static::$instance;
 		}
 		
-		public function getExperienceCost(\Mechanics\Ability $ability)
+		public function getSpells()
 		{
-			if($ability->getBaseClass() == $this)
-				return $ability->getCreationCost() - 1;
-			else
-				return $ability->getCreationCost() + 2;
+			return $this->spells;
 		}
 		
-		public function __toString()
+		public function getCreationPoints()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			return $this->creation_points;
 		}
 	}
 ?>

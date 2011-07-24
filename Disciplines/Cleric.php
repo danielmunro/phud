@@ -24,30 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Spells;
-	class Spell_Heal extends \Mechanics\Spell
+	namespace Disciplines;
+	class Cleric extends \Mechanics\Discipline
 	{
-	
-		protected static $level = 45;
-		protected $improve_by_practice = 0;
-		protected $min_mana_cost = 50;
-		protected static $name_familiar = 'heal';
-		protected static $name_unfamiliar = 'oezes';
-		protected static $aliases = array('heal', 'h', 'he', 'hea');
-		protected static $group = 'curative';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
-		public static function perform(Actor &$actor, Skill $spell, $args = null)
-		{
-		
-			$amount = 50;
-			$actor->setHp($actor->getHp() + $amount);
-			
-			Server::out($actor, "You feel better!");
-		}
 	}
 ?>

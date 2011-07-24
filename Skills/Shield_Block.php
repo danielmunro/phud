@@ -25,16 +25,11 @@
 	 *
 	 */
 	namespace Skills;
-	class Shield_Block extends \Mechanics\Ability
+	class Shield_Block extends \Mechanics\Skill
 	{
 	
-		protected static $aliases = array('shield block', 'shield');
-		protected static $to_disciplines = array('barbarian', 'rogue', 'crusader', 'wizard');
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type);
-		}
+		protected $aliases = array('shield block', 'shield');
+		protected $creation_cost = 5;
 	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{

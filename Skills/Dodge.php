@@ -25,16 +25,11 @@
 	 *
 	 */
 	namespace Skills;
-	class Dodge extends \Mechanics\Ability
+	class Dodge extends \Mechanics\Skill
 	{
 	
-		protected static $aliases = array('dodge', 'dod');
-		protected static $to_disciplines = array('barbarian', 'crusader', 'rogue', 'wizard');
-		
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type);
-		}
+		protected $aliases = array('dodge', 'dod');
+		protected $creation_cost = 5;
 	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{

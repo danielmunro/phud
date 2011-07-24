@@ -24,38 +24,21 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Skills;
-	class Berserk extends \Mechanics\Skill
+	namespace Spell_Groups;
+	class Healing extends \Mechanics\Spell_Group
 	{
 	
-		protected $aliases = array('bers', 'berserk');
-		protected $creation_cost = 5;
-		protected $fail_message = 'Your face gets really red!';
+		protected $creation_points = 5;
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		protected function __construct()
 		{
-			
-			$actor->incrementDelay(2);
-			
-			$chance = rand(0, 100);
-			if($chance > $this->getPercent())
-				return $this->fail_message;
-			
-			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
-			$timeout = ceil(10 * $p);
-			$str = ceil(4 * $p);
-			$dex = ceil(2 * $p);
-			$a = new \Mechanics\Affect();
-			$a->setAffect('berserk');
-			$a->setMessageAffect('Affect: berserk');
-			$a->setMessageEnd('You cool down.');
-			$a->setTimeout($timeout);
-			$att = $a->getAttributes();
-			$att->setStr($str);
-			$att->setDex($dex);
-			$actor->addAffect($a);
-			\Mechanics\Server::out($actor, "You fly into a rage!");
+			$this->spells = array(
+				\Spells\Cure_Light::instance(),
+				\Spells\Cure_Serious::instance(),
+				\Spells\Cure_Critical::instance(),
+				\Spells\Heal::instance()
+			);
+			parent::__construct(self::GROUP_PROTECTIVE);
 		}
 	}
-
 ?>

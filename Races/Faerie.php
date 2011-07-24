@@ -31,30 +31,30 @@
 		public function __construct()
 		{
 		
-			$this->str = 10;
-			$this->int = 21;
-			$this->wis = 21;
-			$this->dex = 20;
-			$this->con = 10;
-			$this->max_str = 13;
-			$this->max_int = 25;
-			$this->max_wis = 25;
-			$this->max_dex = 25;
-			$this->max_con = 13;
+			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes->setStr(9);
+			$this->attributes->setInt(16);
+			$this->attributes->setWis(16);
+			$this->attributes->setDex(15);
+			$this->attributes->setCon(9);
+			$this->attributes->setAcBash(100);
+			$this->attributes->setAcSlash(100);
+			$this->attributes->setAcPierce(100);
+			$this->attributes->setAcMagic(100);
+			$this->attributes->setHit(1);
+			$this->attributes->setDam(1);
+			
+			$this->max_str = 14;
+			$this->max_int = 21;
+			$this->max_wis = 21;
+			$this->max_dex = 20;
+			$this->max_con = 14;
 			
 			$this->movement_cost = 0;
 			
 			$this->decrease_thirst = 0.5;
 			$this->decrease_nourishment = 0.5;
 			$this->full = 40;
-			
-			$this->ac_bash = 100;
-			$this->ac_slash = 100;
-			$this->ac_pierce = 100;
-			$this->ac_magic = 85;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 1;
 			
 			$this->weapons = array
 			(
@@ -67,6 +67,10 @@
 			$this->size = self::SIZE_TINY;
 			$this->playable = true;
 			
+			$this->available_disciplines = array(
+				\Disciplines\Crusader::instance(),
+				\Disciplines\Wizard::instance()
+			);
 			
 			parent::__construct();
 		

@@ -31,30 +31,30 @@
 		public function __construct()
 		{
 		
-			$this->str = 21;
-			$this->int = 12;
-			$this->wis = 14;
-			$this->dex = 17;
-			$this->con = 21;
-			$this->max_str = 25;
-			$this->max_int = 17;
-			$this->max_wis = 19;
-			$this->max_dex = 21;
-			$this->max_con = 25;
+			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes->setStr(16);
+			$this->attributes->setInt(10);
+			$this->attributes->setWis(12);
+			$this->attributes->setDex(12);
+			$this->attributes->setCon(15);
+			$this->attributes->setAcBash(100);
+			$this->attributes->setAcSlash(100);
+			$this->attributes->setAcPierce(100);
+			$this->attributes->setAcMagic(100);
+			$this->attributes->setHit(1);
+			$this->attributes->setDam(3);
+			
+			$this->max_str = 21;
+			$this->max_int = 15;
+			$this->max_wis = 17;
+			$this->max_dex = 17;
+			$this->max_con = 20;
 			
 			$this->movement_cost = 2;
 			
 			$this->decrease_thirst = 1;
 			$this->decrease_nourishment = 2;
 			$this->full = 60;
-			
-			$this->ac_bash = 85;
-			$this->ac_slash = 85;
-			$this->ac_pierce = 85;
-			$this->ac_magic = 100;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 3;
 			
 			$this->weapons = array
 			(
@@ -68,6 +68,11 @@
 			$this->playable = true;
 			
 			$this->effects_resist = array(\Mechanics\Effect::FIRE, \Mechanics\Effect::COLD);
+			
+			$this->available_disciplines = array(
+				\Disciplines\Barbarian::instance(),
+				\Disciplines\Crusader::instance()
+			);
 			
 			parent::__construct();
 		

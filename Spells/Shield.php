@@ -28,16 +28,10 @@
 	class Shield extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'shield';
-		protected static $name_unfamiliar = 'plysoxixithix';
-		protected static $aliases = array('sh', 'shi', 'shie', 'shiel', 'shield');
-		protected static $group = 'protective';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
+		protected $name_familiar = 'shield';
+		protected $name_unfamiliar = 'plysoxixithix';
+		protected $aliases = array('sh', 'shi', 'shie', 'shiel', 'shield');
+		
 		public static function perform(\Mechanics\Actor &$actor, &$target, $args = null)
 		{
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);

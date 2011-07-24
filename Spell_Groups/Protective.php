@@ -24,30 +24,19 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Spells;
-	class Spell_Cure_Serious extends \Mechanics\Spell
+	namespace Spell_Groups;
+	class Protective extends \Mechanics\Spell_Group
 	{
 	
-		protected static $level = 10;
-		protected $improve_by_practice = 0;
-		protected $min_mana_cost = 25;
-		protected static $name_familiar = 'cure serious';
-		protected static $name_unfamiliar = 'frzzz flam';
-		protected static $aliases = array('cure serious', 'cure s');
-		protected static $group = 'curative';
+		protected $creation_points = 5;
 	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
+		protected function __construct()
 		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
-		public static function perform(Actor &$actor, Skill $spell, $args = null)
-		{
-		
-			$amount = 5 + $actor->getLevel() / 2;
-			$actor->setHp($actor->getHp() + (int) $amount);
-			
-			Server::out($actor, "You feel better!");
+			$this->spells = array(
+				\Spells\Armor::instance(),
+				\Spells\Shield::instance()
+			);
+			parent::__construct(self::GROUP_PROTECTIVE);
 		}
 	}
 ?>

@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,27 +24,15 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Spells;
-	class Spell_Cure_Critical extends \Mechanics\Spell
+	namespace Exceptions;
+	class Spell extends \Exception
 	{
 	
-		protected static $name_familiar = 'cure critical';
-		protected static $name_unfamiliar = 'tztzz frzzz';
-		protected static $aliases = array('cure critical', 'cure crit', 'cure c');
-		protected static $group = 'curative';
+		const INVALID_GROUP = 1;
 	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
+		public function __construct($msg, $no)
 		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
-		public static function perform(Actor &$actor, Skill $spell, $args = null)
-		{
-		
-			$amount = 10 + $actor->getLevel() / 1.8;
-			$actor->setHp($actor->getHp() + $amount);
-			
-			Server::out($actor, "You feel better!");
+			parent::__construct($msg, $no);
 		}
 	}
 ?>

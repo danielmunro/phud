@@ -31,11 +31,13 @@
 		const TYPE_OFFENSIVE = 1;
 		const TYPE_PASSIVE = 2;
 	
-		protected static $name_familiar = '';
-		protected static $name_unfamiliar = '';
+		protected $name_familiar = '';
+		protected $name_unfamiliar = '';
 		protected $min_mana = 15;
-		protected static $spell_type = self::TYPE_PASSIVE;
+		protected $spell_type = self::TYPE_PASSIVE;
 		protected static $groups = array();
+	
+		protected function __construct() { parent::__construct(self::TYPE_SPELL); }
 	
 		public function getManaCost($actor_level)
 		{
@@ -66,7 +68,38 @@
 		{
 			self::$groups[static::$group][] = static::$name_familiar;
 		}
+		public static function grantGroup(Actor $actor, $group_name)
+		{
+			if(!isset(self::$groups[$group_name]))
+				throw new \Exceptions\Spell("Cannot grant group (".$group_name." -- does not exist)", \Exceptions\Spell::INVALID_GROUP);
+			foreach(self::$groups[$group_name] as $alias)
+			{
+				$spell_class = self::exists($alias);
+				if($spell_class)
+				{
+					$spell_instance = new $spell_class(1, $actor->getId(), $actor->getType());
+					$actor->getAbilitySet()->addAbility($spell_instance);
+				}
+			}
+		}
+		public static function removeGroup(Actor $actor, $group_name)
+		{
+			if(!isset(self::$groups[$group_name]))
+				throw new \Exceptions\Spell("Cannot revoke group (".$group_name." -- does not exist)", \Exceptions\Spell::INVALID_GROUP);
+			foreach(self::$groups[$group_name] as $alias)
+			{
+				$spell_class = self::exists($alias);
+				if($spell_class)
+				{
+					$actor->getAbilitySet()->removeSpell($spell_class::$name_familiar);
+				}
+			}
+		}
 		public static function getGroups() { return self::$groups; }
+		public function getCreationPoints()
+		{
+			return $this->spell_group->getCreationPoints();
+		}
 	}
 
 ?>

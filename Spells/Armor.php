@@ -28,15 +28,9 @@
 	class Armor extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'armor';
-		protected static $name_unfamiliar = 'plysoxix';
-		protected static $aliases = array('ar', 'armor');
-		protected static $group = 'protective';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
+		protected $name_familiar = 'armor';
+		protected $name_unfamiliar = 'plysoxix';
+		protected $aliases = array('ar', 'armor');
 	
 		public static function perform(\Mechanics\Actor &$actor, &$target, $args = null)
 		{
@@ -45,7 +39,6 @@
 			$modifier = max(floor($actor->getLevel() / 10), 1);
 			$mod_ac = -15 * $modifier;
 			
-			// new \Mechanics\Affect(self::$name_familiar, 'Spell: armor: ' . $mod_ac . ' to armor class', $timeout, array('mod_ac' => $mod_ac))
 			$a = new \Mechanics\Affect();
 			$a->setAffect(self::$name_familiar);
 			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');

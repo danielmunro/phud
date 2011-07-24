@@ -45,6 +45,7 @@
 							$battle->addActor($victim);
 						}
 						$aggressor->attack();
+						$aggressor->decrementDelay();
 					}
 					else
 					{

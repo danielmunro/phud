@@ -27,14 +27,5 @@
 	namespace Disciplines;
 	class Wizard extends \Mechanics\Discipline
 	{
-		
-		public function assignGroup()
-		{
-			
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Kick(0, $this->actor->getId()));
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Cure_Light(0, $this->actor->getId()));
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Magic_Missile(0, $this->actor->getId()));
-		}
-		
 	}
 ?>

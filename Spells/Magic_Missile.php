@@ -28,17 +28,11 @@
 	class Magic_Missile extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'magic missile';
-		protected static $name_unfamiliar = 'oqisasi';
-		protected static $spell_type = self::TYPE_OFFENSIVE;
-		protected static $aliases = array('magic missile', 'magic', 'mis', 'ma');
-		protected static $group = 'attack';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
+		protected $name_familiar = 'magic missile';
+		protected $name_unfamiliar = 'oqisasi';
+		protected $spell_type = self::TYPE_OFFENSIVE;
+		protected $aliases = array('magic missile', 'magic', 'mis', 'ma');
+		
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			

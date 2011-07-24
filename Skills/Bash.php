@@ -25,26 +25,29 @@
 	 *
 	 */
 	namespace Skills;
-	class Bash extends \Mechanics\Ability
+	class Bash extends \Mechanics\Skill
 	{
 	
-		private $fn_init = null;
-		private $fn_done = null;
-		protected static $aliases = array('bash', 'b', 'ba', 'bas');
-		protected static $to_disciplines = array('barbarian');
+		protected $aliases = array('bash', 'b', 'ba', 'bas');
+		protected $creation_points = 5;
+		protected $fail_message = 'You fall flat on your face!';
 	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
+		protected function __construct()
 		{
-			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type);
+			$this->base_class = \Disciplines\Warrior::instance();
+			parent::__construct();
 		}
 	
-		public function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target = null, $args = null)
+		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
+			$target_args = $actor->getRoom()->getActorByInput($args);
+			$target_fighting = $actor->getTarget();
 			
-			if(!$target)
-				$target = $actor->getTarget();
-			if(!$target)
-				$target = $actor->getRoom()->getActorByInput($args);
+			if($target_fighting && $target_args && $target_fighting != $target_args)
+					return "Whoa! Don't you think one is enough!";
+			
+			$target = $target_fighting ? $target_fighting : $target_args;
+			
 			if(!$target)
 				return \Mechanics\Server::out($actor, "You bash around, all to yourself!");
 			
@@ -57,19 +60,14 @@
 			
 			if($chance / $target_mod < $this->getPercent() / $actor_mod)
 			{
-				\Mechanics\Server::out($actor, "You slam into " . $target->getAlias() . " and send " . $target->getSex() . " flying!");
-				return $this->apply($target);
+				$a = new Affect();
+				$a->setAffect('stun');
+				$a->setTimeout(0);
+				$target->addAffect($a);
+				return "You slam into " . $target->getAlias() . " and send " . $target->getSex() . " flying!";
 			}
-			else
-				return \Mechanics\Server::out($actor, "You fall flat on your face!");
-		}
-		
-		public function apply($target, $timeout = null)
-		{
-			$a = new Affect();
-			$a->setAffect('stun');
-			$a->setTimeout(0);
-			$target->addAffect($a);
+			
+			return $this->fail_message;
 		}
 	}
 ?>

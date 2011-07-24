@@ -26,15 +26,6 @@
 	 */
 	namespace Disciplines;
 	class Rogue extends \Mechanics\Discipline
-	{
-		
-		public function assignGroup()
-		{
-			
-			$this->actor->increaseHitDam(1, 1);
-			
-			$this->actor->getAbilitySet()->addAbility(new \Skill\Kick(0, $this->actor->getId()));
-		}
-		
+	{	
 	}
 ?>

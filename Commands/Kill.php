@@ -50,6 +50,9 @@
 			if(!($target instanceof \Mechanics\Fighter))
 				return \Mechanics\Server::out($actor, $target->getAlias(true)." wouldn't like that very much.");
 			
+			if($target == $actor)
+				return \Mechanics\Server::out($actor, "You can't attack yourself!");
+			
 			\Mechanics\Server::out($actor, "You scream and attack!");
 			$actor->initiateBattle($target);
 		}

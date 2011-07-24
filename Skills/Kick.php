@@ -28,14 +28,8 @@
 	class Kick extends \Mechanics\Ability
 	{
 	
-		private static $base_chance = 99;
-		protected static $aliases = array('ki', 'kick');
-		protected static $to_disciplines = array('barbarian', 'rogue');
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SKILL, $actor_id, $actor_type);
-		}
+		protected $aliases = array('ki', 'kick');
+		protected $creation_cost = 5;
 	
 		public function perform(\Mechanics\Actor &$actor, $args = null)
 		{
@@ -54,12 +48,13 @@
 				return \Mechanics\Server::out($actor, 'You kick your legs wildly!');
 			
 			$actor->incrementDelay(1);
+			$base_chance = 99;
 			
 			if(!($actor_target instanceof \Mechanics\Actor))
 				$actor->addFighter($final_target);
 			
 			$chance = rand(0, 100);
-			if($chance > self::$base_chance || $chance > $this->getPercent())
+			if($chance > $base_chance || $chance > $this->getPercent())
 				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
 			
 			if($actor->damage($final_target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))

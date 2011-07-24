@@ -28,17 +28,11 @@
 	class Sleep extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'sleep';
-		protected static $name_unfamiliar = 'teruo';
-		protected static $spell_type = self::TYPE_OFFENSIVE;
-		protected static $aliases = array('sleep', 'sle', 'slee');
-		protected static $group = 'maladictions';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
+		protected $name_familiar = 'sleep';
+		protected $name_unfamiliar = 'teruo';
+		protected $spell_type = self::TYPE_OFFENSIVE;
+		protected $aliases = array('sleep', 'sle', 'slee');
+		
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 			

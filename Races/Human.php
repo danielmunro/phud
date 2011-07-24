@@ -31,31 +31,30 @@
 		protected function __construct()
 		{
 		
-			$this->str = 17;
-			$this->int = 19;
-			$this->wis = 18;
-			$this->dex = 19;
-			$this->con = 17;
-			
-			$this->max_str = 21;
-			$this->max_int = 23;
-			$this->max_wis = 22;
-			$this->max_dex = 23;
-			$this->max_con = 21;
+			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes->setStr(13);
+			$this->attributes->setInt(13);
+			$this->attributes->setWis(13);
+			$this->attributes->setDex(13);
+			$this->attributes->setCon(13);
+			$this->attributes->setAcBash(100);
+			$this->attributes->setAcSlash(100);
+			$this->attributes->setAcPierce(100);
+			$this->attributes->setAcMagic(100);
+			$this->attributes->setHit(1);
+			$this->attributes->setDam(2);
+		
+			$this->max_str = 19;
+			$this->max_int = 19;
+			$this->max_wis = 19;
+			$this->max_dex = 19;
+			$this->max_con = 19;
 			
 			$this->movement_cost = 2;
 			
 			$this->decrease_thirst = 1;
 			$this->decrease_nourishment = 1;
 			$this->full = 40;
-			
-			$this->ac_bash = 100;
-			$this->ac_slash = 100;
-			$this->ac_pierce = 100;
-			$this->ac_magic = 100;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 2;
 			
 			$this->move_verb = 'walks';
 			
@@ -66,6 +65,13 @@
 			);
 			
 			$this->playable = true;
+			
+			$this->available_disciplines = array(
+				\Disciplines\Barbarian::instance(),
+				\Disciplines\Crusader::instance(),
+				\Disciplines\Rogue::instance(),
+				\Disciplines\Wizard::instance()
+			);
 			
 			parent::__construct();
 		

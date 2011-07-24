@@ -40,12 +40,12 @@
 		
 		public static function start()
 		{
-		
 			Debug::addDebugLine("Initializing environment...");
 			Ability::runInstantiation();
 			Command::runInstantiation();
 			\Living\Mob::instantiate();
 			\Living\Shopkeeper::instantiate();
+			die;
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
@@ -152,11 +152,11 @@
 						else
 						{
 						
-							// Skills -- See the cast command for spells
-							if($skill = $this->clients[$i]->getAbilitySet()->isValidSkill($args[0]))
+							// Skills and spells
+							$ability = Ability::lookup($args[0]);
+							if($ability)
 							{
-								$n = null;
-								$skill->perform($this->clients[$i], $n, $args);
+								self::out($this->clients[$i], $this->clients[$i]->perform($ability, $args));
 								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
 								continue;
 							}

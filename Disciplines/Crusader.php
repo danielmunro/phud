@@ -25,15 +25,9 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Crusader extends \Mechanics\Discipline
+	class Crusader extends \Disciplines\Cleric
 	{
 	
-		public function assignGroup()
-		{
-			
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Kick(0, $this->actor->getId()));
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Cure_Light(0, $this->actor->getId()));s
-		}
 		
 	}
 ?>

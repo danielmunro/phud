@@ -25,23 +25,22 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Barbarian extends \Mechanics\Discipline
+	class Barbarian extends Warrior
 	{
 		
-		public function assignGroup()
+		protected function __construct()
 		{
-			$id = $this->actor->getId();
-			$this->actor->increaseHitDam(1, 2);
-			
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Kick(0, $id));
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Dodge(0, $id));
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Shield_Block(0, $id));
-			$this->actor->getAbilitySet()->addAbility(new \Skills\Bash(0, $id));
-			
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Armor(0, $id));
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Cure_Light(0, $id));
-			$this->actor->getAbilitySet()->addAbility(new \Spells\Magic_Missile(0, $id));
+			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->ability_set->addAbilities(array(
+				// Skills
+				\Skills\Kick::instance(),
+				\Skills\Dodge::instance(),
+				\Skills\Shield_Block::instance(),
+				\Skills\Bash::instance(),
+			));
+			$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
+			$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
+			parent::__construct();
 		}
-		
 	}
 ?>

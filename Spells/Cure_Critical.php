@@ -24,38 +24,21 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Skills;
-	class Berserk extends \Mechanics\Skill
+	namespace Spells;
+	class Cure_Critical extends \Mechanics\Spell
 	{
 	
-		protected $aliases = array('bers', 'berserk');
-		protected $creation_cost = 5;
-		protected $fail_message = 'Your face gets really red!';
-	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		protected $name_familiar = 'cure critical';
+		protected $name_unfamiliar = 'tztzz frzzz';
+		protected $aliases = array('cure critical', 'cure crit', 'cure c');
+		
+		public static function perform(Actor &$actor, Skill $spell, $args = null)
 		{
+		
+			$amount = 10 + $actor->getLevel() / 1.8;
+			$actor->setHp($actor->getHp() + $amount);
 			
-			$actor->incrementDelay(2);
-			
-			$chance = rand(0, 100);
-			if($chance > $this->getPercent())
-				return $this->fail_message;
-			
-			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
-			$timeout = ceil(10 * $p);
-			$str = ceil(4 * $p);
-			$dex = ceil(2 * $p);
-			$a = new \Mechanics\Affect();
-			$a->setAffect('berserk');
-			$a->setMessageAffect('Affect: berserk');
-			$a->setMessageEnd('You cool down.');
-			$a->setTimeout($timeout);
-			$att = $a->getAttributes();
-			$att->setStr($str);
-			$att->setDex($dex);
-			$actor->addAffect($a);
-			\Mechanics\Server::out($actor, "You fly into a rage!");
+			Server::out($actor, "You feel better!");
 		}
 	}
-
 ?>

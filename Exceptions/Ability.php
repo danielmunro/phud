@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,38 +24,17 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Skills;
-	class Berserk extends \Mechanics\Skill
+	namespace Exceptions;
+	class Ability extends \Exception
 	{
 	
-		protected $aliases = array('bers', 'berserk');
-		protected $creation_cost = 5;
-		protected $fail_message = 'Your face gets really red!';
+		const INVALID_TYPE = 1;
+		const MISSING_ARGUMENTS = 2;
+		const ALIAS_CONFLICT = 3;
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		public function __construct($msg, $no)
 		{
-			
-			$actor->incrementDelay(2);
-			
-			$chance = rand(0, 100);
-			if($chance > $this->getPercent())
-				return $this->fail_message;
-			
-			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
-			$timeout = ceil(10 * $p);
-			$str = ceil(4 * $p);
-			$dex = ceil(2 * $p);
-			$a = new \Mechanics\Affect();
-			$a->setAffect('berserk');
-			$a->setMessageAffect('Affect: berserk');
-			$a->setMessageEnd('You cool down.');
-			$a->setTimeout($timeout);
-			$att = $a->getAttributes();
-			$att->setStr($str);
-			$att->setDex($dex);
-			$actor->addAffect($a);
-			\Mechanics\Server::out($actor, "You fly into a rage!");
+			parent::__construct($msg, $no);
 		}
 	}
-
 ?>

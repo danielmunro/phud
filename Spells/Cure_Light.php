@@ -28,16 +28,10 @@
 	class Cure_Light extends \Mechanics\Spell
 	{
 	
-		protected static $name_familiar = 'cure light';
-		protected static $name_unfamiliar = 'frzzz';
-		protected static $aliases = array('c', 'cure', 'cure light');
-		protected static $group = 'curative';
-	
-		public function __construct($percent, $actor_id = null, $actor_type = '')
-		{
-			parent::__construct($percent, self::TYPE_SPELL, $actor_id, $actor_type);
-		}
-	
+		protected $name_familiar = 'cure light';
+		protected $name_unfamiliar = 'frzzz';
+		protected $aliases = array('c', 'cure', 'cure light');
+		
 		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
 		{
 		

@@ -32,6 +32,8 @@
 		protected $last_input = '';
 		protected $nourishment = 0;
 		protected $thirst = 0;
+		protected $trains = 0;
+		protected $practices = 0;
 		private $login = array('alias' => false);
 		private $command_buffer = array();
 		private static $instances = array();
@@ -85,6 +87,8 @@
 			$this->id = $row->id;
 			$this->thirst = $row->thirst;
 			$this->nourishment = $row->nourishment;
+			$this->trains = $row->trains;
+			$this->practices = $row->practices;
 			$this->disposition = \Mechanics\Actor::DISPOSITION_STANDING;
 			
 			parent::__construct($row->fk_room_id);
@@ -150,7 +154,9 @@
 											experience = ?,
 											exp_per_level = ?,
 											fk_room_id = ?,
-											disposition = ? WHERE id = ?', array(
+											disposition = ?,
+											trains = ?,
+											practices = ? WHERE id = ?', array(
 											$this->getAlias(),
 											$this->level,
 											$this->copper,
@@ -162,11 +168,13 @@
 											$this->exp_per_level,
 											$this->getRoom()->getId(),
 											$this->disposition,
+											$this->trains,
+											$this->practices,
 											$this->id));
 			else
 			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, level, copper, silver, gold, pass, race, fk_room_id, discipline, disposition) VALUES
-															(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
+				\Mechanics\Db::getInstance()->query('INSERT INTO users (alias, level, copper, silver, gold, pass, race, fk_room_id, discipline, disposition, trains,
+															practices) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array(
 																$this->getAlias(),
 																$this->level,
 																$this->copper,
@@ -176,7 +184,9 @@
 																(string)$this->race,
 																$this->getRoom()->getId(),
 																(string)$this->discipline,
-																$this->disposition
+																$this->disposition,
+																$this->trains,
+																$this->practices
 															));
 				$this->id = \Mechanics\Db::getInstance()->insert_id;
 			}
