@@ -27,6 +27,9 @@
 	namespace Disciplines;
 	class Wizard extends \Mechanics\DisciplineFocus
 	{
+	
+		protected $discipline_parts = array(Mage::instance());
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('wizard', $this);

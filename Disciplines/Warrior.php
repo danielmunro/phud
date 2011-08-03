@@ -27,6 +27,14 @@
 	namespace Disciplines;
 	class Warrior extends \Mechanics\DisciplinePrimary
 	{
+	
+		protected $discipline_focuses = array(
+											\Disciplines\Samurai::instance(),
+											\Disciplines\Paladin::instance(),
+											\Disciplines\Berzerker::instance(),
+											\Disciplines\Barbarian::instance()
+										);
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('warrior', $this);

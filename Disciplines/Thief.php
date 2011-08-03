@@ -27,6 +27,14 @@
 	namespace Disciplines;
 	class Thief extends \Mechanics\DisciplinePrimary
 	{
+	
+		protected $discipline_focuses = array(
+											\Disciplines\Rogue::instance(),
+											\Disciplines\Assassin::instance(),
+											\Disciplines\Monk::instance(),
+											\Disciplines\Berzerker::instance()
+										);
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('thief', $this);

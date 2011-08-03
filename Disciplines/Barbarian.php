@@ -27,6 +27,9 @@
 	namespace Disciplines;
 	class Barbarian extends \Mechanics\DisciplineFocus
 	{
+	
+		protected $discipline_parts = array(Warrior::instance());
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('barbarian', $this);

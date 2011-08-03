@@ -27,6 +27,14 @@
 	namespace Disciplines;
 	class Mage extends \Mechanics\DisciplinePrimary
 	{
+	
+		protected $discipline_focuses = array(
+											\Disciplines\Samurai::instance(),
+											\Disciplines\Assassin::instance(),
+											\Disciplines\Wizard::instance(),
+											\Disciplines\Druid::instance()
+										);
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('mage', $this);

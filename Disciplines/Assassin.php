@@ -25,14 +25,17 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Rogue extends \Mechanics\DisciplineFocus
+	class Assassin extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(Thief::instance());
+		protected $discipline_parts = array(
+											Mage::instance(),
+											Thief::instance()
+										);
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('rogue', $this);
+			$this->alias = new \Mechanics\Alias('assassin', $this);
 		}
 		
 		protected function initAbilitySet()

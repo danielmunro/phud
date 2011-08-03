@@ -27,6 +27,9 @@
 	namespace Disciplines;
 	class Crusader extends \Mechanics\DisciplineFocus
 	{
+	
+		protected $discipline_parts = array(Cleric::instance());
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('crusader', $this);
