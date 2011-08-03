@@ -30,6 +30,7 @@
 	
 		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('human', $this);
 		
 			$this->attributes = new \Mechanics\Attributes();
 			$this->attributes->setStr(13);
@@ -44,11 +45,13 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(2);
 		
+			/**
 			$this->max_str = 19;
 			$this->max_int = 19;
 			$this->max_wis = 19;
 			$this->max_dex = 19;
 			$this->max_con = 19;
+			*/
 			
 			$this->movement_cost = 2;
 			

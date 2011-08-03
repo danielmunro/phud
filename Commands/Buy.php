@@ -28,15 +28,14 @@
 	class Buy extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'buy');
+			new \Mechanics\Alias('buy', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
 			if(sizeof($args) == 3)

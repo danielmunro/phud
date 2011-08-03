@@ -29,49 +29,33 @@
 	{
 		
 		private $actor = null;
-		private $skills = array();
-		private $spell_groups = array();
-		private $spells = array();
+		private $abilities = array();
 		
 		public function __construct(Actor $actor = null)
 		{
-			if($actor)
-				$this->loadActorAbilitySet($actor);
-		}
-		
-		private function loadActorAbilitySet(Actor $actor)
-		{
-			/** Have to change how all this is done
 			$this->actor = $actor;
-			$rows = Db::getInstance()->query('SELECT * FROM abilities WHERE actor_type = ? AND fk_actor_id = ?', array($this->actor->getType(), $this->actor->getId()))->fetch_objects();
-			foreach($rows as $row)
-			{
-				$ability = $row->type == Ability::TYPE_SKILL ? 'Skills' : 'Spells';
-				$ability = $ability . '\\' . ucfirst($row->name);
-				if($row->type == Ability::TYPE_SKILL)
-					$learned = new Learned_Skill($ability::instance(), $actor, $row->percent);
-				else
-					$learned = new Learned_Spell_Group($ability::instance(), $actor, $row->percent);
-				$this->addAbility($ability::instance());
-			}
-			*/
 		}
 		
 		public function getSkills()
 		{
 			return
-				array_filter($this->abilities, function($ability)
+				array_filter($this->abilities, function($learned)
 				{
-					return $ability->getType() === Ability::TYPE_SKILL;
+					return $learned->getAbility()->getType() === Ability::TYPE_SKILL;
 				});
 		}
 		public function getSpells()
 		{
 			return
-				array_filter($this->abilities, function($ability)
+				array_filter($this->abilities, function($learned)
 				{
-					return $ability->getType() === Ability::TYPE_SPELL;
+					return $learned->getAbility()->getType() === Ability::TYPE_SPELL;
 				});
+		}
+		
+		public function getSpellGroups()
+		{
+			
 		}
 		
 		public function addAbilities($abilities)
@@ -80,26 +64,31 @@
 				$this->addAbility($ability);
 		}
 		
-		public function addAbility(Ability $instance)
+		public function addAbility(Ability $instance, $percent = 1)
 		{
-			$this->abilities[] = new Learned_Ability($this->actor, $instance);
+			// Don't let them learn something if it is outside of their discipline
+			if($this->actor && $this->actor->getDiscipline() && !$this->actor->getDiscipline()->getAbilitySet()->getLearnedAbility($instance))
+				return Server::out($this->actor, "You cannot learn that.");
+			
+			// Only add it if they don't already have it
+			if(!$this->getLearnedAbility($instance))
+			{
+				$this->abilities[] = new Learned_Ability($instance, $this->actor, $percent);
+				$spell_group_alias = $instance->getSpellGroup()->getAlias()->getAliasName();
+				if($instance->getType() == Ability::TYPE_SPELL && !in_array($spell_group_alias, $this->spell_groups))
+					$this->spell_groups[] = $spell_group_alias;
+			}
 		}
 		
 		public function getLearnedAbility($ability)
 		{
-			foreach($this->abilities as $learned_ability)
-				if($this->learned_ability->getAbility() == $ability)
-					return $learned_ability;
+			$found = array_filter($this->abilities, function($a) use ($ability)
+				{
+					return $a->getAbility() == $ability;
+				});
+			if($found)
+				return $found[0];
 			return null;
-		}
-		
-		public function save()
-		{
-			foreach($this->skills as $learned_skill)
-				$learned_skill->save();
-			foreach($this->spells as $learned_spell)
-				$learned_spell->save();
-			
 		}
 		
 		public function getCreationPoints()

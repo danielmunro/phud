@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('sc', 'score'));
+			new \Mechanics\Alias('score', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			\Mechanics\Debug::addDebugLine(print_r($actor->getAttributes(), true));
 			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a(n) ' . $actor->getRaceStr());

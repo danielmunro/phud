@@ -25,7 +25,16 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Warrior extends \Mechanics\Discipline
+	class Warrior extends \Mechanics\DisciplinePrimary
 	{
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('warrior', $this);
+		}
+		
+		protected function initAbilitySet()
+		{
+			$this->ability_set = new \Mechanics\Ability_Set();
+		}
 	}
 ?>

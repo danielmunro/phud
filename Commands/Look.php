@@ -28,15 +28,14 @@
 	class Look extends \Mechanics\Command
 	{
 		
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 		
 		protected function __construct()
 		{
-			
-			\Mechanics\Command::addAlias(__CLASS__, array('l', 'look'));
+			new \Mechanics\Alias('look', $this);
 		}
 		
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
 			if($args === null || sizeof($args) == 1) // The actor is looking

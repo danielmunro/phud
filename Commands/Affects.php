@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('aff', 'a', 'affect', 'affects'));
+			new \Mechanics\Alias('affects', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
 			\Mechanics\Server::out($actor, 'You are affected by: ');

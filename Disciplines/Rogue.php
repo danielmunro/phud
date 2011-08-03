@@ -25,7 +25,16 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Rogue extends \Mechanics\Discipline
-	{	
+	class Rogue extends \Mechanics\DisciplineFocus
+	{
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('rogue', $this);
+		}
+		
+		protected function initAbilitySet()
+		{
+			$this->ability_set = new \Mechanics\Ability_Set();
+		}
 	}
 ?>

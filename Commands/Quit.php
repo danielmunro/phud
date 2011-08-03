@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'quit');
+			new \Mechanics\Alias('quit', $this);
 		}
 		
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			if(array_key_exists('sleep', $actor->getAffects()))
 				return \Mechanics\Server::out($actor, "You need to be able to wake up first.");
@@ -43,8 +42,8 @@
 			{
 				$actor->save();
 				\Mechanics\Server::out($actor, "Good bye!\r\n");
-				\Mechanics\Server::getInstance()->disconnectUser($actor);
-				$actor->clearSocket();
+				\Mechanics\Server::getInstance()->disconnectClient($actor->getClient());
+				$actor->getClient()->clearSocket();
 				unset($actor);
 			}
 		}

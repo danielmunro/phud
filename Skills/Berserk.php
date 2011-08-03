@@ -28,17 +28,20 @@
 	class Berserk extends \Mechanics\Skill
 	{
 	
-		protected $aliases = array('bers', 'berserk');
 		protected $creation_cost = 5;
 		protected $fail_message = 'Your face gets really red!';
+		protected $delay = 2;
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		protected function __construct()
 		{
-			
-			$actor->incrementDelay(2);
-			
-			$chance = rand(0, 100);
-			if($chance > $this->getPercent())
+			$this->alias = new \Mechanics\Alias('berserk', $this);
+			$this->base_class = \Disciplines\Barbarian::instance();
+			parent::__construct();
+		}
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		{
+			if(rand(0, 100) > $chance)
 				return $this->fail_message;
 			
 			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
@@ -54,7 +57,7 @@
 			$att->setStr($str);
 			$att->setDex($dex);
 			$actor->addAffect($a);
-			\Mechanics\Server::out($actor, "You fly into a rage!");
+			return "You fly into a rage!";
 		}
 	}
 

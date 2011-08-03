@@ -29,62 +29,12 @@
 	{
 	
 		protected $id = 0;
-		protected $table_id = 0;
-		protected $table = '';
 		protected $items = array();
 		
 		private static $instances = array();
 		
-		public function __construct($table = '', $table_id = 0)
+		public function __construct()
 		{
-			$this->table = $table;
-			$this->table_id = $table_id;
-		}
-		
-		public static function findById($id)
-		{
-			
-			$row = Db::getInstance()->query(
-				'SELECT * FROM inventories WHERE id = ?', $id)->getResult()->fetch_object();
-			
-			return self::find($row->fk_table, $row->fk_table_id);
-		}
-		
-		public static function find($table, $table_id)
-		{
-			
-			if(!empty(self::$instances[$table][$table_id]) && self::$instances[$table][$table_id] instanceof Inventory)
-				return self::$instances[$table][$table_id];
-			
-			$rows = Db::getInstance()->query('
-				SELECT
-					inventories.id AS inventory_id,
-					items.id AS item_id,
-					items.fk_inventory_id
-				FROM inventories
-				LEFT JOIN items ON items.fk_inv_inside_id = inventories.id
-				WHERE fk_table = ? AND fk_table_id = ?',
-					array($table, $table_id))->fetch_objects();
-
-			// NEW....
-			if(empty($rows))
-			{
-				self::$instances[$table][$table_id] = new self($table, $table_id);
-				return self::$instances[$table][$table_id];
-			}
-			
-			self::$instances[$table][$table_id] = new self($table, $table_id);
-			
-			self::$instances[$table][$table_id]->setId($rows[0]->inventory_id);
-			
-			foreach($rows as $row)
-			{
-				if($row->item_id == 0)
-					continue;
-			
-				self::$instances[$table][$table_id]->add(\Items\Item::getInstance($row->item_id));
-			}
-			return self::$instances[$table][$table_id];
 		}
 		
 		public function add(\Items\Item $item)
@@ -189,35 +139,5 @@
 				$this->add($item);
 			}
 		}
-		
-		public function save()
-		{
-			
-			if(!sizeof($this->items))
-				return;
-			
-			if($this->id)
-				Db::getInstance()->query('UPDATE inventories SET fk_table = ?, fk_table_id = ?
-					WHERE id = ?', array($this->table, $this->table_id, $this->id));
-			else
-			{
-				Db::getInstance()->query('INSERT INTO inventories (fk_table, fk_table_id) VALUES
-					(?, ?)', array($this->table, $this->table_id));
-				$this->id = Db::getInstance()->insert_id;
-			}
-			foreach($this->items as $i => $item)
-			{
-				
-				$item->save($this->id);
-				if($item instanceof \Items\Container)
-					$item->getInventory()->save($this->id);
-			}
-		}
-		
-		public function setId($id) { $this->id = $id; }
-		public function getId() { return $this->id; }
-		public function setTable($table) { $this->table = $table; }
-		public function setTableId($id) { $this->table_id = $id; }
 	}
-
 ?>

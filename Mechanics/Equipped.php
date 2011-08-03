@@ -49,7 +49,7 @@
 		
 		private $equipment = array();
 		private $inventory = null;
-		private $user = null;
+		private $actor = null;
 		private static $types = array
 		(
 			self::POSITION_LIGHT => \Items\Equipment::TYPE_LIGHT,
@@ -93,7 +93,7 @@
 			self::POSITION_FLOAT => 	'<floating nearby>    '
 		);
 		
-		public function __construct(Actor $user = null)
+		public function __construct(Actor $actor)
 		{
 			
 			$this->equipment = array
@@ -118,24 +118,19 @@
 				self::POSITION_FLOAT => null
 			);
 			
-			if($user)
+			if($actor)
 			{
-				$this->user = $user;
-				$this->inventory = Inventory::find($this->user->getTable().'_eq', $this->user->getId());
-				foreach($this->inventory->getItems() as $item)
-					$this->equip($this->user, $item, false);
+				$this->actor = $actor;
 			}
+			$this->inventory = new Inventory();
 		}
 		
-		public function getInventory() { return $this->inventory; }
-		
-		public function save()
+		public function getInventory()
 		{
-			
-			$this->inventory->save();
+			return $this->inventory;
 		}
 		
-		public function equip(Actor &$actor, \Items\Equipment $item, $display_message = true)
+		public function equip(\Items\Equipment $item, $display_message = true)
 		{
 			
 			$positions = array_keys(self::$types, $item->getEquipmentType());
@@ -147,11 +142,11 @@
 				$i++;
 				if($this->equipment[$position] === null)
 				{
-					if($actor->getInventory()->remove($item) !== false)
+					if($this->actor->getInventory()->remove($item) !== false)
 						$this->inventory->add($item);
 					$this->equipment[$position] = $item;
 					foreach($item->getAffects() as $affect)
-						$actor->addAffect($affect);
+						$this->actor->addAffect($affect);
 					$equipped = $item;
 					$equipped_position = $position;
 					break;
@@ -162,11 +157,11 @@
 					$this->inventory->remove($item_remove);
 					$this->inventory->add($item);
 					foreach($item_remove->getAffects() as $affect)
-						$actor->removeAffect($affect);
+						$this->actor->removeAffect($affect);
 					foreach($item->getAffects() as $affect)
-						$actor->addAffect($affect);
-					$actor->getInventory()->add($item_remove);
-					$actor->getInventory()->remove($item);
+						$this->actor->addAffect($affect);
+					$this->actor->getInventory()->add($item_remove);
+					$this->actor->getInventory()->remove($item);
 					$this->equipment[$position] = $item;
 					$equipped = $item;
 					$dequipped = $item_remove;
@@ -178,8 +173,8 @@
 			if($item instanceof \Items\Weapon)
 			{
 				if(isset($item_remove))
-					$actor->decreaseHitDam($item_remove->getHitRoll(), $item_remove->getDamRoll());
-				$actor->increaseHitDam($item->getHitRoll(), $item->getDamRoll());
+					$this->actor->decreaseHitDam($item_remove->getHitRoll(), $item_remove->getDamRoll());
+				$this->actor->increaseHitDam($item->getHitRoll(), $item->getDamRoll());
 			}
 			
 			if(!$display_message)
@@ -188,12 +183,12 @@
 			if($dequipped)
 			{
 				$msg_you = "You remove " . $dequipped->getShort() . " and "; // . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position, true) . '.';
-				$msg_others = $actor->getAlias(true) . " removes " . $dequipped->getShort() . " and "; //wears " . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position) . '.';
+				$msg_others = $this->actor->getAlias(true) . " removes " . $dequipped->getShort() . " and "; //wears " . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position) . '.';
 			}
 			else
 			{
 				$msg_you = "You ";
-				$msg_others = $actor->getAlias(true) . " ";
+				$msg_others = $this->actor->getAlias(true) . " ";
 			}
 			
 			if($equipped->getEquipmentType() == \Items\Equipment::TYPE_WIELD)
@@ -220,7 +215,7 @@
 			$msg_you .= $item->getShort();
 			$msg_others .= $item->getShort();
 			
-			$sex = $actor->getSex() == 'm' ? 'his' : 'her';
+			$sex = $this->actor->getSex() == 'm' ? 'his' : 'her';
 			
 			switch($equipped->getEquipmentType())
 			{
@@ -278,47 +273,50 @@
 					break;
 			}
 			
-			Server::out($actor, $msg_you);
-			$actors = $actor->getRoom()->getActors();
+			Server::out($this->actor, $msg_you);
+			$actors = $this->actor->getRoom()->getActors();
 			foreach($actors as $a)
 				if($actor->getAlias() != $a->getAlias())
 					Server::out($a, $msg_others);
 		}
 		
-		public function removeByPosition(Actor &$actor, $position)
+		public function removeByPosition($position)
 		{
 			
 			if($this->equipment[$position] instanceof \Items\Equipment)
 			{
 				$this->getInventory()->remove($item);
-				$actor->removeAffects($item->getAffects());
+				$this->actor->removeAffects($item->getAffects());
 				$item = $this->equipment[$position];
-				$actor->getInventory()->add($item);
+				$this->actor->getInventory()->add($item);
 				$this->equipment[$position] = null;
 			}
 			else
-				Server::out($actor, 'Nothing is there.');
+				Server::out($this->actor, 'Nothing is there.');
 			
 		}
 		
-		public function remove(Actor &$actor, \Items\Equipment $item)
+		public function remove(\Items\Equipment $item)
 		{
 		
 			$i = array_search($item, $this->equipment);
 			if($i !== false)
 			{
 				$this->getInventory()->remove($item);
-				$actor->getInventory()->add($item);
+				$this->actor->getInventory()->add($item);
 				foreach($item->getAffects() as $affect)
-					$actor->removeAffect($affect);
+					$this->actor->removeAffect($affect);
 				$this->equipment[$i] = null;
 			}
 			else
-				Server::out($actor, 'Nothing is there.');
+				Server::out($this->actor, 'Nothing is there.');
 		
 		}
 		
-		public function getEquipmentByPosition($position) { return $this->equipment[$position]; }
+		public function getEquipmentByPosition($position)
+		{
+			return $this->equipment[$position];
+		}
 		
 		public function displayContents()
 		{

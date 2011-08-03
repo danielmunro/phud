@@ -35,20 +35,15 @@
 		const GROUP_MALADICTIONS = 5;
 		const GROUP_PLAGUE = 6;
 		const GROUP_ELEMENTAL = 7;
+		const GROUP_ATTACK = 8;
+		const GROUP_BEGUILING = 9;
 		
 		protected $creation_points = 0;
 		protected $spells = array();
-		private static $instances = array(
-			self::GROUP_PROTECTIVE => null,
-			self::GROUP_HEALING => null,
-			self::GROUP_TRANSPORTATION => null,
-			self::GROUP_CURATIVE => null,
-			self::GROUP_MALADICTIONS => null,
-			self::GROUP_PLAGUE => null,
-			self::GROUP_ELEMENTAL => null
-		);
+		protected $base_class = null;
+		protected $alias = null;
 		private $instance_type = 0;
-		private $spells = array();
+		protected static $instances = array();
 		
 		protected function __construct($instance_type)
 		{
@@ -57,9 +52,11 @@
 		
 		public static function instance()
 		{
-			if(!isset(static::$instance))
-				static::$instance = new static();
-			return static::$instance;
+			$class = get_called_class();
+			Debug::addDebugLine($class.isset(self::$instances[$class]));
+			if(!isset(self::$instances[$class]))
+				self::$instances[$class] = new $class();
+			return self::$instances[$class];
 		}
 		
 		public function getSpells()
@@ -70,6 +67,16 @@
 		public function getCreationPoints()
 		{
 			return $this->creation_points;
+		}
+		
+		public function getAlias()
+		{
+			return $this->alias;
+		}
+		
+		public function getBaseClass()
+		{
+			return $this->base_class;
 		}
 	}
 ?>

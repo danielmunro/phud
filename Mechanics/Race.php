@@ -53,18 +53,11 @@
 		private static $instances = array();
 		protected $attributes = null;
 		protected $affects = array();
-		protected $max_str;
-		protected $max_int;
-		protected $max_wis;
-		protected $max_dex;
-		protected $max_con;
 		protected $movement_cost;
 		protected $move_verb;
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
 		protected $full = 0;
-		protected $weapons;
-		protected $armor;
 		protected $unarmed_verb = 'punch';
 		protected $size = 2;
 		protected $effects_resist = array();
@@ -74,41 +67,29 @@
 		protected $available_disciplines = array();
 		protected $playable = false;
 		
-		protected function __construct() {}
-		
-		public static function getInstance($race)
+		protected function __construct()
 		{
-			$race = ucfirst($race);
-			
-			if(!empty(self::$instances[$race]) && self::$instances[$race] instanceof self)
-				return self::$instances[$race];
-			
-			$class = 'Races\\' . $race;
-
-			$instance = new $class();
-		
-			if(!empty($instance) && $instance instanceof self)
-				return self::$instances[$race] = $instance;
-			
-			throw new Exception('Race not found');
 		}
 		
-		public function applyRacialAttributeModifiers(&$actor)
+		public static function instance()
 		{
-			
-			$actor->setStr($this->attributes->getStr());
-			$actor->setInt($this->attributes->getInt());
-			$actor->setWis($this->attributes->getWis());
-			$actor->setDex($this->attributes->getDex());
-			$actor->setCon($this->attributes->getCon());
-			$actor->setHit($this->attributes->getHit());
-			$actor->setDam($this->attributes->getDam());
-			$actor->setAcSlash($this->attributes->getAcSlash());
-			$actor->setAcBash($this->attributes->getAcBash());
-			$actor->setAcPierce($this->attributes->getAcPierce());
-			$actor->setAcMagic($this->attributes->getAcMagic());
-			
-			// Add affects/vulns/resists/etc
+			$class = get_called_class();
+			if(!isset(self::$instances[$class]))
+				self::$instances[$class] = new $class();
+			return self::$instances[$class];
+		}
+		
+		public function runInstantiation()
+		{
+			$namespace = 'Races';
+			$d = dir(dirname(__FILE__) . '/../'.$namespace);
+			while($command = $d->read())
+				if(strpos($command, '.php') !== false)
+				{
+					$class = substr($command, 0, strpos($command, '.'));
+					$called_class = $namespace.'\\'.$class;
+					new $called_class();
+				}
 		}
 		
 		public static function getParts(\Mechanics\Actor $actor)

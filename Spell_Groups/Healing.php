@@ -32,13 +32,14 @@
 	
 		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('healing', $this);
 			$this->spells = array(
 				\Spells\Cure_Light::instance(),
 				\Spells\Cure_Serious::instance(),
 				\Spells\Cure_Critical::instance(),
 				\Spells\Heal::instance()
 			);
-			parent::__construct(self::GROUP_PROTECTIVE);
+			parent::__construct(self::GROUP_HEALING);
 		}
 	}
 ?>

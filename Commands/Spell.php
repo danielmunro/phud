@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-	
-			\Mechanics\Command::addAlias(__CLASS__, array('spell', 'sp'));
+			new \Mechanics\Alias('spell', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			\Mechanics\Server::out($actor, "Spells: ");
 			$spells = $actor->getAbilitySet()->getSpells();

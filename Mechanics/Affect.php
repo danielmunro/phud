@@ -94,32 +94,5 @@
 			else
 				return $this->args;
 		}
-		public static function reapplyFromDb(&$target, $table = '')
-		{
-			if(!$table && $target instanceof \Items\Item)
-				$table =  'items';
-			$rows = Db::getInstance()->query('SELECT * FROM affects WHERE fk_table = ? AND fk_id = ?', array($table, $target->getId()))->fetch_objects();
-			Debug::addDebugLine("AFFECT COUNT: ".sizeof($rows));
-			foreach($rows as $row)
-			{
-				$a = new Affect();
-				$a->setAffect($row->affect);
-				$a->setMessageAffect($row->message_affect);
-				$a->setMessageEnd($row->message_end);
-				$a->setTimeout($row->timeout);
-				$a->setArgs(unserialize($row->args));
-				$target->addAffect($a);
-			}
-		}
-		public function save($table, $id)
-		{
-			Db::getInstance()->query('INSERT INTO affects (fk_table, fk_id, affect, message_affect, message_end, timeout, args) VALUES (?, ?, ?, ?, ?, ?, ?)
-				ON DUPLICATE KEY UPDATE timeout = ?', array($table, $id, $this->affect, $this->message_affect, $this->message_end, $this->timeout, 
-				serialize($this->args), $this->timeout));
-		}
-		public function removeFromDb($table, $id)
-		{
-			Db::getInstance()->query('DELETE FROM affects WHERE fk_table = ? AND fk_id = ? AND affect = ?', array($table, $id, $this->affect));
-		}
 	}
 ?>

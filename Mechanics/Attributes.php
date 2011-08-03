@@ -32,6 +32,14 @@
 		private $wis = 0;
 		private $dex = 0;
 		private $con = 0;
+		private $cha = 0;
+		
+		private $max_str = 0;
+		private $max_int = 0;
+		private $max_wis = 0;
+		private $max_dex = 0;
+		private $max_con = 0;
+		private $max_cha = 0;
 		
 		private $hp = 20;
 		private $max_hp = 20;
@@ -48,23 +56,9 @@
 		private $hit = 1;
 		private $dam = 1;
 		
-		public function load($table, $row_id)
-		{
-			$row = Db::getInstance()->query("SELECT * FROM attributes WHERE fk_table = ? AND fk_id = ?", array($table, $row_id))->getResult()->fetch_object();
-			$props = get_object_vars($row);
-			foreach($props as $prop => $val)
-				if(property_exists($this, $prop))
-					$this->$prop = $val;
-		}
-		
-		public function save($table_id, $row_id)
-		{
-			// on duplicate key update...
-			Db::getInstance()->query("INSERT INTO attributes (str, `int`, wis, dex, con, hp, max_hp, mana, max_mana, movement, max_movement, ac_bash, ac_slash, ac_pierce, 
-										ac_magic, hit, dam, fk_table, fk_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array($this->str, $this->int, 
-										$this->wis, $this->dex, $this->con, $this->hp, $this->max_hp, $this->mana, $this->max_mana, $this->movement, $this->max_movement, 
-										$this->ac_bash, $this->ac_slash, $this->ac_pierce, $this->ac_magic, $this->hit, $this->dam, $table_id, $row_id));
-		}
+		///////////////////////////////////////////////////////////////////////
+		// Attribute getters and setters
+		///////////////////////////////////////////////////////////////////////
 		
 		public function setStr($str)
 		{
@@ -91,6 +85,11 @@
 			$this->con = $con;
 		}
 		
+		public function setCha($cha)
+		{
+			$this->cha = $cha;
+		}
+		
 		public function getStr()
 		{
 			return $this->str;
@@ -114,6 +113,71 @@
 		public function getCon()
 		{
 			return $this->con;
+		}
+		
+		public function getCha()
+		{
+			return $this->cha;
+		}
+		
+		public function setMaxStr($str)
+		{
+			$this->max_str = $str;
+		}
+		
+		public function setMaxInt($int)
+		{
+			$this->max_int = $int;
+		}
+		
+		public function setMaxWis($wis)
+		{
+			$this->max_wis = $wis;
+		}
+		
+		public function setMaxDex($dex)
+		{
+			$this->max_dex = $dex;
+		}
+		
+		public function setMaxCon($con)
+		{
+			$this->max_con = $con;
+		}
+		
+		public function setMaxCha($cha)
+		{
+			$this->max_cha = $cha;
+		}
+		
+		public function getMaxStr()
+		{
+			return $this->max_str;
+		}
+		
+		public function getMaxInt()
+		{
+			return $this->max_int;
+		}
+		
+		public function getMaxWis()
+		{
+			return $this->max_wis;
+		}
+		
+		public function getMaxDex()
+		{
+			return $this->max_dex;
+		}
+		
+		public function getMaxCon()
+		{
+			return $this->max_con;
+		}
+		
+		public function getMaxCha()
+		{
+			return $this->max_cha;
 		}
 		
 		public function setHp($hp)

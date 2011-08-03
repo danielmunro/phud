@@ -28,14 +28,14 @@
 	class Cast extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
 		
 		protected function __construct()
 		{
-			\Mechanics\Command::addAlias(__CLASS__, array('c', 'cast'));
+			new \Mechanics\Alias('cast', $this);
 		}
 		
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			
 			// DETERMINE THE SPELL

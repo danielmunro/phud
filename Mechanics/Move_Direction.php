@@ -28,9 +28,9 @@
 	abstract class Move_Direction extends Command
 	{
 
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
 
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
 			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SITTING)

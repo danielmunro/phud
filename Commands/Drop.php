@@ -28,15 +28,14 @@
 	class Drop extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('dr', 'drop'));
+			new \Mechanics\Alias('drop', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			$item = $actor->getInventory()->getItemByInput($args);
 			

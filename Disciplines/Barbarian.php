@@ -25,10 +25,15 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Barbarian extends Warrior
+	class Barbarian extends \Mechanics\DisciplineFocus
 	{
-		
 		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('barbarian', $this);
+			//parent::__construct();
+		}
+		
+		protected function initAbilitySet()
 		{
 			$this->ability_set = new \Mechanics\Ability_Set();
 			$this->ability_set->addAbilities(array(
@@ -38,9 +43,8 @@
 				\Skills\Shield_Block::instance(),
 				\Skills\Bash::instance(),
 			));
-			$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
-			$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
-			parent::__construct();
+			//$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
+			//$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
 		}
 	}
 ?>

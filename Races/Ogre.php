@@ -28,8 +28,9 @@
 	class Ogre extends \Mechanics\Race
 	{
 	
-		public function __construct()
+		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('ogre', $this);
 		
 			$this->attributes = new \Mechanics\Attributes();
 			$this->attributes->setStr(16);
@@ -44,11 +45,13 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(3);
 			
+			/**
 			$this->max_str = 21;
 			$this->max_int = 15;
 			$this->max_wis = 17;
 			$this->max_dex = 17;
 			$this->max_con = 20;
+			*/
 			
 			$this->movement_cost = 2;
 			

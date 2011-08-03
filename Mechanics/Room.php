@@ -28,9 +28,9 @@
 	class Room
 	{
 	
-		static $instance = array();
+		static $instances = array();
 		
-		private $id = 0;
+		private $id = null;
 		private $title = '';
 		private $description = '';
 		private $north = 0;
@@ -47,14 +47,13 @@
 	
 		const PURGATORY_ROOM_ID = 7;
 	
-		public function __construct($id = null)
+		public function __construct()
 		{
-			
+			$this->inventory = new Inventory();
 		}
 	
 		public function loadFrom($row)
 		{
-			$this->id = $row->id;
 			$this->title = $row->title;
 			$this->description = $row->description;
 			$this->north = $row->north;
@@ -65,25 +64,6 @@
 			$this->down = $row->down;
 			$this->area = $row->area;
 			$this->visibility = $row->visibility;
-		}
-	
-		public static function find($id)
-		{
-			
-			if(isset(self::$instance[$id]) === true && self::$instance[$id] instanceof Room)
-				return self::$instance[$id];
-			
-			$row = Db::getInstance()->query(
-				'SELECT 
-					*
-				FROM 
-					rooms 
-				WHERE id = ?', $id)->getResult()->fetch_object();
-			self::$instance[$id] = new self($id);
-			self::$instance[$id]->loadFrom($row);
-			self::$instance[$id]->setInventory(Inventory::find('room', $id));
-			return self::$instance[$id];
-		
 		}
 		public function getVisibility() { return $this->visibility; }
 		public function getId() { return $this->id; }
@@ -103,7 +83,6 @@
 		public function getUp() { return $this->getDirection('up', $this->up); }
 		public function getDown() { return $this->getDirection('down', $this->down); }
 		public function getInventory() { return $this->inventory; }
-		public function setInventory(Inventory $inventory) { $this->inventory = $inventory; }
 		public function setArea($area) { $this->area = $area; }
 		public function getArea() { return $this->area; }
 		
@@ -116,13 +95,18 @@
 		public function setUp($up) { $this->up = $up; }
 		public function setDown($down) { $this->down = $down; }
 		
-		public function actorAdd(Actor &$actor)
+		public function actorAdd(Actor $actor)
 		{
-			$this->actors[$actor->getUniqueId()] = $actor;
+			$this->actors[] = $actor;
 		}
 		public function actorRemove(Actor $actor)
 		{
-			unset($this->actors[$actor->getUniqueId()]);
+			$key = array_search($actor, $this->actors);
+			if($key === false)
+				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
+			unset($this->actors[$key]);
+			$this->actors = array_values($this->actors);
+			
 		}
 		public function getActors()
 		{
@@ -132,7 +116,7 @@
 		public function announce(Actor $actor, $message)
 		{
 			foreach($this->actors as $a)
-				if($a->getUniqueId() != $actor->getUniqueId() && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
+				if($a != $actor && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
 					Server::out($a, $message);
 		}
 		
@@ -155,17 +139,28 @@
 			return null;
 		}
 		
+		public static function find($id)
+		{
+			if(is_numeric($id))
+			{
+				if(self::$instances[$id] instanceof self)
+					return self::$instances[$id];
+				$db = \Mechanics\Dbr::instance();
+				$room_serialized = $db->lGet('rooms', $id);
+				return self::$instances[$id] = unserialize($room_serialized);
+			}
+		}
+		
 		public function save()
 		{
-			if($this->id)
-				Db::getInstance()->query('UPDATE rooms SET title = ?, description = ?, north = ?, south = ?, east = ?, west = ?, up = ?, down = ?, area = ? WHERE id = ?',
-					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area, $this->id));
+			$actors = $this->actors;
+			$this->actors = array();
+			$db = \Mechanics\Dbr::instance();
+			if(is_numeric($this->id))
+				$db->lSet('rooms', $this->id, serialize($this));
 			else
-			{
-				$this->id = Db::getInstance()->query('INSERT INTO rooms (title, description, north, south, east, west, up, down, area) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-					array($this->title, $this->description, $this->north, $this->south, $this->east, $this->west, $this->up, $this->down, $this->area))->insert_id;
-				self::$instance[$this->id] = $this;
-			}
+				$this->id = $db->rPush('rooms', serialize($this)) - 1;
+			$this->actors = $actors;
 		}
 	}
 

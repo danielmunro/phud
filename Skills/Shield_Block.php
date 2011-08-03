@@ -28,15 +28,19 @@
 	class Shield_Block extends \Mechanics\Skill
 	{
 	
-		protected $aliases = array('shield block', 'shield');
 		protected $creation_cost = 5;
-	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		
+		protected function __construct()
 		{
-			
-			$chance = rand(0, 100);
+			$this->alias = new \Mechanics\Alias('shield block', $this);
+			$this->base_class = \Disciplines\Warrior::instance();
+			parent::__construct();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		{
 			$mod = 40 - $actor->getStr();
-			return $chance < $this->getPercent() / $mod;
+			return $chance < rand(0, 100) / $mod;
 			
 		}
 	

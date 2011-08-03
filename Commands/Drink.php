@@ -28,15 +28,14 @@
 	class Drink extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'drink');
+			new \Mechanics\Alias('drink', $this);
 		}
 		
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			
 			\Mechanics\Debug::addDebugLine($actor->getAlias(true) . " is drinking... ", false);

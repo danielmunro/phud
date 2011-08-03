@@ -28,15 +28,14 @@
 	class Open extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('o', 'open'));
+			new \Mechanics\Alias('open', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
 			if(sizeof($args) < 2)

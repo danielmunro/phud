@@ -25,7 +25,16 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Wizard extends \Mechanics\Discipline
+	class Wizard extends \Mechanics\DisciplineFocus
 	{
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('wizard', $this);
+		}
+		
+		protected function initAbilitySet()
+		{
+			$this->ability_set = new \Mechanics\Ability_Set();
+		}
 	}
 ?>

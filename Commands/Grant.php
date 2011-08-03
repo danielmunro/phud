@@ -30,23 +30,21 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('grant'));
+			new \Mechanics\Alias('grant', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
-			$target = $actor->getRoom()->getActorByInput($args);
-			$ability = \Mechanics\Ability::exists($args[1]);
+			$target = $actor;//$actor->getRoom()->getActorByInput($args);
+			$ability = \Mechanics\Ability::lookup($args[1]);
 			$percent = $args[2];
 			if(!is_numeric($percent) || $percent < 1 || $percent > 100)
 				$percent = 1;
 			if($ability)
 			{
-				$a = new $ability($args[2], $target->getId(), $target->getType());
-				$target->getAbilitySet()->addAbility($a);
-				\Mechanics\Server::out($target, $actor->getAlias(true)." has bestowed the knowledge of ".$a->getCleanName()." on you.");
-				return \Mechanics\Server::out($actor, "You've granted ".$a->getCleanName()." to ".$target->getAlias().".");
+				$target->getAbilitySet()->addAbility($ability, $percent);
+				\Mechanics\Server::out($target, $actor->getAlias(true)." has bestowed the knowledge of ".$ability->getName()." on you.");
+				return \Mechanics\Server::out($actor, "You've granted ".$ability->getName()." to ".$target->getAlias().".");
 			}
 			\Mechanics\Server::out($actor, "Ability not found.");
 		}

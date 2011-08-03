@@ -28,15 +28,14 @@
 	class Recall extends \Mechanics\Command
 	{
 	
-		protected static $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'recall');
+			new \Mechanics\Alias('recall', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			$actor->setRoom(\Mechanics\Room::find(1));
 		}

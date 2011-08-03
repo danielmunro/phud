@@ -28,8 +28,9 @@
 	class Faerie extends \Mechanics\Race
 	{
 	
-		public function __construct()
+		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('faerie', $this);
 		
 			$this->attributes = new \Mechanics\Attributes();
 			$this->attributes->setStr(9);
@@ -44,11 +45,13 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
 			
+			/**
 			$this->max_str = 14;
 			$this->max_int = 21;
 			$this->max_wis = 21;
 			$this->max_dex = 20;
 			$this->max_con = 14;
+			*/
 			
 			$this->movement_cost = 0;
 			

@@ -29,18 +29,40 @@
 	{
 		
 		protected $ability_set = null;
-		protected static $instance = null;
+		protected static $instances = array();
+		protected $alias = null;
 		
 		protected function __construct()
 		{
 		}
 		
+		public static function runInstantiation()
+		{
+			$d = dir(dirname(__FILE__) . '/../Disciplines');
+			while($discipline = $d->read())
+				if(strpos($discipline, '.php') !== false)
+				{
+					$class = 'Disciplines\\'.substr($discipline, 0, strpos($discipline, '.'));
+					$class::instance();
+				}
+		}
+		
 		public static function instance()
 		{
-			if(!isset(static::$instance))
-				static::$instance = new static();
-			return static::$instance;
+			$class = get_called_class();
+			if(!isset(self::$instances[$class]))
+				self::$instances[$class] = new $class();
+			return self::$instances[$class];
 		}
+		
+		public function getAbilitySet()
+		{
+			if(!$this->ability_set)
+				$this->initAbilitySet();
+			return $this->ability_set;
+		}
+		
+		abstract protected function initAbilitySet();
 		
 		public function getExperienceCost(\Mechanics\Ability $ability)
 		{
@@ -48,6 +70,11 @@
 				return $ability->getCreationCost() - 1;
 			else
 				return $ability->getCreationCost() + 2;
+		}
+		
+		public function getAlias()
+		{
+			return $this->alias;
 		}
 		
 		public function __toString()

@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, 'say');
+			new \Mechanics\Alias('say', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			
 			$actors = $actor->getRoom()->getActors();

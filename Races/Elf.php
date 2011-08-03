@@ -28,8 +28,9 @@
 	class Elf extends \Mechanics\Race
 	{
 	
-		public function __construct()
+		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('elf', $this);
 		
 			$this->attributes = new \Mechanics\Attributes();
 			$this->attributes->setStr(10);
@@ -44,11 +45,13 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
 			
+			/**
 			$this->max_str = 15;
 			$this->max_int = 20;
 			$this->max_wis = 19;
 			$this->max_dex = 19;
 			$this->max_con = 17;
+			*/
 			
 			$this->movement_cost = 1;
 			

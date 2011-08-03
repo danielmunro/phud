@@ -30,9 +30,19 @@
 	
 		protected $name_familiar = 'armor';
 		protected $name_unfamiliar = 'plysoxix';
-		protected $aliases = array('ar', 'armor');
-	
-		public static function perform(\Mechanics\Actor &$actor, &$target, $args = null)
+		
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('armor', $this);
+			parent::__construct();
+		}
+		
+		protected function initSpellGroup()
+		{
+			$this->spell_group = \Spell_Groups\Protective::instance();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
 		{
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);
 			

@@ -31,9 +31,19 @@
 		protected $name_familiar = 'sleep';
 		protected $name_unfamiliar = 'teruo';
 		protected $spell_type = self::TYPE_OFFENSIVE;
-		protected $aliases = array('sleep', 'sle', 'slee');
 		
-		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('sleep', $this);
+			parent::__construct();
+		}
+		
+		protected function initSpellGroup()
+		{
+			$this->spell_group = \Spell_Groups\Beguiling::instance();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
 		{
 			
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);

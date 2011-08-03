@@ -28,49 +28,40 @@
 	abstract class Command
 	{
 	
-		public static $instances = array();
-		public static $aliases = array();
-		protected static $dispositions = array();
+		//public static $instances = array();
+		protected $dispositions = array();
 		
-		public static function addAlias($command, $alias)
+		protected function __construct() {}
+		
+		/**
+		public static function instance()
 		{
-			
-			if(is_array($alias))
-			{
-				foreach($alias as $a)
-					self::addAlias($command, $a);
-				return;
-			}
-			
-			if(isset(self::$aliases[$alias]))
-				throw new \Exceptions\Command(
-								'Cannot redeclare aliases.',
-								\Exceptions\Command::ALIAS_ALREADY_EXISTS);
-			self::$aliases[$alias] = $command;
+			$class = get_called_class();
+			if(!isset(self::$instances[$class]))
+				self::$instances[$class] = new $class();
+			return self::$instances[$class];
 		}
+		*/
 		
 		public function runInstantiation()
 		{
-		
-			$d = dir(dirname(__FILE__) . '/../Commands');
+			$namespace = 'Commands';
+			$d = dir(dirname(__FILE__) . '/../'.$namespace);
 			while($command = $d->read())
 				if(strpos($command, '.php') !== false)
-					self::instantiate(substr($command, 0, strpos($command, '.')));
+				{
+					$class = substr($command, 0, strpos($command, '.'));
+					$called_class = $namespace.'\\'.$class;
+					new $called_class();
+				}
 		}
 	
-		private static function instantiate($command)
+		public function getDispositions()
 		{
-			
-			$class = 'Commands\\' . $command;
-			
-			if(isset(self::$instances[$command]))
-				throw new \Exceptions\Command(
-								$command . ' already instantiated, trying to do so again.',
-								\Exceptions\Command::ALREADY_INSTANTIATED);
-			
-			self::$instances[$class] = new $class();
+			return $this->dispositions;
 		}
-	
+		
+		/** Prob don't need
 		public static function find($input)
 		{
 			
@@ -81,11 +72,6 @@
 			$alias = self::$aliases[$input];
 			
 			return self::$instances[$alias];
-		}
-		
-		public static function getDispositions()
-		{
-			return static::$dispositions;
 		}
 		
 		public static function findObjectByArgs($objects, $args)
@@ -100,7 +86,8 @@
 			}
 			return null;
 		}
+		*/
 	
-		abstract public static function perform(&$actor, $args = null);
+		abstract public function perform(\Mechanics\Actor $actor, $args = array());
 	}
 ?>

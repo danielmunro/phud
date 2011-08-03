@@ -28,17 +28,17 @@
 	class Bash extends \Mechanics\Skill
 	{
 	
-		protected $aliases = array('bash', 'b', 'ba', 'bas');
 		protected $creation_points = 5;
 		protected $fail_message = 'You fall flat on your face!';
 	
 		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('bash', $this);
 			$this->base_class = \Disciplines\Warrior::instance();
 			parent::__construct();
 		}
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
 			$target_args = $actor->getRoom()->getActorByInput($args);
 			$target_fighting = $actor->getTarget();
@@ -50,8 +50,6 @@
 			
 			if(!$target)
 				return \Mechanics\Server::out($actor, "You bash around, all to yourself!");
-			
-			$chance = rand(0, 100);
 			
 			$actor_mod = 5 - $actor->getRace()->getSize();
 			$target_mod = 5 - $target->getRace()->getSize();

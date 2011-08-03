@@ -25,7 +25,23 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Cleric extends \Mechanics\Discipline
+	class Cleric extends \Mechanics\DisciplinePrimary
 	{
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('cleric', $this);
+			
+			$this->discipline_focuses = array(
+				\Disciplines\Crusader::instance(),
+				\Disciplines\Paladin::instance(),
+				\Disciplines\Monk::instance(),
+				\Disciplines\Druid::instance()
+			);
+		}
+		
+		protected function initAbilitySet()
+		{
+			$this->ability_set = new \Mechanics\Ability_Set();
+		}
 	}
 ?>

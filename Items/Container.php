@@ -45,11 +45,6 @@
 			
 			$this->inventory = $inventory;
 		}
-		public function save($inv_inside_id)
-		{
-			parent::save($inv_inside_id);
-			$this->inventory->save();
-		}
 		public function getInventory() { return $this->inventory; }
 		
 		public function lookDescribe()

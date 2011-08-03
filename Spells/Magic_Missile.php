@@ -31,9 +31,19 @@
 		protected $name_familiar = 'magic missile';
 		protected $name_unfamiliar = 'oqisasi';
 		protected $spell_type = self::TYPE_OFFENSIVE;
-		protected $aliases = array('magic missile', 'magic', 'mis', 'ma');
 		
-		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('magic missile', $this);
+			parent::__construct();
+		}
+		
+		protected function initSpellGroup()
+		{
+			$this->spell_group = \Spell_Groups\Attack::instance();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
 		{
 			
 			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));

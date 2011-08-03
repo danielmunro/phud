@@ -25,13 +25,19 @@
 	 *
 	 */
 	namespace Skills;
-	class Kick extends \Mechanics\Ability
+	class Kick extends \Mechanics\Skill
 	{
 	
-		protected $aliases = array('ki', 'kick');
 		protected $creation_cost = 5;
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('kick', $this);
+			$this->base_class = \Disciplines\Warrior::instance();
+			parent::__construct();
+		}
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
 		{
 			
 			$actor_target = $actor->getTarget();
@@ -52,8 +58,7 @@
 			
 			if(!($actor_target instanceof \Mechanics\Actor))
 				$actor->addFighter($final_target);
-			
-			$chance = rand(0, 100);
+
 			if($chance > $base_chance || $chance > $this->getPercent())
 				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
 			

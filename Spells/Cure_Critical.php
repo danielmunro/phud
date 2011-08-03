@@ -30,9 +30,19 @@
 	
 		protected $name_familiar = 'cure critical';
 		protected $name_unfamiliar = 'tztzz frzzz';
-		protected $aliases = array('cure critical', 'cure crit', 'cure c');
 		
-		public static function perform(Actor &$actor, Skill $spell, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('cure critical', $this);
+			parent::__construct();
+		}
+		
+		protected function initSpellGroup()
+		{
+			$this->spell_group = \Spell_Groups\Healing::instance();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
 		{
 		
 			$amount = 10 + $actor->getLevel() / 1.8;

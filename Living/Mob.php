@@ -46,7 +46,7 @@
 			foreach($properties as $property => $value)
 			{
 				if($property == 'race')
-					$this->setRace($value);
+					$this->setRace(\Races\Human::instance()); // HACK @todo fixme this is a hack. Need to have configurable races
 				elseif($property == 'respawn_time')
 					$this->respawn_time = $this->default_respawn_time = $value;
 				elseif($property == 'fk_room_id')
@@ -55,39 +55,36 @@
 					$this->$property = $value;
 			}
 			parent::__construct($this->start_room_id);
+			$this->save();
 			$this->registerMove();
 		}
 		
-		public static function instantiate($data = null)
+		public static function instantiate()
 		{
 			\Mechanics\Debug::addDebugLine('Initializing mobs');
 			$results = \Mechanics\Db::getInstance()->query('SELECT * FROM mobs')->fetch_objects();
 			\Mechanics\Debug::addDebugLine('mobs: '.sizeof($results));
 			foreach($results as $mob)
 				new self($mob);
+			die;
+
+			$db = \Mechanics\Dbr::instance();
+			$mob_count = $db->lSize('mobs');
+			$mobs = $db->lRange('mobs', 0, $mob_count);
+			foreach($mobs as $i => $mob)
+			{
+				$m = unserialize($mob);
+				$m->registerMove();
+			}
 		}
 		
 		public function save()
 		{
-			if($this->id)
-			{
-				\Mechanics\Db::getInstance()->query('UPDATE mobs SET alias = ?, noun = ?, `long` = ?, auto_flee = ?, `unique` = ?, area = ?, movement_speed = ?, 
-					respawn_time = ?, gold = ?, silver = ?, copper = ?, race = ?, fk_room_id = ?, level = ? WHERE id = ?', array ($this->alias, $this->noun,
-					$this->long, $this->auto_flee ? 1 : 0, $this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->gold, 
-					$this->silver, $this->copper, $this->race, $this->room->getId(), $this->level, $this->id));
-			}
+			$db = \Mechanics\Dbr::instance();
+			if(is_numeric($this->id))
+				$db->lSet('mobs', $this->id, serialize($this));
 			else
-			{
-				\Mechanics\Db::getInstance()->query('INSERT INTO mobs (alias, noun, `long`, auto_flee, `unique`, area, movement_speed, respawn_time, 
-					gold, silver, copper, race, fk_room_id, level) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', array ($this->alias, $this->noun, 
-					$this->long, $this->auto_flee ? 1 : 0, $this->unique ? 1 : 0, $this->area, $this->movement_speed, $this->respawn_time, $this->gold, 
-					$this->silver, $this->copper, $this->race, $this->room->getId(), $this->level));
-				$this->id = \Mechanics\Db::getInstance()->insert_id;
-				$this->inventory->setTableId($this->id);
-			}
-			$this->attributes->save($this->getTable(), $this->id);
-			$this->inventory->save();
-			$this->ability_set->save();
+				$this->id = $db->rPush('mobs', serialize($this)) - 1;
 		}
 		
 		private function registerMove()

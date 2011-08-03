@@ -25,9 +25,16 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Crusader extends \Disciplines\Cleric
+	class Crusader extends \Mechanics\DisciplineFocus
 	{
-	
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('crusader', $this);
+		}
 		
+		protected function initAbilitySet()
+		{
+			$this->ability_set = new \Mechanics\Ability_Set();
+		}
 	}
 ?>

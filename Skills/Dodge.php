@@ -28,15 +28,32 @@
 	class Dodge extends \Mechanics\Skill
 	{
 	
-		protected $aliases = array('dodge', 'dod');
 		protected $creation_cost = 5;
 	
-		public function perform(\Mechanics\Actor &$actor, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('dodge', $this);
+			$this->base_class = \Disciplines\Warrior::instance();
+			parent::__construct();
+		}
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
 			
-			$chance = rand(0, 100);
-			$mod = 5 + $actor->getRace()->getSize();
-			return $chance < $this->getPercent() / $mod;
+			$chance = $chance / 10;
+			switch($actor->getSize())
+			{
+				case \Mechanics\Race::SIZE_TINY:
+					$chance += 5;
+					break;
+				case \Mechanics\Race::SIZE_SMALL:
+					$chance += 1;
+					break;
+				case \Mechanics\Race::SIZE_LARGE:
+					$chance -= 5;
+					break;
+			}
+			return $chance < rand(0, 100);
 			
 		}
 	

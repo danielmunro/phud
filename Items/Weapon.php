@@ -59,53 +59,6 @@
 			$this->dam_roll = $dam_roll;
 			$this->verb = $verb;
 		}
-		public function save($inv_inside_id)
-		{
-			if($this->id)
-				return \Mechanics\Db::getInstance()->query(
-					'UPDATE items SET
-						short_desc = ?,
-						long_desc = ?,
-						nouns = ?,
-						value = ?,
-						weight = ?,
-						item_type = ?,
-						can_own = ?,
-						fk_inv_inside_id = ?,
-						fk_door_unlock_id = ?,
-						weapon_type = ?,
-						hit_roll = ?,
-						dam_roll = ?,
-						verb = ?,
-						damage_type = ?
-					WHERE
-						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
-						$this->weight, $this->type, $this->can_own, $inv_inside_id,
-						$this->door_unlock_id, $this->weapon_type, $this->hit_roll, $this->dam_roll, $this->verb, $this->damage_type, $this->id));
-			
-			\Mechanics\Db::getInstance()->query(
-				'INSERT INTO items (
-					short_desc,
-					long_desc,
-					nouns,
-					value,
-					weight,
-					item_type,
-					can_own,
-					fk_inv_inside_id,
-					fk_door_unlock_id,
-					weapon_type,
-					hit_roll,
-					dam_roll,
-					verb,
-					damage_type)
-				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $inv_inside_id, $this->door_unlock_id,
-				$this->weapon_type, $this->hit_roll, $this->dam_roll, $this->verb, $this->damage_type));
-			$this->id = \Mechanics\Db::getInstance()->insert_id;
-		}
 		public function getWeaponType() { return $this->weapon_type; }
 		public function getHitRoll() { return $this->hit_roll; }
 		public function getDamRoll() { return $this->dam_roll; }

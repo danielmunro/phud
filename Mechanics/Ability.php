@@ -28,14 +28,16 @@
 	abstract class Ability
 	{
 	
+		protected static $instances = array();
 		protected $level = 1;
-		protected $aliases = array();
-		private static $alias_ref = array();
-		protected static $instance = null;
 		private $creation_points = 0;
 		private $type = 0;
 		protected $fail_message = '';
 		protected $base_class = null;
+		protected $delay = 0;
+		protected $clean_name = '';
+		protected $clean_name_fitted = '';
+		protected $alias = null;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -46,24 +48,15 @@
 	
 		protected function __construct($type)
 		{
-		
-			if(!is_array($this->aliases) || !sizeof($this->aliases))
-				throw new \Exceptions\Ability("Cannot instantiate class (".__CLASS__.") without aliases", \Exceptions\Ability::MISSING_ARGUMENTS);
-		
-			foreach($this->aliases as $alias)
-				if(self::lookup($alias))
-					throw new \Exceptions\Ability("Cannot overwrite alias (".$alias.")", \Exceptions\Ability::ALIAS_CONFLICT);
-				else
-					self::$alias_ref[$alias] = $this;
-			
 			$this->type = $type;
 		}
 		
 		public static function instance()
 		{
-			if(!isset(static::$instance))
-				static::$instance = new static();
-			return static::$instance;
+			$class = get_called_class();
+			if(!isset(self::$instances[$class]))
+				self::$instances[$class] = new $class();
+			return self::$instances[$class];
 		}
 		
 		public static function runInstantiation()
@@ -91,46 +84,25 @@
 		{
 			return $this->creation_points;
 		}
+		
+		public function getDelay()
+		{
+			return $this->delay;
+		}
 	
-		/**
-		protected static function instantiate($dir, $ability)
-		{
-			
-			$class = $dir.'\\'.$ability;
-			$aliases = $class::getAliases();
-			foreach($aliases as $alias)
-				self::$abilities[$alias] = $class;
-			if(method_exists($class, 'extraInstantiate'))
-				$class::extraInstantiate();
-		}
-		
-		public function save()
-		{
-			if($this->actor_id)
-				Db::getInstance()->query('
-					INSERT INTO abilities (`name`, percent, actor_type, fk_actor_id, `type`) VALUES (?, ?, ?, ?, ?)
-					ON DUPLICATE KEY UPDATE percent = ?', array($this->name, $this->percent, $this->actor_type, $this->actor_id, $this->type, $this->percent));
-		}
-		
-		public function remove()
-		{
-			Db::getInstance()->query('DELETE FROM abilities WHERE fk_actor_id = ? AND actor_type = ? AND `name` = ?', array($this->actor_id, $this->actor_type, $this->name));
-		}
-		*/
-		
-		public static final function lookup($alias)
-		{
-			return isset(self::$alias_ref[$alias]) ? self::$alias_ref[$alias] : false;
-		}
+		abstract public function perform(Actor $actor, $percent = 0, $args = array());
 		
 		public function getBaseClass()
 		{
 			return $this->base_class;
 		}
 	
-		public function getAliases() { return $this->aliases; }
 		public function getType() { return $this->type; }
-		public function getName() { return $this->name; }
+		public function getAlias()
+		{
+			return $this->alias;
+		}
+		/**
 		public function getCleanName($space = false, $strtolower = true)
 		{
 			if(!$this->clean_name)
@@ -148,8 +120,7 @@
 			
 			return $space ? $this->clean_name_fitted : $this->clean_name;
 		}
-		public function getPercent() { return $this->percent; }
-		public function setPercent($percent) { $this->percent = $percent; }
+		*/
 		public static function getLevel() { return self::$level; }
 		
 		public function __toString()

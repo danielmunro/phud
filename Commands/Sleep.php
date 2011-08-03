@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-	
-			\Mechanics\Command::addAlias(__CLASS__, array('sleep', 'sl', 'sle', 'slee'));
+			new \Mechanics\Alias('sleep', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SLEEPING)
 				return \Mechanics\Server::out($actor, "You are already sleeping.");

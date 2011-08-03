@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Spell extends \Mechanics\Ability
+	abstract class Spell extends \Mechanics\Ability
 	{
 	
 		const TYPE_OFFENSIVE = 1;
@@ -35,6 +35,7 @@
 		protected $name_unfamiliar = '';
 		protected $min_mana = 15;
 		protected $spell_type = self::TYPE_PASSIVE;
+		protected $spell_group = null;
 		protected static $groups = array();
 	
 		protected function __construct() { parent::__construct(self::TYPE_SPELL); }
@@ -43,6 +44,15 @@
 		{
 			return ceil(max($this->min_mana, 100 / (2 + $actor_level - self::$level)));
 		}
+		
+		public function getSpellGroup()
+		{
+			if(!$this->spell_group)
+				$this->initSpellGroup();
+			return $this->spell_group;
+		}
+		
+		abstract protected function initSpellGroup();
 		
 		public static function getNameFamiliar() { return self::$name_familiar; }
 		public static function getNameUnfamiliar() { return self::$name_unfamiliar; }
@@ -98,7 +108,11 @@
 		public static function getGroups() { return self::$groups; }
 		public function getCreationPoints()
 		{
-			return $this->spell_group->getCreationPoints();
+			return $this->getSpellGroup()->getCreationPoints();
+		}
+		public function getBaseClass()
+		{
+			return $this->getSpellGroup()->getBaseClass();
 		}
 	}
 

@@ -30,11 +30,10 @@
 	
 		protected function __construct()
 		{
-		
-			\Mechanics\Command::addAlias(__CLASS__, array('e', 'east'));
+			new \Mechanics\Alias('east', $this);
 		}
 	
-		public static function perform(&$actor, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			parent::perform($actor, array($actor->getRoom()->getEast(), 'east'));
 		}

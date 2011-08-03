@@ -32,6 +32,7 @@
 	
 		protected function __construct()
 		{
+			$this->alias = new \Mechanics\Alias('protective', $this);
 			$this->spells = array(
 				\Spells\Armor::instance(),
 				\Spells\Shield::instance()

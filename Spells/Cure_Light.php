@@ -30,9 +30,19 @@
 	
 		protected $name_familiar = 'cure light';
 		protected $name_unfamiliar = 'frzzz';
-		protected $aliases = array('c', 'cure', 'cure light');
 		
-		public static function perform(\Mechanics\Actor &$actor, \Mechanics\Actor &$target, $args = null)
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('cure light', $this);
+			parent::__construct();
+		}
+		
+		protected function initSpellGroup()
+		{
+			$this->spell_group = \Spell_Groups\Healing::instance();
+		}
+		
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
 		
 			$amount = 1 + $actor->getLevel() / 2;

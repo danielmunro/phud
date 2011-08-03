@@ -36,23 +36,14 @@
 		protected $delay = 0;
 		protected $fightable = true;
 		protected $attributes = null;
-		protected $discipline = null;
 		protected $battle = null;
 		protected $target = null;
 		protected $fighting = array();
 	
-		public function __construct($room_id)
+		public function __construct()
 		{
 			$this->attributes = new Attributes();
-			if($this->getId())
-			{
-				$this->attributes->load($this->getTable(), $this->getId());
-			}
-			else
-			{
-				$this->race->applyRacialAttributeModifiers($this);
-			}
-			parent::__construct($room_id);
+			parent::__construct();
 		}
 		public function getAttributes()
 		{
@@ -181,13 +172,6 @@
 				$this->attributes->setMovement($this->attributes->getMaxMovement());
 			parent::tick();
 		}
-		/**
-		public function setRace($race)
-		{
-			parent::setRace($race);
-			$this->race->applyRacialAttributeModifiers($this);
-		}
-		*/
 		public function getExperience() { return $this->experience; }
 		public function getExpPerLevel()
 		{

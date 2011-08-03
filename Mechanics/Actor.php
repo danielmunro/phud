@@ -33,32 +33,39 @@
 		const DISPOSITION_SLEEPING = 1;
 		const DISPOSITION_SITTING = 2;
 		
-		protected $id = 0;
+		protected $id = null;
 		protected $alias = '';
-		protected $password = '';
 		protected $long = '';
 		protected $level = 1;
 		protected $gold = 0;
 		protected $silver = 0;
 		protected $copper = 0;
-		protected $sex = null;
+		protected $sex = '';
 		protected $disposition = 0; // sitting, sleeping, standing
-		protected $race = null;
-		protected $room = null;
+		protected $race = '';
+		protected $room_id = 0;
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $ability_set = null;
-		protected $unique_id = 0;
 		protected $affects = array();
+		protected $alignment = 0;
 		
-		public function __construct($room_id)
+		public function __construct()
 		{
-		
-			$this->unique_id = sha1($this->alias.microtime().get_class($this).rand(0, 10000000));
-			$this->setRoom(Room::find($room_id));
-			$this->loadInventory();
+			$this->inventory = new Inventory();
+			$this->equipped = new Equipped($this);
 			$this->ability_set = new Ability_Set($this);
 			$this->tick(true);
+		}
+		
+		public function getAlignment()
+		{
+			return $this->alignment;
+		}
+		
+		public function setAlignment($alignment)
+		{
+			$this->alignment = $alignment;
 		}
 		
 		public function getDisposition()
@@ -89,18 +96,9 @@
 		}
 		public function getAffects() { return $this->affects; }
 		
-		public function getId() { return $this->id; }
-		public function setId($id)
+		public function getId()
 		{
-			if(!is_numeric($id))
-				throw new \Exceptions\Actor("Cannot assign non-numeric ID to actor (".$id.")", \Exceptions\Actor::NON_NUMERIC_ID);
-			$this->id = $id;
-		}
-		
-		protected function loadInventory()
-		{
-			$this->inventory = Inventory::find($this->getTable(), $this->id);
-			$this->equipped = new Equipped($this);
+			return $this->id;
 		}
 		
 		public function tick()
@@ -129,6 +127,7 @@
 		public function perform(Ability $ability, $args = array())
 		{
 			$learned_ability = $this->ability_set->getLearnedAbility($ability);
+			$this->incrementDelay($ability->getDelay());
 			if($learned_ability)
 				return $learned_ability->perform($args);
 			return $ability->getFailMessage();
@@ -145,34 +144,40 @@
 			else
 				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
-		public function getRaceStr()
-		{
-			$class = get_class($this->race);
-			return substr($class, strpos($class, '\\') + 1);
-		}
-		public function getUniqueId() { return $this->unique_id; }
 		public function getClassStr() { return $this->_class->getClassStr(); }
-		public function getDiscipline() { return $this->discipline; }
 		public function getLevel() { return $this->level; }
 		public function getLong() { return $this->long; }
 		public function getInventory() { return $this->inventory; }
 		public function getEquipped() { return $this->equipped; }
-		public function getRoomId() { return $this->room->getId(); }
-		public function getRoom() { return $this->room; }
+		public function getRoom()
+		{
+			return Room::find($this->room_id);
+		}
 		public function getDescription() { return $this->long; }
 		public function getCopper() { return $this->copper; }
 		public function getSilver() { return $this->silver; }
 		public function addSilver($silver) { $this->silver += $silver; }
 		public function getGold() { return $this->gold; }
-		public function getSex() { return $this->sex; }
-		public function setRoom(\Mechanics\Room &$room)
+		public function getSex()
 		{
-			if($this->room)
-				$this->room->actorRemove($this);
-			$room->actorAdd($this);
-			$this->room = $room;
+			return $this->sex;
 		}
-		public function getRace() { return $this->race; }
+		public function setSex($sex)
+		{
+			if($sex == 'm' || $sex == 'f')
+				$this->sex = $sex;
+		}
+		public function setRoom(\Mechanics\Room $room)
+		{
+			if($this->room_id)
+				Room::find($this->room_id)->actorRemove($this);
+			$room->actorAdd($this);
+			$this->room_id = $room->getId();
+		}
+		public function getRace()
+		{
+			return Alias::lookup($this->race);
+		}
 		public function increaseCopper($amount) { $this->copper += $amount; }
 		public function decreaseCopper($amount) { $this->copper -= $amount; }
 		public function increaseSilver($amount) { $this->silver += $amount; }
@@ -187,11 +192,7 @@
 		public function setAlias($alias) { $this->alias = $alias; }
 		public function setRace($race)
 		{
-			$race = Race::getInstance($race);
-			if($race instanceof Race && $race->isPlayable())
-				$this->race = $race;
-			else
-				throw new \Exceptions\Actor("Trying to instantiate race with bad value.", \Exceptions\Actor::INVALID_RACE);
+			$this->race = $race;
 		}
 		public function decreaseFunds($value)
 		{
@@ -276,7 +277,6 @@
 		
 		abstract protected function levelUp();
 		
-		abstract public function getTable();
 		public function getNoun()
 		{
 			return $this->alias;

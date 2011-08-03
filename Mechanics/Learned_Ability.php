@@ -7,16 +7,16 @@
 		private $ability = null;
 		private $percent = 0;
 		
-		public function __construct(Actor $actor, Ability $ability, $percent = 0)
+		public function __construct(Ability $ability, Actor $actor = null, $percent = 0)
 		{
 			$this->actor = $actor;
-			$this->ability = $ability;
+			$this->ability = $ability->getAlias()->getAliasName();
 			$this->percent = $percent;
 		}
 		
 		public function getAbility()
 		{
-			return $this->ability;
+			return Alias::lookup($this->ability);
 		}
 		
 		public function getPercent()
@@ -24,9 +24,16 @@
 			return $this->percent;
 		}
 		
+		public function getActor()
+		{
+			return $this->actor;
+		}
+		
 		public function perform($args = array())
 		{
-			return $this->ability->perform($this->$actor, $args);
+			if(!$this->actor)
+				return;
+			return Alias::lookup($this->ability)->perform($this->actor, $this->percent, $args);
 		}
 	}
 

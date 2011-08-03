@@ -37,45 +37,6 @@
 			$this->thirst = $thirst;
 		}
 		
-		public function save($inv_inside_id)
-		{
-			if($this->id)
-				return \Mechanics\Db::getInstance()->query(
-					'UPDATE items SET
-						short_desc = ?,
-						long_desc = ?,
-						nouns = ?,
-						value = ?,
-						weight = ?,
-						item_type = ?,
-						can_own = ?,
-						thirst = ?,
-						fk_inv_inside_id = ?,
-						fk_door_unlock_id = ?
-					WHERE
-						id = ?', array($this->short, $this->long, $this->nouns, $this->value,
-						$this->weight, $this->type, $this->can_own, $this->thirst, $inv_inside_id, 
-						$this->door_unlock_id, $this->id), true);
-			
-			\Mechanics\Db::getInstance()->query(
-				'INSERT INTO items (
-					short_desc,
-					long_desc,
-					nouns,
-					value,
-					weight,
-					item_type,
-					can_own,
-					thirst,
-					fk_inv_inside_id,
-					fk_door_unlock_id)
-				VALUES
-					(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				array($this->short, $this->long, $this->nouns, $this->value, $this->weight,
-				$this->type, $this->can_own, $this->thirst, $inv_inside_id, $this->door_unlock_id), true);
-			$this->id = \Mechanics\Db::getInstance()->insert_id;
-		}
-		
 		public function getThirst() { return $this->thirst; }
 	}
 

@@ -36,16 +36,17 @@
 		static $instance = null;
 		
 		private function __construct() { $this->openSocket(); }
-		private function __destruct() { $this->closeSocket($this->socket); }
+		private function __destruct() { socket_close($this->socket); }
 		
 		public static function start()
 		{
 			Debug::addDebugLine("Initializing environment...");
 			Ability::runInstantiation();
 			Command::runInstantiation();
-			\Living\Mob::instantiate();
-			\Living\Shopkeeper::instantiate();
-			die;
+			Race::runInstantiation();
+			Discipline::runInstantiation();
+			//\Living\Mob::instantiate();
+			//\Living\Shopkeeper::instantiate();
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
@@ -72,7 +73,7 @@
 						if(!isset($this->clients[$i]))
 						{
 							$socket = socket_accept($this->socket);
-							$this->clients[$i] = new \Living\User($socket);
+							$this->clients[$i] = new Client($socket);
 							$added = $i;
 							break;
 						}
@@ -80,8 +81,8 @@
 					if($added === false)
 					{
 						$socket = socket_accept($this->socket);
-						$this->clients[] = $user = new \Living\User($socket);
-						$added = array_search($user, $this->clients);
+						$this->clients[] = new Client($socket);
+						$added = sizeof($this->clients)-1;
 					}
 					self::out($this->clients[$added], 'By what name do you wish to be known? ', false);
 				}
@@ -112,7 +113,7 @@
 					}
 					
 					// Check for a delay in the user's commands
-					if($this->clients[$i]->getDelay())
+					if($this->clients[$i]->getUser() && $this->clients[$i]->getUser()->getDelay())
 						continue;
 					
 					$input = $this->clients[$i]->shiftCommandBuffer();
@@ -127,13 +128,34 @@
 						
 						$args = explode(' ', trim($input));
 						
-						if(!$this->clients[$i]->getAlias())
+						if(!$this->clients[$i]->getUser())
 						{
 							$this->clients[$i]->handleLogin($args[0]);
 							continue;
 						}
 						
+						$alias = Alias::lookup($args[0]);
+						if($alias instanceof Command)
+						{
+							if(!sizeof($alias->getDispositions()) || in_array($this->clients[$i]->getUser()->getDisposition(), $alias->getDispositions()))
+							{
+								// Perform command
+								$alias->perform($this->clients[$i]->getUser(), $args);
+								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							}
+							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SITTING)
+								self::out($this->clients[$i], "You need to stand up.");
+							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SLEEPING)
+								self::out($this->clients[$i], "You are asleep!");
+						}
+						else if($alias instanceof Ability)
+						{
+							self::out($this->clients[$i], $this->clients[$i]->getUser()->perform($alias, $args));
+							self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							continue;
+						}
 						
+						/**
 						$command = Command::find($args[0]);
 						if($command)
 						{
@@ -183,6 +205,7 @@
 								continue;
 							}
 						}
+						*/
 					}
 				}
 			}
@@ -196,7 +219,7 @@
 				Debug::addDebugLine($client->getAlias(true).': '.$message);
 			}
 			
-			if(!($client instanceof \Living\User) || is_null($client->getSocket()))
+			if(!($client instanceof Client) || is_null($client->getSocket()))
 				return;
 			
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
@@ -214,8 +237,10 @@
 			socket_listen($this->socket);
 		
 		}
-		private function closeSocket($socket) { socket_close($socket); }
-		public function disconnectUser(\Living\User $user) { $this->closeSocket($user->getSocket()); }
+		public function disconnectClient(Client $client)
+		{
+			socket_close($client->getSocket());
+		}
 		public static function getInstance() { return self::$instance; }
 		public function getCommandFromClass($class) { return strtolower(str_replace('_', ' ', $class)); }
 		public function getSocket() { return $this->socket; }

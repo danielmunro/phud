@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Skill extends \Mechanics\Ability
+	abstract class Skill extends \Mechanics\Ability
 	{
 		protected $creation_points = 0;
 	
