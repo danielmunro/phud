@@ -66,6 +66,7 @@
 		protected $damages_vuln = array();
 		protected $available_disciplines = array();
 		protected $playable = false;
+		protected $creation_points = 0;
 		
 		protected function __construct()
 		{
@@ -102,6 +103,11 @@
 				self::PART_LEG => 'leg',
 				self::PART_HEART => 'heart'
 			);
+		}
+		
+		public function getCreationPoints()
+		{
+			return $this->creation_points;
 		}
 		
 		public function getSize() { return $this->size; }

@@ -28,6 +28,8 @@
 	class Faerie extends \Mechanics\Race
 	{
 	
+		protected $creation_points = 18;
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('faerie', $this);

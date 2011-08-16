@@ -31,7 +31,6 @@
 		const MAX_ATTRIBUTE = 25;
 		
 		protected $experience = 0;
-		protected $exp_per_level = 0;
 		protected $concentration = 0;
 		protected $delay = 0;
 		protected $fightable = true;
@@ -173,14 +172,12 @@
 			parent::tick();
 		}
 		public function getExperience() { return $this->experience; }
-		public function getExpPerLevel()
+		public function getExperiencePerLevel()
 		{
-			$abilities = array_merge($this->ability_set->getSkills(), $this->ability_set->getSpells());
-			//$experience = "{$this->race}"::getBaseCreationCost();
-			foreach($abilities as $ability)
-				$experience += $this->discipline->getExperienceCost($ability);
-			//return $this->exp_per_level;
-			return 0;
+			$exp = ($this->getRace()->getCreationPoints() + 
+					$this->getAbilitySet()->getCreationPoints()) ^ 2;
+			if($exp < 1000)
+				$exp = 1000;
 		}
 		public function getConcentration() { return $this->concentration; }
 		public function getTarget() { return $this->target; }
@@ -326,7 +323,6 @@
 		{
 			$this->attributes->setMaxMovement($max_movement);
 		}
-		public function setExpPerLevel($exp) { $this->exp_per_level = $exp; }
 		public function setExperience($experience)
 		{
 			$this->experience = $experience;

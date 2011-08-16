@@ -35,21 +35,40 @@
 		private $clients = array();
 		static $instance = null;
 		
-		private function __construct() { $this->openSocket(); }
-		private function __destruct() { socket_close($this->socket); }
+		private function __construct()
+		{
+			$this->openSocket();
+		}
+		
+		private function __destruct()
+		{
+			socket_close($this->socket);
+		}
 		
 		public static function start()
 		{
-			Debug::addDebugLine("Initializing environment...");
-			Ability::runInstantiation();
-			Command::runInstantiation();
-			Race::runInstantiation();
-			Discipline::runInstantiation();
-			//\Living\Mob::instantiate();
-			//\Living\Shopkeeper::instantiate();
+			self::init();
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
+		}
+		
+		public static function init()
+		{
+			Debug::addDebugLine("Calling init() to set up instances");
+			$req_init = array(
+							'\Mechanics\Ability',
+							'\Mechanics\Command',
+							'\Mechanics\Race',
+							'\Mechanics\Discipline',
+							//'Mob',
+							//'Shopkeeper'
+						);
+			foreach($req_init as $required)
+			{
+				Debug::addDebugLine("init() ".$required);
+				$required::runInstantiation();
+			}
 		}
 		
 		public function run()

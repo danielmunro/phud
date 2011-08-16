@@ -149,6 +149,14 @@
 		
 		public function setDisciplineFocus(\Mechanics\DisciplineFocus $discipline)
 		{
+			if(!$this->discipline_primary)
+				throw new \Exceptions\User(
+										'Primary discipline must be set before focus can be set.',
+										\Exceptions\User::BAD_CONFIG
+									);
+			
+			//if
+			
 			$this->discipline_focus = $discipline->getAlias()->getAliasName();
 		}
 	}

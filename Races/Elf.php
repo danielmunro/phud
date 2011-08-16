@@ -28,6 +28,8 @@
 	class Elf extends \Mechanics\Race
 	{
 	
+		protected $creation_points = 14;
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('elf', $this);

@@ -64,6 +64,8 @@
 		
 		abstract protected function initAbilitySet();
 		
+		abstract protected function initDisciplines();
+		
 		public function getExperienceCost(\Mechanics\Ability $ability)
 		{
 			if($ability->getBaseClass() == $this)

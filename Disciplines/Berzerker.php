@@ -28,14 +28,17 @@
 	class Berzerker extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(
-											Thief::instance(),
-											Warrior::instance()
-										);
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('berzerker', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(
+											Thief::instance(),
+											Warrior::instance()
+										);
 		}
 		
 		protected function initAbilitySet()

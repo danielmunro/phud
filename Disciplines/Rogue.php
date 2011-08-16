@@ -28,11 +28,14 @@
 	class Rogue extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(Thief::instance());
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('rogue', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(Thief::instance());
 		}
 		
 		protected function initAbilitySet()

@@ -28,6 +28,8 @@
 	class Undead extends \Mechanics\Race
 	{
 	
+		protected $creation_points = 20;
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('undead', $this);

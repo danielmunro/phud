@@ -28,14 +28,17 @@
 	class Druid extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(
-											Cleric::instance(),
-											Mage::instance()
-										);
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('druid', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(
+											Cleric::instance(),
+											Mage::instance()
+										);
 		}
 		
 		protected function initAbilitySet()

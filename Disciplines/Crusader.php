@@ -28,11 +28,14 @@
 	class Crusader extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(Cleric::instance());
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('crusader', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(Cleric::instance());
 		}
 		
 		protected function initAbilitySet()

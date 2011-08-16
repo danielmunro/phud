@@ -27,5 +27,21 @@
 	namespace Mechanics; 
 	abstract class DisciplineFocus extends Discipline
 	{
+		protected $discipline_parts = array();
+		
+		public function getDisciplineParts()
+		{
+			if(!$this->discipline_parts)
+				$this->initDisciplines();
+			return $this->discipline_parts;
+		}
+		
+		public function getOtherDiscipline(Actor $actor)
+		{
+			$d_parts = $this->getDisciplineParts();
+			foreach($d_parts as $d)
+				if($d != $actor->getDisciplinePrimary())
+					return $d;
+		}
 	}
 ?>

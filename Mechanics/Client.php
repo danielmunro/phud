@@ -187,7 +187,7 @@
 				else if($input == 'f' || $input == 'female')
 					$this->login['sex'] = 'f';
 				else
-					\Mechanics\Server::out($this, "That's not a sex.\nWhat IS your sex? ", false);
+					return \Mechanics\Server::out($this, "That's not a sex.\nWhat IS your sex? ", false);
 				
 				if($this->login['sex'])
 				{
@@ -251,18 +251,66 @@
 			if(isset($this->login['custom']) && $this->login['custom'] === false)
 			{
 				if($input == 'y' || $input == 'yes')
-					$this->login['custom'] = 1;
+					$this->login['custom'] = 0;
 				else if($input == 'n' || $input == 'no')
 					$this->login['custom'] = 2;
 				else
 					return \Mechanics\Server::out($this, "\nCustomize (y/n)? ", false);
 			}
-			if(isset($this->login['custom']) && $this->login['custom'] === 1)
+			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
+				$input = explode(' ', $input);
+				
 				$spell_groups = array_merge(
-										$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
-										$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSpellGroups()
-									);
+								$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
+								$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSpellGroups()
+							);
+				$skills = array_merge(
+									$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
+									$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSkills()
+								);
+				
+				if($input[0] == 'list' || $this->login['custom'] === 0)
+				{
+					$this->login['custom'] = 1;
+					Server::out($this, "Spell Groups:");
+					foreach($spell_groups as $i => $s)
+						Server::out($this, $s.
+												($i % 2 ? "                          " : "\n"), false);
+					Server::out($this, "\nSkills:");
+					foreach($skills as $s)
+						Server::out($this, $s->getAlias()->getAliasName().
+												($i % 2 ? "                          " : "\n"), false);
+				}
+				else if($input[0] == 'add')
+				{
+					$try_add = Alias::lookup($input[1]);
+					
+					// Find out if it's a skill or spell
+					$look_in = array();
+					if($try_add instanceof Skill)
+						$look_in = $skills;
+					else
+						$look_in = $spell_groups;
+					
+					if(!$look_in)
+						Server::out($this, "What is that?");
+					else if(in_array($try_add, $look_in))
+					{
+						$this->unverified_user->getAbilitySet()->addAbility($try_add);
+						Server::out($this, "You added ".$try_add->getAlias()->getAliasName().".");
+					}
+					else
+						Server::out($this, "You can't add that.");
+				}
+				else if($input[0] == 'done')
+				{
+					$this->login['custom'] = 3;
+				}
+				
+				$cp = $this->unverified_user->getAbilitySet()->getCreationPoints();
+				Server::out($this, "\n\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
+				return Server::out($this, "What would you like to do (add, list, drop, done)?");
 			}
 			if(isset($this->login['custom']) && $this->login['custom'] === 2)
 			{

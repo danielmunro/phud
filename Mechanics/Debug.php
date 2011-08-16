@@ -46,7 +46,10 @@
 				return;
 			
 			$fp = fopen('debug.log', 'a');
-			fwrite($fp, $msg . ($new_line === true ? " [mem: " . memory_get_usage(true) . ", users: " . sizeof(\Living\User::getInstances()) . "]\n" : ''));
+			if($new_line)
+				fwrite($fp, date('Y-m-d H:i:s')." ".$msg." [mem: " . memory_get_usage(true) . ", users: " . sizeof(\Living\User::getInstances()) . "]\n");
+			else
+				fwrite($fp, $msg);
 			fclose($fp);
 		}
 	}

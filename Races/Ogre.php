@@ -28,6 +28,8 @@
 	class Ogre extends \Mechanics\Race
 	{
 	
+		protected $creation_points = 4;
+	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('ogre', $this);

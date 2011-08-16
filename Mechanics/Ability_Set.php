@@ -30,6 +30,7 @@
 		
 		private $actor = null;
 		private $abilities = array();
+		private $spell_groups = array();
 		
 		public function __construct(Actor $actor = null)
 		{
@@ -55,7 +56,7 @@
 		
 		public function getSpellGroups()
 		{
-			
+			return $this->spell_groups;
 		}
 		
 		public function addAbilities($abilities)
@@ -94,10 +95,18 @@
 		public function getCreationPoints()
 		{
 			$creation_points = 0;
-			foreach($this->skills as $skill)
-				$creation_points += $skill->getCreationPoints();
-			foreach($this->spell_groups as $group)
-				$creation_points += $group->getCreationPoints();
+			$spell_groups = array();
+			foreach($this->abilities as $ability_alias)
+			{
+				$ability = Alias::lookup($ability_alias);
+				if($ability instanceof Skill)
+					$creation_points += $ability->getCreationPoints();
+				else if($ability instanceof Spell && !in_array($ability->getSpellGroup()->getAlias()->getAliasName(), $spell_groups))
+				{
+					$spell_groups[] = $ability->getSpellGroup()->getAlias()->getAliasName();
+					$creation_points += $ability->getCreationPoints();
+				}
+			}
 			return $creation_points;
 		}
 	}

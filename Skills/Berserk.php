@@ -35,7 +35,7 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('berserk', $this);
-			$this->base_class = \Disciplines\Barbarian::instance();
+			$this->base_class = \Disciplines\Berzerker::instance();
 			parent::__construct();
 		}
 	

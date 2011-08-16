@@ -28,14 +28,17 @@
 	class Monk extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(
-											Cleric::instance(),
-											Thief::instance()
-										);
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('monk', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(
+											Cleric::instance(),
+											Thief::instance()
+										);
 		}
 		
 		protected function initAbilitySet()

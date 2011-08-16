@@ -31,6 +31,8 @@
 		
 		public function getDisciplineFocuses()
 		{
+			if(!$this->discipline_focuses)
+				$this->initDisciplines();
 			return $this->discipline_focuses;
 		}
 	}

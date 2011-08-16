@@ -28,14 +28,17 @@
 	class Paladin extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(
-											Cleric::instance(),
-											Warrior::instance()
-										);
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('paladin', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(
+											Cleric::instance(),
+											Warrior::instance()
+										);
 		}
 		
 		protected function initAbilitySet()

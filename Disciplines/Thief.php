@@ -28,16 +28,19 @@
 	class Thief extends \Mechanics\DisciplinePrimary
 	{
 	
-		protected $discipline_focuses = array(
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('thief', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_focuses = array(
 											\Disciplines\Rogue::instance(),
 											\Disciplines\Assassin::instance(),
 											\Disciplines\Monk::instance(),
 											\Disciplines\Berzerker::instance()
 										);
-	
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('thief', $this);
 		}
 		
 		protected function initAbilitySet()

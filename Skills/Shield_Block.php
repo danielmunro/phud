@@ -29,6 +29,7 @@
 	{
 	
 		protected $creation_cost = 5;
+		protected $is_performable = false;
 		
 		protected function __construct()
 		{

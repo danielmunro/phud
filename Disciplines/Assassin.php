@@ -28,14 +28,17 @@
 	class Assassin extends \Mechanics\DisciplineFocus
 	{
 	
-		protected $discipline_parts = array(
-											Mage::instance(),
-											Thief::instance()
-										);
-	
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('assassin', $this);
+		}
+		
+		protected function initDisciplines()
+		{
+			$this->discipline_parts = array(
+											Mage::instance(),
+											Thief::instance()
+										);
 		}
 		
 		protected function initAbilitySet()
