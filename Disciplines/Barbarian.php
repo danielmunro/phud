@@ -48,8 +48,8 @@
 				\Skills\Shield_Block::instance(),
 				\Skills\Bash::instance(),
 			));
-			//$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
-			//$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
+			$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
+			$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
 		}
 	}
 ?>

@@ -32,6 +32,7 @@
 		const DISPOSITION_STANDING = 0;
 		const DISPOSITION_SLEEPING = 1;
 		const DISPOSITION_SITTING = 2;
+		const DISPOSITION_FIGHTING = 3;
 		
 		protected $id = null;
 		protected $alias = '';
@@ -109,13 +110,16 @@
 				{
 					if($affect->getMessageEnd())
 						Server::out($this, $affect->getMessageEnd());
-					$affect->removeFromDb($this->getTable(), $this->getId());
 					unset($this->affects[$i]);
 					continue;
 				}
 				$affect->decreaseTime();
-				$affect->save($this->getTable(), $this->getId());
 			}
+			
+			$abilities = $this->ability_set->getAbilitiesByHook(Ability::HOOK_TICK);
+			foreach($abilities as $ability)
+				$ability->perform();
+			
 			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		

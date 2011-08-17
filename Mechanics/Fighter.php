@@ -376,7 +376,7 @@
 			$ab_third = $this->ability_set->getLearnedAbility(\Skills\ThirdAttack::instance());
 			
 			$attacking_weapon = null;
-			$hand_l = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
+			$hand_l = null;//$this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
 			$hand_r = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
 			
 			if($hand_l instanceof \Items\Weapon)
@@ -453,7 +453,7 @@
 			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
 		}
-		public function damage(Actor &$target, $damage, $type = Damage::TYPE_HIT)
+		public function damage(Fighter &$target, $damage, $type = Damage::TYPE_HIT)
 		{
 		
 			// Don't do anything if dead
@@ -462,30 +462,13 @@
 			if(!$target->isAlive() || !$this->isAlive() || $this == $target || $target->isSafe())
 				return false;
 			
-			// Damage reduction
-			if ($damage > 35)
-				$damage = ($damage - 35) / 2 + 35;
-			if ($damage > 80)
-				$damage = ($damage - 80) / 2 + 80;
-			
-			// Check for parry, dodge, and shield block
+			// Check for any skill to defend against a hit, such as parry, dodge, shield block, etc
 			if($type === Damage::TYPE_HIT)
 			{
-				$skill = $target->getAbilitySet()->getLearnedAbility(\Skills\Dodge::instance());
-				if($skill && $skill->perform($target))
-				{
-					Server::out($this, $target->getAlias(true) . ' dodges your attack!');
-					Server::out($target, 'You dodge ' . $this->getAlias() . "'s attack!");
-					return false;
-				}
-				$skill = $target->getAbilitySet()->getLearnedAbility(\Skills\Shield_Block::instance());
-				if($skill && $skill->perform($target))
-				{
-					
-					Server::out($this, $target->getAlias(true) . " blocks your attack with " . $target->getDisplaySex() . " shield!");
-					Server::out($target, "You block " . $this->getAlias() . "'s attack with your shield!");
-					return false;
-				}
+				$skills = $target->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_HIT_DEFEND);
+				foreach($skills as $skill)
+					if($skill->perform($this))
+						return false;
 			}
 			
 			$target->setHp($target->getHp() - $damage);

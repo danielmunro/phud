@@ -256,12 +256,25 @@
 			socket_listen($this->socket);
 		
 		}
+		
 		public function disconnectClient(Client $client)
 		{
 			socket_close($client->getSocket());
 		}
-		public static function getInstance() { return self::$instance; }
-		public function getCommandFromClass($class) { return strtolower(str_replace('_', ' ', $class)); }
-		public function getSocket() { return $this->socket; }
+		
+		public static function getInstance()
+		{
+			return self::$instance;
+		}
+		
+		public function getSocket()
+		{
+			return $this->socket;
+		}
+		
+		public static function chance()
+		{
+			return rand(0, 10000) / 10000;
+		}
 	}
 ?>

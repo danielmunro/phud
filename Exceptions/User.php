@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,15 +24,15 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class Damage
+	namespace Exceptions;
+	class User extends \Exception
 	{
 	
-		const TYPE_HIT = 0;
-		const TYPE_BASH = 1;
-		const TYPE_SLASH = 2;
-		const TYPE_PIERCE = 3;
-		const TYPE_MAGIC = 4;
-		const TYPE_BACKSTAB = 5;
+		const BAD_CONFIG = 1;
+	
+		public function __construct($msg, $no)
+		{
+			parent::__construct($msg, $no);
+		}
 	}
 ?>

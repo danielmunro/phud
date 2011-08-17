@@ -40,9 +40,20 @@
 		
 		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
-			$mod = 40 - $actor->getStr();
-			return $chance < rand(0, 100) / $mod;
+			$roll = \Mechanics\Server::chance();
 			
+			$roll += $this->getEasyAttributeModifier($actor->getDex());
+			$roll += $this->getHardAttributeModifier($actor->getStr());
+			
+			$roll *= 1.25;
+			
+			if($roll < $chance)
+			{
+				Server::out($actor, $args->getAlias(true) . " blocks your attack with " . $args->getDisplaySex() . " shield!");
+				Server::out($args, "You block " . $actor->getAlias() . "'s attack with your shield!");
+				return true;
+			}
+			return false;
 		}
 	
 	}

@@ -260,7 +260,6 @@
 			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
 				$input = explode(' ', $input);
-				
 				$spell_groups = array_merge(
 								$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
 								$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSpellGroups()
@@ -269,18 +268,23 @@
 									$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
 									$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSkills()
 								);
-				
 				if($input[0] == 'list' || $this->login['custom'] === 0)
 				{
 					$this->login['custom'] = 1;
 					Server::out($this, "Spell Groups:");
 					foreach($spell_groups as $i => $s)
+					{
+						$padding = substr("                          ", strlen($s));
 						Server::out($this, $s.
-												($i % 2 ? "                          " : "\n"), false);
+												($i % 2 ? $padding : "\n"), false);
+					}
 					Server::out($this, "\nSkills:");
 					foreach($skills as $s)
+					{
+						$padding = substr("                          ", strlen($s));
 						Server::out($this, $s->getAlias()->getAliasName().
-												($i % 2 ? "                          " : "\n"), false);
+												($i % 2 ? $padding : "\n"), false);
+					}
 				}
 				else if($input[0] == 'add')
 				{
@@ -303,14 +307,28 @@
 					else
 						Server::out($this, "You can't add that.");
 				}
+				else if($input[0] == 'drop')
+				{
+					$try_drop = Alias::lookup($input[1]);
+					$learned = $this->unverified_user->getAbilitySet()->getLearnedAbility($try_drop);
+					if($learned)
+					{
+						$this->unverified_user->getAbilitySet()->dropAbility($learned);
+						return Server::out($this, $learned." dropped.");
+					}
+					return Server::out($this, "You don't know that.");
+				}
 				else if($input[0] == 'done')
 				{
 					$this->login['custom'] = 3;
 				}
 				
-				$cp = $this->unverified_user->getAbilitySet()->getCreationPoints();
-				Server::out($this, "\n\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
-				return Server::out($this, "What would you like to do (add, list, drop, done)?");
+				if($this->login['custom'] !== 3)
+				{
+					$cp = $this->unverified_user->getAbilitySet()->getCreationPoints();
+					Server::out($this, "\n\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
+					return Server::out($this, "What would you like to do (add, list, drop, done)?");
+				}
 			}
 			if(isset($this->login['custom']) && $this->login['custom'] === 2)
 			{

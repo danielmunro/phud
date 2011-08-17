@@ -85,11 +85,19 @@
 		{
 			$found = array_filter($this->abilities, function($a) use ($ability)
 				{
-					return $a->getAbility() == $ability;
+					return $a->getAbility() === $ability;
 				});
 			if($found)
 				return $found[0];
 			return null;
+		}
+		
+		public function getAbilitiesByHook($hook)
+		{
+			return array_filter($this->abilities, function($a) use ($hook)
+				{
+					return $a->getAbility()->getHook() === $hook;
+				});
 		}
 		
 		public function getCreationPoints()

@@ -24,15 +24,35 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class Damage
+	namespace Skills;
+	class Backstab extends \Mechanics\Skill
 	{
 	
-		const TYPE_HIT = 0;
-		const TYPE_BASH = 1;
-		const TYPE_SLASH = 2;
-		const TYPE_PIERCE = 3;
-		const TYPE_MAGIC = 4;
-		const TYPE_BACKSTAB = 5;
+		protected $creation_points = 5;
+		protected $fail_message = '';
+	
+		protected function __construct()
+		{
+			$this->alias = new \Mechanics\Alias('backstab', $this);
+			$this->base_class = \Disciplines\Thief::instance();
+			parent::__construct();
+		}
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		{
+			
+			$roll = \Mechanics\Server::chance();
+			
+			$d = $actor->getDisciplineFocus()->getOtherDiscipline($actor);
+			if($d instanceof \Disciplines\Thief)
+				$roll -= 0.10;
+			
+			$roll += $this->getHardAttributeModifier($actor->getDex());
+			
+			if($roll < $chance)
+			{
+				//$actor-> do some fight stuff
+			}
+		}
 	}
 ?>

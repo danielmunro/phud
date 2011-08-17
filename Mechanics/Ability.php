@@ -38,6 +38,7 @@
 		protected $clean_name = '';
 		protected $clean_name_fitted = '';
 		protected $alias = null;
+		protected $hook = 0;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -45,6 +46,9 @@
 		const TARGET_FIGHTING = 1;
 		const TARGET_ARGS = 2;
 		const TARGET_SELF = 3;
+		
+		const HOOK_TICK = 1;
+		const HOOK_HIT_DEFEND = 2;
 	
 		protected function __construct($type)
 		{
@@ -73,6 +77,11 @@
 						$class::instance();
 					}
 			}
+		}
+		
+		public function getHook()
+		{
+			return $this->hook;
 		}
 		
 		public function getFailMessage()
@@ -127,6 +136,63 @@
 		{
 			$class = get_called_class();
 			return substr($class, strpos($class, '\\') + 1);
+		}
+		
+		protected function getEasyAttributeModifier($attribute)
+		{
+			switch($attribute)
+			{
+				case ($attribute < 15):
+					return rand(12, 17) / 100;
+				case ($attribute < 17):
+					return rand(8, 12) / 100;
+				case ($attribute < 20):
+					return rand(0, 6) / 100;
+				case ($attribute < 22):
+					return 0;
+				case ($attribute < 25):
+					return -(rand(0, 5) / 100);
+				default:
+					return -(rand(0, 10) / 100);
+			}
+		}
+		
+		protected function getNormalAttributeModifier($attribute)
+		{
+			switch($attribute)
+			{
+				case ($attribute < 15):
+					return rand(18, 25) / 100;
+				case ($attribute < 17):
+					return rand(10, 18) / 100;
+				case ($attribute < 20):
+					return rand(4, 10) / 100;
+				case ($attribute < 22):
+					return rand(0, 4) / 100;
+				case ($attribute < 25):
+					return -(rand(0, 3) / 100);
+				default:
+					return -(rand(0, 4) / 100);
+			}
+		}
+		
+		protected function getHardAttributeModifier($attribute)
+		{
+			switch($attribute)
+			{
+				case ($attribute < 15):
+					return rand(30, 40) / 100;
+				case ($attribute < 17):
+					return rand(20, 30) / 100;
+				case ($attribute < 20):
+					return rand(10, 20) / 100;
+				case ($attribute < 22):
+					return rand(0, 10) / 100;
+				case ($attribute < 25):
+					return 0;
+				default:
+					return rand(0, 5) / 100;
+			}
 		}
 	}
 

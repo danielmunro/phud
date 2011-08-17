@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Skills;
-	class Dodge extends \Mechanics\Skill
+	class Parry extends \Mechanics\Skill
 	{
 	
 		protected $creation_cost = 5;
@@ -34,37 +34,42 @@
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('dodge', $this);
+			$this->alias = new \Mechanics\Alias('parry', $this);
 			$this->base_class = \Disciplines\Warrior::instance();
 			parent::__construct();
 		}
 	
 		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
-			
+		
+			$weapon = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
+			if(!$weapon)
+				return false;
+		
 			$roll = \Mechanics\Server::chance();
 			switch($actor->getSize())
 			{
 				case \Mechanics\Race::SIZE_TINY:
-					$chance += 5;
+					$roll -= 0.10;
 					break;
 				case \Mechanics\Race::SIZE_SMALL:
-					$chance += 1;
+					$roll -= 0.05;
 					break;
 				case \Mechanics\Race::SIZE_LARGE:
-					$chance -= 5;
+					$roll += 0.05;
 					break;
 			}
 			
 			$roll += $this->getNormalAttributeModifier($actor->getDex());
 			
+			$roll *= 1.25;
+			
 			if($roll < $chance)
 			{
-				Server::out($actor, $args->getAlias(true) . ' dodges your attack!');
-				Server::out($args, 'You dodge ' . $actor->getAlias() . "'s attack!");
+				Server::out($actor, $args->getAlias(true) . ' parries your attack!');
+				Server::out($args, 'You parry ' . $actor->getAlias() . "'s attack!");
 				return true;
 			}
-			return false;
 		}
 	
 	}

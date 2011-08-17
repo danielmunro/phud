@@ -25,46 +25,57 @@
 	 *
 	 */
 	namespace Skills;
-	class Dodge extends \Mechanics\Skill
+	class Meditation extends \Mechanics\Skill
 	{
 	
 		protected $creation_cost = 5;
 		protected $is_performable = false;
-		protected $ability_hook = \Mechanics\Ability::HOOK_HIT_DEFEND;
+		protected $ability_hook = \Mechanics\Ability::HOOK_TICK;
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('dodge', $this);
-			$this->base_class = \Disciplines\Warrior::instance();
+			$this->alias = new \Mechanics\Alias('meditation', $this);
+			$this->base_class = \Disciplines\Cleric::instance();
 			parent::__construct();
 		}
 	
 		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
-			
+		
+			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_FIGHTING)
+				return;
+		
 			$roll = \Mechanics\Server::chance();
-			switch($actor->getSize())
-			{
-				case \Mechanics\Race::SIZE_TINY:
-					$chance += 5;
-					break;
-				case \Mechanics\Race::SIZE_SMALL:
-					$chance += 1;
-					break;
-				case \Mechanics\Race::SIZE_LARGE:
-					$chance -= 5;
-					break;
-			}
 			
-			$roll += $this->getNormalAttributeModifier($actor->getDex());
+			$p = $actor->getDisciplineFocus();
+			if($p instanceof \Disciplines\Cleric)
+				$roll -= 0.25;
+			
+			$roll += $this->getEasyAttributeModifier($actor->getWis());
 			
 			if($roll < $chance)
 			{
-				Server::out($actor, $args->getAlias(true) . ' dodges your attack!');
-				Server::out($args, 'You dodge ' . $actor->getAlias() . "'s attack!");
-				return true;
+				$f = $actor->getDisciplineFocus();
+				switch($f)
+				{
+					case ($f instanceof \Disciplines\Warrior):
+						$hp_mod = rand(12, 18) / 100;
+						$mv_mod = rand(8, 12) / 100;
+						$ma_mod = 0;
+					case ($f instanceof \Disciplines\Thief):
+						$mv_mod = rand(12, 18) / 100;
+						$hp_mod = rand(8, 12) / 100;
+						$ma_mod = 0;
+					case ($f instanceof \Disciplines\Mage):
+					case ($f instanceof \Disciplines\Cleric):
+						$ma_mod = rand(15, 20) / 100;
+						$hp_mod = 0;
+						$mv_mod = 0;
+				}
+				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * $hp_mod));
+				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * $ma_mod));
+				$actor->setMovement($actor->getMovement() + ($actor->getMovement() * $mv_mod));
 			}
-			return false;
 		}
 	
 	}
