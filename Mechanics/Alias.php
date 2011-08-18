@@ -9,6 +9,7 @@
 		protected static $instances = array();
 		
 		const PRIORITY_NORMAL = 5;
+		const PRIORITY_SECONDARY = 4;
 		
 		public function __construct($alias_name, $lookup_object, $priority = self::PRIORITY_NORMAL)
 		{
@@ -29,7 +30,7 @@
 			
 			$possibilities = array();
 			foreach(self::$instances as $key => $instance)
-				if(strpos($key, $alias_name) === false)
+				if(strpos($key, $alias_name) === 0)
 					$possibilities[] = $instance;
 			
 			usort($possibilities, function($a, $b)
@@ -39,6 +40,12 @@
 			// Return the highest priority match
 			if($possibilities)
 				return $possibilities[0]->getLookupObject();
+		}
+		
+		public static function getInstances()
+		{
+			// For testing
+			return self::$instances;
 		}
 		
 		public function getAliasName()

@@ -28,7 +28,7 @@
 	class Berserk extends \Mechanics\Skill
 	{
 	
-		protected $creation_cost = 5;
+		protected $creation_points = 5;
 		protected $fail_message = 'Your face gets really red!';
 		protected $delay = 2;
 	

@@ -155,8 +155,6 @@
 										\Exceptions\User::BAD_CONFIG
 									);
 			
-			//if
-			
 			$this->discipline_focus = $discipline->getAlias()->getAliasName();
 		}
 	}

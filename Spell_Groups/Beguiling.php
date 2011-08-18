@@ -34,7 +34,7 @@
 		{
 			$this->alias = new \Mechanics\Alias('beguiling', $this);
 			$this->spells = array(
-				\Spells\Sleep::instance();
+				\Spells\Sleep::instance()
 			);
 			parent::__construct(self::GROUP_BEGUILING);
 		}

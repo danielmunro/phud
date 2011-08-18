@@ -171,20 +171,47 @@
 				$this->attributes->setMovement($this->attributes->getMaxMovement());
 			parent::tick();
 		}
-		public function getExperience() { return $this->experience; }
+		
+		public function getExperience()
+		{
+			return $this->experience;
+		}
+		
 		public function getExperiencePerLevel()
 		{
-			$exp = ($this->getRace()->getCreationPoints() + 
-					$this->getAbilitySet()->getCreationPoints()) ^ 2;
-			if($exp < 1000)
-				$exp = 1000;
+			$cp = $this->getCreationPoints();
+		
+			if($cp < 30)
+				return 1000;
+		
+			$base_mod = 100;
+			if($cp < 99)
+				return $cp * $base_mod;
+			
+			$upper_mod = 200;
+			return (100 * $base_mod) + ($cp - 100 * $upper_mod); 
 		}
-		public function getConcentration() { return $this->concentration; }
-		public function getTarget() { return $this->target; }
+		
+		public function getCreationPoints()
+		{
+			return $this->getAbilitySet()->getCreationPoints() + $this->getRace()->getCreationPoints();
+		}
+		
+		public function getConcentration()
+		{
+			return $this->concentration;
+		}
+		
+		public function getTarget()
+		{
+			return $this->target;
+		}
+		
 		public function setTarget(Actor $target = null)
 		{
 			$this->target = $target;
 		}
+		
 		public function getHpPercent()
 		{
 			return ($this->attributes->getHp() / $this->attributes->getMaxHp()) * 100;

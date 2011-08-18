@@ -72,8 +72,9 @@
 		///////////////////////////////////////////////////////////
 		// Login
 		///////////////////////////////////////////////////////////
-		public function handleLogin($input)
+		public function handleLogin($args)
 		{
+			$input = array_shift($args);
 			if($this->login['alias'] === false)
 			{
 				$this->login['alias'] = $input;
@@ -259,57 +260,46 @@
 			}
 			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
-				$input = explode(' ', $input);
-				$spell_groups = array_merge(
-								$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
-								$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSpellGroups()
+				$ability_list = array_merge(
+								$this->unverified_user->getDisciplinePrimary()->getAbilities(),
+								$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilities()
 							);
-				$skills = array_merge(
-									$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
-									$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilitySet()->getSkills()
-								);
-				if($input[0] == 'list' || $this->login['custom'] === 0)
+				if($input == 'list' || $this->login['custom'] === 0)
 				{
 					$this->login['custom'] = 1;
-					Server::out($this, "Spell Groups:");
-					foreach($spell_groups as $i => $s)
-					{
-						$padding = substr("                          ", strlen($s));
-						Server::out($this, $s.
-												($i % 2 ? $padding : "\n"), false);
-					}
-					Server::out($this, "\nSkills:");
-					foreach($skills as $s)
-					{
-						$padding = substr("                          ", strlen($s));
-						Server::out($this, $s->getAlias()->getAliasName().
-												($i % 2 ? $padding : "\n"), false);
-					}
+					$this->abilityList($ability_list);
 				}
-				else if($input[0] == 'add')
+				else if($input == 'add')
 				{
-					$try_add = Alias::lookup($input[1]);
+					$try_add = Alias::lookup(implode(' ', $args));
+					
+					if(!$try_add instanceof Skill && !$try_add instanceof Spell_Group)
+						return Server::out($this, "You can't add that.");
+					
+					if($this->unverified_user->getAbilitySet()->getLearnedAbility($try_add))
+						return Server::out($this, "You already know that.");
 					
 					// Find out if it's a skill or spell
 					$look_in = array();
 					if($try_add instanceof Skill)
-						$look_in = $skills;
-					else
-						$look_in = $spell_groups;
-					
-					if(!$look_in)
-						Server::out($this, "What is that?");
-					else if(in_array($try_add, $look_in))
 					{
-						$this->unverified_user->getAbilitySet()->addAbility($try_add);
-						Server::out($this, "You added ".$try_add->getAlias()->getAliasName().".");
+						if(in_array($try_add, $ability_list))
+						{
+							$this->unverified_user->getAbilitySet()->addAbility($try_add);
+							Server::out($this, "You added ".$try_add->getAlias().".");
+						}
+					}
+					else if($try_add instanceof Spell_Group)
+					{
+						$this->unverified_user->getAbilitySet()->addAbilities($try_add->getSpells());
+						Server::out($this, "You added ".$try_add->getAlias().".");
 					}
 					else
 						Server::out($this, "You can't add that.");
 				}
-				else if($input[0] == 'drop')
+				else if($input == 'drop')
 				{
-					$try_drop = Alias::lookup($input[1]);
+					$try_drop = Alias::lookup(implode(' ', $args));
 					$learned = $this->unverified_user->getAbilitySet()->getLearnedAbility($try_drop);
 					if($learned)
 					{
@@ -318,15 +308,19 @@
 					}
 					return Server::out($this, "You don't know that.");
 				}
-				else if($input[0] == 'done')
+				else if($input == 'learned')
+				{
+					$this->abilityList($this->unverified_user->getAbilitySet()->getAbilities());
+				}
+				else if($input == 'done')
 				{
 					$this->login['custom'] = 3;
 				}
 				
 				if($this->login['custom'] !== 3)
 				{
-					$cp = $this->unverified_user->getAbilitySet()->getCreationPoints();
-					Server::out($this, "\n\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
+					$cp = $this->unverified_user->getCreationPoints();
+					Server::out($this, "\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
 					return Server::out($this, "What would you like to do (add, list, drop, done)?");
 				}
 			}
@@ -421,12 +415,59 @@
 				\Commands\Look::perform($this);
 			}
 		}
+		
+		private function abilityList($ability_list)
+		{
+			Server::out($this, "\nspell groups:");
+			$groups = array();
+			foreach($ability_list as $i => $a)
+			{
+				if($a instanceof Learned_Ability)
+				{
+					$s = $a->getAbility();
+					$learned_check = false;
+				}
+				else
+				{
+					$s = $a;
+					$learned_check = $this->unverified_user->getAbilitySet()->getLearnedAbility($s);
+				}
+				
+				if($s instanceof Spell && !$learned_check && !in_array($s->getSpellGroup(), $groups))
+				{
+					$padding = substr("                          ", strlen($s->getSpellGroup()->getAlias()));
+					Server::out($this, $s->getSpellGroup()->getAlias().$padding.$s->getCreationPoints()."cp");
+					$groups[] = $s->getSpellGroup();
+				}
+			}
+			Server::out($this, "\nskills:");
+			foreach($ability_list as $i => $a)
+			{
+				if($a instanceof Learned_Ability)
+				{
+					$s = $a->getAbility();
+					$learned_check = false;
+				}
+				else
+				{
+					$s = $a;
+					$learned_check = $this->unverified_user->getAbilitySet()->getLearnedAbility($s);
+				}
+				if($s instanceof Skill && !$learned_check)
+				{
+					$padding = substr("                          ", strlen($s->getAlias()));
+					Server::out($this, $s->getAlias().$padding.$s->getCreationPoints()."cp");
+				}
+			}
+		}
+		
 		private function racesAvailable()
 		{
 			\Mechanics\Server::out($this, 'The following races are available: ');
 			\Mechanics\Server::out($this, '[human undead faerie elf ogre] ');
 			\Mechanics\Server::out($this, 'What is your race (help for more information)? ', false);
 		}
+		
 		private function customizeList()
 		{
 			\Mechanics\Server::out($this, "\nThe following skills and groups are available to your character:\n(this list may be seen again by typing list)");

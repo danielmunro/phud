@@ -33,7 +33,7 @@
 		
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('shield', $this);
+			$this->alias = new \Mechanics\Alias('shield', $this, \Mechanics\Alias::PRIORITY_SECONDARY);
 			parent::__construct();
 		}
 		

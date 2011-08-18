@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,32 +24,30 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Disciplines;
-	class Monk extends \Mechanics\DisciplineFocus
+	namespace Skills;
+	class Haggle extends \Mechanics\Skill
 	{
+	
+		protected $creation_points = 3;
+		protected $is_performable = false;
+		protected $ability_hook = \Mechanics\Ability::HOOK_BUY_ITEM;
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('monk', $this);
+			$this->alias = new \Mechanics\Alias('haggle', $this);
+			parent::__construct();
 		}
-		
-		protected function initDisciplines()
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
-			$this->discipline_parts = array(
-											Cleric::instance(),
-											Thief::instance()
-										);
+			$roll = \Mechanics\Server::chance();
+			
+			if($roll < $chance)
+			{
+				return -(rand($args/10, $args/8));
+			}
 		}
-		
-		protected function initAbilities()
-		{
-			$this->abilities = 
-						array_merge(
-							Cleric::instance()->getAbilities(),
-							Thief::instance()->getAbilities(),
-							array(
-							)
-						);
-		}
+	
 	}
+
 ?>

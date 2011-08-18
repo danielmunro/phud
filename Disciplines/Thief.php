@@ -43,9 +43,16 @@
 										);
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->abilities = 
+						array(
+							\Skills\Backstab::instance(),
+							\Skills\Dodge::instance(),
+							\Skills\Parry::instance(),
+							\Skills\Kick::instance(),
+							\Skills\Shield_Block::instance()
+						);
 		}
 	}
 ?>

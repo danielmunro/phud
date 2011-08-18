@@ -47,15 +47,15 @@
 		
 		public static function start()
 		{
-			self::init();
+			self::initEnvironment();
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
 		}
 		
-		public static function init()
+		public static function initEnvironment()
 		{
-			Debug::addDebugLine("Calling init() to set up instances");
+			Debug::addDebugLine("Calling initEnvironment() on game components...");
 			$req_init = array(
 							'\Mechanics\Ability',
 							'\Mechanics\Command',
@@ -66,7 +66,7 @@
 						);
 			foreach($req_init as $required)
 			{
-				Debug::addDebugLine("init() ".$required);
+				Debug::addDebugLine("initEnvironment() ".$required);
 				$required::runInstantiation();
 			}
 		}
@@ -149,7 +149,7 @@
 						
 						if(!$this->clients[$i]->getUser())
 						{
-							$this->clients[$i]->handleLogin($args[0]);
+							$this->clients[$i]->handleLogin($args);
 							continue;
 						}
 						

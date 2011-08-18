@@ -28,7 +28,7 @@
 	class Meditation extends \Mechanics\Skill
 	{
 	
-		protected $creation_cost = 5;
+		protected $creation_points = 5;
 		protected $is_performable = false;
 		protected $ability_hook = \Mechanics\Ability::HOOK_TICK;
 	

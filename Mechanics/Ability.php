@@ -30,7 +30,7 @@
 	
 		protected static $instances = array();
 		protected $level = 1;
-		private $creation_points = 0;
+		protected $creation_points = 0;
 		private $type = 0;
 		protected $fail_message = '';
 		protected $base_class = null;
@@ -49,6 +49,7 @@
 		
 		const HOOK_TICK = 1;
 		const HOOK_HIT_DEFEND = 2;
+		const HOOK_BUY_ITEM = 3;
 	
 		protected function __construct($type)
 		{

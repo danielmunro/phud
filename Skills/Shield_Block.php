@@ -28,7 +28,7 @@
 	class Shield_Block extends \Mechanics\Skill
 	{
 	
-		protected $creation_cost = 5;
+		protected $creation_points = 5;
 		protected $is_performable = false;
 		
 		protected function __construct()

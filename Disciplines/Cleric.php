@@ -43,9 +43,13 @@
 											);
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->abilities =
+						array_merge(
+							\Spell_Groups\Healing::instance()->getSpells(),
+							\Spell_Groups\Protective::instance()->getSpells()
+						);
 		}
 	}
 ?>

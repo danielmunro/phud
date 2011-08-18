@@ -38,9 +38,14 @@
 			$this->discipline_parts = array(Thief::instance());
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->abilities = 
+						array_merge(
+							Thief::instance()->getAbilities(),
+							array(
+							)
+						);
 		}
 	}
 ?>

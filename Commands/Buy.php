@@ -59,13 +59,10 @@
 			if(!($item instanceof \Items\Item))
 				return Say::perform($target, $target->getNoItemMessage());
 			
-			if($actor->decreaseFunds($item->getValue()) === false)
-				return Say::perform($target, $target->getNotEnoughMoneyMessage());
+			if($actor->purchaseFrom($target, $item))
+				return \Mechanics\Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 			
-			$item->copyTo($actor);
-			
-			\Mechanics\Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
-			
+			return Say::perform($target, $target->getNotEnoughMoneyMessage());
 		}
 	}
 ?>

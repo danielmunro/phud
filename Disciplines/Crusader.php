@@ -38,9 +38,14 @@
 			$this->discipline_parts = array(Cleric::instance());
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->abilities = 
+						array_merge(
+							Cleric::instance()->getAbilities(),
+							array(
+							)
+						);
 		}
 	}
 ?>

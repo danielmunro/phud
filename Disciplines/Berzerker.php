@@ -41,9 +41,16 @@
 										);
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
+			$this->abilities = 
+						array_merge(
+							\Disciplines\Warrior::instance()->getAbilitySet()->getSkills(),
+							\Disciplines\Thief::instance()->getAbilitySet()->getSkills(),
+							array(
+								\Skills\Berserk::instance()
+							)
+						);
 		}
 	}
 ?>

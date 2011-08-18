@@ -38,18 +38,14 @@
 			$this->discipline_parts = array(Warrior::instance());
 		}
 		
-		protected function initAbilitySet()
+		protected function initAbilities()
 		{
-			$this->ability_set = new \Mechanics\Ability_Set();
-			$this->ability_set->addAbilities(array(
-				// Skills
-				\Skills\Kick::instance(),
-				\Skills\Dodge::instance(),
-				\Skills\Shield_Block::instance(),
-				\Skills\Bash::instance(),
-			));
-			$this->ability_set->addAbilities(\Spell_Groups\Healing::instance()->getSpells());
-			$this->ability_set->addAbilities(\Spell_Groups\Protective::instance()->getSpells());
+			$this->abilities = 
+						array_merge(
+							Warrior::instance()->getAbilities(),
+							array(
+							)
+						);
 		}
 	}
 ?>

@@ -28,7 +28,7 @@
 	abstract class Discipline
 	{
 		
-		protected $ability_set = null;
+		protected $abilities = null;
 		protected static $instances = array();
 		protected $alias = null;
 		
@@ -55,14 +55,17 @@
 			return self::$instances[$class];
 		}
 		
-		public function getAbilitySet()
+		public function getAbilities()
 		{
-			if(!$this->ability_set)
-				$this->initAbilitySet();
-			return $this->ability_set;
+			if(!$this->abilities)
+			{
+				$this->initAbilities();
+				$this->abilities = array_unique($this->abilities);
+			}
+			return $this->abilities;
 		}
 		
-		abstract protected function initAbilitySet();
+		abstract protected function initAbilities();
 		
 		abstract protected function initDisciplines();
 		

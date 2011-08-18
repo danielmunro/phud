@@ -59,36 +59,51 @@
 			return $this->spell_groups;
 		}
 		
+		public function getAbilities()
+		{
+			return $this->abilities;
+		}
+		
 		public function addAbilities($abilities)
 		{
 			foreach($abilities as $ability)
-				$this->addAbility($ability);
+			{
+				if($ability instanceof Learned_Ability)
+					$lookup = $ability->getAbility();
+				else
+					$lookup = $ability;
+				$this->addAbility($lookup);
+			}
 		}
 		
 		public function addAbility(Ability $instance, $percent = 1)
 		{
-			// Don't let them learn something if it is outside of their discipline
-			if($this->actor && $this->actor->getDiscipline() && !$this->actor->getDiscipline()->getAbilitySet()->getLearnedAbility($instance))
-				return Server::out($this->actor, "You cannot learn that.");
-			
 			// Only add it if they don't already have it
 			if(!$this->getLearnedAbility($instance))
 			{
 				$this->abilities[] = new Learned_Ability($instance, $this->actor, $percent);
-				$spell_group_alias = $instance->getSpellGroup()->getAlias()->getAliasName();
-				if($instance->getType() == Ability::TYPE_SPELL && !in_array($spell_group_alias, $this->spell_groups))
-					$this->spell_groups[] = $spell_group_alias;
+				if($instance instanceof Spell)
+				{
+					$spell_group_alias = $instance->getSpellGroup()->getAlias()->getAliasName();
+					if(!in_array($spell_group_alias, $this->spell_groups))
+						$this->spell_groups[] = $spell_group_alias;
+				}
 			}
 		}
 		
 		public function getLearnedAbility($ability)
 		{
-			$found = array_filter($this->abilities, function($a) use ($ability)
-				{
-					return $a->getAbility() === $ability;
-				});
-			if($found)
-				return $found[0];
+			if($ability instanceof Spell_Group)
+				return in_array($ability, $this->spell_groups);
+			else if($ability instanceof Ability)
+			{
+				$found = array_filter($this->abilities, function($a) use ($ability)
+					{
+						return $a->getAbility() === $ability;
+					});
+				if($found)
+					return array_shift($found);
+			}
 			return null;
 		}
 		
@@ -104,9 +119,9 @@
 		{
 			$creation_points = 0;
 			$spell_groups = array();
-			foreach($this->abilities as $ability_alias)
+			foreach($this->abilities as $learned_ability)
 			{
-				$ability = Alias::lookup($ability_alias);
+				$ability = $learned_ability->getAbility();
 				if($ability instanceof Skill)
 					$creation_points += $ability->getCreationPoints();
 				else if($ability instanceof Spell && !in_array($ability->getSpellGroup()->getAlias()->getAliasName(), $spell_groups))
