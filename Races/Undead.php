@@ -34,30 +34,29 @@
 		{
 			$this->alias = new \Mechanics\Alias('undead', $this);
 		
-			$this->str = 20;
-			$this->int = 15;
-			$this->wis = 15;
-			$this->dex = 13;
-			$this->con = 21;
-			$this->max_str = 23;
-			$this->max_int = 20;
-			$this->max_wis = 20;
-			$this->max_dex = 18;
-			$this->max_con = 24;
+			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes->setStr(15);
+			$this->attributes->setInt(15);
+			$this->attributes->setWis(13);
+			$this->attributes->setDex(12);
+			$this->attributes->setCon(12);
+			$this->attributes->setMaxStr(21);
+			$this->attributes->setMaxInt(21);
+			$this->attributes->setMaxWis(17);
+			$this->attributes->setMaxDex(16);
+			$this->attributes->setMaxCon(17);
+			$this->attributes->setAcBash(100);
+			$this->attributes->setAcSlash(100);
+			$this->attributes->setAcPierce(100);
+			$this->attributes->setAcMagic(100);
+			$this->attributes->setHit(1);
+			$this->attributes->setDam(1);
 			
 			$this->movement_cost = 2;
 			
 			$this->decrease_thirst = 1;
 			$this->decrease_nourishment = 2;
 			$this->full = 40;
-			
-			$this->ac_bash = 85;
-			$this->ac_slash = 85;
-			$this->ac_pierce = 85;
-			$this->ac_magic = 125;
-			
-			$this->hit_roll = 1;
-			$this->dam_roll = 2;
 			
 			$this->weapons = array
 			(

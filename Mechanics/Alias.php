@@ -8,6 +8,7 @@
 		protected $priority = 0;
 		protected static $instances = array();
 		
+		const PRIORITY_HIGH = 6;
 		const PRIORITY_NORMAL = 5;
 		const PRIORITY_SECONDARY = 4;
 		
@@ -16,8 +17,15 @@
 			$this->alias_name = $alias_name;
 			$this->lookup_object = $lookup_object;
 			$this->priority = $priority;
+			
 			if(isset(self::$instances[$this->alias_name]))
 				Debug::addDebugLine('Alias "'.$this->alias_name.'" already set. '.print_r(self::$instances[$this->alias_name], true), \Exceptions\Alias::ALIAS_ALREADY_EXISTS);
+			
+			if($lookup_object instanceof Spell)
+				$this->priority = self::PRIORITY_SECONDARY;
+			
+			if($lookup_object instanceof Move_Direction)
+				$this->priority = self::PRIORITY_HIGH;
 			
 			self::$instances[$this->alias_name] = $this;
 		}

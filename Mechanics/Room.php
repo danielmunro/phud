@@ -28,6 +28,8 @@
 	class Room
 	{
 	
+		const START_ROOM = 0;
+	
 		static $instances = array();
 		
 		private $id = null;
@@ -66,7 +68,17 @@
 			$this->visibility = $row->visibility;
 		}
 		public function getVisibility() { return $this->visibility; }
-		public function getId() { return $this->id; }
+		
+		public function getId()
+		{
+			return $this->id;
+		}
+		
+		public function setId($id)
+		{
+			$this->id = $id;
+		}
+		
 		public function getTitle() { return $this->title; }
 		public function getDescription() { return $this->description; }
 		private function getDirection($direction_str, $direction_id)
@@ -143,11 +155,13 @@
 		{
 			if(is_numeric($id))
 			{
-				if(self::$instances[$id] instanceof self)
+				if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self)
 					return self::$instances[$id];
 				$db = \Mechanics\Dbr::instance();
 				$room_serialized = $db->lGet('rooms', $id);
-				return self::$instances[$id] = unserialize($room_serialized);
+				self::$instances[$id] = unserialize($room_serialized);
+				self::$instances[$id]->setId($id);
+				return self::$instances[$id];
 			}
 		}
 		
@@ -159,7 +173,10 @@
 			if(is_numeric($this->id))
 				$db->lSet('rooms', $this->id, serialize($this));
 			else
+			{
 				$this->id = $db->rPush('rooms', serialize($this)) - 1;
+				$this->save(); // Save the room with the new ID -- hacky
+			}
 			$this->actors = $actors;
 		}
 	}

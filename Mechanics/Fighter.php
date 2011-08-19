@@ -158,6 +158,27 @@
 			return $this->attributes->getCon();
 		}
 		
+		public function getMaxStr()
+		{
+			return $this->attributes->getMaxStr();
+		}
+		public function getMaxInt()
+		{
+			return $this->attributes->getMaxInt();
+		}
+		public function getMaxWis()
+		{
+			return $this->attributes->getMaxWis();
+		}
+		public function getMaxDex()
+		{
+			return $this->attributes->getMaxDex();
+		}
+		public function getMaxCon()
+		{
+			return $this->attributes->getMaxCon();
+		}
+		
 		public function tick()
 		{
 			$this->attributes->setHp($this->attributes->getHp() + floor(rand($this->attributes->getMaxHp() * 0.05, $this->attributes->getMaxHp() * 0.1)));
@@ -170,6 +191,21 @@
 			if($this->attributes->getMovement() > $this->attributes->getMaxMovement())
 				$this->attributes->setMovement($this->attributes->getMaxMovement());
 			parent::tick();
+		}
+		
+		public function setRace($race)
+		{
+			parent::setRace($race);
+			$this->attributes->setMaxStr($this->getRace()->getAttributes()->getMaxStr());
+			$this->attributes->setStr($this->getRace()->getAttributes()->getStr());
+			$this->attributes->setMaxInt($this->getRace()->getAttributes()->getMaxInt());
+			$this->attributes->setInt($this->getRace()->getAttributes()->getInt());
+			$this->attributes->setMaxWis($this->getRace()->getAttributes()->getMaxWis());
+			$this->attributes->setWis($this->getRace()->getAttributes()->getWis());
+			$this->attributes->setMaxDex($this->getRace()->getAttributes()->getMaxDex());
+			$this->attributes->setDex($this->getRace()->getAttributes()->getDex());
+			$this->attributes->setMaxCon($this->getRace()->getAttributes()->getMaxCon());
+			$this->attributes->setCon($this->getRace()->getAttributes()->getCon());
 		}
 		
 		public function getExperience()

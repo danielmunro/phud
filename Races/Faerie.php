@@ -40,6 +40,11 @@
 			$this->attributes->setWis(16);
 			$this->attributes->setDex(15);
 			$this->attributes->setCon(9);
+			$this->attributes->setMaxStr(13);
+			$this->attributes->setMaxInt(25);
+			$this->attributes->setMaxWis(25);
+			$this->attributes->setMaxDex(25);
+			$this->attributes->setMaxCon(13);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);

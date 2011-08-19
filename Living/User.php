@@ -27,18 +27,20 @@
 	namespace Living;
 	class User extends \Mechanics\Fighter
 	{
-		protected $nourishment = 0;
-		protected $thirst = 0;
+		protected $nourishment = 5;
+		protected $thirst = 5;
 		protected $trains = 0;
 		protected $practices = 0;
 		protected $password = '';
 		private $client = null;
 		protected $discipline_primary = null;
 		protected $discipline_focus = null;
+		protected $date_created = null;
 		protected static $instances = array();
 		
 		public function __construct()
 		{
+			$this->date_created = date('Y-m-d H:i:s');
 			parent::__construct();
 			self::$instances[] = $this;
 		}
@@ -58,6 +60,11 @@
 			$this->client = $client;
 		}
 		
+		public function getDateCreated()
+		{
+			return $this->date_created;
+		}
+		
 		public function prompt()
 		{
 			return 'hp:' . $this->getHp() . '/' . $this->getMaxHp() . ' mana: ' . $this->getMana() . '/' . $this->getMaxMana() . ' mv: ' . $this->getMovement() . '/' . $this->getMaxMovement() . ' >';
@@ -65,7 +72,7 @@
 		
 		public function setPassword($password)
 		{
-			$this->password = sha1('mud password salt!'.$password);
+			$this->password = $password;
 		}
 		
 		public function getPassword()
@@ -156,6 +163,21 @@
 									);
 			
 			$this->discipline_focus = $discipline->getAlias()->getAliasName();
+		}
+		
+		public function addTrains($trains)
+		{
+			$this->trains += $trains;
+		}
+		
+		public function decreaseTrains()
+		{
+			$this->trains--;
+		}
+		
+		public function getTrains()
+		{
+			return $this->trains;
 		}
 	}
 

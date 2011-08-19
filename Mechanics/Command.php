@@ -60,33 +60,6 @@
 		{
 			return $this->dispositions;
 		}
-		
-		/** Prob don't need
-		public static function find($input)
-		{
-			
-			$input = strtolower($input);
-			if(!isset(self::$aliases[$input]))
-				return false;
-			
-			$alias = self::$aliases[$input];
-			
-			return self::$instances[$alias];
-		}
-		
-		public static function findObjectByArgs($objects, $args)
-		{
-			$args = strtolower($args);
-			foreach($objects as $object)
-			{
-				$nouns = explode(' ', $object->getNouns());
-				foreach($nouns as $noun)
-					if(strpos(strtolower($noun), $args) === 0)
-						return $object;
-			}
-			return null;
-		}
-		*/
 	
 		abstract public function perform(\Mechanics\Actor $actor, $args = array());
 	}

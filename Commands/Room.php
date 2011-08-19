@@ -40,16 +40,17 @@
 			//if($actor->getLevel() < \Mechanics\Actor::MAX_LEVEL)
 			//	return \Mechanics\Server::out($actor, "You cannot do that.");
 			
-			if($args[1] == 'new')
+			if($args[1] == 'new' || $args[1] == 'create')
 			{
+			
+				$direction = $this->isValidDirection($args[2]);
+				if(!$direction)
+					return \Mechanics\Server::out($actor, "That direction doesn't exist.");
+			
 				$room = new \Mechanics\Room();
 				$room->save();
-				$room->setInventory(\Mechanics\Inventory::find('room', $room->getId()));
-				$direction = $args[2];
 				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
-				
 				$new_direction = self::getReverseDirection($direction);
-				
 				$room->{'set' . ucfirst($new_direction)}($actor->getRoom()->getId());
 				$room->save();
 				$actor->getRoom()->save();
@@ -73,10 +74,14 @@
 			
 			if($args[1] == 'copy')
 			{
+			
+				$direction = $this->isValidDirection($args[2]);
+				if(!$direction)
+					return \Mechanics\Server::out($actor, "That direction doesn't exist.");
+			
 				$room = new \Mechanics\Room();
 				$room->save();
 				$room->setInventory(\Mechanics\Inventory::find('room', $room->getId()));
-				$direction = $args[2];
 				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
 				$actor->getRoom()->save();
 				$new_direction = self::getReverseDirection($direction);
@@ -90,6 +95,17 @@
 			
 			return \Mechanics\Server::out($actor, "What was that?");
 			
+		}
+		
+		private function isValidDirection($dir)
+		{
+			$dirs = array('north', 'south', 'east', 'west', 'up', 'down');
+		
+			foreach($dirs as $d)
+				if(strpos($d, $dir) === 0)
+					return $d;
+			
+			return false;
 		}
 		
 		private static function getReverseDirection($direction)

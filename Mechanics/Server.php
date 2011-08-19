@@ -37,6 +37,7 @@
 		
 		private function __construct()
 		{
+			$this->initEnvironment();
 			$this->openSocket();
 		}
 		
@@ -47,13 +48,12 @@
 		
 		public static function start()
 		{
-			self::initEnvironment();
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
 		}
 		
-		public static function initEnvironment()
+		private function initEnvironment()
 		{
 			Debug::addDebugLine("Calling initEnvironment() on game components...");
 			$req_init = array(
@@ -129,6 +129,7 @@
 							$this->clients[$i]->clearCommandBuffer();
 						else
 							$this->clients[$i]->addCommandBuffer($input);
+						var_dump($input);
 					}
 					
 					// Check for a delay in the user's commands
@@ -149,7 +150,11 @@
 						
 						if(!$this->clients[$i]->getUser())
 						{
-							$this->clients[$i]->handleLogin($args);
+							$logged = $this->clients[$i]->handleLogin($args);
+							if($logged === false)
+								unset($this->clients[$i]);
+							else if($logged === true)
+								Server::out($this->clients[$i], "\n".$this->clients[$i]->getUser()->prompt(), false);
 							continue;
 						}
 						
@@ -160,7 +165,7 @@
 							{
 								// Perform command
 								$alias->perform($this->clients[$i]->getUser(), $args);
-								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+								self::out($this->clients[$i], "\n" . $this->clients[$i]->getUser()->prompt(), false);
 							}
 							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SITTING)
 								self::out($this->clients[$i], "You need to stand up.");
@@ -234,9 +239,10 @@
 		public static function out($client, $message, $break_line = true)
 		{
 			if($client instanceof \Living\Mob)
-			{
-				Debug::addDebugLine($client->getAlias(true).': '.$message);
-			}
+				return Debug::addDebugLine($client->getAlias(true).': '.$message);
+			
+			if($client instanceof \Living\User)
+				$client = $client->getClient();
 			
 			if(!($client instanceof Client) || is_null($client->getSocket()))
 				return;
@@ -274,7 +280,7 @@
 		
 		public static function chance()
 		{
-			return rand(0, 10000) / 10000;
+			return rand(0, 10000) / 100;
 		}
 	}
 ?>

@@ -37,10 +37,8 @@
 		
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
-		
-			if($args === null || sizeof($args) == 1) // The actor is looking
+			if(!$args || sizeof($args) == 1) // The actor is looking
 			{
-				
 				if(!$actor->getRoom()->getVisibility() && !\Mechanics\Affect::isAffecting($actor, \Mechanics\Affect::GLOW))
 					return \Mechanics\Server::out($actor, "You can't see anything, it's so dark!");
 				
@@ -74,9 +72,10 @@
 						\Mechanics\Server::out($actor, 
 							ucfirst($item->getShort()) . ' is here.');
 				
+				
 				$people = $actor->getRoom()->getActors();
 				foreach($people as $a)
-					if($a->getUniqueId() != $actor->getUniqueId())
+					if($a != $actor)
 						\Mechanics\Server::out($actor, $a->getAlias(true) . ' is here.');
 				return;
 			}

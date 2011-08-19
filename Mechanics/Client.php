@@ -64,8 +64,8 @@
 		}
 		
 		public function isValidated($password)
-		{
-			$pw_hash = sha1('mud password salt!' . $password);
+		{			
+			$pw_hash = sha1($this->unverified_user->getAlias().$this->unverified_user->getDateCreated().$password);
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
 		
@@ -80,10 +80,11 @@
 				$this->login['alias'] = $input;
 				
 				$db = Dbr::instance();
-				$this->unverified_user = $db->get('user'.$input);
+				$this->unverified_user = unserialize($db->get('user'.$input));
 				
 				if(!empty($this->unverified_user))
 				{
+					$this->unverified_user->setClient($this);
 					\Mechanics\Server::out($this, 'Password: ', false);
 					$this->login['pass'] = false;
 				}
@@ -103,15 +104,16 @@
 				{
 					$this->user = $this->unverified_user;
 					$this->unverified_user = null;
-					\Commands\Look::perform($this->user);
+					$look = Alias::lookup('look');
+					$look->perform($this->user);
+					return true;
 				}
 				else
 				{
 					\Mechanics\Server::out($this, 'Wrong password.');
 					\Mechanics\Server::getInstance()->disconnectClient($this);
+					return false;
 				}
-
-				return;
 			}
 			
 			if(isset($this->login['confirm_new']) && $this->login['confirm_new'] === false)
@@ -245,18 +247,8 @@
 					return \Mechanics\Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
 				
 				$this->unverified_user->setAlignment($this->login['align']);
-				$this->login['custom'] = false;
-				return \Mechanics\Server::out($this, "Customization takes time, but allows a wider range of skills and abilities.\nCustomize (y/n)? ", false);
-			}
-			
-			if(isset($this->login['custom']) && $this->login['custom'] === false)
-			{
-				if($input == 'y' || $input == 'yes')
-					$this->login['custom'] = 0;
-				else if($input == 'n' || $input == 'no')
-					$this->login['custom'] = 2;
-				else
-					return \Mechanics\Server::out($this, "\nCustomize (y/n)? ", false);
+				$this->login['custom'] = 0;
+				\Mechanics\Server::out($this, "Skill and spell customization. Choose from the list below of skills and spells:");
 			}
 			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
@@ -315,6 +307,14 @@
 				else if($input == 'done')
 				{
 					$this->login['custom'] = 3;
+					\Mechanics\Server::out($this, "Now let's figure out your attributes...");
+					$this->login['attr'] = 0;
+					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0);
+					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+					\Mechanics\Server::out($this,
+						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
+						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
+					\Mechanics\Server::out($this, "Add a point to: ", false);
 				}
 				
 				if($this->login['custom'] !== 3)
@@ -324,95 +324,67 @@
 					return Server::out($this, "What would you like to do (add, list, drop, done)?");
 				}
 			}
-			if(isset($this->login['custom']) && $this->login['custom'] === 2)
-			{
-				
-			}
-			/**
-			if(isset($this->login['custom']) && $this->login['custom'] === 1)
-			{
-				if(!isset($this->login['custom_start']))
-				{
-					$this->login['custom_start'] = 1;
-					return $this->customizeList();
-				}
-			}
-			*/
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-				\Mechanics\Server::out($this, "Now let's figure out your attributes...");
-				$this->login['attr'] = 0;
-				\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-				\Mechanics\Server::out($this,
-					'Str ' . $this->getStr(true) . ' Int ' . $this->getInt(true) . ' Wis ' . $this->getWis(true) . ' Dex ' . $this->getDex(true) . ' Con ' . $this->getCon(true));
-				\Mechanics\Server::out($this, "Add a point to: ", false);
-			
 			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
 			{
 				
-				$method_get = 'get' . $input;
-				$method_set = 'set' . $input;
+				$method_get = 'getBase'.ucfirst($input);
+				$method_set = 'set'.ucfirst($input);
+				$method_get_max = 'getMax'.ucfirst($input);
 				
-				if(!method_exists($this, $method_get) || !method_exists($this, $method_set))
+				if(!method_exists($this->unverified_user, $method_get) || !method_exists($this->unverified_user, $method_set))
 					return \Mechanics\Server::out($this, 'Which attribute is that? ', false);
 				
-				if($this->$method_set($this->$method_get(true) + 1, true))
-					$this->login['attr']++;
+				if($this->login['attr'] + $this->login['attr_mod'][$input] + 1 > 10)
+				{
+					\Mechanics\Server::out($this, "You don't have enough points to do that.");
+				}
+				else if($this->unverified_user->$method_get() < $this->unverified_user->$method_get_max())
+				{
+					$this->unverified_user->$method_set($this->unverified_user->$method_get() + 1);
+					$this->login['attr'] += $this->login['attr_mod'][$input] + 1;
+					$this->login['attr_mod'][$input]++;
+				}
 				else
 					\Mechanics\Server::out($this, 'This attribute is maxed!');
 				
-				if($this->login['attr'] < 10)
+				$modifiable = false;
+				foreach($this->login['attr_mod'] as $attr)
+				{
+					if(10 - $this->login['attr'] >= $attr + 1)
+					{
+						$modifiable = true;
+						break;
+					}
+				}
+				
+				if($this->login['attr'] < 10 && $modifiable)
 				{
 					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 					\Mechanics\Server::out($this,
-						'Str ' . $this->getStr(true) . ' Int ' . $this->getInt(true) . ' Wis ' . $this->getWis(true) . ' Dex ' . $this->getDex(true) . ' Con ' . $this->getCon(true));
+						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
+						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
 					\Mechanics\Server::out($this, "Add a point to: ", false);
 				}
 				else
 				{
+					$this->unverified_user->addTrains(10 - $this->login['attr']);
 					$this->login['attr'] = true;
-					return;
+					$this->login['finish'] = false;
 				}
 			}
 			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)
 			{
-				$this->alias = $this->login['alias'];
-				$this->copper = 20;
-				$this->silver = 0;
-				$this->gold = 0;
-				$this->password = sha1('mud password salt!' . $this->login['new_pass']);
-				$this->experience = 1000;
-				$this->exp_per_level = 1000;
-				$this->level = 1;
-				$this->thirst = 5;
-				$this->nourishment = 5;
-				$this->setRoom(\Mechanics\Room::find(3));
+				$this->user = $this->unverified_user;
+				$this->user->setAlias($this->login['alias']);
+				$this->user->increaseCopper(20);
+				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
+				$this->user->setRoom(Room::find(Room::START_ROOM));
+				$this->user->setClient($this);
+				$this->user->save();
 				
-				parent::__construct($this->getRoom()->getId());
-				$this->save();
-				self::$instances[$this->id] = $this;
-				$this->discipline->assignGroup();
-				$this->ability_set->save();
-				
-				\Commands\Look::perform($this);
+				$look = Alias::lookup('look');
+				$look->perform($this->user);
 			}
 		}
 		

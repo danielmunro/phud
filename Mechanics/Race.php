@@ -110,13 +110,13 @@
 			return $this->creation_points;
 		}
 		
+		public function getAttributes()
+		{
+			return $this->attributes;
+		}
+		
 		public function getSize() { return $this->size; }
 		public function getRaceStr() { return get_class($this); }
-		public function getMaxStr($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
-		public function getMaxInt($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
-		public function getMaxWis($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
-		public function getMaxDex($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
-		public function getMaxCon($base = false) { return $base ? $this->max_str : $this->max_str + 4; }
 		public function getMovementCost() { return $this->movement_cost; }
 		public function getUnarmedVerb() { return $this->unarmed_verb; }
 		public function getMoveVerb() { return $this->move_verb; }
