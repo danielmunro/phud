@@ -61,7 +61,7 @@
 							'\Mechanics\Command',
 							'\Mechanics\Race',
 							'\Mechanics\Discipline',
-							//'Mob',
+							'\Living\Mob',
 							//'Shopkeeper'
 						);
 			foreach($req_init as $required)
@@ -129,7 +129,6 @@
 							$this->clients[$i]->clearCommandBuffer();
 						else
 							$this->clients[$i]->addCommandBuffer($input);
-						var_dump($input);
 					}
 					
 					// Check for a delay in the user's commands

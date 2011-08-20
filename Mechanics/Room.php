@@ -35,12 +35,12 @@
 		private $id = null;
 		private $title = '';
 		private $description = '';
-		private $north = 0;
-		private $south = 0;
-		private $east = 0;
-		private $west = 0;
-		private $up = 0;
-		private $down = 0;
+		private $north = -1;
+		private $south = -1;
+		private $east = -1;
+		private $west = -1;
+		private $up = -1;
+		private $down = -1;
 		private $door = null;
 		private $inventory = null;
 		private $area = '';
@@ -134,7 +134,7 @@
 		
 		public function getActorByInput($input)
 		{
-			if(empty($input[1]))
+			if(is_array($input) && empty($input[1]))
 				return;
 			
 			if(is_array($input))
@@ -143,7 +143,7 @@
 			$person = strtolower($input);
 			foreach($this->actors as $actor)
 			{
-				$look_for = property_exists($actor, 'noun') ? explode(' ', $actor->getNoun()) : array($actor->getAlias());
+				$look_for = property_exists($actor, 'nouns') ? explode(' ', $actor->getNouns()) : array($actor->getAlias());
 				foreach($look_for as $look)
 					if(stripos($look, $person) === 0)
 						return $actor;

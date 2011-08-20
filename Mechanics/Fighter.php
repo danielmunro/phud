@@ -31,6 +31,7 @@
 		const MAX_ATTRIBUTE = 25;
 		
 		protected $experience = 0;
+		protected $experience_per_level = 0;
 		protected $concentration = 0;
 		protected $delay = 0;
 		protected $fightable = true;
@@ -208,31 +209,6 @@
 			$this->attributes->setCon($this->getRace()->getAttributes()->getCon());
 		}
 		
-		public function getExperience()
-		{
-			return $this->experience;
-		}
-		
-		public function getExperiencePerLevel()
-		{
-			$cp = $this->getCreationPoints();
-		
-			if($cp < 30)
-				return 1000;
-		
-			$base_mod = 100;
-			if($cp < 99)
-				return $cp * $base_mod;
-			
-			$upper_mod = 200;
-			return (100 * $base_mod) + ($cp - 100 * $upper_mod); 
-		}
-		
-		public function getCreationPoints()
-		{
-			return $this->getAbilitySet()->getCreationPoints() + $this->getRace()->getCreationPoints();
-		}
-		
 		public function getConcentration()
 		{
 			return $this->concentration;
@@ -385,18 +361,6 @@
 		public function setMaxMovement($max_movement)
 		{
 			$this->attributes->setMaxMovement($max_movement);
-		}
-		public function setExperience($experience)
-		{
-			$this->experience = $experience;
-			if($this->experience <= 0)
-				$this->levelUp();
-		}
-		public function awardExperience($experience)
-		{
-			$this->experience -= $experience;
-			if($this->experience <= 0)
-				$this->levelUp();
 		}
 		public function increaseHitDam($hit = 0, $dam = 0)
 		{
@@ -690,28 +654,81 @@
 			
 			return $experience;
 		}
+		
 		public function getKillExperience()
 		{
 			return 300 + (10 * $this->level);
 		}
+		
 		protected function levelUp($display = true)
 		{
 			Debug::addDebugLine($this->getAlias(true) . ' levels up.');
-			$hp_gain = ceil($this->con * 0.5);
-			$movement_gain = ceil(($this->con * 0.6) + ($this->dex * 0.9) / 1.5);
-			$mana_gain = ceil(($this->wis + $this->int / 2) * 0.8);
+			$hp_gain = ceil($this->getCon() * 0.5);
+			$movement_gain = ceil(($this->getCon() * 0.6) + ($this->getCon() * 0.9) / 1.5);
+			$mana_gain = ceil(($this->getWis() + $this->getInt() / 2) * 0.8);
 			
-			$this->max_hp += (int) $hp_gain;
-			$this->max_mana += (int) $mana_gain;
-			$this->max_movement += (int) $movement_gain;
+			$this->attributes->setMaxHp($this->attributes->getMaxHp() + (int) $hp_gain);
+			$this->attributes->setMaxMana($this->attributes->getMaxMana() + (int) $mana_gain);
+			$this->attributes->getMaxMovement($this->attributes->getMaxMovement() + (int) $movement_gain);
 			
-			$this->level = (int) ($this->experience / $this->exp_per_level);
+			$this->level = (int) ($this->experience / $this->getExperiencePerLevel());
 			
 			if($display)
 			{
 				Server::out($this, 'You LEVELED UP!');
 				Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
 			}
+		}
+		
+		public function setExperience($experience)
+		{
+			$this->experience = $experience;
+			if($this->experience <= 0)
+				$this->levelUp();
+		}
+		
+		public function awardExperience($experience)
+		{
+			$this->experience -= $experience;
+			if($this->experience <= 0)
+				$this->levelUp();
+		}
+		
+		public function getExperience()
+		{
+			return $this->experience;
+		}
+		
+		public function getExperiencePerLevel()
+		{
+			return $this->experience_per_level; 
+		}
+		
+		public function setExperiencePerLevel($xp = 0)
+		{
+			if($xp < 1)
+				$xp = $this->getExperiencePerLevelFromCP();
+			$this->experience_per_level = $xp;
+		}
+		
+		public function getExperiencePerLevelFromCP()
+		{
+			$cp = $this->getCreationPoints();
+		
+			if($cp < 30)
+				return 1000;
+		
+			$base_mod = 100;
+			if($cp < 99)
+				return $cp * $base_mod;
+			
+			$upper_mod = 200;
+			return (100 * $base_mod) + ($cp - 100 * $upper_mod);
+		}
+		
+		public function getCreationPoints()
+		{
+			return $this->getAbilitySet()->getCreationPoints() + $this->getRace()->getCreationPoints();
 		}
 	}
 ?>

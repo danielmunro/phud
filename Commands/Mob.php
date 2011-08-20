@@ -36,52 +36,151 @@
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
-			if($args[1] == 'copy')
+			if(sizeof($args) <= 1)
+				return \Mechanics\Server::out($actor, "What were you trying to do?");
+		
+			$command = $this->getCommand($args[1]);
+			if($command)
 			{
-				$target = $actor->getRoom()->getActorByInput(array(null, $args[2]));
-				if($target)
-				{
-					$class_name = get_class($target);
-					$new_instance = new $class_name(array(
-						'alias' => $target->getAlias(),
-						'noun' => $target->getNoun(),
-						'long' => $target->getLong(),
-						'auto_flee' => $target->getAutoFlee(),
-						'race' => $target->getRaceStr(),
-						'unique' => $target->isUnique(),
-						'area' => $target->getArea(),
-						'movement_speed' => $target->getMovementSpeed(),
-						'respawn_time' => $target->getRespawnTime(),
-						'gold' => $target->getGold(),
-						'silver' => $target->getSilver(),
-						'copper' => $target->getCopper(),
-						'fk_room_id' => $target->getRoomId(),
-						'level' => $target->getLevel()
-					));
-					$new_instance->getInventory()->transferItemsFrom($target->getInventory());
-					$new_instance->setRoom($new_instance->getRoom());
-					$new_instance->save();
-					return \Mechanics\Server::out($actor, $new_instance->getAlias(true)." arrives in a puff of smoke!");
-				}
-				else
-				{
-					return \Mechanics\Server::out($actor, "Nothing is there.");
-				}
-			}
-			
-			if($args[1] == 'change')
-			{
-				$target = $actor->getRoom()->getActorByInput(array(null, $args[2]));
-				if($target)
-				{
-					
-				}
-				else
-				{
-					return \Mechanics\Server::out($actor, "Nothing is there.");
-				}
+				$fn = 'do'.ucfirst($command);
+				$this->$fn($actor, $args);
 			}
 		}
-	
+		
+		private function doCreate(\Mechanics\Actor $actor, $args)
+		{
+			if(sizeof($args) <= 2)
+				return \Mechanics\Server::out($actor, "You need to specify a name for your new mob.");
+			
+			$alias = implode(' ', array_slice($args, 2));
+			$nouns = substr($alias, strrpos($alias, ',')+1);
+			$alias = substr($alias, 0, strrpos($alias, ','));
+			
+			if(!\Living\Mob::validateAlias($alias))
+				return \Mechanics\Server::out($actor, "\"".$alias."\" is not a valid name for a mob.");
+			
+			$mob = new \Living\Mob();
+			$mob->setAlias($alias);
+			$mob->setNouns($nouns);
+			$mob->setRoom($actor->getRoom());
+			$mob->setStartRoom();
+			$mob->save();
+			
+			$mob->getRoom()->announce($mob, $mob->getAlias(true)." poofs into existence.");
+		}
+		
+		private function doRace(\Mechanics\Actor $actor, $args)
+		{
+			if(sizeof($args) < 4)
+				return \Mechanics\Server::out($actor, "You are missing something.");
+			
+			$arg_race = implode(' ', array_slice($args, sizeof($args) - 1));
+			$arg_noun = implode(' ', array_slice($args, 2, 1));
+			
+			$race = \Mechanics\Alias::lookup($arg_race);
+			$mob = $actor->getRoom()->getActorByInput($arg_noun);
+			
+			if(!($race instanceof \Mechanics\Race))
+				return \Mechanics\Server::out($actor, "That is not a valid race.");
+			
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "Who?");
+			
+			$mob->setRace($race);
+			$mob->save();
+			$mob->getRoom()->announce($mob, $mob->getAlias(true)." spontaneously shapeshifts into a ".$race->getAlias().".");
+		}
+		
+		private function doLong(\Mechanics\Actor $actor, $args)
+		{
+			if(sizeof($args) <= 3)
+				return \Mechanics\Server::out($actor, "You are missing some arguments.");
+			
+			$arg_noun = implode(' ', array_slice($args, 2, 1));
+			$arg_long = implode(' ', array_slice($args, 3));
+			
+			$mob = $actor->getRoom()->getActorByInput($arg_noun);
+			
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "Who is that?");
+			
+			$mob->setLong($arg_long);
+			$mob->save();
+			
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s description now reads: ".$mob->getLong());
+		}
+		
+		private function doLevel(\Mechanics\Actor $actor, $args)
+		{
+			if(sizeof($args) <= 2)
+				return \Mechanics\Server::out($actor, "What was that?");
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "What mob do you want to grant a level to?");
+			
+			$num_levels = 1;
+			if(sizeof($args) == 4)
+				$num_levels = $args[3];
+			
+			if(!is_numeric($num_levels))
+				return \Mechanics\Server::out($actor, "Number of levels granted must be a number.");
+			
+			$mob->setLevel($num_levels);
+			$mob->save();
+			
+			return \Mechanics\Server::out($actor, "You grant ".$mob->getAlias()." ".$num_levels." level".($num_levels==1?'':'s'));
+		}
+		
+		private function doInformation(\Mechanics\Actor $actor, $args)
+		{
+			if(sizeof($args) <= 2)
+				return \Mechanics\Server::out($actor, "Which mob?");
+			
+			array_shift($args);
+			$mob = $actor->getRoom()->getActorByInput($args);
+			
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			\Mechanics\Server::out($actor,
+					"info page on mob ".$mob->getId().":\n".
+					"alias:                    ".$mob->getAlias()."\n".
+					"race:                     ".$mob->getRace()->getAlias()."\n".
+					"level:                    ".$mob->getLevel()."\n".
+					"nouns:                    ".$mob->getNouns()."\n".
+					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."\n".
+					"max worth:                ".$mob->getGold().'g '.$mob->getSilver().'s '.$mob->getCopper()."c\n".
+					"long:\n".
+					($mob->getLong() ? $mob->getLong() : "Nothing."));
+		}
+		
+		private function doGold()
+		{
+			
+		}
+		
+		private function doSilver()
+		{
+		}
+		
+		private function doCopper()
+		{
+		}
+		
+		private function getCommand($arg)
+		{
+			$commands = array('create', 'race', 'level', 'information', 'long', 'gold', 'silver', 'copper');
+			
+			$command = array_filter($commands, function($c) use ($arg) 
+				{
+					return strpos($c, $arg) === 0;
+				});
+			
+			if(sizeof($command))
+				return array_shift($command);
+			
+			return false;
+		}
 	}
 ?>

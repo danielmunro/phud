@@ -30,7 +30,7 @@
 	
 		protected $movement_speed;
 		protected $last_move;
-		protected $noun;
+		protected $nouns = '';
 		protected $auto_flee = false;
 		protected $unique = false;
 		protected $respawn_time;
@@ -41,7 +41,13 @@
 		
 		const FLEE_PERCENT = 10;
 		
-		public function __construct($properties)
+		public function __construct()
+		{
+			parent::__construct();
+		}
+		
+		/**
+		public function setFromProperties($properties)
 		{
 			foreach($properties as $property => $value)
 			{
@@ -49,24 +55,24 @@
 					$this->setRace(\Races\Human::instance()); // HACK @todo fixme this is a hack. Need to have configurable races
 				elseif($property == 'respawn_time')
 					$this->respawn_time = $this->default_respawn_time = $value;
-				elseif($property == 'fk_room_id')
-					$this->start_room_id = $value;
 				elseif(property_exists($this, $property))
 					$this->$property = $value;
 			}
-			parent::__construct($this->start_room_id);
 			$this->save();
 			$this->registerMove();
 		}
+		*/
 		
-		public static function instantiate()
+		public static function runInstantiation()
 		{
+			/**
 			\Mechanics\Debug::addDebugLine('Initializing mobs');
 			$results = \Mechanics\Db::getInstance()->query('SELECT * FROM mobs')->fetch_objects();
 			\Mechanics\Debug::addDebugLine('mobs: '.sizeof($results));
 			foreach($results as $mob)
 				new self($mob);
 			die;
+			*/
 
 			$db = \Mechanics\Dbr::instance();
 			$mob_count = $db->lSize('mobs');
@@ -74,7 +80,8 @@
 			foreach($mobs as $i => $mob)
 			{
 				$m = unserialize($mob);
-				$m->registerMove();
+				$m->setRoom($m->getStartRoom());
+				//$m->registerMove();
 			}
 		}
 		
@@ -84,7 +91,10 @@
 			if(is_numeric($this->id))
 				$db->lSet('mobs', $this->id, serialize($this));
 			else
+			{
 				$this->id = $db->rPush('mobs', serialize($this)) - 1;
+				$this->save(); //write the new ID
+			}
 		}
 		
 		private function registerMove()
@@ -121,6 +131,7 @@
 			\Mechanics\Command::find($i)->perform($this); // Move the damn thing
 			$this->registerMove();
 		}
+		
 		public function handleDeath()
 		{
 			parent::handleDeath(false);
@@ -130,34 +141,66 @@
 				$seconds,
 				function($mob)
 				{
-					$mob->setRoom(\Mechanics\Room::find($mob->getDefaultRoomId()));
+					$mob->setRoom($mob->getStartRoom());
 					$mob->getRoom()->announce($mob, $mob->getAlias(true).' arrives in a puff of smoke.');
 				},
 				$this
 			);
 		}
+		
 		public function decreaseRespawnTime()
 		{
 			return $this->respawn_time--;
 		}
+		
 		public function resetRespawnTime()
 		{
 			$this->respawn_time = $this->default_respawn_time;
 		}
+		
 		public function getKillExperience()
 		{
 			return parent::getKillExperience() * rand(0.8, 1.2);
 		}
+		
+		public function getExperiencePerLevel()
+		{
+			return $this->getExperiencePerLevelFromCP();
+		}
+		
+		public function getStartRoom()
+		{
+			return \Mechanics\Room::find($this->start_room_id);
+		}
+		
+		public function setStartRoom()
+		{
+			$this->start_room_id = $this->room_id;
+		}
+		
 		public function getMovementSpeed() { return $this->movement_speed; }
-		public function getNoun() { return $this->noun; }
-		public function getTable() { return 'mobs'; }
+		
+		public function getNouns()
+		{
+			return $this->nouns;
+		}
+		
+		public function setNouns($nouns)
+		{
+			$this->nouns = trim($nouns);
+		}
+		
 		public function getDead() { return $this->dead; }
 		public function setDead($dead) { $this->dead = $dead; }
-		public function getDefaultRoomId() { return $this->start_room_id; }
 		public function getAutoFlee() { return $this->auto_flee; }
 		public function isUnique() { return $this->unique; }
 		public function getRespawnTime() { return $this->respawn_time; }
 		public function getArea() { return $this->area; }
+		
+		public static function validateAlias($alias)
+		{
+			return preg_match('/^[A-Za-z ]{2,100}$/i', $alias);
+		}
 	}
 
 ?>

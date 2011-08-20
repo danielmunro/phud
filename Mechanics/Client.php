@@ -77,6 +77,10 @@
 			$input = array_shift($args);
 			if($this->login['alias'] === false)
 			{
+			
+				if(!\Living\User::validateAlias($input))
+					return Server::out($this, "That is not a valid name. What IS your name?");
+			
 				$this->login['alias'] = $input;
 				
 				$db = Dbr::instance();
@@ -103,6 +107,7 @@
 				if($this->isValidated($input))
 				{
 					$this->user = $this->unverified_user;
+					$this->user->getRoom()->actorAdd($this->user);
 					$this->unverified_user = null;
 					$look = Alias::lookup('look');
 					$look->perform($this->user);
@@ -307,6 +312,7 @@
 				else if($input == 'done')
 				{
 					$this->login['custom'] = 3;
+					$this->unverified_user->setExperiencePerLevel();
 					\Mechanics\Server::out($this, "Now let's figure out your attributes...");
 					$this->login['attr'] = 0;
 					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0);
@@ -320,7 +326,7 @@
 				if($this->login['custom'] !== 3)
 				{
 					$cp = $this->unverified_user->getCreationPoints();
-					Server::out($this, "\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevel()." experience per level.");
+					Server::out($this, "\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevelFromCP()." experience per level.");
 					return Server::out($this, "What would you like to do (add, list, drop, done)?");
 				}
 			}
@@ -377,7 +383,7 @@
 			{
 				$this->user = $this->unverified_user;
 				$this->user->setAlias($this->login['alias']);
-				$this->user->increaseCopper(20);
+				$this->user->addCopper(20);
 				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
 				$this->user->setRoom(Room::find(Room::START_ROOM));
 				$this->user->setClient($this);

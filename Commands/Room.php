@@ -61,9 +61,10 @@
 			if($args[1] == 'id')
 				return \Mechanics\Server::out($actor, "ID: " . $actor->getRoom()->getId());
 			
-			if($args[1] == 'title' || $args[1] == 'description' || $args[1] == 'north' || $args[1] == 'south' || $args[1] == 'east' || $args[1] == 'west' || $args[1] == 'up' || $args[1] == 'down' || $args[1] == 'area')
+			$property = $this->isValidProperty($args[1]);
+			if($property)
 			{
-				$fn = 'set' . ucfirst($args[1]);
+				$fn = 'set' . ucfirst($property);
 				array_shift($args);
 				array_shift($args);
 				$value = implode(' ', $args);
@@ -95,6 +96,18 @@
 			
 			return \Mechanics\Server::out($actor, "What was that?");
 			
+		}
+		
+		private function isValidProperty($property)
+		{
+			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down');
+		
+			foreach($properties as $p)
+				if(strpos($p, $property) === 0)
+					return $p;
+			
+			return false;
+		
 		}
 		
 		private function isValidDirection($dir)

@@ -59,12 +59,12 @@
 							\Mechanics\Server::out($actor, ucfirst($door->getLong($actor->getRoom()->getId())) . "\n");
 				
 				\Mechanics\Server::out($actor, 'Exits [' .
-					($actor->getRoom()->getNorth() != 0 ? ' N ' : '') .
-					($actor->getRoom()->getSouth() != 0 ? ' S ' : '') .
-					($actor->getRoom()->getEast()  != 0 ? ' E ' : '') .
-					($actor->getRoom()->getWest()  != 0 ? ' W ' : '') .
-					($actor->getRoom()->getUp()    != 0 ? ' U ' : '') .
-					($actor->getRoom()->getDown()  != 0 ? ' D ' : '') . ']');
+					($actor->getRoom()->getNorth() >= 0 ? ' N ' : '') .
+					($actor->getRoom()->getSouth() >= 0 ? ' S ' : '') .
+					($actor->getRoom()->getEast()  >= 0 ? ' E ' : '') .
+					($actor->getRoom()->getWest()  >= 0 ? ' W ' : '') .
+					($actor->getRoom()->getUp()    >= 0 ? ' U ' : '') .
+					($actor->getRoom()->getDown()  >= 0 ? ' D ' : '') . ']');
 				$items = $actor->getRoom()->getInventory()->getItems();
 				
 				if(is_array($items) && sizeof($items) > 0)

@@ -67,6 +67,7 @@
 		protected $available_disciplines = array();
 		protected $playable = false;
 		protected $creation_points = 0;
+		protected $alias = null;
 		
 		protected function __construct()
 		{
@@ -124,6 +125,12 @@
 		public function getDecreaseThirst() { return $this->decrease_thirst; }
 		public function getFull() { return $this->full; }
 		public function isPlayable() { return $this->playable; }
+		
+		public function getAlias()
+		{
+			return $this->alias;
+		}
+		
 		public function __toString()
 		{
 			$class = get_class($this);

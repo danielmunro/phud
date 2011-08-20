@@ -37,7 +37,7 @@
 		protected $id = null;
 		protected $alias = '';
 		protected $long = '';
-		protected $level = 1;
+		protected $level = 0;
 		protected $gold = 0;
 		protected $silver = 0;
 		protected $copper = 0;
@@ -137,10 +137,6 @@
 			return $ability->getFailMessage();
 		}
 		
-		public function getType()
-		{
-			return array_pop(explode("\\", get_class($this)));
-		}
 		public function getAlias($upper = null)
 		{
 			if($upper === null)
@@ -148,56 +144,72 @@
 			else
 				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
-		public function getClassStr() { return $this->_class->getClassStr(); }
-		public function getLevel() { return $this->level; }
-		public function getLong() { return $this->long; }
-		public function getInventory() { return $this->inventory; }
-		public function getEquipped() { return $this->equipped; }
+		
+		public function getLong()
+		{
+			return $this->long;
+		}
+		
+		public function setLong($long)
+		{
+			$this->long = $long;
+		}
+		
+		public function getInventory()
+		{
+			return $this->inventory;
+		}
+		
+		public function getEquipped()
+		{
+			return $this->equipped;
+		}
+		
 		public function getRoom()
 		{
 			return Room::find($this->room_id);
 		}
-		public function getDescription() { return $this->long; }
-		public function getCopper() { return $this->copper; }
-		public function getSilver() { return $this->silver; }
-		public function addSilver($silver) { $this->silver += $silver; }
-		public function getGold() { return $this->gold; }
-		public function getSex()
+		
+		public function getDescription()
 		{
-			return $this->sex;
+			return $this->long;
 		}
-		public function setSex($sex)
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Money stuff
+		///////////////////////////////////////////////////////////////////////////
+		
+		public function getCopper()
 		{
-			if($sex == 'm' || $sex == 'f')
-				$this->sex = $sex;
+			return $this->copper;
 		}
-		public function setRoom(\Mechanics\Room $room)
+		
+		public function addCopper($copper)
 		{
-			if($this->room_id)
-				Room::find($this->room_id)->actorRemove($this);
-			$room->actorAdd($this);
-			$this->room_id = $room->getId();
+			$this->copper += $copper;
 		}
-		public function getRace()
+		
+		public function getSilver()
 		{
-			return Alias::lookup($this->race);
+			return $this->silver;
 		}
-		public function increaseCopper($amount) { $this->copper += $amount; }
-		public function decreaseCopper($amount) { $this->copper -= $amount; }
-		public function increaseSilver($amount) { $this->silver += $amount; }
-		public function decreaseSilver($amount) { $this->silver -= $amount; }
-		public function increaseGold($amount) { $this->gold += $amount; }
-		public function decreaseGold($amount) { $this->gold -= $amount; }
-		public function setLevel($level)
+		
+		
+		public function addSilver($silver)
 		{
-			while($this->level < $level)
-				$this->levelUp(false);
+			$this->silver += $silver;
 		}
-		public function setAlias($alias) { $this->alias = $alias; }
-		public function setRace($race)
+		
+		public function getGold()
 		{
-			$this->race = $race;
+			return $this->gold;
 		}
+		
+		public function addGold($gold)
+		{
+			$this->gold += $gold;
+		}
+		
 		public function decreaseFunds($value)
 		{
 			$copper = $this->copper;
@@ -244,6 +256,72 @@
 			return true;
 		}
 		
+		public function purchaseFrom(\Items\Item $item, Actor $seller)
+		{
+			$value = $item->getValue();
+			$abilities = $this->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_BUY_ITEM);
+			foreach($abilities as $learned_ability)
+				$value += $learned_ability->perform($value);
+		
+			if($this->decreaseFunds($value) === false)
+				return false;
+			
+			$item->copyTo($actor);
+			return true;
+		}
+		
+		// End money
+		
+		public function getSex()
+		{
+			return $this->sex;
+		}
+		public function setSex($sex)
+		{
+			if($sex == 'm' || $sex == 'f')
+				$this->sex = $sex;
+		}
+		public function setRoom(\Mechanics\Room $room)
+		{
+			if($this->room_id)
+				Room::find($this->room_id)->actorRemove($this);
+			$room->actorAdd($this);
+			$this->room_id = $room->getId();
+		}
+		public function getRace()
+		{
+			return Alias::lookup($this->race);
+		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Leveling
+		///////////////////////////////////////////////////////////////////////////
+		
+		public function setLevel($level)
+		{
+			while($this->level < $level)
+			{
+				$this->experience += $this->getExperiencePerLevel() - ($this->experience - ($this->level*$this->getExperiencePerLevel()));
+				$this->levelUp(false);
+			}
+		}
+		
+		abstract protected function levelUp();
+		
+		public function getLevel()
+		{
+			return $this->level;
+		}
+		
+		public function setAlias($alias) { $this->alias = $alias; }
+		public function setRace($race)
+		{
+			if($race instanceof \Mechanics\Race)
+				$this->race = $race->getAlias()->getAliasName();
+			else if(is_string($race))
+				$this->race = $race;
+		}
+		
 		public function isSafe()
 		{
 			// Checks for safe rooms, imms, non-mobs, etc
@@ -279,26 +357,6 @@
 		
 		}
 		
-		public function purchaseFrom(\Items\Item $item, Actor $seller)
-		{
-			$value = $item->getValue();
-			$abilities = $this->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_BUY_ITEM);
-			foreach($abilities as $learned_ability)
-				$value += $learned_ability->perform($value);
-		
-			if($this->decreaseFunds($value) === false)
-				return false;
-			
-			$item->copyTo($actor);
-			return true;
-		}
-		
-		abstract protected function levelUp();
-		
-		public function getNoun()
-		{
-			return $this->alias;
-		}
 		public function __toString()
 		{
 			$class = get_class($this);

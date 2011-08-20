@@ -179,6 +179,11 @@
 		{
 			return $this->trains;
 		}
+		
+		public static function validateAlias($alias)
+		{
+			return preg_match('/^[A-Za-z]{2,12}$/i', $alias);
+		}
 	}
 
 ?>

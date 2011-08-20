@@ -51,7 +51,7 @@
 					return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 			}
 			
-			if($args[0] > 0)
+			if($args[0] >= 0)
 			{
 				if($actor->getMovement() >= $actor->getRace()->getMovementCost() || $actor->getLevel() > Actor::MAX_LEVEL)
 				{
@@ -60,7 +60,10 @@
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' ' . $actor->getRace()->getMoveVerb() . ' ' . $args[1] . '.');
 					$actor->setRoom(Room::find($args[0]));
 					if($actor instanceof \Living\User)
-						Command::find('Look')->perform($actor);
+					{
+						$look = Alias::lookup('look');
+						$look->perform($actor);
+					}
 					
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					
