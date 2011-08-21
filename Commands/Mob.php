@@ -155,17 +155,37 @@
 					($mob->getLong() ? $mob->getLong() : "Nothing."));
 		}
 		
-		private function doGold()
+		private function doGold(\Mechanics\Actor $actor, $args)
 		{
+			$this->doWorth($actor, $args, 'gold');
+		}
+		
+		private function doSilver(\Mechanics\Actor $actor, $args)
+		{
+			$this->doWorth($actor, $args, 'silver');
+		}
+		
+		private function doCopper(\Mechanics\Actor $actor, $args)
+		{
+			$this->doWorth($actor, $args, 'copper');
+		}
+		
+		private function doWorth(\Mechanics\Actor $actor, $args, $type)
+		{
+			if(sizeof($args) <= 4)
+				return \Mechanics\Server::out($actor, "Not enough arguments.");
 			
-		}
-		
-		private function doSilver()
-		{
-		}
-		
-		private function doCopper()
-		{
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "Mob not here.");
+			
+			$amount = $args[3];
+			if(!is_numeric($amount) || $amount < 0 || $amount > 99999)
+				return \Mechanics\Server::out($actor, "Invalid amount of ".$type." to give ".$mob->getAlias().".");
+			
+			$fn = 'set'.ucfirst($type).'Repop';
+			$mob->$fn($amount);
+			\Mechanics\Server::out($actor, "You set ".$mob->getAlias()."'s ".$type." amount to ".$amount.".");
 		}
 		
 		private function getCommand($arg)

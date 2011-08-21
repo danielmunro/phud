@@ -66,8 +66,9 @@
 				if($amount < $give_amount)
 					return \Mechanics\Server::out($actor, "You don't have that.");
 				
-				$actor->{'decrease' . ucfirst($currency_proper)}($give_amount);
-				$target->{'increase' . ucfirst($currency_proper)}($give_amount);
+				$fn = 'add'.ucfirst($currency_proper);
+				$actor->$fn(-$give_amount);
+				$target->$fn($give_amount);
 				
 				\Mechanics\Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
 				\Mechanics\Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");

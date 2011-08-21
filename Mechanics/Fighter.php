@@ -530,14 +530,33 @@
 					$this->inventory->remove($item);
 					$corpse_inv->add($item);
 				}
-				$corpse = new \Items\Container(0,
-										'A corpse of ' . $this->getAlias() . ' lies here.',
-										'a corpse of ' . $this->getAlias(),
-										'corpse ' . $this->getAlias(),
-										100,
-										'corpse',
-										$corpse_inv,
-										false);
+				
+				$gold = intval($this->gold * 0.75);
+				$killer->addGold($gold);
+				$this->gold -= $gold;
+				
+				$silver = intval($this->silver * 0.75);
+				$killer->addSilver($silver);
+				$this->silver -= $silver;
+				
+				$copper = intval($this->copper * 0.75);
+				$killer->addCopper($copper);
+				$this->copper -= $copper;
+				
+				$this->gold = intval($this->gold/3);
+				$this->silver = intval($this->silver/3);
+				$this->copper = intval($this->copper/3);
+				
+				$corpse = new \Items\Corpse();
+				$corpse->setLong('A corpse of ' . $this->getAlias() . ' lies here.');
+				$corpse->setShort('a corpse of ' . $this->getAlias());
+				$corpse->setNouns('corpse ' . $this->getAlias());
+				$corpse->setWeight(100);
+				$corpse->setInventory($corpse_inv);
+				$corpse->setGold($this->gold * 2);
+				$corpse->setSilver($this->silver * 2);
+				$corpse->setCopper($this->copper * 2);
+				
 				$this->afterDeath($killer);
 				$this->room->getInventory()->add($corpse);
 				

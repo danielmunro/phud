@@ -38,6 +38,9 @@
 		protected $dead = false;
 		protected $start_room_id = 0;
 		protected $area = '';
+		protected $gold_repop = 0;
+		protected $silver_repop = 0;
+		protected $copper_repop = 0;
 		
 		const FLEE_PERCENT = 10;
 		
@@ -200,6 +203,40 @@
 		public static function validateAlias($alias)
 		{
 			return preg_match('/^[A-Za-z ]{2,100}$/i', $alias);
+		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Money stuff
+		///////////////////////////////////////////////////////////////////////////
+		
+		public function getGoldRepop()
+		{
+			return $this->gold_repop;
+		}
+		
+		public function setGoldRepop($gold)
+		{
+			$this->gold_repop = $gold;
+		}
+		
+		public function getSilverRepop()
+		{
+			return $this->silver_repop;
+		}
+		
+		public function setSilverRepop($silver)
+		{
+			$this->silver_repop = $silver;
+		}
+		
+		public function getCopperRepop()
+		{
+			return $this->copper_repop;
+		}
+		
+		public function setCopperRepop($copper)
+		{
+			$this->copper_repop = $copper;
 		}
 	}
 
