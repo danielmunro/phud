@@ -45,42 +45,111 @@
 		const TYPE_WEAPON = 5;
 		const TYPE_ARMOR = 6;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own = true, $door_unlock_id = null)
+		public function __construct()
 		{
-			$this->id = $id;
-			$this->long = $long;
-			$this->short = $short;
-			$this->nouns = $nouns;
-			$this->value = $value;
-			$this->weight = $weight;
-			$this->type = $type;
-			$this->can_own = $can_own;
-			$this->door_unlock_id = $door_unlock_id;
 		}
 		
-		public function getShort() { return $this->short; }
-		public function getLong() { return $this->long; }
-		public function getNouns() { return $this->nouns; }
-		public function getVerb() { return $this->verb; }
-		public function getCanOwn() { return $this->can_own; }
-		public function getValue() { return $this->value; }
-		public function getType() { return $this->type; }
-		public function getDoorUnlockId() { return $this->door_unlock_id; }
-		public function addAffect(\Mechanics\Affect $affect) { $this->affects[] = $affect; }
+		public function setShort($short)
+		{
+			$this->short = $short;
+		}
+		
+		public function setLong($long)
+		{
+			$this->long = $long;
+		}
+		
+		public function setNouns($nouns)
+		{
+			$this->nouns = $nouns;
+		}
+		
+		public function setValue($value)
+		{
+			$this->value = $value;
+		}
+		
+		public function setWeight($weight)
+		{
+			$this->weight = $weight;
+		}
+		
+		public function setCanOwn($can_own)
+		{
+			$this->can_own = $can_own;
+		}
+		
+		public function getShort()
+		{
+			return $this->short;
+		}
+		
+		public function getLong()
+		{
+			return $this->long;
+		}
+		
+		public function getNouns()
+		{
+			return $this->nouns;
+		}
+		
+		public function getVerb()
+		{
+			return $this->verb;
+		}
+		
+		public function getCanOwn()
+		{
+			return $this->can_own;
+		}
+		
+		public function getValue()
+		{
+			return $this->value;
+		}
+		
+		public function getType()
+		{
+			return $this->type;
+		}
+		
+		public function getDoorUnlockId()
+		{
+			return $this->door_unlock_id;
+		}
+		
+		public function addAffect(\Mechanics\Affect $affect)
+		{
+			$this->affects[] = $affect;
+		}
+		
 		public function removeAffect(\Mechanics\Affect $affect)
 		{
-			return;
+			$key = array_search($affect, $this->affects);
+			if($key !== false)
+			{
+				unset($this->affects[$key]);
+				$this->affects = array_values($this->affects);
+			}
 		}
-		public function getAffects() { return $this->affects; }
+		
+		public function getAffects()
+		{
+			return $this->affects;
+		}
+		
 		public function lookDescribe()
 		{
 			return $this->long;
 		}
+		
 		public function transferOwnership(\Mechanics\Actor $from, \Mechanics\Actor $to)
 		{
 			$from->getInventory()->remove($this);
 			$to->getInventory()->add($this);
 		}
+		
 		public function __toString()
 		{
 			$class = get_class($this);
