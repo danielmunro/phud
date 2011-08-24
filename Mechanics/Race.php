@@ -133,8 +133,9 @@
 		
 		public function __toString()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			if($this->alias)
+				return $this->alias->getAliasName();
+			return '';
 		}
 	}
 ?>

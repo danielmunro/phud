@@ -27,13 +27,6 @@
 	namespace Items;
 	class Weapon extends Equipment
 	{
-	
-		protected $hit_roll;
-		protected $dam_roll;
-		protected $weapon_type = 0;
-		protected $verb = '';
-		protected $damage_type = 0;
-		
 		const TYPE_SWORD = 1;
 		const TYPE_AXE = 2;
 		const TYPE_MACE = 3;
@@ -45,25 +38,47 @@
 		const TYPE_SPEAR = 9;
 		const TYPE_FLAIL = 10;
 		
-		const DAMAGE_SLASH = 1;
-		const DAMAGE_PIERCE = 2;
-		const DAMAGE_POUND = 3;
+		protected $short = 'a generic weapon';
+		protected $long = 'A generic weapon lays here';
+		protected $nouns = 'generic weapon';
+		protected $weapon_type = 0;
+		protected $verb = '';
+		protected $damage_type = 0;
 		
-		public function __construct($id, $long, $short, $nouns, $verb, $value, $weight, $weapon_type, $damage_type, $hit_roll, $dam_roll, $condition = 100, $can_own = true, $door_unlock_id = null)
+		public function __construct()
 		{
-			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_WEAPON, Equipment::TYPE_WIELD, $condition, $can_own, $door_unlock_id);
+			parent::__construct();
+		}
+		
+		public function getWeaponType()
+		{
+			return $this->weapon_type;
+		}
+		
+		public function setWeaponType($weapon_type)
+		{
 			$this->weapon_type = $weapon_type;
+		}
+		
+		public function getDamageType()
+		{
+			return $this->damage_type;
+		}
+		
+		public function setDamageType($damage_type)
+		{
 			$this->damage_type = $damage_type;
-			$this->hit_roll = $hit_roll;
-			$this->dam_roll = $dam_roll;
+		}
+		
+		public function getVerb()
+		{
+			return $this->verb;
+		}
+		
+		public function setVerb($verb)
+		{
 			$this->verb = $verb;
 		}
-		public function getWeaponType() { return $this->weapon_type; }
-		public function getHitRoll() { return $this->hit_roll; }
-		public function getDamRoll() { return $this->dam_roll; }
-		public function getDamageType() { return $this->damage_type; }
-	
 	}
 
 ?>

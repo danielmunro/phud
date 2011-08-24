@@ -91,6 +91,7 @@
 		public function save()
 		{
 			$db = \Mechanics\Dbr::instance();
+			$this->start_room_id = $this->getRoom()->getId();
 			if(is_numeric($this->id))
 				$db->lSet('mobs', $this->id, serialize($this));
 			else
@@ -181,7 +182,10 @@
 			$this->start_room_id = $this->room_id;
 		}
 		
-		public function getMovementSpeed() { return $this->movement_speed; }
+		public function getMovementSpeed()
+		{
+			return $this->movement_speed;
+		}
 		
 		public function getNouns()
 		{

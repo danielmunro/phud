@@ -56,7 +56,7 @@
 			$att = $a->getAttributes();
 			$att->setStr($str);
 			$att->setDex($dex);
-			$actor->addAffect($a);
+			$a->apply($actor);
 			return "You fly into a rage!";
 		}
 	}

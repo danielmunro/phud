@@ -42,6 +42,11 @@
 			$this->gold = $gold;
 		}
 		
+		public function addGold($gold)
+		{
+			$this->gold += $gold;
+		}
+		
 		public function getSilver()
 		{
 			return $this->silver;
@@ -52,6 +57,11 @@
 			$this->silver = $silver;
 		}
 		
+		public function addSilver($silver)
+		{
+			$this->silver += $silver;
+		}
+		
 		public function getCopper()
 		{
 			return $this->copper;
@@ -59,7 +69,12 @@
 		
 		public function setCopper($copper)
 		{
-			$this->copper = $copper
+			$this->copper = $copper;
+		}
+		
+		public function addCopper($copper)
+		{
+			$this->copper += $copper;
 		}
 	}
 

@@ -49,6 +49,8 @@
 			$modifier = max(floor($actor->getLevel() / 10), 1);
 			$mod_ac = -15 * $modifier;
 			
+			$target = $actor; //HACK
+			
 			$a = new \Mechanics\Affect();
 			$a->setAffect(self::$name_familiar);
 			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
@@ -59,7 +61,7 @@
 			$atts->setAcSlash($mod_ac);
 			$atts->setAcPierce($mod_ac);
 			$atts->setAcMagic($mod_ac);
-			$target->addAffect($a);
+			$a->apply($target);
 			\Mechanics\Server::out($target, "You feel more protected!");
 			return false;
 		}

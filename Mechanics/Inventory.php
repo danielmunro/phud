@@ -28,7 +28,6 @@
 	class Inventory
 	{
 	
-		protected $id = 0;
 		protected $items = array();
 		
 		private static $instances = array();
@@ -37,17 +36,19 @@
 		{
 		}
 		
-		public function add(\Items\Item $item)
+		public function add(Item $item)
 		{
-		
-			if(is_array($item))
-				foreach($item as $i)
-					$this->add($i);
-			else if($item instanceof \Items\Item)
-				$this->items[] = $item;
+			$this->items[] = $item;
 		}
 		
-		public function remove(\Items\Item $item, $hard = false)
+		public function addMany($items)
+		{
+			if(is_array($items))
+				foreach($items as $i)
+					$this->add($i);
+		}
+		
+		public function remove(Item $item, $hard = false)
 		{
 			
 			$i = array_search($item, $this->items);
@@ -58,19 +59,12 @@
 				$item->delete();
 			
 			return $i;
-			
-			
-			foreach($this->items as $key => $i)
-				if($i->getShort() == $item->getShort())
-				{
-					unset($this->items[$key]);
-					if($hard)
-						$item->delete();
-					return;
-				}
 		}
 		
-		public function getItems() { return $this->items; }
+		public function getItems()
+		{
+			return $this->items;
+		}
 		
 		public function getItemByInput($input)
 		{

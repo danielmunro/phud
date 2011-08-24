@@ -56,12 +56,14 @@
 			
 			$actor->incrementDelay(2);
 			
-			if($chance / $target_mod < $this->getPercent() / $actor_mod)
+			$roll = \Mechanics\Server::chance();
+			
+			if($roll < $chance)
 			{
-				$a = new Affect();
+				$a = new \Mechanics\Affect();
 				$a->setAffect('stun');
-				$a->setTimeout(0);
-				$target->addAffect($a);
+				$a->setTimeout(1);
+				$a->apply($target);
 				return "You slam into " . $target->getAlias() . " and send " . $target->getSex() . " flying!";
 			}
 			

@@ -34,7 +34,6 @@
 		protected $experience_per_level = 0;
 		protected $concentration = 0;
 		protected $delay = 0;
-		protected $fightable = true;
 		protected $attributes = null;
 		protected $battle = null;
 		protected $target = null;
@@ -336,8 +335,10 @@
 			if($this->delay > 0)
 				$this->delay--;
 		}
-		public function getDelay() { return $this->delay; }
-		public function getFightable() { return $this->fightable; }
+		public function getDelay()
+		{
+			return $this->delay;
+		}
 		public function setHp($hp)
 		{
 			$this->attributes->setHp($hp);

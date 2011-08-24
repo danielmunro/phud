@@ -102,7 +102,7 @@
 		{
 			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down');
 		
-			foreach($properties as $p)
+			foreach($dirs as $p)
 				if(strpos($p, $property) === 0)
 					return $p;
 			

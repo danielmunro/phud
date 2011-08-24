@@ -47,28 +47,6 @@
 			}
 		}
 		
-		private function doCreate(\Mechanics\Actor $actor, $args)
-		{
-			if(sizeof($args) <= 2)
-				return \Mechanics\Server::out($actor, "You need to specify a name for your new mob.");
-			
-			$alias = implode(' ', array_slice($args, 2));
-			$nouns = substr($alias, strrpos($alias, ',')+1);
-			$alias = substr($alias, 0, strrpos($alias, ','));
-			
-			if(!\Living\Mob::validateAlias($alias))
-				return \Mechanics\Server::out($actor, "\"".$alias."\" is not a valid name for a mob.");
-			
-			$mob = new \Living\Mob();
-			$mob->setAlias($alias);
-			$mob->setNouns($nouns);
-			$mob->setRoom($actor->getRoom());
-			$mob->setStartRoom();
-			$mob->save();
-			
-			$mob->getRoom()->announce($mob, $mob->getAlias(true)." poofs into existence.");
-		}
-		
 		private function doRace(\Mechanics\Actor $actor, $args)
 		{
 			if(sizeof($args) < 4)
@@ -144,13 +122,19 @@
 				return \Mechanics\Server::out($actor, "That's not a mob.");
 			
 			\Mechanics\Server::out($actor,
-					"info page on mob ".$mob->getId().":\n".
+					"info page on mob #".$mob->getId().":\n".
 					"alias:                    ".$mob->getAlias()."\n".
-					"race:                     ".$mob->getRace()->getAlias()."\n".
+					"race:                     ".$mob->getRace()."\n".
 					"level:                    ".$mob->getLevel()."\n".
 					"nouns:                    ".$mob->getNouns()."\n".
-					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."\n".
+					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."v\n".
 					"max worth:                ".$mob->getGold().'g '.$mob->getSilver().'s '.$mob->getCopper()."c\n".
+					"movement speed:           ".$mob->getMovementSpeed()."\n".
+					"auto flee:                ".($mob->getAutoFlee()?'yes':'no')."\n".
+					"unique:                   ".($mob->isUnique()?'yes':'no')."\n".
+					"respawn time:             ".$mob->getRespawnTime()."\n".
+					"sex:                      ".$mob->getSex()."\n".
+					"start room:               ".$mob->getStartRoom()->getTitle()."\n".
 					"long:\n".
 					($mob->getLong() ? $mob->getLong() : "Nothing."));
 		}
@@ -190,7 +174,7 @@
 		
 		private function getCommand($arg)
 		{
-			$commands = array('create', 'race', 'level', 'information', 'long', 'gold', 'silver', 'copper');
+			$commands = array('race', 'level', 'information', 'long', 'gold', 'silver', 'copper');
 			
 			$command = array_filter($commands, function($c) use ($arg) 
 				{

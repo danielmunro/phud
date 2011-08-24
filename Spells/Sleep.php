@@ -52,7 +52,7 @@
 			$a->setAffect(self::$name_familiar);
 			$a->setMessageAffect('Spell: sleep');
 			$a->setTimeout($timeout);
-			$target->addAffect($a);
+			$a->apply($target);
 			$target->getRoom()->announce($target, $target->getAlias(true)." goes to sleep.");
 			\Mechanics\Server::out($target, "You go to sleep.");
 		}

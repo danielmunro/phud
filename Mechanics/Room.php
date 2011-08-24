@@ -33,8 +33,8 @@
 		static $instances = array();
 		
 		private $id = null;
-		private $title = '';
-		private $description = '';
+		private $title = 'Generic room';
+		private $description = 'A nondescript room.';
 		private $north = -1;
 		private $south = -1;
 		private $east = -1;
@@ -159,9 +159,17 @@
 					return self::$instances[$id];
 				$db = \Mechanics\Dbr::instance();
 				$room_serialized = $db->lGet('rooms', $id);
-				self::$instances[$id] = unserialize($room_serialized);
-				self::$instances[$id]->setId($id);
+				if($room_serialized)
+					self::$instances[$id] = unserialize($room_serialized);
+				else
+				{
+					$r = new Room();
+					$r->setId($id);
+					$r->save();
+					self::$instances[$id] = $r;
+				}
 				return self::$instances[$id];
+				
 			}
 		}
 		
@@ -175,7 +183,7 @@
 			else
 			{
 				$this->id = $db->rPush('rooms', serialize($this)) - 1;
-				$this->save(); // Save the room with the new ID -- hacky
+				$db->lSet('rooms', $this->id, serialize($this));
 			}
 			$this->actors = $actors;
 		}

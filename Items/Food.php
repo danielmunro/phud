@@ -27,17 +27,28 @@
 	namespace Items;
 	class Food extends Item
 	{
-	
+		protected $short = 'a generic food item';
+		protected $long = 'A generic food item lays here';
+		protected $nouns = 'generic food';
+		protected $weapon_type = 0;
+		protected $verb = '';
+		protected $damage_type = 0;
 		protected $nourishment = 0;
 
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $nourishment = 1, $can_own = true, $door_unlock_id = null, $affects = '')
+		public function __construct()
 		{
-			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_FOOD, $can_own, $affects);
-			$this->nourishment = $nourishment;
+			parent::__construct();
 		}
 		
-		public function getNourishment() { return $this->nourishment; }
+		public function getNourishment()
+		{
+			return $this->nourishment;
+		}
+		
+		public function setNourishment($nourishment)
+		{
+			$this->nourishment = $nourishment;
+		}
 	}
 
 ?>

@@ -24,29 +24,22 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Items;
-	class Item implements \Mechanics\Affectable
+	namespace Mechanics;
+	abstract class Item implements Affectable
 	{
 	
-		protected $short = '';
-		protected $long = '';
-		protected $nouns = '';
+		protected $short = 'a generic item';
+		protected $long = 'A generic item lays here';
+		protected $nouns = 'generic';
 		protected $value = 0;
 		protected $weight = 0.0;
-		protected $type = 0;
 		protected $can_own = true;
-		protected $door_unlock_id = null;
+		protected $attributes = null;
 		protected $affects = array();
-		
-		const TYPE_ITEM = 1;
-		const TYPE_CONTAINER = 2;
-		const TYPE_FOOD = 3;
-		const TYPE_DRINK = 4;
-		const TYPE_WEAPON = 5;
-		const TYPE_ARMOR = 6;
 		
 		public function __construct()
 		{
+			$this->attributes = new Attributes();
 		}
 		
 		public function setShort($short)
@@ -94,11 +87,6 @@
 			return $this->nouns;
 		}
 		
-		public function getVerb()
-		{
-			return $this->verb;
-		}
-		
 		public function getCanOwn()
 		{
 			return $this->can_own;
@@ -107,16 +95,6 @@
 		public function getValue()
 		{
 			return $this->value;
-		}
-		
-		public function getType()
-		{
-			return $this->type;
-		}
-		
-		public function getDoorUnlockId()
-		{
-			return $this->door_unlock_id;
 		}
 		
 		public function addAffect(\Mechanics\Affect $affect)
@@ -152,8 +130,7 @@
 		
 		public function __toString()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			return $this->short;
 		}
 	}
 

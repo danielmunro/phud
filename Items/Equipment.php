@@ -25,41 +25,57 @@
 	 *
 	 */
 	namespace Items;
-	abstract class Equipment extends Item
+	abstract class Equipment extends \Mechanics\Item
 	{
+		const POSITION_LIGHT = 0;
+		const POSITION_FINGER = 1;
+		const POSITION_NECK = 2;
+		const POSITION_BODY = 3;
+		const POSITION_HEAD = 4;
+		const POSITION_LEGS = 5;
+		const POSITION_FEET = 6;
+		const POSITION_HANDS = 7;
+		const POSITION_ARMS = 8;
+		const POSITION_TORSO = 9;
+		const POSITION_WAIST = 10;
+		const POSITION_WRIST = 11;
+		const POSITION_HOLD = 13;
+		const POSITION_FLOAT = 14;
+		const POSITION_WIELD = 15;
+		const POSITION_GENERIC = 16;
 	
-		protected $equipment_type;
 		protected $condition = 100;
+		protected $size = 0;
 		
-		const TYPE_LIGHT = 0;
-		const TYPE_FINGER = 1;
-		const TYPE_NECK = 2;
-		const TYPE_BODY = 3;
-		const TYPE_HEAD = 4;
-		const TYPE_LEGS = 5;
-		const TYPE_FEET = 6;
-		const TYPE_HANDS = 7;
-		const TYPE_ARMS = 8;
-		const TYPE_TORSO = 9;
-		const TYPE_WAIST = 10;
-		const TYPE_WRIST = 11;
-		const TYPE_WIELD = 12;
-		const TYPE_HOLD = 13;
-		const TYPE_FLOAT = 14;
-		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $type, $equipment_type, $condition, $can_own, $door_unlock_id)
+		public function __construct()
 		{
-			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, $type, $can_own, $door_unlock_id);
-			$this->condition = $condition;
-			$this->equipment_type = $equipment_type;
+			parent::__construct();
 		}
 		
-		public function getCondition() { return $this->condition; }
-		public function decreaseCondition($amount) { $this->condition -= $amount; }
-		public function increaseCondition($amount) { $this->condition += $amount; }
-		public function getEquipmentType() { return $this->equipment_type; }
-	
+		public function getCondition()
+		{
+			return $this->condition;
+		}
+		
+		public function setCondition($condition)
+		{
+			$this->condition = $condition;
+		}
+		
+		public function addCondition($condition)
+		{
+			$this->condition += $condition;
+		}
+		
+		public function getSize()
+		{
+			return $this->size;
+		}
+		
+		public function setSize($size)
+		{
+			$this->size = $size;
+		}
 	}
 
 ?>

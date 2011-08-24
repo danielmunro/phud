@@ -27,25 +27,23 @@
 	namespace Items;
 	class Armor extends Equipment
 	{
-	
-		protected $ac_slash = 0;
-		protected $ac_bash = 0;
-		protected $ac_pierce = 0;
-		protected $ac_magic = 0;
+		protected $short = 'a generic piece of armor';
+		protected $long = 'A generic piece of armor lays here';
+		protected $nouns = 'generic armor';
+		protected $position = 0;
 		
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $equipment_type, $ac_slash, $ac_bash, $ac_pierce, $ac_magic, $condition = 100, $can_own = true, $door_unlock_id = null)
+		public function __construct()
 		{
-			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, Item::TYPE_ARMOR, $equipment_type, $condition, $can_own, $door_unlock_id);
-			$this->ac_slash = $ac_slash;
-			$this->ac_bash = $ac_bash;
-			$this->ac_pierce = $ac_pierce;
-			$this->ac_magic = $ac_magic;
 		}
-		public function getACSlash() { return $this->ac_slash; }
-		public function getACBash() { return $this->ac_bash; }
-		public function getACPierce() { return $this->ac_pierce; }
-		public function getACMagic() { return $this->ac_magic; }
+		
+		public function getPosition()
+		{
+			return $this->position;
+		}
+		
+		public function setPosition($position)
+		{
+			$this->position = $position;
+		}
 	}
-
 ?>

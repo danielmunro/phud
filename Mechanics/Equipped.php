@@ -27,70 +27,25 @@
 	namespace Mechanics;
 	class Equipped
 	{
-	
-		const POSITION_LIGHT = 0;
-		const POSITION_FINGER_L = 1;
-		const POSITION_FINGER_R = 2;
-		const POSITION_NECK_1 = 3;
-		const POSITION_NECK_2 = 4;
-		const POSITION_BODY = 5;
-		const POSITION_HEAD = 6;
-		const POSITION_LEGS = 7;
-		const POSITION_FEET = 8;
-		const POSITION_HANDS = 9;
-		const POSITION_ARMS = 10;
-		const POSITION_TORSO = 11;
-		const POSITION_WAIST = 12;
-		const POSITION_WRIST_L = 13;
-		const POSITION_WRIST_R = 14;
-		const POSITION_WIELD_L = 15;
-		const POSITION_WIELD_R = 16;
-		const POSITION_FLOAT = 18;
-		
 		private $equipment = array();
 		private $inventory = null;
 		private $actor = null;
-		private static $types = array
-		(
-			self::POSITION_LIGHT => \Items\Equipment::TYPE_LIGHT,
-			self::POSITION_FINGER_L => \Items\Equipment::TYPE_FINGER,
-			self::POSITION_FINGER_R => \Items\Equipment::TYPE_FINGER,
-			self::POSITION_NECK_1 => \Items\Equipment::TYPE_NECK,
-			self::POSITION_NECK_2 => \Items\Equipment::TYPE_NECK,
-			self::POSITION_BODY => \Items\Equipment::TYPE_BODY,
-			self::POSITION_HEAD => \Items\Equipment::TYPE_HEAD,
-			self::POSITION_LEGS => \Items\Equipment::TYPE_LEGS,
-			self::POSITION_FEET => \Items\Equipment::TYPE_FEET,
-			self::POSITION_HANDS => \Items\Equipment::TYPE_HANDS,
-			self::POSITION_ARMS => \Items\Equipment::TYPE_ARMS,
-			self::POSITION_TORSO => \Items\Equipment::TYPE_TORSO,
-			self::POSITION_WAIST => \Items\Equipment::TYPE_WAIST,
-			self::POSITION_WRIST_L => \Items\Equipment::TYPE_WRIST,
-			self::POSITION_WRIST_R => \Items\Equipment::TYPE_WRIST,
-			self::POSITION_WIELD_L => \Items\Equipment::TYPE_WIELD,
-			self::POSITION_WIELD_R => \Items\Equipment::TYPE_WIELD,
-			self::POSITION_FLOAT => \Items\Equipment::TYPE_FLOAT
-		);
 		private static $labels = array
 		(
-			self::POSITION_LIGHT =>		'<used as light>      ',
-			self::POSITION_FINGER_L => '<worn on finger>     ',
-			self::POSITION_FINGER_R => '<worn on finger>     ',
-			self::POSITION_NECK_1 => 	'<worn around neck>   ',
-			self::POSITION_NECK_2 => 	'<worn around neck>   ',
-			self::POSITION_HEAD => 		'<worn on head>       ',
-			self::POSITION_LEGS => 		'<worn on legs>       ',
-			self::POSITION_FEET => 		'<worn on feet>       ',
-			self::POSITION_HANDS => 	'<worn on hands>      ',
-			self::POSITION_ARMS => 		'<worn on arms>       ',
-			self::POSITION_TORSO => 	'<worn on torso>      ',
-			self::POSITION_BODY => 		'<worn about body>    ',
-			self::POSITION_WAIST => 	'<worn about waist>   ',
-			self::POSITION_WRIST_L => 	'<worn around wrist>  ',
-			self::POSITION_WRIST_R => 	'<worn around wrist>  ',
-			self::POSITION_WIELD_L => 	'<wielded in hand>    ',
-			self::POSITION_WIELD_R => 	'<wielded in hand>    ',
-			self::POSITION_FLOAT => 	'<floating nearby>    '
+			\Items\Equipment::POSITION_LIGHT =>		'<used as light>      ',
+			\Items\Equipment::POSITION_FINGER =>	'<worn on finger>     ',
+			\Items\Equipment::POSITION_NECK =>		'<worn around neck>   ',
+			\Items\Equipment::POSITION_HEAD => 		'<worn on head>       ',
+			\Items\Equipment::POSITION_LEGS => 		'<worn on legs>       ',
+			\Items\Equipment::POSITION_FEET => 		'<worn on feet>       ',
+			\Items\Equipment::POSITION_HANDS => 	'<worn on hands>      ',
+			\Items\Equipment::POSITION_ARMS => 		'<worn on arms>       ',
+			\Items\Equipment::POSITION_TORSO => 	'<worn on torso>      ',
+			\Items\Equipment::POSITION_BODY => 		'<worn about body>    ',
+			\Items\Equipment::POSITION_WAIST => 	'<worn about waist>   ',
+			\Items\Equipment::POSITION_WRIST =>		'<worn around wrist>  ',
+			\Items\Equipment::POSITION_WIELD => 	'<wielded in hand>    ',
+			\Items\Equipment::POSITION_FLOAT => 	'<floating nearby>    '
 		);
 		
 		public function __construct(Actor $actor)
@@ -98,24 +53,24 @@
 			
 			$this->equipment = array
 			(
-				self::POSITION_LIGHT => null,
-				self::POSITION_FINGER_L => null,
-				self::POSITION_FINGER_R => null,
-				self::POSITION_NECK_1 => null,
-				self::POSITION_NECK_2 => null,
-				self::POSITION_BODY => null,
-				self::POSITION_HEAD => null,
-				self::POSITION_LEGS => null,
-				self::POSITION_FEET => null,
-				self::POSITION_HANDS => null,
-				self::POSITION_ARMS => null,
-				self::POSITION_TORSO => null,
-				self::POSITION_WAIST => null,
-				self::POSITION_WRIST_L => null,
-				self::POSITION_WRIST_R => null,
-				self::POSITION_WIELD_L => null,
-				self::POSITION_WIELD_R => null,
-				self::POSITION_FLOAT => null
+				\Items\Equipment::POSITION_LIGHT => null,
+				\Items\Equipment::POSITION_FINGER => null,
+				\Items\Equipment::POSITION_FINGER => null,
+				\Items\Equipment::POSITION_NECK => null,
+				\Items\Equipment::POSITION_NECK => null,
+				\Items\Equipment::POSITION_BODY => null,
+				\Items\Equipment::POSITION_HEAD => null,
+				\Items\Equipment::POSITION_LEGS => null,
+				\Items\Equipment::POSITION_FEET => null,
+				\Items\Equipment::POSITION_HANDS => null,
+				\Items\Equipment::POSITION_ARMS => null,
+				\Items\Equipment::POSITION_TORSO => null,
+				\Items\Equipment::POSITION_WAIST => null,
+				\Items\Equipment::POSITION_WRIST => null,
+				\Items\Equipment::POSITION_WRIST => null,
+				\Items\Equipment::POSITION_WIELD => null,
+				\Items\Equipment::POSITION_WIELD => null,
+				\Items\Equipment::POSITION_FLOAT => null
 			);
 			
 			if($actor)
@@ -133,6 +88,13 @@
 		public function equip(\Items\Equipment $item, $display_message = true)
 		{
 			
+			if($item->getEquipmentType() === \Items\Equipment::TYPE_GENERIC)
+			{
+				if($display_message)
+					Server::out($this->actor, "You can't wear that.");
+				return false;
+			}
+			
 			$positions = array_keys(self::$types, $item->getEquipmentType());
 			
 			$equipped = $dequipped = null;
@@ -146,7 +108,7 @@
 						$this->inventory->add($item);
 					$this->equipment[$position] = $item;
 					foreach($item->getAffects() as $affect)
-						$this->actor->addAffect($affect);
+						$affect->apply($this->target);
 					$equipped = $item;
 					$equipped_position = $position;
 					break;
@@ -159,7 +121,7 @@
 					foreach($item_remove->getAffects() as $affect)
 						$this->actor->removeAffect($affect);
 					foreach($item->getAffects() as $affect)
-						$this->actor->addAffect($affect);
+						$affect->apply($this->target);
 					$this->actor->getInventory()->add($item_remove);
 					$this->actor->getInventory()->remove($item);
 					$this->equipment[$position] = $item;
@@ -168,13 +130,6 @@
 					$equipped_position = $position;
 					break;
 				}
-			}
-			
-			if($item instanceof \Items\Weapon)
-			{
-				if(isset($item_remove))
-					$this->actor->decreaseHitDam($item_remove->getHitRoll(), $item_remove->getDamRoll());
-				$this->actor->increaseHitDam($item->getHitRoll(), $item->getDamRoll());
 			}
 			
 			if(!$display_message)

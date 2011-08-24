@@ -89,13 +89,21 @@
 			$i = $affect->getAffect();
 			$this->affects[$i] = $affect;
 		}
+		
 		public function removeAffect(Affect $affect)
 		{
 			$i = array_search($affect, $this->affects);
 			if($i !== false)
+			{
 				unset($this->affects[$i]);
+				$this->affects = array_keys($this->affects);
+			}
 		}
-		public function getAffects() { return $this->affects; }
+		
+		public function getAffects()
+		{
+			return $this->affects;
+		}
 		
 		public function getId()
 		{
@@ -104,23 +112,11 @@
 		
 		public function tick()
 		{
-			foreach($this->affects as $i => $affect)
-			{
-				if(!$affect->getTimeout())
-				{
-					if($affect->getMessageEnd())
-						Server::out($this, $affect->getMessageEnd());
-					unset($this->affects[$i]);
-					continue;
-				}
-				$affect->decreaseTime();
-			}
-			
 			$abilities = $this->ability_set->getAbilitiesByHook(Ability::HOOK_TICK);
 			foreach($abilities as $ability)
 				$ability->perform();
 			
-			Pulse::instance()->registerTickEvent(function($user) { $user->tick(); }, $this);
+			Pulse::instance()->registerNextTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		
 		public function getAbilitySet()
@@ -274,13 +270,17 @@
 		
 		public function getSex()
 		{
+			if(!$this->sex)
+				$this->sex = 'it';
 			return $this->sex;
 		}
+		
 		public function setSex($sex)
 		{
 			if($sex == 'm' || $sex == 'f')
 				$this->sex = $sex;
 		}
+		
 		public function setRoom(\Mechanics\Room $room)
 		{
 			if($this->room_id)
@@ -288,9 +288,20 @@
 			$room->actorAdd($this);
 			$this->room_id = $room->getId();
 		}
+		
 		public function getRace()
 		{
+			if(!$this->race)
+				return "generic";
 			return Alias::lookup($this->race);
+		}
+		
+		public function setRace($race)
+		{
+			if($race instanceof \Mechanics\Race)
+				$this->race = $race->getAlias()->getAliasName();
+			else if(is_string($race))
+				$this->race = $race;
 		}
 		
 		///////////////////////////////////////////////////////////////////////////
@@ -313,13 +324,9 @@
 			return $this->level;
 		}
 		
-		public function setAlias($alias) { $this->alias = $alias; }
-		public function setRace($race)
+		public function setAlias($alias)
 		{
-			if($race instanceof \Mechanics\Race)
-				$this->race = $race->getAlias()->getAliasName();
-			else if(is_string($race))
-				$this->race = $race;
+			$this->alias = $alias;
 		}
 		
 		public function isSafe()

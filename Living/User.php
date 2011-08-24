@@ -96,32 +96,53 @@
 		}
 		
 		// Food and nourishment
+		
 		public function decreaseRacialNourishmentAndThirst()
 		{
 			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
 			$this->thirst -= $this->getRace()->getDecreaseThirst();
 		}
+		
 		public function getNourishment()
 		{
 			return $this->nourishment;
 		}
+		
 		public function getThirst()
 		{
 			return $this->thirst;
 		}
+		
 		public function increaseNourishment($nourishment)
 		{
 			if($this->nourishment < 0)
 				$this->nourishment = $nourishment;
 			else
 				$this->nourishment += $nourishment;
+			
+			if($this->nourishment > $this->getRace()->getNourishment())
+				$this->nourishment = $this->getRace()->getNourishment();
 		}
+		
 		public function increaseThirst($thirst)
 		{
 			if($this->thirst < 0)
 				$this->thirst = $thirst;
 			else
 				$this->thirst += $thirst;
+			
+			if($this->thirst > $this->getRace()->getThirst())
+				$this->thirst = $this->getRace()->getThirst();
+		}
+		
+		public function isNourishmentFull()
+		{
+			return $this->nourishment == $this->getRace()->getNourishment();
+		}
+		
+		public function isThirstFull()
+		{
+			return $this->nourishment == $this->getRace()->getThirst();
 		}
 		
 		public function save()

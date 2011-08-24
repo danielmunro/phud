@@ -25,19 +25,81 @@
 	 *
 	 */
 	namespace Items;
-	class Drink extends Item
+	class Drink extends \Mechanics\Item
 	{
-	
+		protected $short = 'a generic drink container';
+		protected $long = 'A generic drink container lays here';
+		protected $nouns = 'generic drink container';
+		protected $size = 0;
+		protected $amount = 0;
+		protected $contents = '';
 		protected $thirst = 0;
+		protected $nourishment = 0;
 
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $thirst = 1, $can_own = true, $door_unlock_id = null, $affects = '')
+		public function __construct($size = 5)
 		{
-			
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_DRINK, $can_own, $affects);
-			$this->thirst = $thirst;
+			$this->size = $size;
+			parent::__construct();
 		}
 		
-		public function getThirst() { return $this->thirst; }
+		public function getSize()
+		{
+			return $this->size;
+		}
+		
+		public function setSize($size)
+		{
+			$this->size = $size;
+		}
+		
+		public function getAmount()
+		{
+			return $this->amount;
+		}
+		
+		public function use(\Mechanics\Actor $actor)
+		{
+			if(!$this->amount)
+			{
+				\Mechanics\Server::out($actor, "There's no ".$contents." left.");
+				return false;
+			}
+			
+			if($this->nourishment && $actor->isNourishmentFull())
+			{
+				\Mechanics\Server::out($actor, "You are too full to drink more ".$contents.".");
+				return false;
+			}
+			
+			if($this->thirst && $actor->isThirstFull())
+			{
+				\Mechanics\Server::out($actor, "Your thirst has been quenched.");
+				return false;
+			}
+			
+			$this->amount--;
+			$actor->increaseNourishment($this->nourishment);
+			$actor->increaseThirst($this->thirst);
+			return true;
+		}
+		
+		private function fill()
+		{
+			$this->amount = $this->size;
+		}
+		
+		public function getContents()
+		{
+			return $this->contents;
+		}
+		
+		public function setContents($contents, $thirst, $nourishment)
+		{
+			$this->contents = $contents;
+			$this->thirst = $thirst;
+			$this->nourishment = $nourishment;
+			$this->fill();
+		}
 	}
 
 ?>

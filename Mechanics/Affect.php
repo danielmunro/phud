@@ -42,57 +42,82 @@
 		{
 			$this->attributes = new Attributes();
 		}
+		
 		public function getAttributes()
 		{
 			return $this->attributes;
 		}
+		
 		public function setAffect($affect)
 		{
 			$this->affect = $affect;
 		}
+		
 		public function getAffect()
 		{
 			return $this->affect;
 		}
+		
 		public function setMessageAffect($message)
 		{
 			$this->message_affect = $message;
 		}
+		
 		public function getMessageAffect()
 		{
 			return $this->message_affect;
 		}
+		
 		public function setMessageEnd($message)
 		{
 			$this->message_end = $message;
 		}
+		
 		public function getMessageEnd()
 		{
 			return $this->message_end;
 		}
+		
 		public function setTimeout($timeout)
 		{
 			$this->timeout = $timeout;
 		}
+		
 		public function getTimeout()
 		{
 			return $this->timeout;
 		}
-		public function decreaseTime()
-		{
-			if($this->timeout > 0)
-				$this->timeout--;
-		}
+		
 		public function setArgs($args)
 		{
 			$this->args = $args;
 		}
+		
 		public function getArgs($i = '')
 		{
 			if($i)
 				return $this->args[$i];
 			else
 				return $this->args;
+		}
+		
+		public function apply(\Mechanics\Affectable $affectable)
+		{
+			$affectable->addAffect($this);
+			if($this->timeout > 0)
+				Pulse::instance()->registerEvent(
+					$this->timeout,
+					function($args)
+					{
+						$affectable = $args[0];
+						$affect = $args[1];
+						$affectable->removeAffect($affect);
+						if($affect->getMessageEnd() && $affect instanceof \Living\User)
+							Server::out($affectable, $affect->getMessageEnd());
+					},
+					array($affectable, $this),
+					Pulse::EVENT_TICK
+				);
 		}
 	}
 ?>

@@ -25,34 +25,31 @@
 	 *
 	 */
 	namespace Items;
-	class Container extends Item
+	class Container extends \Mechanics\Item
 	{
 	
-		private $inventory;
+		protected $short = 'a generic container';
+		protected $long = 'A generic container lays here';
+		protected $nouns = 'generic container';
+		private $inventory = null;
 	
-		public function __construct($id, $long, $short, $nouns, $value, $weight, $inventory = null, $can_own = true, $affects = '')
+		public function __construct()
 		{
-		
-			parent::__construct($id, $long, $short, $nouns, $value, $weight, self::TYPE_CONTAINER, $can_own, $affects);
-			
-			if(!($inventory instanceof \Mechanics\Inventory))
-				$inventory = new \Mechanics\Inventory(self::TYPE_CONTAINER, $this->id);
-			else
-			{
-				$inventory->setTable(self::TYPE_CONTAINER);
-				$inventory->setTableId($this->id);
-			}
-			
-			$this->inventory = $inventory;
+			$this->inventory = new \Mechanics\Inventory();
 		}
-		public function getInventory() { return $this->inventory; }
 		
+		public function getInventory()
+		{
+			return $this->inventory;
+		}
+		
+		/**
 		public function lookDescribe()
 		{
 			return $this->long . "\n" . $this->inventory->displayContents();
 		
 		}
-	
+		*/
 	}
 
 ?>
