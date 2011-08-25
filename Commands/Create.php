@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class Create extends \Mechanics\Command
+	class Create extends \Mechanics\Command implements Command_DM
 	{
 	
 		protected function __construct()

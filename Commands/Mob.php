@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class Mob extends \Mechanics\Command
+	class Mob extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
 		protected function __construct()
@@ -49,8 +49,8 @@
 		
 		private function doRace(\Mechanics\Actor $actor, $args)
 		{
-			if(sizeof($args) < 4)
-				return \Mechanics\Server::out($actor, "You are missing something.");
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
 			
 			$arg_race = implode(' ', array_slice($args, sizeof($args) - 1));
 			$arg_noun = implode(' ', array_slice($args, 2, 1));
@@ -71,8 +71,8 @@
 		
 		private function doLong(\Mechanics\Actor $actor, $args)
 		{
-			if(sizeof($args) <= 3)
-				return \Mechanics\Server::out($actor, "You are missing some arguments.");
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
 			
 			$arg_noun = implode(' ', array_slice($args, 2, 1));
 			$arg_long = implode(' ', array_slice($args, 3));
@@ -90,8 +90,8 @@
 		
 		private function doLevel(\Mechanics\Actor $actor, $args)
 		{
-			if(sizeof($args) <= 2)
-				return \Mechanics\Server::out($actor, "What was that?");
+			if(!$this->hasArgCount($actor, $args, 3))
+				return;
 			
 			$mob = $actor->getRoom()->getActorByInput($args[2]);
 			if(!($mob instanceof \Living\Mob))
@@ -112,8 +112,8 @@
 		
 		private function doInformation(\Mechanics\Actor $actor, $args)
 		{
-			if(sizeof($args) <= 2)
-				return \Mechanics\Server::out($actor, "Which mob?");
+			if(!$this->hasArgCount($actor, $args, 3))
+				return;
 			
 			array_shift($args);
 			$mob = $actor->getRoom()->getActorByInput($args);
@@ -129,12 +129,13 @@
 					"nouns:                    ".$mob->getNouns()."\n".
 					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."v\n".
 					"max worth:                ".$mob->getGold().'g '.$mob->getSilver().'s '.$mob->getCopper()."c\n".
-					"movement speed:           ".$mob->getMovementSpeed()."\n".
-					"auto flee:                ".($mob->getAutoFlee()?'yes':'no')."\n".
+					"movement ticks:           ".$mob->getMovementTicks()."\n".
+					"auto flee:                ".$mob->getAutoFlee()."\n".
 					"unique:                   ".($mob->isUnique()?'yes':'no')."\n".
-					"respawn time:             ".$mob->getRespawnTime()."\n".
-					"sex:                      ".$mob->getSex()."\n".
-					"start room:               ".$mob->getStartRoom()->getTitle()."\n".
+					"respawn time:             ".$mob->getDefaultRespawnTicks()."\n".
+					"sex:                      ".($mob->getSex()=='m'?'male':'female')."\n".
+					"start room:               ".$mob->getStartRoom()->getTitle()." (#".$mob->getStartRoom()->getId().")\n".
+					"area:                     ".$mob->getArea()."\n".
 					"long:\n".
 					($mob->getLong() ? $mob->getLong() : "Nothing."));
 		}
@@ -156,8 +157,8 @@
 		
 		private function doWorth(\Mechanics\Actor $actor, $args, $type)
 		{
-			if(sizeof($args) <= 4)
-				return \Mechanics\Server::out($actor, "Not enough arguments.");
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
 			
 			$mob = $actor->getRoom()->getActorByInput($args[2]);
 			if(!($mob instanceof \Living\Mob))
@@ -169,12 +170,85 @@
 			
 			$fn = 'set'.ucfirst($type).'Repop';
 			$mob->$fn($amount);
+			$fn = 'set'.ucfirst($type);
+			$mob->$fn($amount);
 			\Mechanics\Server::out($actor, "You set ".$mob->getAlias()."'s ".$type." amount to ".$amount.".");
+		}
+		
+		private function doRespawn(\Mechanics\Actor $actor, $args)
+		{
+			$ticks = array_pop($args);
+			if(!is_numeric($ticks))
+				return \Mechanics\Server::out($actor, "What respawn time?");
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "Mob does not exist.");
+			
+			$mob->setDefaultRespawnTicks($ticks);
+			\Mechanics\Server::out($actor, "You set ".$mob->getAlias()."'s respawn to ".$ticks." ticks.");
+		}
+		
+		private function doSex(\Mechanics\Actor $actor, $args)
+		{
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$sex = array_pop($args);
+			if($mob->setSex($sex))
+				return \Mechanics\Server::out($actor, $mob->getAlias(true)." is now a ".strtoupper($mob->getDisplaySex()).".");
+		}
+		
+		private function doAutoflee(\Mechanics\Actor $actor, $args)
+		{
+			$auto_flee = array_pop($args);
+			if(!is_numeric($auto_flee))
+				return \Mechanics\Server::out($actor, "What respawn time?");
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$mob->setAutoFlee($auto_flee);
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s auto flee is set to ".$auto_flee." hp.");
+		}
+		
+		private function doMovement(\Mechanics\Actor $actor, $args)
+		{
+			$movement = array_pop($args);
+			if(!is_numeric($movement))
+				return \Mechanics\Server::out($actor, "What movement speed?");
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$mob->setMovementTicks($movement);
+			\Mechanics\Server::out($actor, $mob->getAlias()."'s movement speed set to ".$movement." ticks.");
+		}
+		
+		private function doArea(\Mechanics\Actor $actor, $args)
+		{
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$area = implode(' ', array_slice($args, 3));
+			
+			$mob->setArea($area);
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s area is now set to ".$area.".");
 		}
 		
 		private function getCommand($arg)
 		{
-			$commands = array('race', 'level', 'information', 'long', 'gold', 'silver', 'copper');
+			$commands = array('race', 'level', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
 			
 			$command = array_filter($commands, function($c) use ($arg) 
 				{
@@ -182,7 +256,7 @@
 				});
 			
 			if(sizeof($command))
-				return array_shift($command);
+				return str_replace(' ', '', array_shift($command));
 			
 			return false;
 		}

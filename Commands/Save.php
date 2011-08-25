@@ -35,6 +35,7 @@
 		
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
+			/**
 			if(sizeof($args))
 			{
 				$target = $actor->getRoom()->getActorByInput($args);
@@ -46,7 +47,8 @@
 				else
 					return \Mechanics\Server::out($actor, 'Cannot do that.');
 			}
-			if($actor && method_exists($actor, 'save'))
+			*/
+			if($actor instanceof \Living\User || $actor instanceof \Living\Mob)
 			{
 				$actor->save();
 				return \Mechanics\Server::out($actor, 'Done.');

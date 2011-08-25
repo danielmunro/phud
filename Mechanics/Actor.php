@@ -185,6 +185,11 @@
 			$this->copper += $copper;
 		}
 		
+		public function setCopper($copper)
+		{
+			$this->copper = $copper;
+		}
+		
 		public function getSilver()
 		{
 			return $this->silver;
@@ -196,6 +201,11 @@
 			$this->silver += $silver;
 		}
 		
+		public function setSilver($silver)
+		{
+			$this->silver = $silver;
+		}
+		
 		public function getGold()
 		{
 			return $this->gold;
@@ -204,6 +214,11 @@
 		public function addGold($gold)
 		{
 			$this->gold += $gold;
+		}
+		
+		public function setGold($gold)
+		{
+			$this->gold = $gold;
 		}
 		
 		public function decreaseFunds($value)
@@ -278,7 +293,11 @@
 		public function setSex($sex)
 		{
 			if($sex == 'm' || $sex == 'f')
+			{
 				$this->sex = $sex;
+				return true;
+			}
+			return false;
 		}
 		
 		public function setRoom(\Mechanics\Room $room)

@@ -24,26 +24,8 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	class AttSet extends \Mechanics\Command implements \Mechanics\Command_DM
+	namespace Mechanics;
+	interface Command_DM
 	{
-		
-		protected function __construct()
-		{
-			new \Mechanics\Alias('attset', $this);
-		}
-		
-		public function perform(\Mechanics\Actor $actor, $args = array())
-		{
-			if($args[1] == 'hp')
-			{
-				$actor->setHp($args[2]);
-				\Mechanics\Server::out($actor, "You feel different.");
-			}
-			if($args[1] == 'movement')
-			{
-				$actor->setMovement($args[2]);
-			}
-		}
 	}
 ?>

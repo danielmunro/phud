@@ -188,16 +188,26 @@
 						$alias = Alias::lookup($args[0]);
 						if($alias instanceof Command)
 						{
-							if(!sizeof($alias->getDispositions()) || in_array($this->clients[$i]->getUser()->getDisposition(), $alias->getDispositions()))
+						
+							if($alias instanceof Command_DM && !$this->clients[$i]->getUser()->isDM())
+							{
+								self::out($this->clients[$i], "You cannot do that.");
+							}
+							else if(!sizeof($alias->getDispositions()) || in_array($this->clients[$i]->getUser()->getDisposition(), $alias->getDispositions()))
 							{
 								// Perform command
 								$alias->perform($this->clients[$i]->getUser(), $args);
 								self::out($this->clients[$i], "\n" . $this->clients[$i]->getUser()->prompt(), false);
 							}
 							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SITTING)
+							{
 								self::out($this->clients[$i], "You need to stand up.");
+							}
 							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SLEEPING)
+							{
 								self::out($this->clients[$i], "You are asleep!");
+							}
+							continue;
 						}
 						else if($alias instanceof Ability)
 						{

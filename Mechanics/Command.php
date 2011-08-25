@@ -33,16 +33,6 @@
 		
 		protected function __construct() {}
 		
-		/**
-		public static function instance()
-		{
-			$class = get_called_class();
-			if(!isset(self::$instances[$class]))
-				self::$instances[$class] = new $class();
-			return self::$instances[$class];
-		}
-		*/
-		
 		public function runInstantiation()
 		{
 			$namespace = 'Commands';
@@ -59,6 +49,16 @@
 		public function getDispositions()
 		{
 			return $this->dispositions;
+		}
+		
+		public function hasArgCount(\Mechanics\Actor $actor, $args, $count)
+		{
+			if(sizeof($args) < $count)
+			{
+				Server::out($actor, "Not enough args.");
+				return false;
+			}
+			return true;
 		}
 	
 		abstract public function perform(\Mechanics\Actor $actor, $args = array());

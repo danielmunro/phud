@@ -36,6 +36,7 @@
 		protected $discipline_primary = null;
 		protected $discipline_focus = null;
 		protected $date_created = null;
+		protected $is_dm = false;
 		protected static $instances = array();
 		
 		public function __construct()
@@ -78,6 +79,16 @@
 		public function getPassword()
 		{
 			return $this->password;
+		}
+		
+		public function isDM()
+		{
+			return $this->is_dm;
+		}
+		
+		public function setDM($is_dm)
+		{
+			$this->is_dm = $is_dm;
 		}
 		
 		public function tick($init = false)

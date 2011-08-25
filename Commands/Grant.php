@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class Grant extends \Mechanics\Command
+	class Grant extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
 		protected function __construct()

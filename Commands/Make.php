@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class Make extends \Mechanics\Command
+	class Make extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
 		protected function __construct()
@@ -35,10 +35,8 @@
 	
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
-			$target = $actor->getRoom()->getActorByInput(array(null, $args[1]));
-			$command = \Mechanics\Command::find($args[2]);
-			array_shift($args);
-			array_shift($args);
+			$target = $actor->getRoom()->getActorByInput($args[1]);
+			$command = \Mechanics\Alias::lookup($args[2]);
 			if($target && $command)
 			{
 				$command->perform($target, $args);

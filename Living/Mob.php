@@ -28,13 +28,13 @@
 	class Mob extends \Mechanics\Fighter
 	{
 	
-		protected $movement_speed;
+		protected $movement_ticks = 10;
 		protected $last_move;
 		protected $nouns = '';
 		protected $auto_flee = false;
 		protected $unique = false;
 		protected $respawn_time;
-		protected $default_respawn_time;
+		protected $default_respawn_ticks = 1;
 		protected $dead = false;
 		protected $start_room_id = 0;
 		protected $area = '';
@@ -49,34 +49,8 @@
 			parent::__construct();
 		}
 		
-		/**
-		public function setFromProperties($properties)
-		{
-			foreach($properties as $property => $value)
-			{
-				if($property == 'race')
-					$this->setRace(\Races\Human::instance()); // HACK @todo fixme this is a hack. Need to have configurable races
-				elseif($property == 'respawn_time')
-					$this->respawn_time = $this->default_respawn_time = $value;
-				elseif(property_exists($this, $property))
-					$this->$property = $value;
-			}
-			$this->save();
-			$this->registerMove();
-		}
-		*/
-		
 		public static function runInstantiation()
 		{
-			/**
-			\Mechanics\Debug::addDebugLine('Initializing mobs');
-			$results = \Mechanics\Db::getInstance()->query('SELECT * FROM mobs')->fetch_objects();
-			\Mechanics\Debug::addDebugLine('mobs: '.sizeof($results));
-			foreach($results as $mob)
-				new self($mob);
-			die;
-			*/
-
 			$db = \Mechanics\Dbr::instance();
 			$mob_count = $db->lSize('mobs');
 			$mobs = $db->lRange('mobs', 0, $mob_count);
@@ -103,9 +77,9 @@
 		
 		private function registerMove()
 		{
-			if($this->movement_speed)
+			if($this->movement_ticks)
 			{
-				$seconds = \Mechanics\Pulse::getRandomSeconds($this->movement_speed);
+				$seconds = \Mechanics\Pulse::getRandomSeconds($this->movement_ticks);
 				\Mechanics\Pulse::instance()->registerEvent($seconds, function($actor) { $actor->move(); }, $this);
 			}
 		}
@@ -159,7 +133,22 @@
 		
 		public function resetRespawnTime()
 		{
-			$this->respawn_time = $this->default_respawn_time;
+			$this->respawn_time = $this->default_respawn_ticks;
+		}
+		
+		public function getRespawnTime()
+		{
+			return $this->respawn_time;
+		}
+		
+		public function getDefaultRespawnTicks()
+		{
+			return $this->default_respawn_ticks;
+		}
+		
+		public function setDefaultRespawnTicks($ticks)
+		{
+			$this->default_respawn_ticks = $ticks;
 		}
 		
 		public function getKillExperience()
@@ -182,9 +171,14 @@
 			$this->start_room_id = $this->room_id;
 		}
 		
-		public function getMovementSpeed()
+		public function getMovementTicks()
 		{
-			return $this->movement_speed;
+			return $this->movement_ticks;
+		}
+		
+		public function setMovementTicks($movement_ticks)
+		{
+			$this->movement_ticks = $movement_ticks;
 		}
 		
 		public function getNouns()
@@ -199,10 +193,36 @@
 		
 		public function getDead() { return $this->dead; }
 		public function setDead($dead) { $this->dead = $dead; }
-		public function getAutoFlee() { return $this->auto_flee; }
-		public function isUnique() { return $this->unique; }
-		public function getRespawnTime() { return $this->respawn_time; }
-		public function getArea() { return $this->area; }
+	
+		public function getAutoFlee()
+		{
+			return $this->auto_flee;
+		}
+		
+		public function setAutoFlee($auto_flee)
+		{
+			$this->auto_flee = $auto_flee;
+		}
+	
+		public function isUnique()
+		{
+			return $this->unique;
+		}
+		
+		public function setUnique($unique)
+		{
+			$this->unique = $unique;
+		}
+		
+		public function getArea()
+		{
+			return $this->area;
+		}
+		
+		public function setArea($area)
+		{
+			$this->area = $area;
+		}
 		
 		public static function validateAlias($alias)
 		{
