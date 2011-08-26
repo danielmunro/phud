@@ -48,35 +48,7 @@
 		
 		public static function start()
 		{
-			//$dbr = Dbr::instance();
-			//$dbr->lTrim('users', 0, -1);
-			//echo $dbr->lSize('users');
-			/**
-			$keys = $dbr->keys('*');
-			foreach($keys as $key)
-			{
-				if(strpos($key, 'user') === 0)
-					$dbr->delete($key);
-			}
-			$keys = $dbr->keys('*');
-			var_dump($keys);die;
-			*/
 			self::$instance = new Server();
-			
-			/**
-			$m1 = new \Living\Mob();
-			$m2 = new \Living\Mob();
-			
-			$m1->setAlias('Mob 1');
-			$m1->setRace(\Races\Human::instance());
-			$m2->setAlias('Mob 2');
-			$m2->setRace(\Races\Human::instance());
-			
-			$m1->setTarget($m2);
-			$bash = Alias::lookup('bash');
-			var_dump($bash->perform($m1, 100));
-			*/
-			
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
 		}

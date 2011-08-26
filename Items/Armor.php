@@ -30,20 +30,10 @@
 		protected $short = 'a generic piece of armor';
 		protected $long = 'A generic piece of armor lays here';
 		protected $nouns = 'generic armor';
-		protected $position = 0;
 		
 		public function __construct()
 		{
-		}
-		
-		public function getPosition()
-		{
-			return $this->position;
-		}
-		
-		public function setPosition($position)
-		{
-			$this->position = $position;
+			$this->position = Equipment::POSITION_GENERIC;
 		}
 	}
 ?>

@@ -48,15 +48,13 @@
 					$this->add($i);
 		}
 		
-		public function remove(Item $item, $hard = false)
+		public function remove(Item $item)
 		{
 			
 			$i = array_search($item, $this->items);
 			
 			if($i !== false)
 				unset($this->items[$i]);
-			if($i !== false && $hard)
-				$item->delete();
 			
 			return $i;
 		}

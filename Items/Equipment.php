@@ -44,12 +44,23 @@
 		const POSITION_WIELD = 15;
 		const POSITION_GENERIC = 16;
 	
+		protected $position = 0;
 		protected $condition = 100;
 		protected $size = 0;
 		
 		public function __construct()
 		{
 			parent::__construct();
+		}
+		
+		public function getPosition()
+		{
+			return $this->position;
+		}
+		
+		public function setPosition($position)
+		{
+			$this->position = $position;
 		}
 		
 		public function getCondition()

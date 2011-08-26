@@ -47,6 +47,7 @@
 		
 		public function __construct()
 		{
+			$this->position = Equipment::POSITION_WIELD;
 			parent::__construct();
 		}
 		
