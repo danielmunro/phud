@@ -35,7 +35,6 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('parry', $this);
-			$this->base_class = \Disciplines\Warrior::instance();
 			parent::__construct();
 		}
 	

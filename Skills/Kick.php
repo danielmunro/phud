@@ -33,7 +33,6 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('kick', $this);
-			$this->base_class = \Disciplines\Warrior::instance();
 			parent::__construct();
 		}
 	

@@ -34,7 +34,6 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('bash', $this);
-			$this->base_class = \Disciplines\Warrior::instance();
 			parent::__construct();
 		}
 	

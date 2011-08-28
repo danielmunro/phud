@@ -33,12 +33,9 @@
 		protected $creation_points = 0;
 		private $type = 0;
 		protected $fail_message = '';
-		protected $base_class = null;
-		protected $delay = 0;
-		protected $clean_name = '';
-		protected $clean_name_fitted = '';
 		protected $alias = null;
 		protected $hook = 0;
+		protected $level = 0;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -106,44 +103,23 @@
 		{
 			return $this->creation_points;
 		}
-		
-		public function getDelay()
-		{
-			return $this->delay;
-		}
 	
 		abstract public function perform(Actor $actor, $percent = 0, $args = array());
-		
-		public function getBaseClass()
-		{
-			return $this->base_class;
-		}
 	
-		public function getType() { return $this->type; }
+		public function getType()
+		{
+			return $this->type;
+		}
+		
 		public function getAlias()
 		{
 			return $this->alias;
 		}
-		/**
-		public function getCleanName($space = false, $strtolower = true)
+		
+		public function getLevel()
 		{
-			if(!$this->clean_name)
-			{
-				$this->clean_name = $this->clean_name_fitted = str_replace('_', ' ', $this->name);
-				$clean_name_len = strlen($this->clean_name);
-				for($i = 0; $i < 40 - $clean_name_len; $i++)
-					$this->clean_name_fitted .= ' ';
-			}
-			
-			if($strtolower)
-			{
-				return $space ? strtolower($this->clean_name_fitted) : strtolower($this->clean_name);
-			}
-			
-			return $space ? $this->clean_name_fitted : $this->clean_name;
+			return $this->level;
 		}
-		*/
-		public static function getLevel() { return self::$level; }
 		
 		public function __toString()
 		{

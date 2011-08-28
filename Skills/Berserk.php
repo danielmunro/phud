@@ -30,18 +30,28 @@
 	
 		protected $creation_points = 5;
 		protected $fail_message = 'Your face gets really red!';
-		protected $delay = 2;
-	
+		
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('berserk', $this);
-			$this->base_class = \Disciplines\Berzerker::instance();
 			parent::__construct();
 		}
 	
 		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
 		{
-			if(rand(0, 100) > $chance)
+			$this->incrementDelay(2);
+			$roll = \Mechanics\Server::chance();
+			
+			$roll += $this->getHardAttributeModifier($actor->getDex());
+			$roll += $this->getNormalAttributeModifier($actor->getStr());
+			
+			if($actor->getDisciplinePrimary() === \Disciplines\Warrior::instance())
+				$roll -= 10;
+			
+			$actor->setMovement($actor->getMovement() / 2);
+			$actor->setMana($actor->getMana() / 2);
+			
+			if($roll > $chance)
 				return $this->fail_message;
 			
 			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;

@@ -34,7 +34,6 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('backstab', $this);
-			$this->base_class = \Disciplines\Thief::instance();
 			parent::__construct();
 		}
 	

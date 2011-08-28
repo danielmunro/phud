@@ -35,7 +35,6 @@
 		protected function __construct()
 		{
 			$this->alias = new \Mechanics\Alias('meditation', $this);
-			$this->base_class = \Disciplines\Cleric::instance();
 			parent::__construct();
 		}
 	
