@@ -50,10 +50,22 @@
 		const HOOK_TICK = 1;
 		const HOOK_HIT_DEFEND = 2;
 		const HOOK_BUY_ITEM = 3;
+		const HOOK_HIT_ATTACK_ROUND = 4;
 	
 		protected function __construct($type)
 		{
 			$this->type = $type;
+			$this->enforceInitRules();
+		}
+		
+		private function enforceInitRules()
+		{
+			if($this->hook === self::HOOK_HIT_ATTACK_ROUND && (!method_exists($this, 'getAttackName') || strlen($this->getAttackName()) !== 3))
+			{
+				throw new \Exceptions\Ability('Cannot define an ability of hook type HOOK_HIT_ATTACK_ROUND, and not define the attack name. '.
+												'Make a function called "getAttackName" that returns a 3 char description of the attack.', 
+												\Exceptions\Ability::ATTACK_NAME_NOT_DEFINED);
+			}
 		}
 		
 		public static function instance()

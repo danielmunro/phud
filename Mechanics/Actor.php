@@ -161,11 +161,6 @@
 			return $this->equipped;
 		}
 		
-		public function getRoom()
-		{
-			return Room::find($this->room_id);
-		}
-		
 		public function getDescription()
 		{
 			return $this->long;
@@ -300,12 +295,23 @@
 			return false;
 		}
 		
-		public function setRoom(\Mechanics\Room $room)
+		public function initRoom(\Mechanics\Room $room)
 		{
-			if($this->room_id)
-				Room::find($this->room_id)->actorRemove($this);
 			$room->actorAdd($this);
 			$this->room_id = $room->getId();
+		}
+		
+		public function setRoom(\Mechanics\Room $room)
+		{
+			if($this->room_id > -1)
+				$this->getRoom()->actorRemove($this);
+			$room->actorAdd($this);
+			$this->room_id = $room->getId();
+		}
+		
+		public function getRoom()
+		{
+			return Room::find($this->room_id);
 		}
 		
 		public function getRace()

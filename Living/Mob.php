@@ -57,8 +57,8 @@
 			foreach($mobs as $i => $mob)
 			{
 				$m = unserialize($mob);
-				$m->setRoom($m->getStartRoom());
-				//$m->registerMove();
+				$m->getRoom()->actorAdd($m);
+				$m->registerMove();
 			}
 		}
 		
@@ -79,35 +79,53 @@
 		{
 			if($this->movement_ticks)
 			{
-				$seconds = \Mechanics\Pulse::getRandomSeconds($this->movement_ticks);
-				\Mechanics\Pulse::instance()->registerEvent($seconds, function($actor) { $actor->move(); }, $this);
+				$ticks = \Mechanics\Pulse::getRandomSeconds($this->movement_ticks);
+				\Mechanics\Pulse::instance()->registerEvent($ticks, function($mob) { $mob->move(); }, $this, \Mechanics\Pulse::EVENT_TICK);
 			}
 		}
 		
-		public function move($index = 0)
+		public function move()
 		{
-		
-			if($this->room->getId() == \Mechanics\Room::PURGATORY_ROOM_ID || $index > 4)
-				return;
-			
-			$direction = rand(0, 5);
-			$directions = array(
-							'North' => $this->room->getNorth(),
-							'South' => $this->room->getSouth(),
-							'East' => $this->room->getEast(),
-							'West' => $this->room->getWest(),
-							'Up' => $this->room->getUp(),
-							'Down' => $this->room->getDown());
-			$directions = array_filter($directions);
-			$i = array_rand($directions);
-			$areas = explode(' ', $this->area);
-			if(!in_array(\Mechanics\Room::find($directions[$i])->getArea(), $areas))
+			if($this->getRoom()->getId() === \Mechanics\Room::PURGATORY_ROOM_ID)
 			{
-				$this->move($index++);
+				$this->registerMove();
 				return;
 			}
-			\Mechanics\Command::find($i)->perform($this); // Move the damn thing
-			$this->registerMove();
+			
+			$directions = array(
+							'north' => $this->getRoom()->getNorth(),
+							'south' => $this->getRoom()->getSouth(),
+							'east' => $this->getRoom()->getEast(),
+							'west' => $this->getRoom()->getWest(),
+							'up' => $this->getRoom()->getUp(),
+							'down' => $this->getRoom()->getDown());
+			$direction = rand(0, sizeof($directions)-1);
+			$directions = array_filter(
+									$directions,
+									function($d)
+									{
+										return $d !== -1;
+									}
+								);
+			uasort(
+				$directions,
+				function($i)
+				{
+					return rand(0, 1);
+				}
+			);
+			$areas = explode(' ', $this->area);
+			foreach($directions as $dir => $room_id)
+			{
+				if(in_array(\Mechanics\Room::find($room_id)->getArea(), $areas))
+				{
+					$command = \Mechanics\Alias::lookup($dir);
+					$command->perform($this);
+					$this->registerMove();
+					return;
+				}
+			}
+			\Mechanics\Debug::addDebugLine($mob->getAlias(true).' is stuck and will no longer move.');
 		}
 		
 		public function handleDeath()

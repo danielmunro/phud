@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Commands;
-	class Room extends \Mechanics\Command
+	class Room extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
 		protected function __construct()
@@ -92,6 +92,15 @@
 				$room->{'set' . ucfirst($new_direction)}($actor->getRoom()->getId());
 				$room->save();
 				return \Mechanics\Server::out($actor, 'Property set.');
+			}
+			
+			if(strpos('information', $args[1]) === 0)
+			{
+				return \Mechanics\Server::out($actor, 
+								"Information on room (#".$actor->getRoom()->getId()."):\n".
+								"title:                  ".$actor->getRoom()->getTitle()."\n".
+								"area:                   ".$actor->getRoom()->getArea()."\n".
+								"description:\n".$actor->getRoom()->getDescription());
 			}
 			
 			return \Mechanics\Server::out($actor, "What was that?");

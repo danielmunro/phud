@@ -47,7 +47,7 @@
 		private $visibility = 1;
 		private $actors = array();
 	
-		const PURGATORY_ROOM_ID = 7;
+		const PURGATORY_ROOM_ID = 5;
 	
 		public function __construct()
 		{

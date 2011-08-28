@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -24,18 +24,40 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Exceptions;
-	class Ability extends \Exception
+	namespace Skills;
+	class Second_Attack extends \Mechanics\Skill
 	{
 	
-		const INVALID_TYPE = 1;
-		const MISSING_ARGUMENTS = 2;
-		const ALIAS_CONFLICT = 3;
-		const ATTACK_NAME_NOT_DEFINED = 4;
+		protected $creation_points = 8;
+		protected $hook = \Mechanics\Ability::HOOK_HIT_ATTACK_ROUND;
 	
-		public function __construct($msg, $no)
+		protected function __construct()
 		{
-			parent::__construct($msg, $no);
+			$this->alias = new \Mechanics\Alias('second attack', $this);
+			parent::__construct();
+		}
+	
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
+		{
+			$roll = \Mechanics\Server::chance() + 25;
+			
+			$mod = $this->getEasyAttributeModifier($actor->getDex());
+			$mod += $this->getEasyAttributeModifier($actor->getStr());
+			
+			$roll += $mod / 2;
+			
+			if($actor->getDisciplinePrimary() === \Disciplines\Warrior::instance())
+				$roll -= 15;
+			else if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
+				$roll -= 5;
+			
+			return $roll < $chance;
+		}
+		
+		public function getAttackName()
+		{
+			return '2nd';
 		}
 	}
+
 ?>

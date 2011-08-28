@@ -34,7 +34,7 @@
 		private $seconds = 0;
 		private static $instance = null;
 		
-		const SECONDS_PER_TICK = 30;
+		const SECONDS_PER_TICK = 10;
 		const EVENT_PULSE = 1;
 		const EVENT_TICK = 2;
 		
@@ -67,6 +67,8 @@
 			$modifier = $mod * $seconds;
 			$low_mod = $seconds - $modifier;
 			$high_mod = $seconds + $modifier;
+			if($low_mod < 0)
+				$low_mod = 0;
 			return rand($low_mod, $high_mod);
 		}
 		

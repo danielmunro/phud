@@ -51,7 +51,7 @@
 					return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 			}
 			
-			if($args[0] >= 0)
+			if($args[0] > -1)
 			{
 				if($actor->getMovement() >= $actor->getRace()->getMovementCost() || $actor->getLevel() > Actor::MAX_LEVEL)
 				{
@@ -64,7 +64,6 @@
 						$look = Alias::lookup('look');
 						$look->perform($actor);
 					}
-					
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					
 					return;

@@ -399,10 +399,6 @@
 		
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
 			
-			// Get necessary skills
-			$ab_second = $this->ability_set->getLearnedAbility(\Skills\SecondAttack::instance());
-			$ab_third = $this->ability_set->getLearnedAbility(\Skills\ThirdAttack::instance());
-			
 			$attacking_weapon = null;
 			$hand_l = null;//$this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
 			$hand_r = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
@@ -465,22 +461,27 @@
 			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 			
-			$actors = $this->room->getActors();
+			$this->damage($actor, $dam_roll);
+			$this->announce($actor, 'Reg', $dam_roll, $descriptor, $verb);
 			
-			$attacks = 1;
-			if($ab_second)
-				$attacks++;
-			if($ab_third)
-				$attacks++;
-			
-			for($i = 0; $i < $attacks; $i++)
-				if($this->damage($actor, $dam_roll))
-					foreach($actors as $actor_sub)
-						Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+			$attacks = $this->ability_set->getAbilitiesByHook(Ability::HOOK_HIT_ATTACK_ROUND);
+			foreach($attacks as $attack)
+			{
+				$attack->perform($actor, array($dam_roll, $descriptor, $verb));
+				$this->announce($attack->getAttackName(), $dam_roll, $descriptor, $verb);
+			}
 			
 			$actor->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
 		}
+		
+		private function announce($actor, $attack_name, $dam_roll, $descriptor, $verb)
+		{
+			$actors = $this->getRoom()->getActors();
+			foreach($actors as $actor_sub)
+						Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+		}
+		
 		public function damage(Fighter &$target, $damage, $type = Damage::TYPE_HIT)
 		{
 		
