@@ -94,7 +94,7 @@
 			$spell::perform($actor, $target);
 			
 			if($spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
-				$actor->initiateBattle($target);
+				$actor->reconcileTarget($target);
 		}
 	}
 ?>

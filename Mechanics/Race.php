@@ -28,10 +28,11 @@
 	abstract class Race
 	{
 	
-		const SIZE_TINY = 0;
-		const SIZE_SMALL = 1;
-		const SIZE_NORMAL = 2;
-		const SIZE_LARGE = 3;
+		const SIZE_TINY = 2;
+		const SIZE_SMALL = 3;
+		const SIZE_NORMAL = 4;
+		const SIZE_LARGE = 5;
+		const SIZE_GIGANTIC = 6;
 		
 		const PART_HEAD = 0;
 		const PART_ARM = 1;

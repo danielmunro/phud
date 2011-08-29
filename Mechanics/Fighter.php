@@ -387,35 +387,43 @@
 				$dam += $a->getAttributes()->getDam();
 			return $dam;
 		}
-		public function decreaseConcentration() { $this->concentration--; if($this->concentration < 0) $this->concentration = 0; }
-		public function increaseConcentration() { $this->concentration++; if($this->concentration > 10) $this->concentration = 10; }
-		public function attack($actor = null)
+		
+		public function decreaseConcentration()
+		{
+			$this->concentration--;
+			if($this->concentration < 0)
+				$this->concentration = 0;
+		}
+		
+		public function increaseConcentration()
+		{
+			$this->concentration++;
+			if($this->concentration > 10)
+				$this->concentration = 10;
+		}
+		
+		public function attack($attack_name = '', $verb = '')
 		{
 		
-			if(!$actor)
-				$actor = $this->getTarget();
-			if(!$actor)
+			$victim = $this->getTarget();
+			if(!$victim)
 				return;
 		
-			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $actor->getAlias() . ". ", false);
+			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $victim->getAlias() . ". ", false);
 			
-			$attacking_weapon = null;
-			$hand_l = null;//$this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
-			$hand_r = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
-			
-			if($hand_l instanceof \Items\Weapon)
-				$attacking_weapon = $hand_l;
-			elseif($hand_r instanceof \Items\Weapon)
-				$attacking_weapon = $hand_r;
+			//$hand_l = null;//$this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
+			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(\Items\Equipment::POSITION_WIELD);
 			
 			if($attacking_weapon)
 			{
-				$verb = $attacking_weapon->getVerb();
+				if(!$verb)
+					$verb = $attacking_weapon->getVerb();
 				$dam_type = $attacking_weapon->getDamageType();
 			}
 			else
 			{
-				$verb = $this->getRace()->getUnarmedVerb();
+				if(!$verb)
+					$verb = $this->getRace()->getUnarmedVerb();
 				$dam_type = Damage::TYPE_BASH;
 			}
 		
@@ -426,19 +434,19 @@
 			$hit_roll += ($this->getDex() / self::MAX_ATTRIBUTE) * 4;
 			
 			// DEFENDING
-			$def_roll = ($actor->getDex() / self::MAX_ATTRIBUTE) * 4;
+			$def_roll = ($victim->getDex() / self::MAX_ATTRIBUTE) * 4;
 			
 			// Size modifier
-			$def_roll += 5 - $actor->getRace()->getSize();
+			$def_roll += 5 - $victim->getRace()->getSize();
 			
 			if($dam_type == Damage::TYPE_BASH)
-				$ac = $actor->getAcBash();
+				$ac = $victim->getAcBash();
 			elseif($dam_type == Damage::TYPE_PIERCE)
-				$ac = $actor->getAcPierce();
+				$ac = $victim->getAcPierce();
 			elseif($dam_type == Damage::TYPE_SLASH)
-				$ac = $actor->getAcSlash();
+				$ac = $victim->getAcSlash();
 			else
-				$ac = $actor->getAcMagic();
+				$ac = $victim->getAcMagic();
 			
 			$ac = $ac / 100;	
 			
@@ -461,17 +469,13 @@
 			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 			
-			$this->damage($actor, $dam_roll);
-			$this->announce($actor, 'Reg', $dam_roll, $descriptor, $verb);
+			if(!$attack_name)
+				$attack_name = 'Reg';
 			
-			$attacks = $this->ability_set->getAbilitiesByHook(Ability::HOOK_HIT_ATTACK_ROUND);
-			foreach($attacks as $attack)
-			{
-				$attack->perform($actor, array($dam_roll, $descriptor, $verb));
-				$this->announce($attack->getAttackName(), $dam_roll, $descriptor, $verb);
-			}
+			$this->damage($victim, $dam_roll);
+			$this->announce($victim, $attack_name, $dam_roll, $descriptor, $verb);
 			
-			$actor->checkAlive($this);
+			$victim->checkAlive($this);
 			Debug::addDebugLine(' Round done computing.');
 		}
 		
@@ -482,13 +486,13 @@
 						Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
 		}
 		
-		public function damage(Fighter &$target, $damage, $type = Damage::TYPE_HIT)
+		public function damage(Fighter $target, $damage, $type = Damage::TYPE_HIT)
 		{
 		
 			// Don't do anything if dead
 			// Don't hit yerself
 			// Check for safe rooms, imms, non mobs & non players, etc
-			if(!$target->isAlive() || !$this->isAlive() || $this == $target || $target->isSafe())
+			if(!$target->isAlive() || !$this->isAlive() || $this === $target || $target->isSafe())
 				return false;
 			
 			// Check for any skill to defend against a hit, such as parry, dodge, shield block, etc
@@ -504,6 +508,46 @@
 			return true;
 			
 		}
+		
+		public function reconcileTarget($args = array())
+		{
+			$actor_target = $this->getTarget();
+			if(!$args)
+				return $actor_target;
+			
+			if(is_array($args))
+				$specified_target = $this->getRoom()->getActorByInput($args);
+			else if($args instanceof Fighter)
+				$specified_target = $args;
+				
+			if($specified_target === $this)
+			{
+				Server::out($this, "You can't target yourself!");
+				return;
+			}
+			if(!$actor_target)
+			{
+				if(!$specified_target)
+				{
+					Server::out($this, "No one is there.");
+					return false;
+				}
+				$this->initiateBattle($specified_target);
+				return $specified_target;
+			}
+			else if(!($actor_target instanceof Fighter))
+			{
+				Server::out($this, "I don't think they would like that very much.");
+				return false;
+			}
+			else if($actor_target && !$specified_target)
+				return $actor_target;
+			else if($actor_target === $specified_target)
+				return $actor_target;
+			Server::out($this, "Whoa there sparky, don't you think one is enough?");
+			return false;
+		}
+		
 		public function checkAlive($killer = null)
 		{
 		
@@ -616,9 +660,9 @@
 			Server::out($this, 'You have been KILLED!');
 		}
 		
-		public function initiateBattle(Actor &$actor)
+		private function initiateBattle(Actor $actor)
 		{
-			if($actor == $this)
+			if($actor === $this)
 				return false;
 			$this->setTarget($actor);
 			if($actor->getBattle())
@@ -626,7 +670,7 @@
 			$this->setBattle(new Battle($this));
 		}
 		
-		public function setBattle(Battle &$battle)
+		public function setBattle(Battle $battle)
 		{
 			$this->battle = $battle;
 		}

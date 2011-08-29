@@ -37,20 +37,33 @@
 			parent::__construct();
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
 		{
+			$target = $actor->reconcileTarget($args);
+			if(!$target)
+				return;
 			
 			$roll = \Mechanics\Server::chance();
 			
 			$d = $actor->getDisciplineFocus()->getOtherDiscipline($actor);
 			if($d instanceof \Disciplines\Thief)
-				$roll -= 0.10;
+				$roll -= 10;
 			
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			
 			if($roll < $chance)
 			{
 				//$actor-> do some fight stuff
+				$actor->incrementDelay(2);
+				$actor->attack('bck');
+			}
+			else
+			{
+				$delay = 2;
+				if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
+					$delay = 1;
+				$actor->incrementDelay($delay);
+				\Mechanics\Server::out($actor, "You fumble your backstab.");
 			}
 		}
 	}

@@ -31,7 +31,6 @@
 		const INVALID_TYPE = 1;
 		const MISSING_ARGUMENTS = 2;
 		const ALIAS_CONFLICT = 3;
-		const ATTACK_NAME_NOT_DEFINED = 4;
 	
 		public function __construct($msg, $no)
 		{

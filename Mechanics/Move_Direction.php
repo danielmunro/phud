@@ -38,7 +38,7 @@
 			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SLEEPING)
 				return \Mechanics\Server::out($actor, "You can't do anything, you're sleeping!");
 		
-			if($actor->getTarget() instanceof Actor)
+			if($actor->getTarget())
 				return Server::out($actor, 'You cannot leave a fight!');
 			
 			$door = Door::findByRoomAndDirection($actor->getRoom()->getId(), $args[1]);

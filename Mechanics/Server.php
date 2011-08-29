@@ -181,64 +181,12 @@
 							}
 							continue;
 						}
-						else if($alias instanceof Ability)
+						else if($alias instanceof Ability && $alias->isPerformable())
 						{
-							self::out($this->clients[$i], $this->clients[$i]->getUser()->perform($alias, $args));
-							self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
+							$this->clients[$i]->getUser()->perform($alias, $args);
+							self::out($this->clients[$i], "\n".$this->clients[$i]->getUser()->prompt(), false);
 							continue;
 						}
-						
-						/**
-						$command = Command::find($args[0]);
-						if($command)
-						{
-							if(!sizeof($command::getDispositions()) || in_array($this->clients[$i]->getDisposition(), $command::getDispositions()))
-							{
-								// Perform command
-								$command->perform($this->clients[$i], $args);
-								if(isset($this->clients[$i]))
-									self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
-							}
-							else if($this->clients[$i]->getDisposition() === Actor::DISPOSITION_SITTING)
-								self::out($this->clients[$i], "You need to stand up.");
-							else if($this->clients[$i]->getDisposition() === Actor::DISPOSITION_SLEEPING)
-								self::out($this->clients[$i], "You are asleep!");
-						}
-						else
-						{
-						
-							// Skills and spells
-							$ability = Ability::lookup($args[0]);
-							if($ability)
-							{
-								self::out($this->clients[$i], $this->clients[$i]->perform($ability, $args));
-								self::out($this->clients[$i], "\n" . $this->clients[$i]->prompt(), false);
-								continue;
-							}
-							
-							$doors = Door::findByRoomId($this->clients[$i]->getRoom()->getId());
-							$input = trim($input);
-							$bail = false;
-							foreach($doors as $door)
-								if($door->getHidden() && $door->getHiddenShowCommand() == $input)
-								{
-									self::out($this->clients[$i], $door->getHiddenAction());
-									$door->setHidden(false);
-									$bail = true;
-									continue;
-								}
-								elseif(!$door->getHidden() && $door->getHiddenShowCommand() == $input)
-								{
-									self::out($this->clients[$i], "That is already done.");
-									continue;
-								}
-							if(!$bail)
-							{
-								self::out($this->clients[$i], "What was that?");
-								continue;
-							}
-						}
-						*/
 					}
 				}
 			}

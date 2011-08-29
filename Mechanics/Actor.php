@@ -127,7 +127,6 @@
 		public function perform(Ability $ability, $args = array())
 		{
 			$learned_ability = $this->ability_set->getLearnedAbility($ability);
-			$this->incrementDelay($ability->getDelay());
 			if($learned_ability)
 				return $learned_ability->perform($args);
 			return $ability->getFailMessage();

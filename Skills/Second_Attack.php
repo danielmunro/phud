@@ -51,12 +51,10 @@
 			else if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
 				$roll -= 5;
 			
-			return $roll < $chance;
-		}
-		
-		public function getAttackName()
-		{
-			return '2nd';
+			if($roll < $chance)
+			{
+				$actor->attack('2nd');
+			}
 		}
 	}
 

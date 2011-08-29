@@ -25,23 +25,52 @@
 	 *
 	 */
 	namespace Commands;
-	class Kill extends \Mechanics\Command
+	class Flee extends \Mechanics\Command
 	{
 	
 		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('kill', $this);
+			new \Mechanics\Alias('flee', $this);
 		}
 	
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target)
-				return;
+			if(!$actor->reconcileTarget())
+				return \Mechanics\Server::out($actor, "Flee from who?");
 			
-			\Mechanics\Server::out($actor, "You scream and attack!");
+			$actor->getBattle()->removeActor($actor);
+			
+			$directions = array(
+							'north' => $actor->getRoom()->getNorth(),
+							'south' => $actor->getRoom()->getSouth(),
+							'east' => $actor->getRoom()->getEast(),
+							'west' => $actor->getRoom()->getWest(),
+							'up' => $actor->getRoom()->getUp(),
+							'down' => $actor->getRoom()->getDown());
+			$direction = rand(0, sizeof($directions)-1);
+			$directions = array_filter(
+									$directions,
+									function($d)
+									{
+										return $d !== -1;
+									}
+								);
+			uasort(
+				$directions,
+				function($i)
+				{
+					return rand(0, 1);
+				}
+			);
+			foreach($directions as $dir => $id)
+			{
+				$command = \Mechanics\Alias::lookup($dir);
+				$command->perform($actor);
+				\Mechanics\Server::out($actor, "You run scared!");
+				return;
+			}
 		}
 	
 	}

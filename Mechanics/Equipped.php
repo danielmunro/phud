@@ -279,7 +279,16 @@
 		
 		public function getEquipmentByPosition($position)
 		{
-			return $this->equipment[$position];
+			$eq = array_filter(
+							$this->equipment,
+							function($e) use ($position)
+							{
+								return $e['position'] === $position;
+							}
+						);
+			if(isset($eq[0]))
+				return $eq[0];
+			return null;
 		}
 		
 		public function displayContents()

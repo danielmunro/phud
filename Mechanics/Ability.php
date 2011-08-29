@@ -35,7 +35,6 @@
 		protected $fail_message = '';
 		protected $alias = null;
 		protected $hook = 0;
-		protected $level = 0;
 		
 		const TYPE_SKILL = 1;
 		const TYPE_SPELL = 2;
@@ -52,17 +51,6 @@
 		protected function __construct($type)
 		{
 			$this->type = $type;
-			$this->enforceInitRules();
-		}
-		
-		private function enforceInitRules()
-		{
-			if($this->hook === self::HOOK_HIT_ATTACK_ROUND && (!method_exists($this, 'getAttackName') || strlen($this->getAttackName()) !== 3))
-			{
-				throw new \Exceptions\Ability('Cannot define an ability of hook type HOOK_HIT_ATTACK_ROUND, and not define the attack name. '.
-												'Make a function called "getAttackName" that returns a 3 char description of the attack.', 
-												\Exceptions\Ability::ATTACK_NAME_NOT_DEFINED);
-			}
 		}
 		
 		public static function instance()

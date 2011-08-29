@@ -38,32 +38,22 @@
 	
 		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
 		{
+			$target = $actor->reconcileTarget($args);
 			
-			$actor_target = $actor->getTarget();
-			$specified_target = $actor->getRoom()->getActorByInput($args);
-			
-			$final_target = null;
-			
-			if($actor_target instanceof \Mechanics\Actor)
-				$final_target = $actor_target;
-			else if($specified_target instanceof \Mechanics\Actor)
-				$final_target = $specified_target;
-			
-			if($final_target === null)
-				return \Mechanics\Server::out($actor, 'You kick your legs wildly!');
+			if(!$target)
+				return;
 			
 			$actor->incrementDelay(1);
-			$base_chance = 99;
+			$roll = \Mechanics\Server::chance();
+			$roll += $this->getEasyAttributeModifier($actor->getDex());
+			$roll -= $this->getEasyAttributeModifier($target->getDex());
 			
-			if(!($actor_target instanceof \Mechanics\Actor))
-				$actor->addFighter($final_target);
-
-			if($chance > $base_chance || $chance > $this->getPercent())
+			if($roll > $chance)
 				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
 			
-			if($actor->damage($final_target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))
+			if($actor->damage($target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))
 			{
-				\Mechanics\Server::out($actor, 'You kick ' . $final_target->getAlias() . ', causing him pain!');
+				\Mechanics\Server::out($actor, 'You kick ' . $target->getAlias() . ', causing him pain!');
 				\Mechanics\Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
 			}
 		}

@@ -4,7 +4,7 @@
 	class Battle
 	{
 	
-		const SECONDS_PER_BATTLE_ROUND = 2;
+		const SECONDS_PER_BATTLE_ROUND = 1;
 		
 		protected $actors = array();
 		
@@ -14,7 +14,7 @@
 			$this->registerAttackRound();
 		}
 		
-		public function addActor(Actor &$actor)
+		public function addActor(Actor $actor)
 		{
 			$this->actors[] = $actor;
 		}
@@ -24,9 +24,21 @@
 			return $this->actors;
 		}
 		
-		public function removeActor($i)
+		public function removeActor(Actor $actor)
 		{
-			unset($this->actors[$i]);
+			$key = array_search($actor, $this->actors);
+			if($key)
+				unset($this->actors[$key]);
+			$this->actors = array_values($this->actors);
+			array_walk(
+					$this->actors,
+					function($i) use ($actor)
+					{
+						if($i->getTarget() === $actor)
+							$i->setTarget(null);
+					}
+				);
+			$actor->setTarget(null);
 		}
 		
 		public function registerAttackRound()
@@ -45,11 +57,16 @@
 							$battle->addActor($victim);
 						}
 						$aggressor->attack();
+						$attacks = $aggressor->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_HIT_ATTACK_ROUND);
+						foreach($attacks as $attack)
+						{
+							$attack->perform($victim);
+						}
 						$aggressor->decrementDelay();
 					}
 					else
 					{
-						$battle->removeActor($i);
+						$battle->removeActor($aggressor);
 					}
 				}
 				
