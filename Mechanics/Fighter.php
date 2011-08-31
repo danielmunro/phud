@@ -345,7 +345,7 @@
 		}
 		public function setMaxHp($max_hp)
 		{
-			$this->attributes->setHp($max_hp);
+			$this->attributes->setMaxHp($max_hp);
 		}
 		public function setMana($mana)
 		{
@@ -353,7 +353,7 @@
 		}
 		public function setMaxMana($max_mana)
 		{
-			$this->attributes->setMovement($max_mana);
+			$this->attributes->setMaxMana($max_mana);
 		}
 		public function setMovement($movement)
 		{
@@ -561,21 +561,13 @@
 				{
 					Debug::addDebugLine($killer->getAlias(true) . ' killed ' . $this->getAlias() . ".");
 					Server::out($killer, 'You have KILLED ' . $this->getAlias() . '.');
-					Server::out($killer, "You get " . $killer->applyExperienceFrom($this) . " experience for your kill.");
+					$killer->applyExperienceFrom($this);
 				}
 				
 				if($this instanceof \Living\User)
 					$nouns = $this->getAlias();
 				elseif($this instanceof \Living\Mob)
-					$nouns = $this->getNoun();
-				
-				$corpse_inv = new Inventory('corpse', 0);
-				$items = $this->inventory->getItems();
-				foreach($items as $item)
-				{
-					$this->inventory->remove($item);
-					$corpse_inv->add($item);
-				}
+					$nouns = $this->getNouns();
 				
 				$gold = intval($this->gold * 0.75);
 				$killer->addGold($gold);
@@ -596,21 +588,25 @@
 				$corpse = new \Items\Corpse();
 				$corpse->setLong('A corpse of ' . $this->getAlias() . ' lies here.');
 				$corpse->setShort('a corpse of ' . $this->getAlias());
-				$corpse->setNouns('corpse ' . $this->getAlias());
+				$corpse->setNouns('corpse '.$nouns);
 				$corpse->setWeight(100);
-				$corpse->setInventory($corpse_inv);
+				$corpse->getInventory()->transferItemsFrom($this->inventory);
+				
 				$corpse->setGold($this->gold * 2);
 				$corpse->setSilver($this->silver * 2);
 				$corpse->setCopper($this->copper * 2);
 				
 				$this->afterDeath($killer);
-				$this->room->getInventory()->add($corpse);
+				$this->getRoom()->getInventory()->add($corpse);
 				
 				if($this instanceof \Living\User)
 				{
-					$this->inventory = new Inventory('users', $this->id);
+					$this->inventory = new Inventory();
 					$this->inventory->save();
 				}
+				
+				if($killer instanceof \Living\User)
+					\Mechanics\Server::out($killer, "\n".$killer->prompt(), false);
 				
 				$this->handleDeath();
 				return false;
@@ -620,7 +616,7 @@
 		
 		protected function afterDeath($killer)
 		{
-			$r = ceil(rand(0, 3));
+			$r = -1;//ceil(rand(0, 3));
 			if($r < 0)
 			{
 				return $this->getRoom()->announce($this, "You hear ".$this->getAlias()."'s death cry.");
@@ -653,8 +649,8 @@
 		
 		protected function handleDeath($move_soul = true)
 		{
-			if($move_soul)
-				$this->setRoom(Room::find(1));
+			//if($move_soul)
+			//	$this->setRoom($);
 			$this->setHp(1);
 			Debug::addDebugLine($this->getAlias(true) . ' died.');
 			Server::out($this, 'You have been KILLED!');
@@ -680,49 +676,86 @@
 			return $this->battle;
 		}
 		
-		public function applyExperienceFrom(Actor $actor)
+		public function applyExperienceFrom(Actor $victim)
 		{
-			if(!$this->exp_per_level) // Mobs have 0 exp per level
+			if(!$this->experience_per_level) // Mobs have 0 exp per level
 				return 0;
-			Debug::addDebugLine("Applying experience from " . $actor->getAlias() . ' to ' . $this->getAlias() . '.');
-			$experience = $actor->getKillExperience();
-			$level_diff = $this->level - $actor->getLevel();
 			
-			if($level_diff > 5)
-				$experience *= 1.3;
-			else if($level_diff > 3)
-				$experience *= 1.2;
-			else if($level_diff > 0)
-				$experience *= 1.1;
-			else if($level_diff < 0)
-				$experience *= 0.75;
-			else if($level_diff < -3)
-				$experience *= 0.25;
-			else
-				$experience *= 0.1;
+			Debug::addDebugLine("Applying experience from " . $victim->getAlias() . ' to ' . $this->getAlias() . '.');
 			
-			$randomizer_percent = rand(0, 10);
-			$randomizer_coin = rand(0, 1);
-			$randomizer_mod = $experience * ($randomizer_percent / 100);
-			if($randomizer_coin)
-				$experience += $randomizer_mod;
-			else
-				$experience -= $randomizer_mod;
-			
-			$experience = (int) $experience;
-			
-			$this->experience += $experience;
-			
-			$diff = (int) ($this->experience / $this->exp_per_level);
-			if($diff > $this->level)
-				$this->levelUp();
-			
-			return $experience;
+			if($this->experience < $this->experience_per_level)
+			{
+				$experience = $victim->getKillExperience($this);
+				$this->experience += $experience;
+				Server::out($this, "You get " . $experience . " experience for your kill.");
+			}
 		}
 		
-		public function getKillExperience()
+		public function getKillExperience(Fighter $killer)
 		{
-			return 300 + (10 * $this->level);
+			$level_diff = $this->level - $killer->getLevel();
+			
+			switch($level_diff)
+			{
+				case -8:
+					$base_exp = 2;
+					break;
+				case -7:
+					$base_exp = 7;
+					break;
+				case -6:
+					$base_exp = 13;
+					break;
+				case -5:
+					$base_exp = 20;
+					break;
+				case -4:
+					$base_exp = 26;
+					break;
+				case -3: 
+					$base_exp = 40;
+					break;
+				case -2:
+					$base_exp = 60;
+					break;
+				case -1:
+					$base_exp = 80;
+					break;
+				case 0:
+					$base_exp = 100;
+					break;
+				case 1:
+					$base_exp = 140;
+					break;
+				case 2:
+					$base_exp = 180;
+					break;
+				case 3:
+					$base_exp = 220;
+					break;
+				case 4:
+					$base_exp = 280;
+					break;
+				case 5:
+					$base_exp = 320;
+					break;
+				default:
+					$base_exp = 0;
+					break;
+			}
+			
+			if($level_diff > 5)
+				$base_exp += 30 * $level_diff;
+			
+			$align_diff = abs($this->alignment - $killer->getAlignment()) / 2000;
+			if($align_diff > 0.5)
+			{
+				$mod = rand(15, 35) / 100;
+				$base_exp = $base_exp * (1 + ($align_diff - $mod));
+			}
+			
+			$base_exp = rand($base_exp * 0.8, $base_exp * 1.2);
+			return intval($base_exp);
 		}
 		
 		protected function levelUp($display = true)

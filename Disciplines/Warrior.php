@@ -38,7 +38,7 @@
 			$this->discipline_focuses = array(
 											\Disciplines\Samurai::instance(),
 											\Disciplines\Paladin::instance(),
-											\Disciplines\Berzerker::instance(),
+											\Disciplines\Ranger::instance(),
 											\Disciplines\Barbarian::instance()
 										);
 		}

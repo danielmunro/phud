@@ -39,7 +39,7 @@
 											\Disciplines\Rogue::instance(),
 											\Disciplines\Assassin::instance(),
 											\Disciplines\Monk::instance(),
-											\Disciplines\Berzerker::instance()
+											\Disciplines\Ranger::instance()
 										);
 		}
 		

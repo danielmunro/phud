@@ -51,7 +51,7 @@
 			if(!($target instanceof Container))
 				return Server::out($actor, "You don't have anything to put that in.");
 			
-			$item->transferOwnership($actor, $target);
+			$item->transferOwnership($actor->getInventory(), $target->getInventory());
 			
 			Server::out($actor, "You put " . $item->getShort() . " in " . $target->getShort() . ".");
 		}

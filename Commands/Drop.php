@@ -39,10 +39,10 @@
 		{
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof \Items\Item))
+			if(!($item instanceof \Mechanics\Item))
 				return \Mechanics\Server::out($actor, "You do not have anything like that.");
 			
-			$item->transferOwnership($actor, $actor->getRoom());
+			$item->transferOwnership($actor->getInventory(), $actor->getRoom()->getInventory());
 
 			\Mechanics\Server::out($actor, "You drop " . $item->getShort() . ".");
 		}

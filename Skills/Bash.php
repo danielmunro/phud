@@ -37,25 +37,18 @@
 			parent::__construct();
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
 		{
-			$target_args = $actor->getRoom()->getActorByInput($args);
-			$target_fighting = $actor->getTarget();
-			
-			if($target_fighting && $target_args && $target_fighting != $target_args)
-					return "Whoa! Don't you think one is enough!";
-			
-			$target = $target_fighting ? $target_fighting : $target_args;
-			
+			$target = $actor->reconcileTarget($args);
 			if(!$target)
-				return \Mechanics\Server::out($actor, "You bash around, all to yourself!");
-			
-			$actor_mod = 5 - $actor->getRace()->getSize();
-			$target_mod = 5 - $target->getRace()->getSize();
-			
-			$actor->incrementDelay(2);
+				return;
 			
 			$roll = \Mechanics\Server::chance();
+			$roll -= $actor->getRace()->getSize() * 1.25;
+			$roll += $target->getRace()->getSize();
+			$roll += $this->getNormalAttributeModifier($actor->getStr());
+			
+			$actor->incrementDelay(2);
 			
 			if($roll < $chance)
 			{

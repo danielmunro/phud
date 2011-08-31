@@ -34,7 +34,8 @@
 		private $seconds = 0;
 		private static $instance = null;
 		
-		const SECONDS_PER_TICK = 10;
+		const SECONDS_PER_TICK = 30;
+		
 		const EVENT_PULSE = 1;
 		const EVENT_TICK = 2;
 		

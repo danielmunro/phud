@@ -44,6 +44,7 @@
 						array_merge(
 							Warrior::instance()->getAbilities(),
 							array(
+								\Skills\Berserk::instance()
 							)
 						);
 		}

@@ -149,7 +149,7 @@
 				case ($attribute < 25):
 					return -(rand(0, 3) / 100);
 				default:
-					return -(rand(0, 4) / 100);
+					return -(rand(1, 4) / 100);
 			}
 		}
 		

@@ -55,7 +55,7 @@
 			{
 				//$actor-> do some fight stuff
 				$actor->incrementDelay(2);
-				$actor->attack('bck');
+				$actor->attack('bks');
 			}
 			else
 			{

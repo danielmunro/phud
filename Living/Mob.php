@@ -169,11 +169,6 @@
 			$this->default_respawn_ticks = $ticks;
 		}
 		
-		public function getKillExperience()
-		{
-			return parent::getKillExperience() * rand(0.8, 1.2);
-		}
-		
 		public function getExperiencePerLevel()
 		{
 			return $this->getExperiencePerLevelFromCP();

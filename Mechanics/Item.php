@@ -122,10 +122,10 @@
 			return $this->long;
 		}
 		
-		public function transferOwnership(\Mechanics\Actor $from, \Mechanics\Actor $to)
+		public function transferOwnership(Inventory $from, Inventory $to)
 		{
-			$from->getInventory()->remove($this);
-			$to->getInventory()->add($this);
+			$from->remove($this);
+			$to->add($this);
 		}
 		
 		public function __toString()

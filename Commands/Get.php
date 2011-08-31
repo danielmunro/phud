@@ -38,7 +38,7 @@
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 		
-			if(sizeof($args) == 2)
+			if(sizeof($args) === 2)
 			{
 				$item = $actor->getRoom()->getInventory()->getItemByInput($args);
 				$container = $actor->getRoom();
@@ -59,8 +59,7 @@
 				{
 					foreach($container->getInventory()->getItems() as $item)
 					{
-						$container->getInventory()->remove($item);
-						$actor->getInventory()->add($item);
+						$item->transferOwnership($container->getInventory(), $actor->getInventory());
 						\Mechanics\Server::out($actor, 'You get ' . $item->getShort() . ' from ' . $container->getShort() . '.');
 					}
 					return;
@@ -77,7 +76,7 @@
 				}
 			}
 			
-			if($item instanceof \Items\Item)
+			if($item instanceof \Mechanics\Item)
 			{
 				if(!$item->getCanOwn())
 					return \Mechanics\Server::out($actor, "You cannot pick that up.");

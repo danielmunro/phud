@@ -43,13 +43,11 @@
 			return $this->inventory;
 		}
 		
-		/**
 		public function lookDescribe()
 		{
 			return $this->long . "\n" . $this->inventory->displayContents();
 		
 		}
-		*/
 	}
 
 ?>

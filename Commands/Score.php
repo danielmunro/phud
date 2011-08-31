@@ -36,7 +36,7 @@
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			\Mechanics\Debug::addDebugLine(print_r($actor->getAttributes(), true));
-			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a(n) ' . $actor->getRaceStr());
+			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a ' . $actor->getRace().' '.$actor->getDisciplineFocus());
 			\Mechanics\Server::out($actor, 'Attributes: Str ' . $actor->getBaseStr() . '(' . $actor->getStr() . ') ' .
 			'Int ' . $actor->getBaseInt() . '(' . $actor->getInt() . ') ' . 
 			'Wis ' . $actor->getBaseWis() . '(' . $actor->getWis() . ') ' .
@@ -48,7 +48,7 @@
 				' Mana: ' . $actor->getMana() . '/' . $actor->getMaxMana() .
 				' Movement: ' . $actor->getMovement() . '/' . $actor->getMaxMovement());
 			
-			$experience = (int) ($actor->getExpPerLevel() - ($actor->getExperience() % $actor->getExpPerLevel()));
+			$experience = (int) ($actor->getExperiencePerLevel() - ($actor->getExperience() % $actor->getExperiencePerLevel()));
 			\Mechanics\Server::out($actor,
 				'Level ' . $actor->getLevel() . ', ' . $experience . ' experience to next level');
 			\Mechanics\Server::out($actor,

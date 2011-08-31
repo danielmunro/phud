@@ -84,8 +84,7 @@
 		
 		public function __toString()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			return $this->alias->getAliasName();
 		}
 	}
 ?>

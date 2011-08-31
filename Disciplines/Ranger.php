@@ -25,12 +25,12 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Berzerker extends \Mechanics\DisciplineFocus
+	class Ranger extends \Mechanics\DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('berzerker', $this);
+			$this->alias = new \Mechanics\Alias('ranger', $this);
 		}
 		
 		protected function initDisciplines()
@@ -46,10 +46,7 @@
 			$this->abilities = 
 						array_merge(
 							\Disciplines\Warrior::instance()->getAbilitySet()->getSkills(),
-							\Disciplines\Thief::instance()->getAbilitySet()->getSkills(),
-							array(
-								\Skills\Berserk::instance()
-							)
+							\Disciplines\Thief::instance()->getAbilitySet()->getSkills()
 						);
 		}
 	}

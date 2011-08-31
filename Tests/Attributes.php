@@ -27,45 +27,17 @@
 	namespace Tests;
 	class Attributes extends \PHPUnit_Framework_TestCase
 	{
-	
-		private $test_id = 3294294;
 		private $attributes = null;
-		private $mobs = array();
-	
+		
 		public function setUp()
 		{
-			$this->mob1 = new \Living\Mob(array(
-				'race' => 'Human',
-				'fk_room_id' => 1,
-				//'id' => $this->test_id
-			));
-			$results = \Mechanics\Db::getInstance()->query('SELECT * FROM mobs')->fetch_objects();
-			foreach($results as $mob)
-				$this->mobs[] = new \Living\Mob($mob);
+			$this->attributes = new Attributes();
 		}
 	
 		public function testAttributeChange()
 		{
-			$this->assertTrue($this->mob1->getStr() == 17);
-			$this->assertTrue($this->mob1->getAttributes()->getStr() == 17);
-			$this->mob1->setStr(18);
-			$this->assertTrue($this->mob1->getStr() == 18);
-			$this->assertTrue($this->mob1->getAttributes()->getStr() == 18);
-		}
-		
-		public function testUserAttributes()
-		{
-			$user = new \Living\User(null);
-			$user->loadByAliasAndPassword('dan', 'qwerty');
-			$this->assertTrue($user->getAttributes()->getStr() > 0);
-		}
-		
-		public function testAllMobs()
-		{
-			foreach($this->mobs as $mob)
-			{
-				$this->assertTrue($mob->getAttributes() instanceof \Mechanics\Attributes);
-			}
+			$new_value = 1;
+			$this->attributes->setStr($new_value);
 		}
 	}
 ?>

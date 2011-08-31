@@ -246,9 +246,51 @@
 			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s area is now set to ".$area.".");
 		}
 		
+		private function doHp(\Mechanics\Actor $actor, $args)
+		{
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$mob->setHp($args[3]);
+			$mob->setMaxHp($args[3]);
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s hp is now set to ".$args[3].".");
+		}
+		
+		private function doMana(\Mechanics\Actor $actor, $args)
+		{
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$mob->setMana($args[3]);
+			$mob->setMaxMana($args[3]);
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s mana is now set to ".$args[3].".");
+		}
+		
+		private function doMv(\Mechanics\Actor $actor, $args)
+		{
+			if(!$this->hasArgCount($actor, $args, 4))
+				return;
+			
+			$mob = $actor->getRoom()->getActorByInput($args[2]);
+			if(!($mob instanceof \Living\Mob))
+				return \Mechanics\Server::out($actor, "That's not a mob.");
+			
+			$mob->setMovement($args[3]);
+			$mob->setMaxMovement($args[3]);
+			\Mechanics\Server::out($actor, $mob->getAlias(true)."'s movement points are now set to ".$args[3].".");
+		}
+		
 		private function getCommand($arg)
 		{
-			$commands = array('race', 'level', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
+			$commands = array('race', 'level', 'hp', 'mana', 'mv', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
 			
 			$command = array_filter($commands, function($c) use ($arg) 
 				{

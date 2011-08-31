@@ -115,7 +115,7 @@
 						$pre = $prices[$key] . ' copper - ';
 					else
 						$pre = ($item > 1 ? '(' . $item . ') ' : '' );
-					$buffer .=  $pre . ucfirst($key) .  "\n";
+					$buffer .=  $pre . $key .  "\n";
 				}
 			}
 			else
@@ -128,6 +128,7 @@
 			$items = $inventory->getItems();
 			foreach($items as $item)
 			{
+				$inventory->remove($item);
 				$this->add($item);
 			}
 		}
