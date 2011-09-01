@@ -50,7 +50,7 @@
 				$room = new \Mechanics\Room();
 				$room->save();
 				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
-				$new_direction = self::getReverseDirection($direction);
+				$new_direction = \Mechanics\Room::getReverseDirection($direction);
 				$room->{'set' . ucfirst($new_direction)}($actor->getRoom()->getId());
 				$room->save();
 				$actor->getRoom()->save();
@@ -82,10 +82,9 @@
 			
 				$room = new \Mechanics\Room();
 				$room->save();
-				$room->setInventory(\Mechanics\Inventory::find('room', $room->getId()));
 				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
 				$actor->getRoom()->save();
-				$new_direction = self::getReverseDirection($direction);
+				$new_direction = \Mechanics\Room::getReverseDirection($direction);
 				$room->setTitle($actor->getRoom()->getTitle());
 				$room->setDescription($actor->getRoom()->getDescription());
 				$room->setArea($actor->getRoom()->getArea());
@@ -128,22 +127,6 @@
 					return $d;
 			
 			return false;
-		}
-		
-		private static function getReverseDirection($direction)
-		{
-			if($direction == 'north')
-				return 'south';
-			if($direction == 'south')
-				return 'north';
-			if($direction == 'east')
-				return 'west';
-			if($direction == 'west')
-				return 'east';
-			if($direction =='up')
-				return 'down';
-			if($direction == 'down')
-				return 'up';
 		}
 	}
 ?>

@@ -41,24 +41,23 @@
 			if($actor->getTarget())
 				return Server::out($actor, 'You cannot leave a fight!');
 			
-			$door = Door::findByRoomAndDirection($actor->getRoom()->getId(), $args[1]);
-			
-			if($door instanceof Door)
-			{
-				if($door->getHidden($actor->getRoom()->getId()) > 0)
-					return Server::out($actor, 'Alas, you cannot go that way.');
-				if($door->getDisposition() != Door::DISPOSITION_OPEN)
-					return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
-			}
-			
 			if($args[0] > -1)
 			{
+				$room = Room::find($args[0]);
+				$door = $room->getDoor($args[1]);
+				if($door instanceof Door)
+				{
+					if($door->isHidden())
+						return Server::out($actor, 'Alas, you cannot go that way.');
+					if($door->getDisposition() != Door::DISPOSITION_OPEN)
+						return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
+				}
 				if($actor->getMovement() >= $actor->getRace()->getMovementCost() || $actor->getLevel() > Actor::MAX_LEVEL)
 				{
 					if($actor->getLevel() < Actor::MAX_LEVEL)
 						$actor->setMovement($actor->getMovement() - $actor->getRace()->getMovementCost());
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' ' . $actor->getRace()->getMoveVerb() . ' ' . $args[1] . '.');
-					$actor->setRoom(Room::find($args[0]));
+					$actor->setRoom($room);
 					if($actor instanceof \Living\User)
 					{
 						$look = Alias::lookup('look');

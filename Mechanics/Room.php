@@ -41,7 +41,7 @@
 		private $west = -1;
 		private $up = -1;
 		private $down = -1;
-		private $door = null;
+		private $doors = array();
 		private $inventory = null;
 		private $area = '';
 		private $visibility = 1;
@@ -52,22 +52,20 @@
 		public function __construct()
 		{
 			$this->inventory = new Inventory();
+			$this->doors = array(
+								'north' => null,
+								'south' => null,
+								'east' => null,
+								'west' => null,
+								'up' => null,
+								'down' => null
+							);
 		}
 	
-		public function loadFrom($row)
+		public function getVisibility()
 		{
-			$this->title = $row->title;
-			$this->description = $row->description;
-			$this->north = $row->north;
-			$this->south = $row->south;
-			$this->east = $row->east;
-			$this->west = $row->west;
-			$this->up = $row->up;
-			$this->down = $row->down;
-			$this->area = $row->area;
-			$this->visibility = $row->visibility;
+			return $this->visibility;
 		}
-		public function getVisibility() { return $this->visibility; }
 		
 		public function getId()
 		{
@@ -79,25 +77,74 @@
 			$this->id = $id;
 		}
 		
-		public function getTitle() { return $this->title; }
-		public function getDescription() { return $this->description; }
+		public function getTitle()
+		{
+			return $this->title;
+		}
+		
+		public function getDescription()
+		{
+			return $this->description;
+		}
+		
 		private function getDirection($direction_str, $direction_id)
 		{
-			$door = Door::findByRoomAndDirection($this->id, $direction_str);
-			if($door instanceof Door && $door->getDisposition() != Door::DISPOSITION_OPEN)
-				return 0;
+			$door = $this->getDoor($direction_str);
+			if($door instanceof Door && $door->getDisposition() !== Door::DISPOSITION_OPEN)
+				return -1;
 			return $direction_id;
 		}
+		
+		public function setDoor($direction, Door $door)
+		{
+			$this->doors[$direction] = $door;
+		}
+		
+		public function getDoor($direction)
+		{
+			if(isset($this->doors[$direction]))
+				return $this->doors[$direction];
+			return null;
+		}
+		
+		public function getDoors()
+		{
+			return $this->doors;
+		}
+		
+		public function getDoorByInput($input)
+		{
+			$doors = array_filter(
+				$this->doors,
+				function($d) use ($input)
+				{
+					if($d)
+					{
+						$nouns = explode(' ', $d->getNouns());
+						foreach($nouns as $n)
+							if(strpos($n, $input) === 0)
+								return true;
+					}
+					return false;
+				}
+			);
+			return array_shift($doors);
+		}
+		
 		public function getNorth() { return $this->getDirection('north', $this->north); }
 		public function getSouth() { return $this->getDirection('south', $this->south); }
 		public function getEast() { return $this->getDirection('east', $this->east); }
 		public function getWest() { return $this->getDirection('west', $this->west); }
 		public function getUp() { return $this->getDirection('up', $this->up); }
 		public function getDown() { return $this->getDirection('down', $this->down); }
-		public function getInventory() { return $this->inventory; }
-		public function setArea($area) { $this->area = $area; }
-		public function getArea() { return $this->area; }
 		
+		public function getInventory()
+		{
+			return $this->inventory;
+		}
+		
+		public function getArea() { return $this->area; }
+		public function setArea($area) { $this->area = $area; }
 		public function setTitle($title) { $this->title = $title; }
 		public function setDescription($description) { $this->description = $description; }
 		public function setNorth($north) { $this->north = $north; }
@@ -171,6 +218,36 @@
 				return self::$instances[$id];
 				
 			}
+		}
+		
+		public static function getDirectionStr($dir)
+		{
+			switch($dir)
+			{
+				case strpos('north', $dir) === 0: return 'north';
+				case strpos('south', $dir) === 0: return 'south';
+				case strpos('east', $dir) === 0: return 'east';
+				case strpos('west', $dir) === 0: return 'west';
+				case strpos('up', $dir) === 0: return 'up';
+				case strpos('down', $dir) === 0: return 'down';
+				default: return false;
+			}
+		}
+		
+		public static function getReverseDirection($direction)
+		{
+			if($direction == 'north')
+				return 'south';
+			if($direction == 'south')
+				return 'north';
+			if($direction == 'east')
+				return 'west';
+			if($direction == 'west')
+				return 'east';
+			if($direction =='up')
+				return 'down';
+			if($direction == 'down')
+				return 'up';
 		}
 		
 		public function save()

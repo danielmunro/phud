@@ -35,7 +35,6 @@
 	
 		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
-		
 			if(sizeof($args) <= 1)
 				return \Mechanics\Server::out($actor, "What were you trying to do?");
 		

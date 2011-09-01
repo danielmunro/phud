@@ -42,21 +42,24 @@
 				if(!$actor->getRoom()->getVisibility() && !\Mechanics\Affect::isAffecting($actor, \Mechanics\Affect::GLOW))
 					return \Mechanics\Server::out($actor, "You can't see anything, it's so dark!");
 				
-				$doors = \Mechanics\Door::findByRoomId($actor->getRoom()->getId());
-				
 				\Mechanics\Server::out($actor, $actor->getRoom()->getTitle());
 				\Mechanics\Server::out($actor, $actor->getRoom()->getDescription() . "\n");
 				
-				if(!empty($doors))
-					foreach($doors as $door)
-						if($door->getHidden($actor->getRoom()->getId()))
+				$doors = $actor->getRoom()->getDoors();
+				array_walk(
+					$doors,
+					function($door) use ($actor)
+					{
+						if($door)
 						{
-							$env = \Mechanics\Environment::findByRoomIdAndType($actor->getRoom()->getId(), \Mechanics\Environment::TYPE_CONCEAL_DOOR);
-							if($env)
-								\Mechanics\Server::out($actor, $env->getMessage());
+							$display = true;
+							if($door->isHidden())
+								$display = rand(0, 3) === 3 ? true : false;
+							if($display)
+								\Mechanics\Server::out($actor, ucfirst($door->getLong()) . "\n");
 						}
-						else
-							\Mechanics\Server::out($actor, ucfirst($door->getLong($actor->getRoom()->getId())) . "\n");
+					}
+				);
 				
 				\Mechanics\Server::out($actor, 'Exits [' .
 					($actor->getRoom()->getNorth() >= 0 ? ' N ' : '') .

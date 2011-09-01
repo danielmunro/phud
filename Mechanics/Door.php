@@ -29,52 +29,26 @@
 	{
 	
 		private $id = 0;
-		private $short = '';
-		private $long_room1 = '';
-		private $long_room2 = '';
-		private $unlock_item_id = 0;
-		private $room1_id = 0;
-		private $room2_id = 0;
-		private $direction1 = '';
-		private $direction2 = '';
-		private $disposition = '';
-		private $default_disposition = '';
-		private $nouns = '';
-		private $hidden = false;
+		private $short = 'a door';
+		private $long = 'a generic door is here.';
+		private $key_unlock = null;
+		private $disposition = self::DISPOSITION_CLOSED;
+		private $default_disposition = self::DISPOSITION_CLOSED;
+		private $nouns = 'door';
+		private $is_hidden = false;
+		private $default_is_hidden = false;
 		private $hidden_show_command = '';
 		private $hidden_action = '';
-		private $hidden_item_id = 0;
-		private $reload_ticks = 0;
+		private $hidden_item_reveal = null;
+		private $reload_ticks = 5;
+		private $partner_door = null;
 	
 		const DISPOSITION_LOCKED = 'locked';
 		const DISPOSITION_OPEN = 'open';
 		const DISPOSITION_CLOSED = 'closed';
 		
-		private static $instances = array();
-		
-		private function __construct($row)
+		public function __construct()
 		{
-			$this->id = $row->id;
-			$this->short = $row->short_desc;
-			$this->long_room1 = $row->long_desc_room1;
-			$this->long_room2 = $row->long_desc_room2;
-			$this->room1_id = $row->fk_room1_id;
-			$this->room2_id = $row->fk_room2_id;
-			$this->direction1 = $row->direction1;
-			$this->direction2 = $row->direction2;
-			$this->disposition = $row->disposition;
-			$this->default_disposition = $row->default_disposition;
-			$this->nouns = $row->nouns;
-			$this->hidden = $row->hidden;
-			$this->hidden_show_command = $row->hidden_show_command;
-			$this->hidden_action = $row->hidden_action;
-			$this->hidden_item_id = $row->fk_hidden_item_id;
-			$this->reload_ticks = $row->reload_ticks;
-		}
-		
-		public static function getInstances()
-		{
-			return self::$instances;
 		}
 		
 		public function decreaseReloadTick()
@@ -86,85 +60,81 @@
 		
 		public function reload()
 		{
-			unset(self::$instances[$this->id]);
-			self::getInstance($this->id);
+			$this->disposition = $this->default_disposition;
+			$this->is_hidden = $this->default_is_hidden;
 		}
 		
-		public static function getInstance($id)
+		public function getParnterDoor()
 		{
-			if(isset(self::$instances[$id]))
-				return self::$instances[$id];
-			
-			$row = Db::getInstance()->query('SELECT * FROM doors WHERE id = ?', $id)->getResult()->fetch_object();
-			self::$instances[$id] = new self($row);
+			return $this->partner_door;
 		}
 		
-		public static function findByRoomId($room_id)
+		public function setPartnerDoor(Door $door)
 		{
-			$instances = array();
-			
-			foreach(self::$instances as $instance)
-				if($instance->getRoom1Id() == $room_id || $instance->getRoom2Id() == $room_id)
-					$instances[] = $instance;
-			
-			if(sizeof($instances) > 0)
-				return $instances;
-			
-			$doors = Db::getInstance()->query('SELECT * FROM doors WHERE fk_room1_id = ? OR fk_room2_id = ?', array($room_id, $room_id))->fetch_objects();
-			
-			if(empty($doors))
-				return $instances;
-			
-			foreach($doors as $door)
-				if(isset(self::$instances[$door->id]))
-					$instances[] = self::$instances[$door->id];
-				else
-					$instances[] = self::$instances[$door->id] = new self($door);
-			
-			return $instances;
+			$this->partner_door = $door;
 		}
 		
-		public static function findByRoomAndDirection($room_id, $direction)
+		public function getDisposition()
 		{
-
-			$doors = self::findByRoomId($room_id);
-			foreach($doors as $door)
-				if($door->getRoom1Id() == $room_id && $door->getDirection1() == $direction)
-					return $door;
-				else if($door->getRoom2Id() == $room_id && $door->getDirection2() == $direction)
-					return $door;
+			return $this->disposition;
 		}
 		
-		public function setDisposition($disposition) { $this->disposition = $disposition; }
-		public function getDisposition() { return $this->disposition; }
-		public function getRoom1Id() { return $this->room1_id; }
-		public function getRoom2Id() { return $this->room2_id; }
-		public function getDirection1() { return $this->direction1; }
-		public function getDirection2() { return $this->direction2; }
-		public function getId() { return $this->id; }
-		public function getShort() { return $this->short; }
-		public function getLong($room_id)
+		public function setDisposition($disposition)
 		{
-			if($room_id == $this->room1_id)
-				return $this->long_room1;
-			else if($room_id == $this->room2_id)
-				return $this->long_room2;
+			$this->disposition = $disposition;
 		}
-		public function getNouns() { return $this->nouns; }
-		public function getHidden($room_id = null)
+		
+		public function getDefaultDisposition()
 		{
-			if($room_id === null)
-				return $this->hidden;
-			else if($room_id == $this->room1_id && $this->disposition == self::DISPOSITION_OPEN)
-				return false;
-			else if($room_id == $this->room1_id)
-				return $this->hidden;
-			return false;
+			return $this->default_disposition;
 		}
+		
+		public function setDefaultDisposition($default_disposition)
+		{
+			$this->default_disposition = $default_disposition;
+		}
+		
+		public function getShort()
+		{
+			return $this->short;
+		}
+		
+		public function getLong()
+		{
+			return $this->long;
+		}
+		
+		public function getNouns()
+		{
+			return $this->nouns;
+		}
+		
+		public function isHidden()
+		{
+			return $this->is_hidden;
+		}
+		
+		public function setIsHidden($is_hidden)
+		{
+			$this->is_hidden = $is_hidden;
+		}
+		
+		public function isDefaultHidden()
+		{
+			return $this->default_is_hidden;
+		}
+		
+		public function setIsDefaultHidden($default_is_hidden)
+		{
+			$this->default_is_hidden = $default_is_hidden;
+		}
+		
+		/**
 		public function getHiddenMessage() { return $this->hidden_message; }
 		public function getHiddenAction() { return $this->hidden_action; }
 		public function setHidden($hidden) { $this->hidden = $hidden; }
 		public function getHiddenItemId() { return $this->hidden_item_id; }
 		public function getHiddenShowCommand() { return $this->hidden_show_command; }
+		*/
 	}
 ?>
