@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Items;
+	namespace Mechanics;
 	abstract class Equipment extends \Mechanics\Item
 	{
 		const POSITION_LIGHT = 0;

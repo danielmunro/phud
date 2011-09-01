@@ -40,7 +40,7 @@
 		
 			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
 			
-			if($equipment instanceof \Items\Equipment)
+			if($equipment instanceof \Mechanics\Equipment)
 			{
 				$actor->getEquipped()->remove($actor, $equipment);
 				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');

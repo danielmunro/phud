@@ -32,43 +32,43 @@
 		private $actor = null;
 		private static $labels = array
 		(
-			\Items\Equipment::POSITION_LIGHT =>		'<used as light>      ',
-			\Items\Equipment::POSITION_FINGER =>	'<worn on finger>     ',
-			\Items\Equipment::POSITION_NECK =>		'<worn around neck>   ',
-			\Items\Equipment::POSITION_HEAD => 		'<worn on head>       ',
-			\Items\Equipment::POSITION_LEGS => 		'<worn on legs>       ',
-			\Items\Equipment::POSITION_FEET => 		'<worn on feet>       ',
-			\Items\Equipment::POSITION_HANDS => 	'<worn on hands>      ',
-			\Items\Equipment::POSITION_ARMS => 		'<worn on arms>       ',
-			\Items\Equipment::POSITION_TORSO => 	'<worn on torso>      ',
-			\Items\Equipment::POSITION_BODY => 		'<worn about body>    ',
-			\Items\Equipment::POSITION_WAIST => 	'<worn about waist>   ',
-			\Items\Equipment::POSITION_WRIST =>		'<worn around wrist>  ',
-			\Items\Equipment::POSITION_WIELD => 	'<wielded in hand>    ',
-			\Items\Equipment::POSITION_FLOAT => 	'<floating nearby>    '
+			\Mechanics\Equipment::POSITION_LIGHT =>		'<used as light>      ',
+			\Mechanics\Equipment::POSITION_FINGER =>	'<worn on finger>     ',
+			\Mechanics\Equipment::POSITION_NECK =>		'<worn around neck>   ',
+			\Mechanics\Equipment::POSITION_HEAD => 		'<worn on head>       ',
+			\Mechanics\Equipment::POSITION_LEGS => 		'<worn on legs>       ',
+			\Mechanics\Equipment::POSITION_FEET => 		'<worn on feet>       ',
+			\Mechanics\Equipment::POSITION_HANDS => 	'<worn on hands>      ',
+			\Mechanics\Equipment::POSITION_ARMS => 		'<worn on arms>       ',
+			\Mechanics\Equipment::POSITION_TORSO => 	'<worn on torso>      ',
+			\Mechanics\Equipment::POSITION_BODY => 		'<worn about body>    ',
+			\Mechanics\Equipment::POSITION_WAIST => 	'<worn about waist>   ',
+			\Mechanics\Equipment::POSITION_WRIST =>		'<worn around wrist>  ',
+			\Mechanics\Equipment::POSITION_WIELD => 	'<wielded in hand>    ',
+			\Mechanics\Equipment::POSITION_FLOAT => 	'<floating nearby>    '
 		);
 		
 		public function __construct(Actor $actor)
 		{
 			
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_LIGHT, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_FINGER, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_FINGER, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_NECK, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_NECK, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_BODY, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_HEAD, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_LEGS, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_FEET, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_HANDS, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_ARMS, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_TORSO, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_WAIST, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_WRIST, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_WRIST, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_WIELD, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_WIELD, 'equipped' => null);
-			$this->equipment[] = array('position' => \Items\Equipment::POSITION_FLOAT, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_LIGHT, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_FINGER, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_FINGER, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_NECK, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_NECK, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_BODY, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_HEAD, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_LEGS, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_FEET, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_HANDS, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_ARMS, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_TORSO, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_WAIST, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_WRIST, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_WRIST, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_WIELD, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_WIELD, 'equipped' => null);
+			$this->equipment[] = array('position' => \Mechanics\Equipment::POSITION_FLOAT, 'equipped' => null);
 			
 			if($actor)
 			{
@@ -82,10 +82,10 @@
 			return $this->inventory;
 		}
 		
-		public function equip(\Items\Equipment $item, $display_message = true)
+		public function equip(\Mechanics\Equipment $item, $display_message = true)
 		{
 			
-			if($item->getPosition() === \Items\Equipment::POSITION_GENERIC)
+			if($item->getPosition() === \Mechanics\Equipment::POSITION_GENERIC)
 			{
 				if($display_message)
 					Server::out($this->actor, "You can't wear that.");
@@ -158,17 +158,17 @@
 				$msg_others = $this->actor->getAlias(true) . " ";
 			}
 			
-			if($equipped->getPosition() === \Items\Equipment::POSITION_WIELD)
+			if($equipped->getPosition() === \Mechanics\Equipment::POSITION_WIELD)
 			{
 				$msg_you .= 'wield ';
 				$msg_others .= 'wields ';
 			}
-			else if($equipped->getPosition() == \Items\Equipment::POSITION_FLOAT)
+			else if($equipped->getPosition() == \Mechanics\Equipment::POSITION_FLOAT)
 			{
 				$msg_you .= 'releases ';
 				$msg_others .= 'releases ';
 			}
-			else if($equipped->getPosition() == \Items\Equipment::POSITION_HOLD)
+			else if($equipped->getPosition() == \Mechanics\Equipment::POSITION_HOLD)
 			{
 				$msg_you .= 'hold ';
 				$msg_others .= 'holds ';
@@ -186,55 +186,55 @@
 			
 			switch($equipped->getPosition())
 			{
-				case \Items\Equipment::POSITION_LIGHT:
+				case \Mechanics\Equipment::POSITION_LIGHT:
 					$msg_you .= ' as a light.';
 					$msg_others .= ' as a light.';
 					break;
-				case \Items\Equipment::POSITION_FLOAT:
+				case \Mechanics\Equipment::POSITION_FLOAT:
 					$msg_you .= ' to float around nearby.';
 					$msg_others .= ' to float around nearby.';
 					break;
-				case \Items\Equipment::POSITION_WIELD:
+				case \Mechanics\Equipment::POSITION_WIELD:
 					$msg_you .= '.';
 					$msg_others .= '.';
 					break;
-				case \Items\Equipment::POSITION_FINGER:
+				case \Mechanics\Equipment::POSITION_FINGER:
 					$msg_you .= ' on your finger.';
 					$msg_others .= 'on ' . $sex . ' finger.';
 					break;
-				case \Items\Equipment::POSITION_ARMS:
+				case \Mechanics\Equipment::POSITION_ARMS:
 					$msg_you .= ' on your arms.';
 					$msg_others .= 'on ' . $sex . ' arms.';
 					break;
-				case \Items\Equipment::POSITION_BODY:
+				case \Mechanics\Equipment::POSITION_BODY:
 					$msg_you .= ' around your body.';
 					$msg_others .= ' around ' . $sex . ' body.';
 					break;
-				case \Items\Equipment::POSITION_FEET:
+				case \Mechanics\Equipment::POSITION_FEET:
 					$msg_you .= ' on your feet.';
 					$msg_others .= ' on ' . $sex . ' feet.';
 					break;
-				case \Items\Equipment::POSITION_HEAD:
+				case \Mechanics\Equipment::POSITION_HEAD:
 					$msg_you .= ' on your head.';
 					$msg_others .= ' on ' . $sex . ' head.';
 					break;
-				case \Items\Equipment::POSITION_HANDS:
+				case \Mechanics\Equipment::POSITION_HANDS:
 					$msg_you .= ' on your hands.';
 					$msg_others .= ' on ' . $sex . ' hands.';
 					break;
-				case \Items\Equipment::POSITION_HOLD:
+				case \Mechanics\Equipment::POSITION_HOLD:
 					$msg_you .= ' in your hand.';
 					$msg_others .= ' in ' . $sex . ' hand.';
 					break;
-				case \Items\Equipment::POSITION_TORSO:
+				case \Mechanics\Equipment::POSITION_TORSO:
 					$msg_you .= ' around your torso.';
 					$msg_others .= ' around ' . $sex . ' torso.';
 					break;
-				case \Items\Equipment::POSITION_WAIST:
+				case \Mechanics\Equipment::POSITION_WAIST:
 					$msg_you .= ' around your waist.';
 					$msg_others .= ' around ' . $sex . ' waist.';
 					break;
-				case \Items\Equipment::POSITION_WRIST:
+				case \Mechanics\Equipment::POSITION_WRIST:
 					$msg_you .= ' on your wrist.';
 					$msg_others .= ' on ' . $sex . ' wrist.';
 					break;
@@ -247,7 +247,7 @@
 		public function removeByPosition($position)
 		{
 			
-			if($this->equipment[$position] instanceof \Items\Equipment)
+			if($this->equipment[$position] instanceof \Mechanics\Equipment)
 			{
 				$this->getInventory()->remove($item);
 				$this->actor->removeAffects($item->getAffects());
@@ -260,7 +260,7 @@
 			
 		}
 		
-		public function remove(\Items\Equipment $item)
+		public function remove(\Mechanics\Equipment $item)
 		{
 		
 			$i = array_search($item, $this->equipment);
@@ -303,7 +303,7 @@
 				for($i = 0; $i < $len_diff; $i++)
 					$buf .= ' ';
 				$buffer .= $buf;
-				if($eq instanceof \Items\Equipment)
+				if($eq instanceof \Mechanics\Equipment)
 					$buffer .= '      ' . $eq->getShort() . "\n";
 				else
 					$buffer .= "      nothing\n";

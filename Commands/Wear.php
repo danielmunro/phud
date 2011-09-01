@@ -43,7 +43,7 @@
 			if(!$item)
 				return \Mechanics\Server::out($actor, 'You have nothing like that in your inventory.');
 			
-			if(!($item instanceof \Items\Equipment))
+			if(!($item instanceof \Mechanics\Equipment))
 				return \Mechanics\Server::out($actor, "You cannot equip " . $item->getShort() . ".");
 			
 			return $actor->getEquipped()->equip($actor, $item);

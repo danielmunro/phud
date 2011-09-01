@@ -411,8 +411,7 @@
 		
 			Debug::addDebugLine("Battle round: " . $this->getAlias() . " attacking " . $victim->getAlias() . ". ", false);
 			
-			//$hand_l = null;//$this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_L);
-			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(\Items\Equipment::POSITION_WIELD);
+			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(\Mechanics\Equipment::POSITION_WIELD);
 			
 			if($attacking_weapon)
 			{

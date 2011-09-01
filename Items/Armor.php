@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Items;
-	class Armor extends Equipment
+	class Armor extends \Mechanics\Equipment
 	{
 		protected $short = 'a generic piece of armor';
 		protected $long = 'A generic piece of armor lays here';
@@ -33,7 +33,7 @@
 		
 		public function __construct()
 		{
-			$this->position = Equipment::POSITION_GENERIC;
+			$this->position = \Mechanics\Equipment::POSITION_GENERIC;
 		}
 	}
 ?>
