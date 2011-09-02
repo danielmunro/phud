@@ -25,6 +25,11 @@
 	 *
 	 */
 	namespace Living;
+	use \Mechanics\Dbr;
+	use \Mechanics\Pulse;
+	use \Mechanics\Room;
+	use \Mechanics\Debug;
+	use \Mechanics\Alias;
 	class Mob extends \Mechanics\Fighter
 	{
 	
@@ -51,7 +56,7 @@
 		
 		public static function runInstantiation()
 		{
-			$db = \Mechanics\Dbr::instance();
+			$db = Dbr::instance();
 			$mob_count = $db->lSize('mobs');
 			$mobs = $db->lRange('mobs', 0, $mob_count);
 			foreach($mobs as $i => $mob)
@@ -64,7 +69,7 @@
 		
 		public function save()
 		{
-			$db = \Mechanics\Dbr::instance();
+			$db = Dbr::instance();
 			$this->start_room_id = $this->getRoom()->getId();
 			if(is_numeric($this->id))
 				$db->lSet('mobs', $this->id, serialize($this));
@@ -79,14 +84,14 @@
 		{
 			if($this->movement_ticks)
 			{
-				$ticks = \Mechanics\Pulse::getRandomSeconds($this->movement_ticks);
-				\Mechanics\Pulse::instance()->registerEvent($ticks, function($mob) { $mob->move(); }, $this, \Mechanics\Pulse::EVENT_TICK);
+				$ticks = Pulse::getRandomSeconds($this->movement_ticks);
+				Pulse::instance()->registerEvent($ticks, function($mob) { $mob->move(); }, $this, Pulse::EVENT_TICK);
 			}
 		}
 		
 		public function move()
 		{
-			if($this->getRoom()->getId() === \Mechanics\Room::PURGATORY_ROOM_ID)
+			if($this->getRoom()->getId() === Room::PURGATORY_ROOM_ID)
 			{
 				$this->registerMove();
 				return;
@@ -117,23 +122,23 @@
 			$areas = explode(' ', $this->area);
 			foreach($directions as $dir => $room_id)
 			{
-				if(in_array(\Mechanics\Room::find($room_id)->getArea(), $areas))
+				if(in_array(Room::find($room_id)->getArea(), $areas))
 				{
-					$command = \Mechanics\Alias::lookup($dir);
+					$command = Alias::lookup($dir);
 					$command->perform($this);
 					$this->registerMove();
 					return;
 				}
 			}
-			\Mechanics\Debug::addDebugLine($mob->getAlias(true).' is stuck and will no longer move.');
+			Debug::addDebugLine($mob->getAlias(true).' is stuck and will no longer move.');
 		}
 		
 		public function handleDeath()
 		{
 			parent::handleDeath(false);
-			$this->setRoom(\Mechanics\Room::find(\Mechanics\Room::PURGATORY_ROOM_ID));
-			$seconds = \Mechanics\Pulse::getRandomSeconds($this->respawn_time);
-			\Mechanics\Pulse::instance()->registerEvent(
+			$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
+			$seconds = Pulse::getRandomSeconds($this->respawn_time);
+			Pulse::instance()->registerEvent(
 				$seconds,
 				function($mob)
 				{
@@ -176,7 +181,7 @@
 		
 		public function getStartRoom()
 		{
-			return \Mechanics\Room::find($this->start_room_id);
+			return Room::find($this->start_room_id);
 		}
 		
 		public function setStartRoom()

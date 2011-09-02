@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Items;
-	class Container extends \Mechanics\Item
+	use \Mechanics\Item;
+	use \Mechanics\Inventory;
+	class Container extends Item
 	{
 	
 		protected $short = 'a generic container';
@@ -35,7 +37,7 @@
 	
 		public function __construct()
 		{
-			$this->inventory = new \Mechanics\Inventory();
+			$this->inventory = new Inventory();
 		}
 		
 		public function getInventory()

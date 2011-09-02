@@ -25,6 +25,9 @@
 	 *
 	 */
 	namespace Living;
+	use \Mechanics\Server;
+	use \Mechanics\Dbr;
+	use \Mechanics\Alias;
 	class User extends \Mechanics\Fighter
 	{
 		protected $nourishment = 5;
@@ -98,12 +101,12 @@
 			{
 				$this->decreaseRacialNourishmentAndThirst();
 				if($this->nourishment < 0)
-					\Mechanics\Server::out($this, "You are hungry.");
+					Server::out($this, "You are hungry.");
 				if($this->thirst < 0)
-					\Mechanics\Server::out($this, "You are thirsty.");
+					Server::out($this, "You are thirsty.");
 				$this->save();
 			}
-			\Mechanics\Server::out($this, "\n" . $this->prompt(), false);
+			Server::out($this, "\n" . $this->prompt(), false);
 		}
 		
 		// Food and nourishment
@@ -160,7 +163,7 @@
 		{
 			$client = $this->client;
 			$this->client = null;
-			$db = \Mechanics\Dbr::instance();
+			$db = Dbr::instance();
 			$db->set('user'.$this->alias, serialize($this));
 			$this->client = $client;
 		}
@@ -173,7 +176,7 @@
 		
 		public function getDisciplinePrimary()
 		{
-			return \Mechanics\Alias::lookup($this->discipline_primary);
+			return Alias::lookup($this->discipline_primary);
 		}
 		
 		public function setDisciplinePrimary(\Mechanics\DisciplinePrimary $discipline)
@@ -183,7 +186,7 @@
 		
 		public function getDisciplineFocus()
 		{
-			return \Mechanics\Alias::lookup($this->discipline_focus);
+			return Alias::lookup($this->discipline_focus);
 		}
 		
 		public function setDisciplineFocus(\Mechanics\DisciplineFocus $discipline)

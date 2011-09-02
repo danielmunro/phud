@@ -322,7 +322,7 @@
 		
 		public function setRace($race)
 		{
-			if($race instanceof \Mechanics\Race)
+			if($race instanceof Race)
 				$this->race = $race->getAlias()->getAliasName();
 			else if(is_string($race))
 				$this->race = $race;

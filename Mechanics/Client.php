@@ -89,12 +89,12 @@
 				if(!empty($this->unverified_user))
 				{
 					$this->unverified_user->setClient($this);
-					\Mechanics\Server::out($this, 'Password: ', false);
+					Server::out($this, 'Password: ', false);
 					$this->login['pass'] = false;
 				}
 				else
 				{
-					\Mechanics\Server::out($this, 'Did I get that right, ' . $this->login['alias'] . '? (y/n) ', false);
+					Server::out($this, 'Did I get that right, ' . $this->login['alias'] . '? (y/n) ', false);
 					$this->login['confirm_new'] = false;
 				}
 				return;
@@ -115,8 +115,8 @@
 				}
 				else
 				{
-					\Mechanics\Server::out($this, 'Wrong password.');
-					\Mechanics\Server::getInstance()->disconnectClient($this);
+					Server::out($this, 'Wrong password.');
+					Server::getInstance()->disconnectClient($this);
 					return false;
 				}
 			}
@@ -131,14 +131,14 @@
 						$this->unverified_user = new \Living\User($this->socket);
 						$this->unverified_user->setAlias($this->login['alias']);
 						$this->login['new_pass'] = false;
-						\Mechanics\Server::out($this, "New character.");
-						return \Mechanics\Server::out($this, "Give me a password for ".$this->login['alias'].": ", false);
+						Server::out($this, "New character.");
+						return Server::out($this, "Give me a password for ".$this->login['alias'].": ", false);
 					case 'n':
 					case 'no':
 						$this->login = array('alias' => false);
-						return \Mechanics\Server::out($this, "Ok, what IS it then? ", false);
+						return Server::out($this, "Ok, what IS it then? ", false);
 					default:
-						return \Mechanics\Server::out($this, 'Please type Yes or No: ', false);
+						return Server::out($this, 'Please type Yes or No: ', false);
 				}
 			}
 			
@@ -146,7 +146,7 @@
 			{
 				$this->login['new_pass'] = $input;
 				$this->login['new_pass_2'] = false;
-				return \Mechanics\Server::out($this, 'Please retype password: ', false);
+				return Server::out($this, 'Please retype password: ', false);
 			}
 			
 			if(isset($this->login['new_pass_2']) && $this->login['new_pass_2'] === false)
@@ -162,8 +162,8 @@
 				{
 					unset($this->login['new_pass_2']);
 					$this->login['new_pass'] = false;
-					\Mechanics\Server::out($this, "Passwords don't match.");
-					\Mechanics\Server::out($this, "Retype password: ", false);
+					Server::out($this, "Passwords don't match.");
+					Server::out($this, "Retype password: ", false);
 				}
 				return;
 			}
@@ -177,13 +177,13 @@
 					$this->unverified_user->setRace($this->login['race']);
 				else
 				{
-					\Mechanics\Server::out($this, "That's not a valid race.");
+					Server::out($this, "That's not a valid race.");
 					$this->racesAvailable();
 					$this->login['race'] = false;
 					return;
 				}
 				
-				\Mechanics\Server::out($this, "What is your sex (m/f)? ", false);
+				Server::out($this, "What is your sex (m/f)? ", false);
 				$this->login['sex'] = '';
 				return;
 			}
@@ -195,12 +195,12 @@
 				else if($input == 'f' || $input == 'female')
 					$this->login['sex'] = 'f';
 				else
-					return \Mechanics\Server::out($this, "That's not a sex.\nWhat IS your sex? ", false);
+					return Server::out($this, "That's not a sex.\nWhat IS your sex? ", false);
 				
 				if($this->login['sex'])
 				{
 					$this->unverified_user->setSex($this->login['sex']);
-					\Mechanics\Server::out($this, "Select a primary discipline [warrior cleric thief mage]: ", false);
+					Server::out($this, "Select a primary discipline [warrior cleric thief mage]: ", false);
 					$this->login['disciplinep'] = false;
 					return;
 				}
@@ -215,13 +215,13 @@
 					$focuses = $discipline->getDisciplineFocuses();
 					$this->login['disciplinep'] = true;
 					$this->login['disciplinef'] = false;
-					\Mechanics\Server::out($this, "Ok.\nSelect a discipline focus [", false);
+					Server::out($this, "Ok.\nSelect a discipline focus [", false);
 					foreach($focuses as $focus)
-						\Mechanics\Server::out($this, $focus->getAlias()." ", false);
-					\Mechanics\Server::out($this, "]: ", false);
+						Server::out($this, $focus->getAlias()." ", false);
+					Server::out($this, "]: ", false);
 				}
 				else
-					\Mechanics\Server::out($this, "That's not a primary discipline. What IS your primary discipline? ", false);
+					Server::out($this, "That's not a primary discipline. What IS your primary discipline? ", false);
 				return;
 			}
 			
@@ -233,10 +233,10 @@
 					$this->unverified_user->setDisciplineFocus($discipline);
 					$this->login['disciplinef'] = true;
 					$this->login['align'] = false;
-					\Mechanics\Server::out($this, "\nYou may be good, neutral, or evil.\nWhich alignment (g/n/e)? ", false);
+					Server::out($this, "\nYou may be good, neutral, or evil.\nWhich alignment (g/n/e)? ", false);
 				}
 				else
-					\Mechanics\Server::out($this, "That's not a discipline focus. What IS your discipline focus? ", false);
+					Server::out($this, "That's not a discipline focus. What IS your discipline focus? ", false);
 				return;
 			}
 			
@@ -249,11 +249,11 @@
 				else if($input == 'e' || $input == 'evil')
 					$this->login['align'] = -500;
 				else
-					return \Mechanics\Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
+					return Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
 				
 				$this->unverified_user->setAlignment($this->login['align']);
 				$this->login['custom'] = 0;
-				\Mechanics\Server::out($this, "Skill and spell customization. Choose from the list below of skills and spells:");
+				Server::out($this, "Skill and spell customization. Choose from the list below of skills and spells:");
 			}
 			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
@@ -313,14 +313,14 @@
 				{
 					$this->login['custom'] = 3;
 					$this->unverified_user->setExperiencePerLevel();
-					\Mechanics\Server::out($this, "Now let's figure out your attributes...");
+					Server::out($this, "Now let's figure out your attributes...");
 					$this->login['attr'] = 0;
 					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0);
-					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-					\Mechanics\Server::out($this,
+					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+					Server::out($this,
 						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
 						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
-					\Mechanics\Server::out($this, "Add a point to: ", false);
+					Server::out($this, "Add a point to: ", false);
 				}
 				
 				if($this->login['custom'] !== 3)
@@ -338,11 +338,11 @@
 				$method_get_max = 'getMax'.ucfirst($input);
 				
 				if(!method_exists($this->unverified_user, $method_get) || !method_exists($this->unverified_user, $method_set))
-					return \Mechanics\Server::out($this, 'Which attribute is that? ', false);
+					return Server::out($this, 'Which attribute is that? ', false);
 				
 				if($this->login['attr'] + $this->login['attr_mod'][$input] + 1 > 10)
 				{
-					\Mechanics\Server::out($this, "You don't have enough points to do that.");
+					Server::out($this, "You don't have enough points to do that.");
 				}
 				else if($this->unverified_user->$method_get() < $this->unverified_user->$method_get_max())
 				{
@@ -351,7 +351,7 @@
 					$this->login['attr_mod'][$input]++;
 				}
 				else
-					\Mechanics\Server::out($this, 'This attribute is maxed!');
+					Server::out($this, 'This attribute is maxed!');
 				
 				$modifiable = false;
 				foreach($this->login['attr_mod'] as $attr)
@@ -365,11 +365,11 @@
 				
 				if($this->login['attr'] < 10 && $modifiable)
 				{
-					\Mechanics\Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-					\Mechanics\Server::out($this,
+					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
+					Server::out($this,
 						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
 						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
-					\Mechanics\Server::out($this, "Add a point to: ", false);
+					Server::out($this, "Add a point to: ", false);
 				}
 				else
 				{
@@ -441,14 +441,14 @@
 		
 		private function racesAvailable()
 		{
-			\Mechanics\Server::out($this, 'The following races are available: ');
-			\Mechanics\Server::out($this, '[human undead faerie elf ogre] ');
-			\Mechanics\Server::out($this, 'What is your race (help for more information)? ', false);
+			Server::out($this, 'The following races are available: ');
+			Server::out($this, '[human undead faerie elf ogre] ');
+			Server::out($this, 'What is your race (help for more information)? ', false);
 		}
 		
 		private function customizeList()
 		{
-			\Mechanics\Server::out($this, "\nThe following skills and groups are available to your character:\n(this list may be seen again by typing list)");
+			Server::out($this, "\nThe following skills and groups are available to your character:\n(this list may be seen again by typing list)");
 			
 		}
 	}

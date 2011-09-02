@@ -28,15 +28,15 @@
 	abstract class Move_Direction extends Command
 	{
 
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
-			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SITTING)
-				return \Mechanics\Server::out($actor, "You need to stand up to do that.");
-			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SLEEPING)
-				return \Mechanics\Server::out($actor, "You can't do anything, you're sleeping!");
+			if($actor->getDisposition() === Actor::DISPOSITION_SITTING)
+				return Server::out($actor, "You need to stand up to do that.");
+			if($actor->getDisposition() === Actor::DISPOSITION_SLEEPING)
+				return Server::out($actor, "You can't do anything, you're sleeping!");
 		
 			if($actor->getTarget())
 				return Server::out($actor, 'You cannot leave a fight!');

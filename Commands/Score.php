@@ -25,39 +25,41 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Alias;
+	use \Mechanics\Actor;
+	use \Mechanics\Server;
 	class Score extends \Mechanics\Command
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('score', $this);
+			new Alias('score', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			\Mechanics\Debug::addDebugLine(print_r($actor->getAttributes(), true));
-			\Mechanics\Server::out($actor, 'You are ' . $actor->getAlias() . ', a ' . $actor->getRace().' '.$actor->getDisciplineFocus());
-			\Mechanics\Server::out($actor, 'Attributes: Str ' . $actor->getBaseStr() . '(' . $actor->getStr() . ') ' .
+			Server::out($actor, 'You are ' . $actor->getAlias() . ', a ' . $actor->getRace().' '.$actor->getDisciplineFocus());
+			Server::out($actor, 'Attributes: Str ' . $actor->getBaseStr() . '(' . $actor->getStr() . ') ' .
 			'Int ' . $actor->getBaseInt() . '(' . $actor->getInt() . ') ' . 
 			'Wis ' . $actor->getBaseWis() . '(' . $actor->getWis() . ') ' .
 			'Dex ' . $actor->getBaseDex() . '(' . $actor->getDex() . ') ' .
 			'Con ' . $actor->getBaseCon() . '(' . $actor->getCon() . ')');
 			
-			\Mechanics\Server::out(
+			Server::out(
 				$actor, 'Hp: ' . $actor->getHp() . '/' . $actor->getMaxHp() .
 				' Mana: ' . $actor->getMana() . '/' . $actor->getMaxMana() .
 				' Movement: ' . $actor->getMovement() . '/' . $actor->getMaxMovement());
 			
 			$experience = (int) ($actor->getExperiencePerLevel() - ($actor->getExperience() % $actor->getExperiencePerLevel()));
-			\Mechanics\Server::out($actor,
+			Server::out($actor,
 				'Level ' . $actor->getLevel() . ', ' . $experience . ' experience to next level');
-			\Mechanics\Server::out($actor,
+			Server::out($actor,
 				$actor->getGold() . ' gold, ' . $actor->getSilver() . ' silver, ' . $actor->getCopper() . ' copper.');
 		
-			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcBash()) . 'against bashing.');
-			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcSlash()) . 'against slashing.');
-			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcPierce()) . 'against piercing.');
-			\Mechanics\Server::out($actor, 'You are' . self::getAcString($actor->getAcMagic()) . 'against magic.');
+			Server::out($actor, 'You are' . self::getAcString($actor->getAcBash()) . 'against bashing.');
+			Server::out($actor, 'You are' . self::getAcString($actor->getAcSlash()) . 'against slashing.');
+			Server::out($actor, 'You are' . self::getAcString($actor->getAcPierce()) . 'against piercing.');
+			Server::out($actor, 'You are' . self::getAcString($actor->getAcMagic()) . 'against magic.');
 		
 		}
 		

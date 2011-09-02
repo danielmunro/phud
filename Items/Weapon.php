@@ -25,7 +25,8 @@
 	 *
 	 */
 	namespace Items;
-	class Weapon extends \Mechanics\Equipment
+	use \Mechanics\Equipment;
+	class Weapon extends Equipment
 	{
 		const TYPE_SWORD = 1;
 		const TYPE_AXE = 2;
@@ -47,7 +48,7 @@
 		
 		public function __construct()
 		{
-			$this->position = \Mechanics\Equipment::POSITION_WIELD;
+			$this->position = Equipment::POSITION_WIELD;
 			parent::__construct();
 		}
 		

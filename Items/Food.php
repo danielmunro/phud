@@ -25,7 +25,8 @@
 	 *
 	 */
 	namespace Items;
-	class Food extends \Mechanics\Item
+	use \Mechanics\Item;
+	class Food extends Item
 	{
 		protected $short = 'a generic food item';
 		protected $long = 'A generic food item lays here';

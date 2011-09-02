@@ -25,7 +25,10 @@
 	 *
 	 */
 	namespace Items;
-	class Drink extends \Mechanics\Item
+	use \Mechanics\Item;
+	use \Mechanics\Server;
+	use \Mechanics\Actor;
+	class Drink extends Item
 	{
 		protected $short = 'a generic drink container';
 		protected $long = 'A generic drink container lays here';
@@ -57,23 +60,23 @@
 			return $this->amount;
 		}
 		
-		public function use(\Mechanics\Actor $actor)
+		public function use(Actor $actor)
 		{
 			if(!$this->amount)
 			{
-				\Mechanics\Server::out($actor, "There's no ".$contents." left.");
+				Server::out($actor, "There's no ".$contents." left.");
 				return false;
 			}
 			
 			if($this->nourishment && $actor->isNourishmentFull())
 			{
-				\Mechanics\Server::out($actor, "You are too full to drink more ".$contents.".");
+				Server::out($actor, "You are too full to drink more ".$contents.".");
 				return false;
 			}
 			
 			if($this->thirst && $actor->isThirstFull())
 			{
-				\Mechanics\Server::out($actor, "Your thirst has been quenched.");
+				Server::out($actor, "Your thirst has been quenched.");
 				return false;
 			}
 			

@@ -25,20 +25,29 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Alias;
+	use \Mechanics\Actor;
+	use \Mechanics\Server;
 	class Skill extends \Mechanics\Command
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('skill', $this);
+			new Alias('skill', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			\Mechanics\Server::out($actor, "Skills: ");
+			Server::out($actor, "Skills: ");
 			$skills = $actor->getAbilitySet()->getSkills();
 			foreach($skills as $s)
-				\Mechanics\Server::out($actor, $s->getCleanName(true).': '.$s->getPercent().'%');
+			{
+				$pad = 20 - strlen($s->getAbility()->getAlias());
+				$label = $s->getAbility()->getAlias();
+				for($i = 0; $i < $pad; $i++)
+					$label .= ' ';
+				Server::out($actor, $label.': '.$s->getPercent().'%');
+			}
 		}
 	
 	}
