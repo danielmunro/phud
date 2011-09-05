@@ -139,14 +139,14 @@
 			
 			if($equipped)
 			{
-				array_walk(
-					$this->equipment,
-					function(&$e) use ($equipped_position, $equipped)
+				foreach($this->equipment as &$e)
+				{
+					if($e['position'] === $equipped_position)
 					{
-						if($e['position'] === $equipped_position)
-							$e['equipped'] = $equipped;
+						$e['equipped'] = $equipped;
+						break;
 					}
-				);
+				}
 			}
 			
 			if(!$display_message)
@@ -267,19 +267,17 @@
 		
 		public function remove(\Mechanics\Equipment $item)
 		{
-		
-			$i = array_search($item, $this->equipment);
-			if($i !== false)
+			foreach($this->equipment as &$e)
 			{
-				$this->getInventory()->remove($item);
-				$this->actor->getInventory()->add($item);
-				foreach($item->getAffects() as $affect)
-					$this->actor->removeAffect($affect);
-				$this->equipment[$i] = null;
+				if($e['equipped'] === $item)
+				{
+					$this->getInventory()->remove($item);
+					$this->actor->getInventory()->add($item);
+					foreach($item->getAffects() as $affect)
+						$this->actor->removeAffect($affect);
+					$e['equipped'] = null;
+				}
 			}
-			else
-				Server::out($this->actor, 'Nothing is there.');
-		
 		}
 		
 		public function getEquipmentByPosition($position)
@@ -296,6 +294,11 @@
 			return null;
 		}
 		
+		public function getEquipment()
+		{
+			return $this->equipment;
+		}
+		
 		public function displayContents()
 		{
 		
@@ -309,7 +312,7 @@
 				for($i = 0; $i < $len_diff; $i++)
 					$buf .= ' ';
 				$buffer .= $buf;
-				if($eq instanceof \Mechanics\Equipment)
+				if($eq['equipped'] instanceof \Mechanics\Equipment)
 					$buffer .= '      ' . $eq['equipped']->getShort() . "\n";
 				else
 					$buffer .= "      nothing\n";

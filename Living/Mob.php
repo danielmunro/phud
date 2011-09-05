@@ -70,7 +70,7 @@
 		{
 			$this->start_room_id = $this->getRoom()->getId();
 			if(!$this->id)
-				$this->id = time();
+				$this->id = microtime();
 			$db = Dbr::instance();
 			$db->set($this->id, serialize($this));
 			$db->sAdd('mobs', $this->id);

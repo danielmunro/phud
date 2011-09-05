@@ -46,6 +46,12 @@
 		{
 			$this->date_created = date('Y-m-d H:i:s');
 			parent::__construct();
+			$this->attributes->setHp(20);
+			$this->attributes->setMaxHp(20);
+			$this->attributes->setMana(100);
+			$this->attributes->setMaxMana(100);
+			$this->attributes->setMovement(100);
+			$this->attributes->setMaxMovement(100);
 			self::$instances[] = $this;
 		}
 		

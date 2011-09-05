@@ -1,5 +1,5 @@
 <?php
-
+	
 	/**
 	 *
 	 * Phud - a PHP implementation of the popular multi-user dungeon game paradigm.
@@ -25,30 +25,35 @@
 	 *
 	 */
 	namespace Commands;
-	class Remove extends \Mechanics\Command
+	use \Mechanics\Alias;
+	use \Mechanics\Actor;
+	use \Mechanics\Item;
+	use \Mechanics\Server;
+	use \Living\Corpse;
+	class Sacrifice extends \Mechanics\Command
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('remove', $this);
+			new Alias('sacrifice', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-		
-			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
+			$item = $actor->getRoom()->getInventory()->getItemByInput($args[1]);
 			
-			if($equipment instanceof \Mechanics\Equipment)
+			if($item instanceof Item)
 			{
-				$actor->getEquipped()->remove($equipment);
-				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
+				$actor->getRoom()->getInventory()->remove($item);
+				$copper = max(1, $item->getLevel()*3);
+				if(!($item instanceof Corpse))
+					$copper = min($copper, $item->getValue());
+				Server::out($actor, "Mojo finds ".$item->getShort()." pleasing and rewards you.");
+				$actor->getRoom()->announce($actor, $actor->getAlias()." sacrifices ".$item->getShort()." to Mojo.");
+				$actor->addCopper($copper);
 			}
 			else
-				return \Mechanics\Server::out($actor, 'You are not wearing anything like that.');
+			 return Server::out($actor, "You can't find that.");
 		}
-	
 	}
-
 ?>

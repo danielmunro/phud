@@ -172,6 +172,11 @@
 			return $this->affects;
 		}
 		
+		public function getAttributes()
+		{
+			return $this->attributes;
+		}
+		
 		public function lookDescribe()
 		{
 			return $this->long;
@@ -198,9 +203,9 @@
 				"can own:          ".$this->getCanOwn()."\n".
 				"long:\n".
 				$this->getLong()."\n".
-				"====================\n".
-				"==Affects         ==\n".
-				"====================\n".
+				"=====================\n".
+				"== Affects         ==\n".
+				"=====================\n".
 				$this->attributes->getAttributeLabels();
 		}
 		

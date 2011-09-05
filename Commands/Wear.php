@@ -46,7 +46,7 @@
 			if(!($item instanceof \Mechanics\Equipment))
 				return \Mechanics\Server::out($actor, "You cannot equip " . $item->getShort() . ".");
 			
-			return $actor->getEquipped()->equip($actor, $item);
+			return $actor->getEquipped()->equip($item);
 		}
 	
 	}

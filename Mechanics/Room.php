@@ -256,7 +256,7 @@
 			$actors = $this->actors;
 			$this->actors = array();
 			if(!$this->id)
-				$this->id = time();
+				$this->id = microtime();
 			$db = Dbr::instance();
 			$db->set($this->id, serialize($this));
 			$this->actors = $actors;
