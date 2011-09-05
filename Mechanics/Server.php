@@ -48,6 +48,14 @@
 		
 		public static function start()
 		{
+			/**
+			$db = Dbr::instance();
+			$user = unserialize($db->get('dan'));
+			$user->setDM(true);
+			$user->save();
+			var_dump($user->isDM());
+			die;
+			*/
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
@@ -61,8 +69,7 @@
 							'\Mechanics\Command',
 							'\Mechanics\Race',
 							'\Mechanics\Discipline',
-							'\Living\Mob',
-							//'Shopkeeper'
+							'\Living\Mob'
 						);
 			foreach($req_init as $required)
 			{

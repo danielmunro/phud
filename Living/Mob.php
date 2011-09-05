@@ -57,27 +57,31 @@
 		public static function runInstantiation()
 		{
 			$db = Dbr::instance();
-			$mob_count = $db->lSize('mobs');
-			$mobs = $db->lRange('mobs', 0, $mob_count);
-			foreach($mobs as $i => $mob)
+			$mob_ids = $db->sMembers('mobs');
+			foreach($mob_ids as $mob_id)
 			{
-				$m = unserialize($mob);
-				$m->getRoom()->actorAdd($m);
-				$m->registerMove();
+				$mob = unserialize($db->get($mob_id));
+				$mob->getRoom()->actorAdd($mob);
+				$mob->registerMove();
 			}
 		}
 		
 		public function save()
 		{
-			$db = Dbr::instance();
 			$this->start_room_id = $this->getRoom()->getId();
-			if(is_numeric($this->id))
-				$db->lSet('mobs', $this->id, serialize($this));
-			else
-			{
-				$this->id = $db->rPush('mobs', serialize($this)) - 1;
-				$this->save(); //write the new ID
-			}
+			if(!$this->id)
+				$this->id = time();
+			$db = Dbr::instance();
+			$db->set($this->id, serialize($this));
+			$db->sAdd('mobs', $this->id);
+		}
+		
+		public function delete()
+		{
+			$db = Dbr::instance();
+			$db->del($this->id);
+			$db->sRem('mobs', $this->id);
+			$this->getRoom()->actorRemove($this);
 		}
 		
 		private function registerMove()
@@ -130,7 +134,7 @@
 					return;
 				}
 			}
-			Debug::addDebugLine($mob->getAlias(true).' is stuck and will no longer move.');
+			Debug::addDebugLine($this->getAlias(true).' is stuck and will no longer move.');
 		}
 		
 		public function handleDeath()

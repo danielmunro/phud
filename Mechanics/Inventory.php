@@ -66,6 +66,8 @@
 		
 		public function getItemByInput($input)
 		{
+			if(is_array($input))
+				$input = $input[1];
 		
 			foreach($this->items as $item)
 			{
@@ -73,7 +75,7 @@
 				if(!is_array($nouns))
 					$nouns = explode(' ', $nouns);
 				foreach($nouns as $noun)
-					if(strpos($noun, $input[1]) === 0)
+					if(strpos($noun, $input) === 0)
 						return $item;
 			}
 		

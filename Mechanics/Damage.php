@@ -34,5 +34,26 @@
 		const TYPE_MAGIC = 4;
 		const TYPE_BACKSTAB = 5;
 		const TYPE_POUND = 6;
+		
+		public static function getDamageTypeLabel($damage_type)
+		{
+			switch($damage_type)
+			{
+				case self::TYPE_HIT:
+					return 'hit';
+				case self::TYPE_BASH:
+					return 'bash';
+				case self::TYPE_SLASH:
+					return 'slash';
+				case self::TYPE_PIERCE:
+					return 'pierce';
+				case self::TYPE_MAGIC:
+					return 'magic';
+				case self::TYPE_BACKSTAB:
+					return 'backstab';
+				case self::TYPE_POUND:
+					return 'pound';
+			}
+		}
 	}
 ?>

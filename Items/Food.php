@@ -31,9 +31,6 @@
 		protected $short = 'a generic food item';
 		protected $long = 'A generic food item lays here';
 		protected $nouns = 'generic food';
-		protected $weapon_type = 0;
-		protected $verb = '';
-		protected $damage_type = 0;
 		protected $nourishment = 0;
 
 		public function __construct()
@@ -49,6 +46,16 @@
 		public function setNourishment($nourishment)
 		{
 			$this->nourishment = $nourishment;
+		}
+		
+		public function getInformation()
+		{
+			return
+				"===================\n".
+				"==Food Attributes==\n".
+				"===================\n".
+				"nourishment:       ".$this->nourishment."\n".
+				parent::getInformation();
 		}
 	}
 

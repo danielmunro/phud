@@ -57,6 +57,33 @@
 			return $this->weapon_type;
 		}
 		
+		public function getWeaponTypeLabel()
+		{
+			switch($this->weapon_type)
+			{
+				case self::TYPE_SWORD:
+					return 'sword';
+				case self::TYPE_AXE:
+					return 'axe';
+				case self::TYPE_MACE:
+					return 'mace';
+				case self::TYPE_STAFF:
+					return 'staff';
+				case self::TYPE_WHIP:
+					return 'whip';
+				case self::TYPE_DAGGER:
+					return 'dagger';
+				case self::TYPE_WAND:
+					return 'wand';
+				case self::TYPE_EXOTIC:
+					return 'exotic';
+				case self::TYPE_SPEAR:
+					return 'spear';
+				case self::TYPE_FLAIL:
+					return 'flail';
+			}
+		}
+		
 		public function setWeaponType($weapon_type)
 		{
 			$this->weapon_type = $weapon_type;
@@ -80,6 +107,18 @@
 		public function setVerb($verb)
 		{
 			$this->verb = $verb;
+		}
+		
+		public function getInformation()
+		{
+			return
+				"=====================\n".
+				"==Weapon Attributes==\n".
+				"=====================\n".
+				"weapon type:         ".$this->getWeaponTypeLabel()."\n".
+				"verb:                ".$this->getVerb()."\n".
+				"damage type:         ".\Mechanics\Damage::getDamageTypeLabel($this->damage_type)."\n".
+				parent::getInformation();
 		}
 	}
 

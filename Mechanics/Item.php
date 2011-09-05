@@ -35,7 +35,37 @@
 		protected $weight = 0.0;
 		protected $can_own = true;
 		protected $attributes = null;
+		protected $level = 0;
+		protected $material = 'generic';
 		protected $affects = array();
+		
+		const MATERIAL_ADAMANTITE = 'adamantite';
+		const MATERIAL_ALLOY = 'alloy';
+		const MATERIAL_ALUMINUM = 'aluminum';
+		const MATERIAL_BRASS = 'brass';
+		const MATERIAL_BRONZE = 'bronze';
+		const MATERIAL_COPPER = 'copper';
+		const MATERIAL_COTTON = 'cotton';
+		const MATERIAL_FOOLS_GOLD = 'fools gold';
+		const MATERIAL_GOLD = 'gold';
+		const MATERIAL_IRON = 'iron';
+		const MATERIAL_LEAD = 'lead';
+		const MATERIAL_LEATHER = 'leather';
+		const MATERIAL_METAL = 'metal';
+		const MATERIAL_MINERAL = 'mineral';
+		const MATERIAL_MITHRIL = 'mithril';
+		const MATERIAL_NICKEL = 'nickel';
+		const MATERIAL_OBSIDIAN = 'obsidian';
+		const MATERIAL_PEWTER = 'pewter';
+		const MATERIAL_PLATINUM = 'platinum';
+		const MATERIAL_SILVER = 'silver';
+		const MATERIAL_STAINLESS = 'stainless';
+		const MATERIAL_STEEL = 'steel';
+		const MATERIAL_TIN = 'tin';
+		const MATERIAL_TINFOIL = 'tinfoil';
+		const MATERIAL_TITANIUM = 'titanium';
+		const MATERIAL_WIRE = 'wire';
+		const MATERIAL_WOOD = 'wood';
 		
 		public function __construct()
 		{
@@ -72,6 +102,16 @@
 			$this->can_own = $can_own;
 		}
 		
+		public function setLevel($level)
+		{
+			$this->level = $level;
+		}
+		
+		public function setMaterial($material)
+		{
+			$this->material = $material;
+		}
+		
 		public function getShort()
 		{
 			return $this->short;
@@ -95,6 +135,21 @@
 		public function getValue()
 		{
 			return $this->value;
+		}
+		
+		public function getWeight()
+		{
+			return $this->weight;
+		}
+		
+		public function getLevel()
+		{
+			return $this->level;
+		}
+		
+		public function getMaterial()
+		{
+			return $this->material;
 		}
 		
 		public function addAffect(\Mechanics\Affect $affect)
@@ -126,6 +181,27 @@
 		{
 			$from->remove($this);
 			$to->add($this);
+		}
+		
+		public function getInformation()
+		{
+			return 
+				"\n=====================\n".
+				"== Base Attributes ==\n".
+				"=====================\n".
+				"level:            ".$this->getLevel()."\n".
+				"nouns:            ".$this->getNouns()."\n".
+				"short:            ".$this->getShort()."\n".
+				"material:         ".$this->getMaterial()."\n".
+				"value:            ".$this->getValue()."\n".
+				"weight:           ".$this->getWeight()."\n".
+				"can own:          ".$this->getCanOwn()."\n".
+				"long:\n".
+				$this->getLong()."\n".
+				"====================\n".
+				"==Affects         ==\n".
+				"====================\n".
+				$this->attributes->getAttributeLabels();
 		}
 		
 		public function __toString()

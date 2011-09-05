@@ -84,7 +84,7 @@
 				$this->login['alias'] = $input;
 				
 				$db = Dbr::instance();
-				$this->unverified_user = unserialize($db->get('user'.$input));
+				$this->unverified_user = unserialize($db->get($input));
 				
 				if(!empty($this->unverified_user))
 				{

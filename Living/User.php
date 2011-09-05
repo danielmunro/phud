@@ -164,7 +164,7 @@
 			$client = $this->client;
 			$this->client = null;
 			$db = Dbr::instance();
-			$db->set('user'.$this->alias, serialize($this));
+			$db->set($this->alias, serialize($this));
 			$this->client = $client;
 		}
 		

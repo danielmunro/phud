@@ -28,7 +28,7 @@
 	class Room
 	{
 	
-		const START_ROOM = 0;
+		const START_ROOM = 1315191254;
 	
 		static $instances = array();
 		
@@ -205,9 +205,11 @@
 				if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self)
 					return self::$instances[$id];
 				$db = \Mechanics\Dbr::instance();
-				$room_serialized = $db->lGet('rooms', $id);
+				$room_serialized = $db->get($id);
 				if($room_serialized)
+				{
 					self::$instances[$id] = unserialize($room_serialized);
+				}
 				else
 				{
 					$r = new Room();
@@ -216,7 +218,6 @@
 					self::$instances[$id] = $r;
 				}
 				return self::$instances[$id];
-				
 			}
 		}
 		
@@ -254,14 +255,10 @@
 		{
 			$actors = $this->actors;
 			$this->actors = array();
-			$db = \Mechanics\Dbr::instance();
-			if(is_numeric($this->id))
-				$db->lSet('rooms', $this->id, serialize($this));
-			else
-			{
-				$this->id = $db->rPush('rooms', serialize($this)) - 1;
-				$db->lSet('rooms', $this->id, serialize($this));
-			}
+			if(!$this->id)
+				$this->id = time();
+			$db = Dbr::instance();
+			$db->set($this->id, serialize($this));
 			$this->actors = $actors;
 		}
 	}

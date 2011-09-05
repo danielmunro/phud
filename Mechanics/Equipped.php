@@ -82,6 +82,11 @@
 			return $this->inventory;
 		}
 		
+		public static function getLabelByPosition($position)
+		{
+			return self::$labels[$position];
+		}
+		
 		public function equip(\Mechanics\Equipment $item, $display_message = true)
 		{
 			
@@ -296,15 +301,16 @@
 		
 			$buffer = '';
 			$viewed = false;
-			foreach($this->equipment as $key => $eq)
+			foreach($this->equipment as $eq)
 			{
+				$key = $eq['position'];
 				$buf = self::$labels[$key];
 				$len_diff = 22 - strlen($buf);
 				for($i = 0; $i < $len_diff; $i++)
 					$buf .= ' ';
 				$buffer .= $buf;
 				if($eq instanceof \Mechanics\Equipment)
-					$buffer .= '      ' . $eq->getShort() . "\n";
+					$buffer .= '      ' . $eq['equipped']->getShort() . "\n";
 				else
 					$buffer .= "      nothing\n";
 			}

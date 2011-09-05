@@ -33,31 +33,29 @@
 		protected $short = 'a generic drink container';
 		protected $long = 'A generic drink container lays here';
 		protected $nouns = 'generic drink container';
-		protected $size = 0;
 		protected $amount = 0;
 		protected $contents = '';
 		protected $thirst = 0;
-		protected $nourishment = 0;
-
-		public function __construct($size = 5)
+		protected $uses = 0;
+		
+		public function getUses()
 		{
-			$this->size = $size;
-			parent::__construct();
+			return $this->uses;
 		}
 		
-		public function getSize()
+		public function setUses($uses)
 		{
-			return $this->size;
-		}
-		
-		public function setSize($size)
-		{
-			$this->size = $size;
+			$this->uses = $uses;
 		}
 		
 		public function getAmount()
 		{
 			return $this->amount;
+		}
+		
+		public function setAmount($amount)
+		{
+			$this->amount = $amount;
 		}
 		
 		public function use(Actor $actor)
@@ -68,12 +66,6 @@
 				return false;
 			}
 			
-			if($this->nourishment && $actor->isNourishmentFull())
-			{
-				Server::out($actor, "You are too full to drink more ".$contents.".");
-				return false;
-			}
-			
 			if($this->thirst && $actor->isThirstFull())
 			{
 				Server::out($actor, "Your thirst has been quenched.");
@@ -81,14 +73,13 @@
 			}
 			
 			$this->amount--;
-			$actor->increaseNourishment($this->nourishment);
 			$actor->increaseThirst($this->thirst);
 			return true;
 		}
 		
 		private function fill()
 		{
-			$this->amount = $this->size;
+			$this->uses = $this->amount;
 		}
 		
 		public function getContents()
@@ -96,12 +87,22 @@
 			return $this->contents;
 		}
 		
-		public function setContents($contents, $thirst, $nourishment)
+		public function setContents($contents, $thirst)
 		{
 			$this->contents = $contents;
 			$this->thirst = $thirst;
-			$this->nourishment = $nourishment;
 			$this->fill();
+		}
+		
+		public function getInformation()
+		{
+			return
+				"==Drink Attributes==\n".
+				"====================\n".
+				"thirst:             ".$this->getThirst()."\n".
+				"amount:             ".$this->getAmount()."\n".
+				"contents:           ".$this->getContents()."\n".
+				parent::getInformation();
 		}
 	}
 

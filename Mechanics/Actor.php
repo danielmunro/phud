@@ -44,7 +44,7 @@
 		protected $sex = '';
 		protected $disposition = 0; // sitting, sleeping, standing
 		protected $race = '';
-		protected $room_id = 0;
+		protected $room_id = -1;
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $ability_set = null;

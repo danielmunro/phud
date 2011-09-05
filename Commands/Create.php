@@ -25,36 +25,47 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Server;
+	use \Mechanics\Alias;
+	use \Mechanics\Actor;
+	use \Mechanics\Item;
+	use \Items\Armor;
+	use \Items\Weapon;
+	use \Items\Food;
+	use \Items\Drink;
+	use \Items\Container;
 	class Create extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('create', $this);
+			new Alias('create', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			switch($args[1])
 			{
 				case strpos($args[1], 'mob') === 0:
 					return $this->doCreateMob($actor, $args);
+				case strpos($args[1], 'shopkeeper') === 0:
+					return $this->doCreateShopkeeper($actor, $args);
 				case strpos($args[1], 'armor') === 0:
-					return $this->doCreateItem($actor, new \Items\Armor(), $args);
+					return $this->doCreateItem($actor, new Armor(), $args);
 				case strpos($args[1], 'weapon') === 0:
-					return $this->doCreateItem($actor, new \Items\Weapon(), $args);
+					return $this->doCreateItem($actor, new Weapon(), $args);
 				case strpos($args[1], 'food') === 0:
-					return $this->doCreateItem($actor, new \Items\Food(), $args);
+					return $this->doCreateItem($actor, new Food(), $args);
 				case strpos($args[1], 'drink') === 0:
-					return $this->doCreateItem($actor, new \Items\Drink(), $args);
+					return $this->doCreateItem($actor, new Drink(), $args);
 				case strpos($args[1], 'container') === 0:
-					return $this->doCreateContainer($actor, new \Items\Container(), $args);
+					return $this->doCreateContainer($actor, new Container(), $args);
 				default:
-					return \Mechanics\Server::out($actor, "What do you want to create?");
+					return Server::out($actor, "What do you want to create?");
 			}
 		}
 		
-		private function doCreateItem(\Mechanics\Actor $actor, \Mechanics\Item $item, $args)
+		private function doCreateItem(Actor $actor, Item $item, $args)
 		{
 			if(sizeof($args) > 2)
 			{
@@ -62,20 +73,20 @@
 				$item->setShort($short);
 			}
 			$actor->getInventory()->add($item);
-			return \Mechanics\Server::out($actor, ucfirst($item->getShort())." poofs into existence.");
+			return Server::out($actor, ucfirst($item->getShort())." poofs into existence.");
 		}
 		
-		private function doCreateMob(\Mechanics\Actor $actor, $args)
+		private function doCreateMob(Actor $actor, $args)
 		{
 			if(sizeof($args) <= 2)
-				return \Mechanics\Server::out($actor, "You need to specify a name for your new mob.");
+				return Server::out($actor, "You need to specify a name for your new mob.");
 			
 			$alias = implode(' ', array_slice($args, 2));
 			$nouns = substr($alias, strrpos($alias, ',')+1);
 			$alias = substr($alias, 0, strrpos($alias, ','));
 			
 			if(!\Living\Mob::validateAlias($alias))
-				return \Mechanics\Server::out($actor, "\"".$alias."\" is not a valid name for a mob.");
+				return Server::out($actor, "\"".$alias."\" is not a valid name for a mob.");
 			
 			$mob = new \Living\Mob();
 			$mob->setAlias($alias);
@@ -85,6 +96,15 @@
 			$mob->save();
 			
 			$mob->getRoom()->announce($mob, $mob->getAlias(true)." poofs into existence.");
+		}
+		
+		private function doCreateShopkeeper(Actor $actor, $args)
+		{
+			$shopkeeper = new \Living\Shopkeeper();
+			$shopkeeper->setRoom($actor->getRoom());
+			$shopkeeper->save();
+			
+			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." poofs into existence.");
 		}
 	}
 ?>

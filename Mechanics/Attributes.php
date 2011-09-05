@@ -41,20 +41,22 @@
 		private $max_con = 0;
 		private $max_cha = 0;
 		
-		private $hp = 20;
-		private $max_hp = 20;
-		private $mana = 100;
-		private $max_mana = 100;
-		private $movement = 100;
-		private $max_movement = 100;
+		private $hp = 0;
+		private $max_hp = 0;
+		private $mana = 0;
+		private $max_mana = 0;
+		private $movement = 0;
+		private $max_movement = 0;
 		
-		private $ac_bash = 100;
-		private $ac_slash = 100;
-		private $ac_pierce = 100;
-		private $ac_magic = 100;
+		private $ac_bash = 0;
+		private $ac_slash = 0;
+		private $ac_pierce = 0;
+		private $ac_magic = 0;
 		
-		private $hit = 1;
-		private $dam = 1;
+		private $hit = 0;
+		private $dam = 0;
+		
+		private $saves = 0;
 		
 		///////////////////////////////////////////////////////////////////////
 		// Attribute getters and setters
@@ -298,6 +300,20 @@
 		public function getDam()
 		{
 			return $this->dam;
+		}
+		
+		public function setSaves($saves)
+		{
+			$this->saves = $saves;
+		}
+		
+		public function getSaves()
+		{
+			return $this->saves;
+		}
+		
+		public function getAttributeLabels()
+		{
 		}
 	}
 ?>

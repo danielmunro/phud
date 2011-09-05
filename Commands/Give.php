@@ -25,17 +25,20 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Alias;
+	use \Mechanics\Server;
+	use \Mechanics\Actor;
 	class Give extends \Mechanics\Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('give', $this);
+			new Alias('give', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			if(
@@ -48,8 +51,8 @@
 				$actors = $actor->getRoom()->getActors();
 				$target = $actor->getRoom()->getActorByInput($args);
 				
-				if(!($target instanceof \Mechanics\Actor))
-					return \Mechanics\Server::out($actor, "They aren't here.");
+				if(!($target instanceof Actor))
+					return Server::out($actor, "They aren't here.");
 				
 				if(strpos('copper', $currency) === 0)
 					$currency_proper = 'copper';
@@ -59,19 +62,19 @@
 					$currency_proper = 'gold';
 				
 				if(!isset($currency_proper))
-					return \Mechanics\Server::out($actor, "What kind of currency?");
+					return Server::out($actor, "What kind of currency?");
 				
 				$amount = $actor->{'get' . ucfirst($currency_proper)}();
 				
 				if($amount < $give_amount)
-					return \Mechanics\Server::out($actor, "You don't have that.");
+					return Server::out($actor, "You don't have that.");
 				
 				$fn = 'add'.ucfirst($currency_proper);
 				$actor->$fn(-$give_amount);
 				$target->$fn($give_amount);
 				
-				\Mechanics\Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
-				\Mechanics\Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
+				Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
+				Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
 			}
 			else
 			{
@@ -79,15 +82,18 @@
 				$target = $actor->getRoom()->getActorByInput($args);
 			
 				if(empty($item))
-					return \Mechanics\Server::out($actor, "You don't appear to have that.");
+					return Server::out($actor, "You don't appear to have that.");
 			
-				if(!($target instanceof \Mechanics\Actor))
-					return \Mechanics\Server::out($actor, "You don't see them here.");
+				if($target instanceof \Living\Shopkeeper && $actor instanceof \Living\User && !$actor->isDM())
+					return Server::out($actor, $target->getAlias(true)." doesn't look interested.");
+			
+				if(!($target instanceof Actor))
+					return Server::out($actor, "You don't see them here.");
 				
 				$actor->getInventory()->remove($item);
 				$target->getInventory()->add($item);
-				\Mechanics\Server::out($actor, "You give " . $item->getShort() . " to " . $target->getAlias() . ".");
-				\Mechanics\Server::out($target, $actor->getAlias(true) . " gives you " . $item->getShort() . ".");
+				Server::out($actor, "You give " . $item->getShort() . " to " . $target->getAlias() . ".");
+				Server::out($target, $actor->getAlias(true) . " gives you " . $item->getShort() . ".");
 			}
 		}
 	
