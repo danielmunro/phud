@@ -113,8 +113,6 @@
 				{
 					if($this->actor->getInventory()->remove($item) !== false)
 						$this->inventory->add($item);
-					foreach($item->getAffects() as $affect)
-						$affect->apply($this->target);
 					$equipped = $item;
 					$equipped_position = $p;
 					break;
@@ -124,10 +122,6 @@
 					$item_remove = $e;
 					$this->inventory->remove($item_remove);
 					$this->inventory->add($item);
-					foreach($item_remove->getAffects() as $affect)
-						$this->actor->removeAffect($affect);
-					foreach($item->getAffects() as $affect)
-						$affect->apply($this->target);
 					$this->actor->getInventory()->add($item_remove);
 					$this->actor->getInventory()->remove($item);
 					$equipped = $item;
@@ -273,8 +267,6 @@
 				{
 					$this->getInventory()->remove($item);
 					$this->actor->getInventory()->add($item);
-					foreach($item->getAffects() as $affect)
-						$this->actor->removeAffect($affect);
 					$e['equipped'] = null;
 				}
 			}

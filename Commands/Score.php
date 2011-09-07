@@ -39,11 +39,12 @@
 		public function perform(Actor $actor, $args = array())
 		{
 			Server::out($actor, 'You are ' . $actor->getAlias() . ', a ' . $actor->getRace().' '.$actor->getDisciplineFocus());
-			Server::out($actor, 'Attributes: Str ' . $actor->getBaseStr() . '(' . $actor->getStr() . ') ' .
-			'Int ' . $actor->getBaseInt() . '(' . $actor->getInt() . ') ' . 
-			'Wis ' . $actor->getBaseWis() . '(' . $actor->getWis() . ') ' .
-			'Dex ' . $actor->getBaseDex() . '(' . $actor->getDex() . ') ' .
-			'Con ' . $actor->getBaseCon() . '(' . $actor->getCon() . ')');
+			Server::out($actor, 'Attributes: Str ' . $actor->getStr() . '(' . $actor->getBaseStr() . ') ' .
+			'Int ' . $actor->getInt() . '(' . $actor->getBaseInt() . ') ' . 
+			'Wis ' . $actor->getWis() . '(' . $actor->getBaseWis() . ') ' .
+			'Dex ' . $actor->getDex() . '(' . $actor->getBaseDex() . ') ' .
+			'Con ' . $actor->getCon() . '(' . $actor->getBaseCon() . ') ' .
+			'Cha ' . $actor->getCha() . '(' . $actor->getBaseCha() . ')');
 			
 			Server::out(
 				$actor, 'Hp: ' . $actor->getHp() . '/' . $actor->getMaxHp() .

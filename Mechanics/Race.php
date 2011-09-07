@@ -53,6 +53,7 @@
 
 		private static $instances = array();
 		protected $attributes = null;
+		protected $max_attributes = null;
 		protected $affects = array();
 		protected $movement_cost;
 		protected $move_verb;
@@ -115,6 +116,11 @@
 		public function getAttributes()
 		{
 			return $this->attributes;
+		}
+		
+		public function getMaxAttributes()
+		{
+			return $this->max_attributes;
 		}
 		
 		public function getSize() { return $this->size; }

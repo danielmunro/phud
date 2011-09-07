@@ -25,24 +25,24 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Human extends \Mechanics\Race
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('human', $this);
+			$this->alias = new Alias('human', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = new Attributes();
+			
 			$this->attributes->setStr(13);
 			$this->attributes->setInt(13);
 			$this->attributes->setWis(13);
 			$this->attributes->setDex(13);
 			$this->attributes->setCon(13);
-			$this->attributes->setMaxStr(18);
-			$this->attributes->setMaxInt(18);
-			$this->attributes->setMaxWis(18);
-			$this->attributes->setMaxDex(18);
-			$this->attributes->setMaxCon(18);
+			$this->attributes->setCha(13);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);
@@ -50,13 +50,12 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(2);
 		
-			/**
-			$this->max_str = 19;
-			$this->max_int = 19;
-			$this->max_wis = 19;
-			$this->max_dex = 19;
-			$this->max_con = 19;
-			*/
+			$this->max_attributes->setStr(18);
+			$this->max_attributes->setInt(18);
+			$this->max_attributes->setWis(18);
+			$this->max_attributes->setDex(18);
+			$this->max_attributes->setCon(18);
+			$this->max_attributes->setCha(18);
 			
 			$this->movement_cost = 2;
 			

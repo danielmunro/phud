@@ -25,13 +25,18 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Rat extends \Mechanics\Race
 	{
 	
 		protected function __construct()
 		{
+			$this->alias = new Alias('rat', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = $this->attributes;
+			
 			$this->attributes->setStr(10);
 			$this->attributes->setInt(15);
 			$this->attributes->setWis(14);

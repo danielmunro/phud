@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Critter extends \Mechanics\Race
 	{
 	
@@ -33,9 +35,9 @@
 		protected function __construct()
 		{
 		
-			$this->alias = new \Mechanics\Alias('critter', $this);
+			$this->alias = new Alias('critter', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
 			$this->attributes->setStr(5);
 			$this->attributes->setInt(5);
 			$this->attributes->setWis(5);
@@ -47,6 +49,8 @@
 			$this->attributes->setAcMagic(100);
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
+			
+			$this->max_attributes = $this->attributes;
 			
 			$this->movement_cost = 1;
 			

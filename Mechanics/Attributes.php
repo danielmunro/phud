@@ -34,19 +34,9 @@
 		private $con = 0;
 		private $cha = 0;
 		
-		private $max_str = 0;
-		private $max_int = 0;
-		private $max_wis = 0;
-		private $max_dex = 0;
-		private $max_con = 0;
-		private $max_cha = 0;
-		
 		private $hp = 0;
-		private $max_hp = 0;
 		private $mana = 0;
-		private $max_mana = 0;
 		private $movement = 0;
-		private $max_movement = 0;
 		
 		private $ac_bash = 0;
 		private $ac_slash = 0;
@@ -121,67 +111,6 @@
 		{
 			return $this->cha;
 		}
-		
-		public function setMaxStr($str)
-		{
-			$this->max_str = $str;
-		}
-		
-		public function setMaxInt($int)
-		{
-			$this->max_int = $int;
-		}
-		
-		public function setMaxWis($wis)
-		{
-			$this->max_wis = $wis;
-		}
-		
-		public function setMaxDex($dex)
-		{
-			$this->max_dex = $dex;
-		}
-		
-		public function setMaxCon($con)
-		{
-			$this->max_con = $con;
-		}
-		
-		public function setMaxCha($cha)
-		{
-			$this->max_cha = $cha;
-		}
-		
-		public function getMaxStr()
-		{
-			return $this->max_str;
-		}
-		
-		public function getMaxInt()
-		{
-			return $this->max_int;
-		}
-		
-		public function getMaxWis()
-		{
-			return $this->max_wis;
-		}
-		
-		public function getMaxDex()
-		{
-			return $this->max_dex;
-		}
-		
-		public function getMaxCon()
-		{
-			return $this->max_con;
-		}
-		
-		public function getMaxCha()
-		{
-			return $this->max_cha;
-		}
-		
 		public function setHp($hp)
 		{
 			$this->hp = $hp;
@@ -210,36 +139,6 @@
 		public function getMovement()
 		{
 			return $this->movement;
-		}
-		
-		public function setMaxHp($hp)
-		{
-			$this->max_hp = $hp;
-		}
-		
-		public function setMaxMana($mana)
-		{
-			$this->max_mana = $mana;
-		}
-		
-		public function setMaxMovement($movement)
-		{
-			$this->max_movement = $movement;
-		}
-		
-		public function getMaxHp()
-		{
-			return $this->max_hp;
-		}
-		
-		public function getMaxMana()
-		{
-			return $this->max_mana;
-		}
-		
-		public function getMaxMovement()
-		{
-			return $this->max_movement;
 		}
 		
 		public function setAcBash($ac)

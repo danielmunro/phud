@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Faerie extends \Mechanics\Race
 	{
 	
@@ -32,19 +34,17 @@
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('faerie', $this);
+			$this->alias = new Alias('faerie', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = new Attributes();
+			
 			$this->attributes->setStr(9);
 			$this->attributes->setInt(16);
 			$this->attributes->setWis(16);
 			$this->attributes->setDex(15);
 			$this->attributes->setCon(9);
-			$this->attributes->setMaxStr(13);
-			$this->attributes->setMaxInt(25);
-			$this->attributes->setMaxWis(25);
-			$this->attributes->setMaxDex(25);
-			$this->attributes->setMaxCon(13);
+			$this->attributes->setCha(14);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);
@@ -52,13 +52,12 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
 			
-			/**
-			$this->max_str = 14;
-			$this->max_int = 21;
-			$this->max_wis = 21;
-			$this->max_dex = 20;
-			$this->max_con = 14;
-			*/
+			$this->max_attributes->setStr(13);
+			$this->max_attributes->setInt(25);
+			$this->max_attributes->setWis(25);
+			$this->max_attributes->setDex(25);
+			$this->max_attributes->setCon(13);
+			$this->max_attributes->setCha(22);
 			
 			$this->movement_cost = 0;
 			

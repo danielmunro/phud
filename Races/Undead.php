@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Undead extends \Mechanics\Race
 	{
 	
@@ -32,25 +34,30 @@
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('undead', $this);
+			$this->alias = new Alias('undead', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = new Attributes();
+			
 			$this->attributes->setStr(15);
 			$this->attributes->setInt(15);
 			$this->attributes->setWis(13);
 			$this->attributes->setDex(12);
 			$this->attributes->setCon(12);
-			$this->attributes->setMaxStr(21);
-			$this->attributes->setMaxInt(21);
-			$this->attributes->setMaxWis(17);
-			$this->attributes->setMaxDex(16);
-			$this->attributes->setMaxCon(17);
+			$this->attributes->setCha(6);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);
 			$this->attributes->setAcMagic(100);
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
+			
+			$this->max_attributes->setStr(21);
+			$this->max_attributes->setInt(21);
+			$this->max_attributes->setWis(17);
+			$this->max_attributes->setDex(16);
+			$this->max_attributes->setCon(17);
+			$this->max_attributes->setCha(13);
 			
 			$this->movement_cost = 2;
 			

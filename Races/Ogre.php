@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Ogre extends \Mechanics\Race
 	{
 	
@@ -32,19 +34,17 @@
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('ogre', $this);
+			$this->alias = new Alias('ogre', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = new Attributes();
+			
 			$this->attributes->setStr(16);
 			$this->attributes->setInt(10);
 			$this->attributes->setWis(12);
 			$this->attributes->setDex(12);
 			$this->attributes->setCon(15);
-			$this->attributes->setMaxStr(21);
-			$this->attributes->setMaxInt(16);
-			$this->attributes->setMaxWis(17);
-			$this->attributes->setMaxDex(18);
-			$this->attributes->setMaxCon(21);
+			$this->attributes->setCha(9);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);
@@ -52,13 +52,12 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(3);
 			
-			/**
-			$this->max_str = 21;
-			$this->max_int = 15;
-			$this->max_wis = 17;
-			$this->max_dex = 17;
-			$this->max_con = 20;
-			*/
+			$this->max_attributes->setStr(21);
+			$this->max_attributes->setInt(16);
+			$this->max_attributes->setWis(17);
+			$this->max_attributes->setDex(18);
+			$this->max_attributes->setCon(21);
+			$this->max_attributes->setCha(14);
 			
 			$this->movement_cost = 2;
 			

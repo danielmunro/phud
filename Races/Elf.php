@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Races;
+	use \Mechanics\Alias;
+	use \Mechanics\Attributes;
 	class Elf extends \Mechanics\Race
 	{
 	
@@ -32,19 +34,17 @@
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('elf', $this);
+			$this->alias = new Alias('elf', $this);
 		
-			$this->attributes = new \Mechanics\Attributes();
+			$this->attributes = new Attributes();
+			$this->max_attributes = new Attributes();
+			
 			$this->attributes->setStr(10);
 			$this->attributes->setInt(15);
 			$this->attributes->setWis(14);
 			$this->attributes->setDex(14);
 			$this->attributes->setCon(12);
-			$this->attributes->setMaxStr(17);
-			$this->attributes->setMaxInt(21);
-			$this->attributes->setMaxWis(19);
-			$this->attributes->setMaxDex(21);
-			$this->attributes->setMaxCon(17);
+			$this->attributes->setCha(13);
 			$this->attributes->setAcBash(100);
 			$this->attributes->setAcSlash(100);
 			$this->attributes->setAcPierce(100);
@@ -52,13 +52,12 @@
 			$this->attributes->setHit(1);
 			$this->attributes->setDam(1);
 			
-			/**
-			$this->max_str = 15;
-			$this->max_int = 20;
-			$this->max_wis = 19;
-			$this->max_dex = 19;
-			$this->max_con = 17;
-			*/
+			$this->max_attributes->setStr(17);
+			$this->max_attributes->setInt(21);
+			$this->max_attributes->setWis(19);
+			$this->max_attributes->setDex(21);
+			$this->max_attributes->setCon(17);
+			$this->max_attributes->setCha(21);
 			
 			$this->movement_cost = 1;
 			

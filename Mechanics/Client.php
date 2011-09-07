@@ -174,7 +174,10 @@
 				
 				$race = Alias::lookup($this->login['race']);
 				if($race instanceof Race)
+				{
 					$this->unverified_user->setRace($this->login['race']);
+					$this->unverified_user->setAttributesFromRace();
+				}
 				else
 				{
 					Server::out($this, "That's not a valid race.");
@@ -315,11 +318,11 @@
 					$this->unverified_user->setExperiencePerLevel();
 					Server::out($this, "Now let's figure out your attributes...");
 					$this->login['attr'] = 0;
-					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0);
+					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0, 'cha' => 0);
 					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 					Server::out($this,
-						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
-						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
+						'Str ' . $this->unverified_user->getStr() . ' Int ' . $this->unverified_user->getInt() . ' Wis ' . $this->unverified_user->getWis() . 
+						' Dex ' . $this->unverified_user->getDex() . ' Con ' . $this->unverified_user->getCon() . ' Cha ' . $this->unverified_user->getCha());
 					Server::out($this, "Add a point to: ", false);
 				}
 				
@@ -333,7 +336,7 @@
 			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
 			{
 				
-				$method_get = 'getBase'.ucfirst($input);
+				$method_get = 'get'.ucfirst($input);
 				$method_set = 'set'.ucfirst($input);
 				$method_get_max = 'getMax'.ucfirst($input);
 				
@@ -367,8 +370,8 @@
 				{
 					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
 					Server::out($this,
-						'Str ' . $this->unverified_user->getBaseStr() . ' Int ' . $this->unverified_user->getBaseInt() . ' Wis ' . $this->unverified_user->getBaseWis() . 
-						' Dex ' . $this->unverified_user->getBaseDex() . ' Con ' . $this->unverified_user->getBaseCon());
+						'Str ' . $this->unverified_user->getStr() . ' Int ' . $this->unverified_user->getInt() . ' Wis ' . $this->unverified_user->getWis() . 
+						' Dex ' . $this->unverified_user->getDex() . ' Con ' . $this->unverified_user->getCon() . ' Cha ' . $this->unverified_user->getCha());
 					Server::out($this, "Add a point to: ", false);
 				}
 				else
@@ -391,6 +394,7 @@
 				
 				$look = Alias::lookup('look');
 				$look->perform($this->user);
+				Server::out($this, $this->user->prompt(), false);
 			}
 		}
 		
