@@ -281,8 +281,8 @@
 								return $e['position'] === $position;
 							}
 						);
-			if(isset($eq[0]))
-				return $eq[0];
+			if(sizeof($eq))
+				return array_shift($eq);
 			return null;
 		}
 		

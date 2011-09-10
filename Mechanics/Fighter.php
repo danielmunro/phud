@@ -428,8 +428,6 @@
 		}
 		public function isAlive()
 		{
-			if($this->attributes->getMaxHp() == 0)
-				return true; // Creation
 			return $this->attributes->getHp() > 0;
 		}
 		public function incrementDelay($delay)
@@ -471,11 +469,11 @@
 			
 			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(\Mechanics\Equipment::POSITION_WIELD);
 			
-			if($attacking_weapon)
+			if($attacking_weapon['equipped'])
 			{
 				if(!$verb)
-					$verb = $attacking_weapon->getVerb();
-				$dam_type = $attacking_weapon->getDamageType();
+					$verb = $attacking_weapon['equipped']->getVerb();
+				$dam_type = $attacking_weapon['equipped']->getDamageType();
 			}
 			else
 			{

@@ -27,16 +27,16 @@
 	namespace Mechanics;
 	class Attributes
 	{
-		private $str = 0;
-		private $int = 0;
-		private $wis = 0;
-		private $dex = 0;
-		private $con = 0;
-		private $cha = 0;
+		private $str = 10;
+		private $int = 10;
+		private $wis = 10;
+		private $dex = 10;
+		private $con = 10;
+		private $cha = 10;
 		
-		private $hp = 0;
-		private $mana = 0;
-		private $movement = 0;
+		private $hp = 1;
+		private $mana = 1;
+		private $movement = 1;
 		
 		private $ac_bash = 0;
 		private $ac_slash = 0;
