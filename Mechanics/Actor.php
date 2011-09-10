@@ -43,7 +43,7 @@
 		protected $copper = 0;
 		protected $sex = '';
 		protected $disposition = 0; // sitting, sleeping, standing
-		protected $race = '';
+		protected $race = 'critter';
 		protected $room_id = -1;
 		protected $inventory = null;
 		protected $equipped = null;
@@ -315,8 +315,6 @@
 		
 		public function getRace()
 		{
-			if(!$this->race)
-				return "generic";
 			return Alias::lookup($this->race);
 		}
 		

@@ -28,7 +28,7 @@
 	class Room
 	{
 	
-		const START_ROOM = 1315191254;
+		const START_ROOM = 1;
 	
 		static $instances = array();
 		
@@ -200,25 +200,22 @@
 		
 		public static function find($id)
 		{
-			if(is_numeric($id))
-			{
-				if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self)
-					return self::$instances[$id];
-				$db = \Mechanics\Dbr::instance();
-				$room_serialized = $db->get($id);
-				if($room_serialized)
-				{
-					self::$instances[$id] = unserialize($room_serialized);
-				}
-				else
-				{
-					$r = new Room();
-					$r->setId($id);
-					$r->save();
-					self::$instances[$id] = $r;
-				}
+			if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self)
 				return self::$instances[$id];
+			$db = \Mechanics\Dbr::instance();
+			$room_serialized = $db->get($id);
+			if($room_serialized)
+			{
+				self::$instances[$id] = unserialize($room_serialized);
 			}
+			else
+			{
+				$r = new Room();
+				$r->setId($id);
+				$r->save();
+				self::$instances[$id] = $r;
+			}
+			return self::$instances[$id];
 		}
 		
 		public static function getDirectionStr($dir)

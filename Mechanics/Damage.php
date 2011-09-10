@@ -54,6 +54,29 @@
 				case self::TYPE_POUND:
 					return 'pound';
 			}
+			return false;
+		}
+		
+		public static function getDamageTypeFromLabel($label)
+		{
+			switch($label)
+			{
+				case strpos('hit', $label) === 0:
+					return self::TYPE_HIT;
+				case strpos('bash', $label) === 0:
+					return self::TYPE_BASH;
+				case strpos('slash', $label) === 0:
+					return self::TYPE_SLASH;
+				case strpos('pierce', $label) === 0:
+					return self::TYPE_PIERCE;
+				case strpos('magic', $label) === 0:
+					return self::TYPE_MAGIC;
+				case strpos('backstab', $label) === 0:
+					return self::TYPE_BACKSTAB;
+				case strpos('pound', $label) === 0:
+					return self::TYPE_POUND;
+			}
+			return false;
 		}
 	}
 ?>

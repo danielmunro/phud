@@ -35,7 +35,6 @@
 	
 		protected $movement_ticks = 10;
 		protected $last_move;
-		protected $nouns = '';
 		protected $auto_flee = false;
 		protected $unique = false;
 		protected $respawn_time;
@@ -46,6 +45,8 @@
 		protected $gold_repop = 0;
 		protected $silver_repop = 0;
 		protected $copper_repop = 0;
+		protected $alias = 'a generic mob';
+		protected $nouns = 'generic mob';
 		
 		const FLEE_PERCENT = 10;
 		
@@ -134,7 +135,11 @@
 					return;
 				}
 			}
-			Debug::addDebugLine($this->getAlias(true).' is stuck and will no longer move.');
+			
+			// Now the mob is stuck. Slow down their movement and try again.
+			if($this->movement_ticks < 10)
+				$this->movement_ticks = 10;
+			$this->registerMove();
 		}
 		
 		public function handleDeath()

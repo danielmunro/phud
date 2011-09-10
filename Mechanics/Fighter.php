@@ -383,7 +383,7 @@
 		
 		public function getHpPercent()
 		{
-			return ($this->attributes->getHp() / $this->attributes->getMaxHp()) * 100;
+			return ($this->attributes->getHp() / $this->max_attributes->getHp()) * 100;
 		}
 		public function getStatus()
 		{

@@ -29,6 +29,7 @@
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
 	use \Mechanics\Race;
+	use \Living\Mob as lMob;
 	class Mob extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
@@ -39,91 +40,55 @@
 	
 		public function perform(Actor $actor, $args = array())
 		{
-			if(sizeof($args) <= 1)
+			if(sizeof($args) < 3)
 				return Server::out($actor, "What were you trying to do?");
 		
-			$command = $this->getCommand($args[1]);
-			if($command)
+			$command = $this->getCommand($args[2]);
+			$mob = $actor->getRoom()->getActorByInput($args[1]);
+			$value = implode(' ', array_slice($args, 3));
+			
+			if($mob instanceof lMob && $command)
 			{
 				$fn = 'do'.ucfirst($command);
-				$this->$fn($actor, $args);
+				return $this->$fn($actor, $mob, $value, $args);
 			}
+			if(!($mob instanceof lMob))
+				return Server::out($actor, "They aren't here.");
+			Server::out($actor, "What do you want to do to ".$mob->getAlias()."?");
 		}
 		
-		private function doRace(Actor $actor, $args)
+		private function doRace(Actor $actor, lMob $mob, $race, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$arg_race = implode(' ', array_slice($args, sizeof($args) - 1));
-			$arg_noun = implode(' ', array_slice($args, 2, 1));
-			
 			$race = Alias::lookup($arg_race);
-			$mob = $actor->getRoom()->getActorByInput($arg_noun);
-			
 			if(!($race instanceof Race))
 				return Server::out($actor, "That is not a valid race.");
 			
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "Who?");
-			
 			$mob->setRace($race);
 			$mob->save();
-			$mob->getRoom()->announce($mob, $mob->getAlias(true)." spontaneously shapeshifts into a ".$race->getAlias().".");
+			$mob->getRoom()->announce($mob, $mob->getAlias(true)." shapeshifts into a ".$race->getAlias().".");
 		}
 		
-		private function doLong(Actor $actor, $args)
+		private function doLong(Actor $actor, lMob $mob, $long, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$arg_noun = implode(' ', array_slice($args, 2, 1));
-			$arg_long = implode(' ', array_slice($args, 3));
-			
-			$mob = $actor->getRoom()->getActorByInput($arg_noun);
-			
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "Who is that?");
-			
 			$mob->setLong($arg_long);
 			$mob->save();
 			
 			Server::out($actor, $mob->getAlias(true)."'s description now reads: ".$mob->getLong());
 		}
 		
-		private function doLevel(Actor $actor, $args)
+		private function doLevel(Actor $actor, lMob $mob, $level, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "What mob do you want to grant a level to?");
-			
-			$num_levels = 1;
-			if(sizeof($args) == 4)
-				$num_levels = $args[3];
-			
-			if(!is_numeric($num_levels))
+			if(!is_numeric($level))
 				return Server::out($actor, "Number of levels granted must be a number.");
 			
-			$mob->setLevel($num_levels);
+			$mob->setLevel($level);
 			$mob->save();
 			
-			return Server::out($actor, "You grant ".$mob->getAlias()." ".$num_levels." level".($num_levels==1?'':'s'));
+			return Server::out($actor, "You grant ".$mob->getAlias()." ".$level." level".($level==1?'':'s'));
 		}
 		
-		private function doInformation(Actor $actor, $args)
+		private function doInformation(Actor $actor, lMob $mob, $inf, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
-				return;
-			
-			array_shift($args);
-			$mob = $actor->getRoom()->getActorByInput($args);
-			
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
 			Server::out($actor,
 					"info page on mob #".$mob->getId().":\n".
 					"alias:                    ".$mob->getAlias()."\n".
@@ -143,31 +108,23 @@
 					($mob->getLong() ? $mob->getLong() : "Nothing."));
 		}
 		
-		private function doGold(Actor $actor, $args)
+		private function doGold(Actor $actor, lMob $mob, $value, $args)
 		{
-			$this->doWorth($actor, $args, 'gold');
+			$this->doWorth($actor, $mob, $value, $args, 'gold');
 		}
 		
-		private function doSilver(Actor $actor, $args)
+		private function doSilver(Actor $actor, lMob $mob, $value, $args)
 		{
-			$this->doWorth($actor, $args, 'silver');
+			$this->doWorth($actor, $mob, $value, $args, 'silver');
 		}
 		
-		private function doCopper(Actor $actor, $args)
+		private function doCopper(Actor $actor, lMob $mob, $value, $args)
 		{
-			$this->doWorth($actor, $args, 'copper');
+			$this->doWorth($actor, $mob, $value, $args, 'copper');
 		}
 		
-		private function doWorth(Actor $actor, $args, $type)
+		private function doWorth(Actor $actor, lMob $mob, $amount, $args, $type)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "Mob not here.");
-			
-			$amount = $args[3];
 			if(!is_numeric($amount) || $amount < 0 || $amount > 99999)
 				return Server::out($actor, "Invalid amount of ".$type." to give ".$mob->getAlias().".");
 			
@@ -178,122 +135,76 @@
 			Server::out($actor, "You set ".$mob->getAlias()."'s ".$type." amount to ".$amount.".");
 		}
 		
-		private function doRespawn(Actor $actor, $args)
+		private function doRespawn(Actor $actor, lMob $mob, $ticks, $args)
 		{
-			$ticks = array_pop($args);
 			if(!is_numeric($ticks))
 				return Server::out($actor, "What respawn time?");
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "Mob does not exist.");
 			
 			$mob->setDefaultRespawnTicks($ticks);
 			Server::out($actor, "You set ".$mob->getAlias()."'s respawn to ".$ticks." ticks.");
 		}
 		
-		private function doSex(Actor $actor, $args)
+		private function doSex(Actor $actor, lMob $mob, $sex, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
-			$sex = array_pop($args);
 			if($mob->setSex($sex))
 				return Server::out($actor, $mob->getAlias(true)." is now a ".strtoupper($mob->getDisplaySex()).".");
 		}
 		
-		private function doAutoflee(Actor $actor, $args)
+		private function doAutoflee(Actor $actor, lMob $mob, $auto_flee, $args)
 		{
-			$auto_flee = array_pop($args);
-			if(!is_numeric($auto_flee))
-				return Server::out($actor, "What respawn time?");
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
 			$mob->setAutoFlee($auto_flee);
 			Server::out($actor, $mob->getAlias(true)."'s auto flee is set to ".$auto_flee." hp.");
 		}
 		
-		private function doMovement(Actor $actor, $args)
+		private function doMovement(Actor $actor, lMob $mob, $movement, $args)
 		{
-			$movement = array_pop($args);
-			if(!is_numeric($movement))
-				return Server::out($actor, "What movement speed?");
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
 			$mob->setMovementTicks($movement);
 			Server::out($actor, $mob->getAlias()."'s movement speed set to ".$movement." ticks.");
 		}
 		
-		private function doArea(Actor $actor, $args)
+		private function doArea(Actor $actor, lMob $mob, $area, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
-			$area = implode(' ', array_slice($args, 3));
-			
 			$mob->setArea($area);
 			Server::out($actor, $mob->getAlias(true)."'s area is now set to ".$area.".");
 		}
 		
-		private function doHp(Actor $actor, $args)
+		private function doHp(Actor $actor, lMob $mob, $hp, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
-			$mob->setHp($args[3]);
-			$mob->setMaxHp($args[3]);
-			Server::out($actor, $mob->getAlias(true)."'s hp is now set to ".$args[3].".");
+			$mob->setHp($hp);
+			$mob->setMaxHp($hp);
+			Server::out($actor, $mob->getAlias(true)."'s hp is now set to ".$hp.".");
 		}
 		
-		private function doMana(Actor $actor, $args)
+		private function doMana(Actor $actor, lMob $mob, $mana, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
-			$mob->setMana($args[3]);
-			$mob->setMaxMana($args[3]);
-			Server::out($actor, $mob->getAlias(true)."'s mana is now set to ".$args[3].".");
+			$mob->setMana($mana);
+			$mob->setMaxMana($mana);
+			Server::out($actor, $mob->getAlias(true)."'s mana is now set to ".$mana.".");
 		}
 		
-		private function doMv(Actor $actor, $args)
+		private function doMv(Actor $actor, lMob $mob, $movement, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$mob = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($mob instanceof \Living\Mob))
-				return Server::out($actor, "That's not a mob.");
-			
-			$mob->setMovement($args[3]);
-			$mob->setMaxMovement($args[3]);
-			Server::out($actor, $mob->getAlias(true)."'s movement points are now set to ".$args[3].".");
+			$mob->setMovement($movement);
+			$mob->setMaxMovement($movement);
+			Server::out($actor, $mob->getAlias(true)."'s movement points are now set to ".$movement.".");
+		}
+		
+		private function doAlias(Actor $actor, lMob $mob, $alias, $args)
+		{
+			$old_alias = $mob->getAlias(true);
+			$mob->setAlias($alias);
+			Server::out($actor, $old_alias."'s alias has changed to: ".$mob->getAlias().".");
+		}
+		
+		private function doNouns(Actor $actor, lMob $mob, $nouns, $args)
+		{
+			$mob->setNouns($nouns);
+			Server::out($actor, $mob->getAlias(true)."'s nouns have changed to: ".$mob->getNouns().".");
 		}
 		
 		private function getCommand($arg)
 		{
-			$commands = array('race', 'level', 'hp', 'mana', 'mv', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
+			$commands = array('alias', 'nouns', 'race', 'level', 'hp', 'mana', 'mv', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
 			
 			$command = array_filter($commands, function($c) use ($arg) 
 				{

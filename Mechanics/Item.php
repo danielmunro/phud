@@ -188,6 +188,51 @@
 			$to->add($this);
 		}
 		
+		public static function getMaterials()
+		{
+			return array(
+						self::MATERIAL_ADAMANTITE,
+						self::MATERIAL_ALLOY,
+						self::MATERIAL_ALUMINUM,
+						self::MATERIAL_BRASS,
+						self::MATERIAL_BRONZE,
+						self::MATERIAL_COPPER,
+						self::MATERIAL_COTTON,
+						self::MATERIAL_FOOLS_GOLD,
+						self::MATERIAL_GOLD,
+						self::MATERIAL_IRON,
+						self::MATERIAL_LEAD,
+						self::MATERIAL_LEATHER,
+						self::MATERIAL_METAL,
+						self::MATERIAL_MINERAL,
+						self::MATERIAL_MITHRIL,
+						self::MATERIAL_NICKEL,
+						self::MATERIAL_OBSIDIAN,
+						self::MATERIAL_PEWTER,
+						self::MATERIAL_PLATINUM,
+						self::MATERIAL_SILVER,
+						self::MATERIAL_STAINLESS,
+						self::MATERIAL_STEEL,
+						self::MATERIAL_TIN,
+						self::MATERIAL_TINFOIL,
+						self::MATERIAL_TITANIUM,
+						self::MATERIAL_WIRE,
+						self::MATERIAL_WOOD
+					);
+		}
+		
+		public static function findMaterial($material)
+		{
+			$materials = self::getMaterials();
+			$key = array_search($material, $materials);
+			if($key !== false)
+				return $materials[$key];
+			foreach($materials as $m)
+				if(strpos($m, $material) === 0)
+					return $m;
+			return false;
+		}
+		
 		public function getInformation()
 		{
 			return 
@@ -200,7 +245,7 @@
 				"material:         ".$this->getMaterial()."\n".
 				"value:            ".$this->getValue()."\n".
 				"weight:           ".$this->getWeight()."\n".
-				"can own:          ".$this->getCanOwn()."\n".
+				"ownable:          ".$this->getCanOwn()."\n".
 				"long:\n".
 				$this->getLong()."\n".
 				"=====================\n".

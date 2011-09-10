@@ -78,19 +78,7 @@
 		
 		private function doCreateMob(Actor $actor, $args)
 		{
-			if(sizeof($args) <= 2)
-				return Server::out($actor, "You need to specify a name for your new mob.");
-			
-			$alias = implode(' ', array_slice($args, 2));
-			$nouns = substr($alias, strrpos($alias, ',')+1);
-			$alias = substr($alias, 0, strrpos($alias, ','));
-			
-			if(!\Living\Mob::validateAlias($alias))
-				return Server::out($actor, "\"".$alias."\" is not a valid name for a mob.");
-			
 			$mob = new \Living\Mob();
-			$mob->setAlias($alias);
-			$mob->setNouns($nouns);
 			$mob->setRoom($actor->getRoom());
 			$mob->setStartRoom();
 			$mob->save();
