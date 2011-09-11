@@ -35,6 +35,7 @@
 		public function __construct()
 		{
 			$this->position = Equipment::POSITION_GENERIC;
+			parent::__construct();
 		}
 	}
 ?>

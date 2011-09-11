@@ -158,6 +158,18 @@
 			);
 		}
 		
+		public function setRace($race)
+		{
+			parent::setRace($race);
+			$atts = $this->getRace()->getAttributes();
+			$this->attributes->setStr($atts->getStr());
+			$this->attributes->setInt($atts->getInt());
+			$this->attributes->setWis($atts->getWis());
+			$this->attributes->setDex($atts->getDex());
+			$this->attributes->setCon($atts->getCon());
+			$this->attributes->setCha($atts->getCha());
+		}
+		
 		public function decreaseRespawnTime()
 		{
 			return $this->respawn_time--;

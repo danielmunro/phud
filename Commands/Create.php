@@ -60,9 +60,17 @@
 					return $this->doCreateItem($actor, new Drink(), $args);
 				case strpos($args[1], 'container') === 0:
 					return $this->doCreateContainer($actor, new Container(), $args);
+				case strpos($args[2], 'copper') === 0:
+					return $this->doCreateCopper($actor, $args[1]);
 				default:
 					return Server::out($actor, "What do you want to create?");
 			}
+		}
+		
+		private function doCreateCopper($actor, $amount)
+		{
+			$actor->addCopper($amount);
+			Server::out($actor, "You create ".$amount." copper.");
 		}
 		
 		private function doCreateItem(Actor $actor, Item $item, $args)

@@ -97,7 +97,20 @@
 		
 		public function setDoor($direction, Door $door)
 		{
-			$this->doors[$direction] = $door;
+			$dir = self::getDirectionStr($direction);
+			if($dir)
+			{
+				$this->doors[$direction] = $door;
+			}
+		}
+		
+		public function removeDoor(Door $door)
+		{
+			$key = array_search($door, $this->doors);
+			if($key !== false)
+			{
+				unset($this->doors[$key]);
+			}
 		}
 		
 		public function getDoor($direction)

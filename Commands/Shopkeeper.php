@@ -29,6 +29,7 @@
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
 	use \Mechanics\Race;
+	use \Living\Shopkeeper as lShopkeeper;
 	class Shopkeeper extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
@@ -39,91 +40,51 @@
 	
 		public function perform(Actor $actor, $args = array())
 		{
-			if(sizeof($args) <= 1)
-				return Server::out($actor, "What were you trying to do?");
+			if(!$this->hasArgCount($actor, $args, 2))
+				return;
 		
-			$command = $this->getCommand($args[1]);
-			if($command)
-			{
-				$fn = 'do'.ucfirst($command);
-				$this->$fn($actor, $args);
-			}
+			$command_fn = $this->getCommand($args[2]);
+			$shopkeeper = $actor->getRoom()->getActorByInput($args[1]);
+			$value = implode(' ', array_slice($args, 3));
+			
+			if($command_fn && $shopkeeper instanceof lShopkeeper)
+				return $this->$command_fn($actor, $shopkeeper, $value, $args);
+			
+			if(!($shopkeeper instanceof lShopkeeper))
+				return Server::out($actor, "You can't find them.");
+			
+			if(!$command_fn)
+				return Server::out($actor, "What are you trying to do.");
 		}
 		
-		private function doRace(Actor $actor, $args)
+		private function doRace(Actor $actor, lShopkeeper $shopkeeper, $race, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$arg_race = implode(' ', array_slice($args, sizeof($args) - 1));
-			$arg_noun = implode(' ', array_slice($args, 2, 1));
-			
-			$race = Alias::lookup($arg_race);
-			$shopkeeper = $actor->getRoom()->getActorByInput($arg_noun);
-			
+			$race = Alias::lookup($race);
 			if(!($race instanceof Race))
 				return Server::out($actor, "That is not a valid race.");
-			
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "Who?");
-			
 			$shopkeeper->setRace($race);
 			$shopkeeper->save();
 			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." spontaneously shapeshifts into a ".$race->getAlias().".");
 		}
 		
-		private function doLong(\Mechanics\Actor $actor, $args)
+		private function doLong(\Mechanics\Actor $actor, lShopkeeper $shopkeeper, $long, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$arg_noun = implode(' ', array_slice($args, 2, 1));
-			$arg_long = implode(' ', array_slice($args, 3));
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($arg_noun);
-			
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "Who is that?");
-			
-			$shopkeeper->setLong($arg_long);
+			$shopkeeper->setLong($long);
 			$shopkeeper->save();
-			
 			Server::out($actor, $shopkeeper->getAlias(true)."'s description now reads: ".$shopkeeper->getLong());
 		}
 		
-		private function doLevel(Actor $actor, $args)
+		private function doLevel(Actor $actor, lShopkeeper $shopkeeper, $levels, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "What shopkeeper do you want to grant a level to?");
-			
-			$num_levels = 1;
-			if(sizeof($args) == 4)
-				$num_levels = $args[3];
-			
-			if(!is_numeric($num_levels))
+			if(!is_numeric($levels))
 				return Server::out($actor, "Number of levels granted must be a number.");
-			
-			$shopkeeper->setLevel($num_levels);
+			$shopkeeper->setLevel($levels);
 			$shopkeeper->save();
-			
-			return Server::out($actor, "You grant ".$shopkeeper->getAlias()." ".$num_levels." level".($num_levels==1?'':'s'));
+			return Server::out($actor, "You grant ".$shopkeeper->getAlias()." ".$levels." level".($levels==1?'':'s'));
 		}
 		
-		private function doInformation(Actor $actor, $args)
+		private function doInformation(Actor $actor, lShopkeeper $shopkeeper, $null, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
-				return;
-			
-			array_shift($args);
-			$shopkeeper = $actor->getRoom()->getActorByInput($args);
-			
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
-			
 			Server::out($actor,
 					"info page on shopkeeper #".$shopkeeper->getId().":\n".
 					"alias:                    ".$shopkeeper->getAlias()."\n".
@@ -140,31 +101,23 @@
 					($shopkeeper->getLong() ? $shopkeeper->getLong() : "Nothing."));
 		}
 		
-		private function doGold(Actor $actor, $args)
+		private function doGold(Actor $actor, lShopkeeper $shopkeeper, $gold, $args)
 		{
-			$this->doWorth($actor, $args, 'gold');
+			$this->doWorth($actor, $shopkeeper, $gold, $args, 'gold');
 		}
 		
-		private function doSilver(Actor $actor, $args)
+		private function doSilver(Actor $actor, lShopkeeper $shopkeeper, $gold, $args)
 		{
-			$this->doWorth($actor, $args, 'silver');
+			$this->doWorth($actor, $shopkeeper, $gold, $args, 'silver');
 		}
 		
-		private function doCopper(Actor $actor, $args)
+		private function doCopper(Actor $actor, lShopkeeper $shopkeeper, $gold, $args)
 		{
-			$this->doWorth($actor, $args, 'copper');
+			$this->doWorth($actor, $shopkeeper, $copper, $args, 'copper');
 		}
 		
-		private function doWorth(Actor $actor, $args, $type)
+		private function doWorth(Actor $actor, $shopkeeper, $amount, $args, $type)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "Shopkeeper not here.");
-			
-			$amount = $args[3];
 			if(!is_numeric($amount) || $amount < 0 || $amount > 99999)
 				return Server::out($actor, "Invalid amount of ".$type." to give ".$shopkeeper->getAlias().".");
 			
@@ -175,89 +128,54 @@
 			Server::out($actor, "You set ".$shopkeeper->getAlias()."'s ".$type." amount to ".$amount.".");
 		}
 		
-		private function doSex(Actor $actor, $args)
+		private function doSex(Actor $actor, lShopkeeper $shopkeeper, $sex, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
-			
-			$sex = array_pop($args);
 			if($shopkeeper->setSex($sex))
 				return Server::out($actor, $shopkeeper->getAlias(true)." is now a ".strtoupper($shopkeeper->getDisplaySex()).".");
 		}
 		
-		private function doMovement(Actor $actor, $args)
+		private function doMovement(Actor $actor, lShopkeeper $shopkeeper, $movement, $args)
 		{
-			$movement = array_pop($args);
 			if(!is_numeric($movement))
 				return Server::out($actor, "What movement speed?");
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
-			
 			$shopkeeper->setMovementTicks($movement);
 			Server::out($actor, $shopkeeper->getAlias()."'s movement speed set to ".$movement." ticks.");
 		}
 		
-		private function doArea(Actor $actor, $args)
+		private function doArea(Actor $actor, lShopkeeper $shopkeeper, $area, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
-			
-			$area = implode(' ', array_slice($args, 3));
-			
 			$shopkeeper->setArea($area);
 			Server::out($actor, $shopkeeper->getAlias(true)."'s area is now set to ".$area.".");
 		}
 		
-		private function doAlias(Actor $actor, $args)
+		private function doAlias(Actor $actor, lShopkeeper $shopkeeper, $alias, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 4))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
 			$old_alias = $shopkeeper->getAlias(true);
-			$alias = implode(' ', array_slice($args, 3));
-			
 			$shopkeeper->setAlias($alias);
 			Server::out($actor, $old_alias." has been renamed to ".$shopkeeper->getAlias().".");
 		}
 		
-		private function doDelete(Actor $actor, $args)
+		private function doDelete(Actor $actor, lShopkeeper $shopkeeper, $null, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
-				return;
-			
-			$shopkeeper = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($shopkeeper instanceof \Living\Shopkeeper))
-				return Server::out($actor, "That's not a shopkeeper.");
-			
 			$shopkeeper->delete();
 			$actor->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." poofs out of existence.");
 		}
 		
+		private function doNouns(Actor $actor, lShopkeeper $shopkeeper, $nouns, $args)
+		{
+			$shopkeeper->setNouns($nouns);
+			Server::out($actor, $shopkeeper->getAlias(true)."'s nouns are now: ".$shopkeeper->getNouns());
+		}
+		
 		private function getCommand($arg)
 		{
-			$commands = array('race', 'delete', 'alias', 'level', 'information', 'long', 'gold', 'silver', 'copper', 'movement', 'sex', 'area');
-			
+			$commands = array('race', 'delete', 'alias', 'nouns', 'level', 'information', 'long', 'gold', 'silver', 'copper', 'movement', 'sex', 'area');
 			$command = array_filter($commands, function($c) use ($arg) 
 				{
 					return strpos($c, $arg) === 0;
 				});
-			
 			if(sizeof($command))
-				return str_replace(' ', '', array_shift($command));
-			
+				return 'do'.ucfirst(str_replace(' ', '', array_shift($command)));
 			return false;
 		}
 	}

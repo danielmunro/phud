@@ -44,6 +44,14 @@
 		{
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();
+			
+			$this->attributes->setHp(20);
+			$this->attributes->setMana(20);
+			$this->attributes->setMovement(100);
+			$this->max_attributes->setHp(20);
+			$this->max_attributes->setMana(20);
+			$this->max_attributes->setMovement(100);
+			
 			parent::__construct();
 		}
 		

@@ -83,7 +83,8 @@
 		
 		public function getContainerByInput($input)
 		{
-			
+			if(is_array($input))
+				$input = $input[1];
 			foreach($this->items as $item)
 			{
 				$nouns = $item->getNouns();

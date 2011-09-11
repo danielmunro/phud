@@ -25,17 +25,23 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Item;
+	use \Mechanics\Alias;
+	use \Mechanics\Actor;
+	use \Mechanics\Server;
+	use \Mechanics\Ability;
+	use \Living\Shopkeeper;
 	class Buy extends \Mechanics\Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('buy', $this);
+			new Alias('buy', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			if(sizeof($args) == 3)
@@ -44,25 +50,32 @@
 			{
 				$targets = $actor->getRoom()->getActors();
 				foreach($targets as $potential_target)
-					if($potential_target instanceof \Living\Shopkeeper)
+					if($potential_target instanceof Shopkeeper)
 						$target = $potential_target;
 			}
 			
-			if(!($target instanceof \Mechanics\Actor))
-				return \Mechanics\Server::out($actor, "They are not here.");
+			if(!($target instanceof Actor))
+				return Server::out($actor, "They are not here.");
 			
-			if(!($target instanceof \Living\Shopkeeper))
-				return \Mechanics\Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
+			if(!($target instanceof Shopkeeper))
+				return Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
 			
-			$item = $target->getInventory()->getItemByInput($args);
+			$item = $target->getInventory()->getItemByInput($args[1]);
 			
-			if(!($item instanceof \Items\Item))
+			if(!($item instanceof Item))
 				return Say::perform($target, $target->getNoItemMessage());
 			
-			if($actor->purchaseFrom($target, $item))
-				return \Mechanics\Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
+			$value = $item->getValue();
+			$abilities = $actor->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_BUY_ITEM);
+			foreach($abilities as $learned_ability)
+				$value += $learned_ability->perform($value);
+		
+			if($actor->decreaseFunds($value) === false)
+				return Say::perform($target, $target->getNotEnoughMoneyMessage());
 			
-			return Say::perform($target, $target->getNotEnoughMoneyMessage());
+			$new_item = clone $item;
+			$actor->getInventory()->add($new_item);
+			return Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 		}
 	}
 ?>

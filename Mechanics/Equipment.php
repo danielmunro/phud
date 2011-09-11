@@ -27,22 +27,22 @@
 	namespace Mechanics;
 	abstract class Equipment extends \Mechanics\Item
 	{
-		const POSITION_LIGHT = 0;
-		const POSITION_FINGER = 1;
-		const POSITION_NECK = 2;
-		const POSITION_BODY = 3;
-		const POSITION_HEAD = 4;
-		const POSITION_LEGS = 5;
-		const POSITION_FEET = 6;
-		const POSITION_HANDS = 7;
-		const POSITION_ARMS = 8;
-		const POSITION_TORSO = 9;
-		const POSITION_WAIST = 10;
-		const POSITION_WRIST = 11;
-		const POSITION_HOLD = 13;
-		const POSITION_FLOAT = 14;
-		const POSITION_WIELD = 15;
-		const POSITION_GENERIC = 16;
+		const POSITION_LIGHT = 'light';
+		const POSITION_FINGER = 'finger';
+		const POSITION_NECK = 'neck';
+		const POSITION_BODY = 'body';
+		const POSITION_HEAD = 'head';
+		const POSITION_LEGS = 'legs';
+		const POSITION_FEET = 'feet';
+		const POSITION_HANDS = 'hands';
+		const POSITION_ARMS = 'arms';
+		const POSITION_TORSO = 'torso';
+		const POSITION_WAIST = 'waist';
+		const POSITION_WRIST = 'wrist';
+		const POSITION_HOLD = 'hold';
+		const POSITION_FLOAT = 'float';
+		const POSITION_WIELD = 'wield';
+		const POSITION_GENERIC = 'generic';
 	
 		protected $position = 0;
 		protected $condition = 100;
@@ -86,6 +86,45 @@
 		public function setSize($size)
 		{
 			$this->size = $size;
+		}
+		
+		public static function getPositionByStr($position)
+		{
+			switch(strtolower($position))
+			{
+				case strpos('light', $position) === 0:
+					return self::POSITION_LIGHT;
+				case strpos('finger', $position) === 0:
+					return self::POSITION_FINGER;
+				case strpos('neck', $position) === 0:
+					return self::POSITION_NECK;
+				case strpos('body', $position) === 0:
+					return self::POSITION_BODY;
+				case strpos('head', $position) === 0:
+					return self::POSITION_HEAD;
+				case strpos('legs', $position) === 0:
+					return self::POSITION_LEGS;
+				case strpos('feet', $position) === 0:
+					return self::POSITION_FEET;
+				case strpos('hands', $position) === 0:
+					return self::POSITION_HANDS;
+				case strpos('arms', $position) === 0:
+					return self::POSITION_ARMS;
+				case strpos('torso', $position) === 0:
+					return self::POSITION_TORSO;
+				case strpos('waist', $position) === 0:
+					return self::POSITION_WAIST;
+				case strpos('wrist', $position) === 0:
+					return self::POSITION_WRIST;
+				case strpos('hold', $position) === 0:
+					return self::POSITION_HOLD;
+				case strpos('float', $position) === 0:
+					return self::POSITION_FLOAT;
+				case strpos('wield', $position) === 0:
+					return self::POSITION_WIELD;
+				default:
+					return false;
+			}
 		}
 		
 		public function getInformation()

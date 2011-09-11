@@ -29,6 +29,8 @@
 	use \Mechanics\Server;
 	use \Mechanics\Actor;
 	use \Mechanics\Item as mItem;
+	use \Mechanics\Equipment as mEquipment;
+	use \Items\Weapon;
 	class Item extends \Mechanics\Command
 	{
 	
@@ -47,15 +49,12 @@
 			$value = implode(' ', array_slice($args, 3));
 			
 			$command = '';
-			switch(get_class($item))
-			{
-				case 'Items\Weapon':
-					$command = $this->getWeaponCommand($args[2]);
-					break;
-				case 'Mechanics\Item':
-					$command = $this->getItemCommand($args[2]);
-					break;
-			}
+			if($item instanceof Weapon)
+				$command = $this->getWeaponCommand($args[2]);
+			else if($item instanceof mEquipment)
+				$command = $this->getEquipmentCommand($args[2]);
+			else if($item instanceof mItem)
+				$command = $this->getItemCommand($args[2]);
 			
 			if(!$item)
 				return Server::out($actor, "You can't find it.");
@@ -155,14 +154,36 @@
 			Server::out($actor, $item->getShort(true)."'s verb is now: ".$item->getVerb().".");
 		}
 		
+		private function doPosition(Actor $actor, mItem $item, $position, $args)
+		{
+			$position = mEquipment::getPositionByStr($position);
+			if($position !== false)
+			{
+				$item->setPosition($position);
+				return Server::out($actor, $item->getShort(true)."'s position is now: ".$position.".");
+			}
+			Server::out($actor, "That's an invalid position.");
+		}
+		
 		private function getItemCommand($arg)
 		{
 			return $this->getCommand($arg, array('information', 'nouns', 'short', 'long', 'material', 'worth', 'value', 'weight', 'ownable', 'level'));
 		}
 		
+		private function getEquipmentCommand($arg)
+		{
+			$command = $this->getItemCommand($arg);
+			if($command)
+				return $command;
+			return $this->getCommand($arg, array('position'));
+		}
+		
 		private function getWeaponCommand($arg)
 		{
-			return $this->getCommand($arg, array('information', 'nouns', 'short', 'long', 'material', 'worth', 'value', 'weight', 'ownable', 'level', 'type', 'damage', 'verb'));
+			$command = $this->getEquipmentCommand($arg);
+			if($command)
+				return $command;
+			return $this->getCommand($arg, array('type', 'damage', 'verb'));
 		}
 		
 		private function getCommand($arg, $commands)

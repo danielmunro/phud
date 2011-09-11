@@ -261,20 +261,6 @@
 			return true;
 		}
 		
-		public function purchaseFrom(\Items\Item $item, Actor $seller)
-		{
-			$value = $item->getValue();
-			$abilities = $this->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_BUY_ITEM);
-			foreach($abilities as $learned_ability)
-				$value += $learned_ability->perform($value);
-		
-			if($this->decreaseFunds($value) === false)
-				return false;
-			
-			$item->copyTo($actor);
-			return true;
-		}
-		
 		// End money
 		
 		public function getSex()

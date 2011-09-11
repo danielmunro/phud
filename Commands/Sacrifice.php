@@ -29,7 +29,9 @@
 	use \Mechanics\Actor;
 	use \Mechanics\Item;
 	use \Mechanics\Server;
-	use \Living\Corpse;
+	use \Items\Corpse;
+	use \Living\User;
+	use \Living\Mob;
 	class Sacrifice extends \Mechanics\Command
 	{
 	
@@ -51,9 +53,25 @@
 				Server::out($actor, "Mojo finds ".$item->getShort()." pleasing and rewards you.");
 				$actor->getRoom()->announce($actor, $actor->getAlias()." sacrifices ".$item->getShort()." to Mojo.");
 				$actor->addCopper($copper);
+				return;
 			}
-			else
-			 return Server::out($actor, "You can't find that.");
+			else if($actor instanceof User && $actor->isDM())
+			{
+				$mob = $actor->getRoom()->getActorByInput($args[1]);
+				if($mob instanceof Mob)
+				{
+					$actor->getRoom()->actorRemove($mob);
+					return Server::out($actor, "You slay ".$mob->getAlias()." and eat its soul in the name of your gods.");
+				}
+				
+				$door = $actor->getRoom()->getDoorByInput($args[1]);
+				if($door instanceof Door)
+				{
+					$actor->getRoom()->removeDoor($door);
+					return Server::out($actor, ucfirst($door->getShort())." crumbles into dust and disappears into the wind.");
+				}
+			}
+			Server::out($actor, "You can't find that.");
 		}
 	}
 ?>
