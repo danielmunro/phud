@@ -37,9 +37,8 @@
 	// Autoloader
 	function __autoload($class)
 	{
-		
-		list($namespace, $class) = explode("\\", $class);
-		if(file_exists($namespace . '/' . $class . '.php'))
-			require_once($namespace . '/' . $class . '.php');
+		$path = str_replace("\\", "/", $class).".php";
+		if(file_exists($path))
+			require_once($path);
 	}
 ?>

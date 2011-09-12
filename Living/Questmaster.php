@@ -24,31 +24,31 @@
 	 * @package Phud
 	 *
 	 */
-
-	abstract class Questmaster extends Actor
+	namespace Living;
+	use \Mechanics\Quest;
+	class Questmaster extends Mob
 	{
-		protected $quest_index = 0;
+		protected $quests = array();
 		
-		//public function __construct($alias, $noun, $description, $room_id, $level, $race)
-		public function __construct($room_id)
+		public function getQuests()
 		{
-		
-			//$this->alias = $alias;
-			//$this->noun = $noun;
-			//$this->description = $description;
-			//$this->level = $level;
-			//$this->setRace($race);
-			parent::__construct($room_id);
-		
+			return $this->quests;
 		}
 		
-		abstract public function questInfo(&$actor);
-		abstract public function questAward(&$actor);
-		abstract public function questAccept(&$actor);
-		abstract public function questDone(&$actor);
+		public function addQuest(Quest $quest)
+		{
+			$this->quests[] = $quest;
+		}
 		
-		public function getTable() { return 'quest'; }
-		
+		public function removeQuest(Quest $quest)
+		{
+			$key = array_search($quest, $this->quests);
+			if($key !== false)
+			{
+				unset($this->quests[$key]);
+				$this->quests = array_values($this->quests);
+			}
+		}
 	}
 
 ?>
