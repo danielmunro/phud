@@ -32,7 +32,7 @@
 		{
 			if($ansii === null)
 			{
-				if(strpos($message, 'Questmaster') === 0)
+				if(strpos($message, 'questmaster') === 0)
 					$ansii = '[37m';
 				if(strpos($message, 'Quest Award') === 0)
 					$ansii = '[31m';

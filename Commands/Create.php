@@ -34,6 +34,9 @@
 	use \Items\Food;
 	use \Items\Drink;
 	use \Items\Container;
+	use \Living\Mob;
+	use \Living\Shopkeeper;
+	use \Living\Questmaster;
 	class Create extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 	
@@ -50,6 +53,8 @@
 					return $this->doCreateMob($actor, $args);
 				case strpos($args[1], 'shopkeeper') === 0:
 					return $this->doCreateShopkeeper($actor, $args);
+				case strpos($args[1], 'questmaster') === 0:
+					return $this->doCreateQuestmaster($actor, $args);
 				case strpos($args[1], 'armor') === 0:
 					return $this->doCreateItem($actor, new Armor(), $args);
 				case strpos($args[1], 'weapon') === 0:
@@ -86,7 +91,7 @@
 		
 		private function doCreateMob(Actor $actor, $args)
 		{
-			$mob = new \Living\Mob();
+			$mob = new Mob();
 			$mob->setRoom($actor->getRoom());
 			$mob->setStartRoom();
 			$mob->save();
@@ -96,11 +101,20 @@
 		
 		private function doCreateShopkeeper(Actor $actor, $args)
 		{
-			$shopkeeper = new \Living\Shopkeeper();
+			$shopkeeper = new Shopkeeper();
 			$shopkeeper->setRoom($actor->getRoom());
 			$shopkeeper->save();
 			
 			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." poofs into existence.");
+		}
+		
+		private function doCreateQuestmaster(Actor $actor, $args)
+		{
+			$questmaster = new Questmaster();
+			$questmaster->setRoom($actor->getRoom());
+			$questmaster->save();
+			
+			$questmaster->getRoom()->announce($questmaster, $questmaster->getAlias(true)." poofs into existence.");
 		}
 	}
 ?>

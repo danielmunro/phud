@@ -28,6 +28,8 @@
 	use \Mechanics\Server;
 	use \Mechanics\Dbr;
 	use \Mechanics\Alias;
+	use \Mechanics\Quest\Quest;
+	use \Mechanics\Quest\Log as QuestLog;
 	class User extends \Mechanics\Fighter
 	{
 		protected $nourishment = 5;
@@ -40,6 +42,7 @@
 		protected $discipline_focus = null;
 		protected $date_created = null;
 		protected $is_dm = false;
+		protected $quest_log = null;
 		protected static $instances = array();
 		
 		public function __construct()
@@ -55,6 +58,9 @@
 			$this->max_attributes->setHp(20);
 			$this->max_attributes->setMana(100);
 			$this->max_attributes->setMovement(100);
+			
+			$this->quest_log = new QuestLog($this);
+			//$this->quest_log->add(Quest::findByHook(Quest::HOOK_CREATE, $this));
 			
 			self::$instances[] = $this;
 		}
@@ -77,6 +83,11 @@
 		public function getDateCreated()
 		{
 			return $this->date_created;
+		}
+		
+		public function getQuestLog()
+		{
+			return $this->quest_log;
 		}
 		
 		public function prompt()

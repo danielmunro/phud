@@ -24,42 +24,45 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Living;
-	use \Mechanics\Quest;
-	class Questmaster extends Mob
+	namespace Mechanics\Quest;
+	use \Living\User as User;
+	class Log
 	{
+		protected $user = null;
 		protected $quests = array();
-		protected $list_message = 'Here are my quests:';
-		
-		public function getQuests()
+	
+		public function __construct(User $user)
 		{
-			return $this->quests;
+			$this->user = $user;
 		}
 		
-		public function getListMessage()
+		public function add(Quest $quest)
 		{
-			return $this->list_message;
+			$this->quests[] = new Instance($this->user, $quest);
 		}
 		
-		public function addQuest(Quest $quest)
-		{
-			$this->quests[] = $quest;
-		}
-		
-		public function removeQuest(Quest $quest)
+		public function remove(Quest $quest)
 		{
 			$key = array_search($quest, $this->quests);
 			if($key !== false)
-			{
-				unset($this->quests[$key]);
-				$this->quests = array_values($this->quests);
-			}
+				array_splice($this->quests, $key, 1);
 		}
-		
-		public function setListMessage($list_message)
+
+		public function getQuestByInput($input)
 		{
-			$this->list_message = $list_message;
+			$quests = array_filter(
+				$this->quests,
+				function($qi) use ($input)
+				{
+					$nouns = explode(" ", $qi->getQuest()->getNouns());
+					foreach($nouns as $noun)
+						if(strpos($noun, $input) === 0)
+							return true;
+					return false;
+				}
+			);
+			if($quests)
+				return array_shift($quests);
 		}
 	}
-
 ?>

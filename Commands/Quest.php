@@ -25,50 +25,109 @@
 	 *
 	 */
 	namespace Commands;
+	use \Mechanics\Actor;
+	use \Mechanics\Alias;
+	use \Mechanics\Server;
+	use \Mechanics\Tag;
+	use \Mechanics\Quest\Questmaster;
+	use \Mechanics\Quest\Instance as QuestInstance;
+	use \Mechanics\Quest\Quest as mQuest;
 	class Quest extends \Mechanics\Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('quest', $this);
+			new Alias('quest', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
+			if(!$this->hasArgCount($actor, $args, 2))
+				return;
 			
-			$action = $args[1];
-			$target = null;
+			$command = $this->getCommand($args[1]);
+			if(!$command && $actor->isDM())
+				$command = $this->getDMCommand($args[1]);
 			
-			if(sizeof($args) == 3)
-			{
-				$target = $actor->getRoom()->getActorByInput($args);
-				if(!($target instanceof Questmaster))
-					return Server::out($actor, "You don't see them anywhere.");
-			}
-			
+			$target = $actor->getRoom()->getActorByInput($args[2]);
 			if(!($target instanceof Questmaster))
-			{
-				$actors = $actor->getRoom()->getActors();
-				foreach($actors as $t)
-					if($t instanceof Questmaster)
-						$target = $t;
-			}
+				return Server::out($actor, "You don't see them anywhere.");
 			
-			if(!($target instanceof Questmaster))
-				return Server::out($actor, "There are no " . Tag::apply('Questmasters') . "here.");
+			$value = implode(' ', array_slice($args, 3));
 			
-			if(strpos('info', $action) === 0)
-				return $target->questInfo($actor);
+			if($command)
+				$this->$command($target, $actor, $value, $args);
 
-			if(strpos('accept', $action) === 0)
-				return $target->questAccept($actor);
-			
-			if(strpos('done', $action) === 0)
-				return $target->questDone($actor);
-			
 			return Server::out($actor, "There is no quest action like that. Try help quest.");
+		}
+		
+		private function doList(Questmaster $questmaster, Actor $actor, $value, $args)
+		{
+			$quests = $questmaster->getQuests();
+			Server::out($actor, $questmaster->getListMessage());
+			array_walk(
+				$quests,
+				function($instance) use ($actor)
+				{
+					Server::out($actor, $instance->getQuest()->getShort().($instance->getQuest()->isQualified($actor) ? '' : ' (unavailable)'));
+				}
+			);
+		}
+		
+		private function doAccept(Questmaster $questmaster, Actor $actor, $value, $args)
+		{
+			$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[1]);
+			if(!$quest_instance)	
+				$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[2]);
+			
+			if(!$quest_instance->getQuest()->isQualifiedToAccept($actor, $questmaster))
+				return;
+			
+			if($quest_instance)
+			{
+				$actor->getQuestLog()->add(new QuestInstance($actor, $quest_instance->getQuest()));
+				return Server::out($actor, "You accept ".$questmaster->getAlias()."'s quest: ".$quest_instance->getQuest().".");
+			}
+		}
+		
+		private function doCreate(Questmaster $questmaster, Actor $actor, $value, $args)
+		{
+			$questmaster->getQuestLog()->add(new mQuest());
+			Server::out($actor, $questmaster->getAlias(true)." has obtained a new quest!");
+		}
+		
+		private function doShort(Questmaster $questmaster, Actor $actor, $value, $args)
+		{
+			$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[3]);
+			if($quest_instance)
+			{
+				$value = implode(" ", array_slice($args, 4));
+				$old_short = $quest_instance->getQuest()->getShort();
+				$quest_instance->getQuest()->setShort($value);
+				return Server::out($actor, ucfirst($old_short)." has been renamed to ".$value.".");
+			}
+			Server::out($actor, "What quest?");
+		}
+		
+		private function getCommand($input)
+		{
+			return $this->command(array('list', 'accept'), $input);
+		}
+		
+		private function getDMCommand($input)
+		{
+			return $this->command(array('create', 'short'), $input);
+		}
+		
+		private function command($commands, $input)
+		{
+			foreach($commands as $command)
+			{
+				if(strpos($command, $input) === 0)
+					return 'do'.ucfirst($command);
+			}
 		}
 	}
 ?>

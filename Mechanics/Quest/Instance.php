@@ -24,42 +24,39 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Living;
-	use \Mechanics\Quest;
-	class Questmaster extends Mob
+	namespace Mechanics\Quest;
+	use \Living\User;
+	class Instance
 	{
-		protected $quests = array();
-		protected $list_message = 'Here are my quests:';
+		protected $quest = null;
+		protected $user = null;
+		protected $requirements_progress = null;
 		
-		public function getQuests()
+		public function __construct(User $user, Quest $quest)
 		{
-			return $this->quests;
+			$this->user = $user;
+			$this->quest = $quest;
+			$this->requirements_progress = new Requirements($this->quest->getRequirementsToComplete());
 		}
 		
-		public function getListMessage()
+		public function getUser()
 		{
-			return $this->list_message;
+			return $this->user;
 		}
 		
-		public function addQuest(Quest $quest)
+		public function getQuest()
 		{
-			$this->quests[] = $quest;
+			return $this->quest;
 		}
 		
-		public function removeQuest(Quest $quest)
+		public function getRequirementsProgress()
 		{
-			$key = array_search($quest, $this->quests);
-			if($key !== false)
-			{
-				unset($this->quests[$key]);
-				$this->quests = array_values($this->quests);
-			}
+			return $this->requirements_progress;
 		}
 		
-		public function setListMessage($list_message)
+		public function isQualifiedToComplete()
 		{
-			$this->list_message = $list_message;
+			return $this->quest->isQualifiedToComplete($this->user);
 		}
 	}
-
 ?>
