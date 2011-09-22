@@ -29,19 +29,19 @@
 	class Instance
 	{
 		protected $quest = null;
-		protected $user = null;
+		protected $actor = null;
 		protected $requirements_progress = null;
 		
-		public function __construct(User $user, Quest $quest)
+		public function __construct(Actor $actor, Quest $quest)
 		{
-			$this->user = $user;
+			$this->actor = $actor;
 			$this->quest = $quest;
 			$this->requirements_progress = new Requirements($this->quest->getRequirementsToComplete());
 		}
 		
-		public function getUser()
+		public function getActor()
 		{
-			return $this->user;
+			return $this->actor;
 		}
 		
 		public function getQuest()
@@ -56,7 +56,15 @@
 		
 		public function isQualifiedToComplete()
 		{
-			return $this->quest->isQualifiedToComplete($this->user);
+			return $this->quest->isQualifiedToComplete($this->actor);
+		}
+
+		public function getExperience()
+		{
+			$quest_level = $this->quest->getRequirementsToAccept()->getLevel();
+			$actor_level = $this->actor->getLevel();
+			$mod = 0.1 * ($actor_level - $quest_level);
+			return $this->quest->getExperience() * $mod;
 		}
 	}
 ?>
