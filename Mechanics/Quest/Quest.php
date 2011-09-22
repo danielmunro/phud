@@ -30,6 +30,7 @@
 	{
 		protected $short = 'a generic quest';
 		protected $nouns = 'generic quest';
+		protected $experience = 0;
 		protected $requirements_to_accept = null;
 		protected $requirements_to_complete = null;
 		protected $hooks = array();
@@ -93,19 +94,16 @@
 			return $this->hooks;
 		}
 		
-		public function getExperience(User $user)
+		public function getExperience()
 		{
-			$experience = 0;
-			array_walk(
-				$this->objectives,
-				function($o) use (&$experience, $user)
-				{
-					$experience += $o->getExperience($user);
-				}
-			);
-			return $experience;
+			return $this->experience;
 		}
 		
+		public function setExperience($experience)
+		{
+			$this->experience = $experience;
+		}
+
 		public function setShort($short)
 		{
 			$this->short = $short;
