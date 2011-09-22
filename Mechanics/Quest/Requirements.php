@@ -45,8 +45,9 @@
 				$this->races = $requirements->getRaces();
 				$this->disciplines = $requirements->getDisciplines();
 				$this->level = $requirements->getLevel();
-				$this->items = $requirements->getItems();
+				$this->inventory = $requirements->getInventory();
 				$this->previous_quests = $requirements->getPreviousQuests();
+				return;
 			}
 			$this->inventory = new Inventory();
 		}
@@ -90,9 +91,9 @@
 				(empty($this->disciplines) || (in_array($user->getDisciplineFocus(), $this->disciplines) ||
 				 in_array($user->getDisciplinePrimary(), $this->disciplines))))
 			{
-				if(sizeof($this->items))
+				if(sizeof($this->getInventory()->getItems()))
 				{
-					$missing = array_diff($this->items, $user->getInventory()->getItems());
+					$missing = array_diff($this->getInventory()->getItems(), $user->getInventory()->getItems());
 					if($missing)
 					{
 						if($questmaster)

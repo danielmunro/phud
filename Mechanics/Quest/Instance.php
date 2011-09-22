@@ -26,6 +26,7 @@
 	 */
 	namespace Mechanics\Quest;
 	use \Living\User;
+	use \Mechanics\Actor;
 	class Instance
 	{
 		protected $quest = null;
