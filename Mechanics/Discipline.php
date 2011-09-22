@@ -40,8 +40,9 @@
 		{
 			$d = dir(dirname(__FILE__) . '/../Disciplines');
 			while($discipline = $d->read())
-				if(strpos($discipline, '.php') !== false)
+				if(substr($discipline, -4) === ".php")
 				{
+					Debug::addDebugLine("init discipline: ".$discipline);
 					$class = 'Disciplines\\'.substr($discipline, 0, strpos($discipline, '.'));
 					$class::instance();
 				}

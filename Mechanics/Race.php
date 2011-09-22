@@ -87,10 +87,11 @@
 		{
 			$namespace = 'Races';
 			$d = dir(dirname(__FILE__) . '/../'.$namespace);
-			while($command = $d->read())
-				if(strpos($command, '.php') !== false)
+			while($race = $d->read())
+				if(substr($race, -4) === ".php")
 				{
-					$class = substr($command, 0, strpos($command, '.'));
+					Debug::addDebugLine("init race: ".$race);
+					$class = substr($race, 0, strpos($race, '.'));
 					$called_class = $namespace.'\\'.$class;
 					new $called_class();
 				}

@@ -48,16 +48,6 @@
 		
 		public static function start()
 		{
-			$user = new \Living\User();
-			$q = new Quest\Quest();
-			$q->getRequirementsToComplete()->getInventory()->addItem(new \Items\Weapon());
-			$user->getQuestLog()->add($q);
-			
-			$quest = $user->getQuestLog()->getQuestByInput('generic');
-			var_dump($quest->isQualifiedToComplete());
-			$user->getInventory()->add(new \Items\Weapon());
-			var_dump($quest->isQualifiedToComplete());
-			die;
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");

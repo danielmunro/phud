@@ -69,8 +69,9 @@
 			{
 				$d = dir(dirname(__FILE__) . '/../'.$dir);
 				while($ability = $d->read())
-					if(strpos($ability, '.php') !== false)
+					if(substr($ability, -4) === ".php")
 					{
+						Debug::addDebugLine("init ability: ".$ability);
 						$class = $dir.'\\'.substr($ability, 0, strpos($ability, '.'));
 						$class::instance();
 					}

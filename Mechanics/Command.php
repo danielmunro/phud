@@ -38,8 +38,9 @@
 			$namespace = 'Commands';
 			$d = dir(dirname(__FILE__) . '/../'.$namespace);
 			while($command = $d->read())
-				if(strpos($command, '.php') !== false)
+				if(substr($command, -4) === ".php")
 				{
+					Debug::addDebugLine("init command: ".$command);
 					$class = substr($command, 0, strpos($command, '.'));
 					$called_class = $namespace.'\\'.$class;
 					new $called_class();
