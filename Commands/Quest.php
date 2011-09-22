@@ -47,18 +47,44 @@
 			if(!$this->hasArgCount($actor, $args, 2))
 				return;
 			
-			$command = $this->getCommand($args[1]);
-			if(!$command && $actor->isDM())
-				$command = $this->getDMCommand($args[1]);
-			
-			$target = $actor->getRoom()->getActorByInput($args[2]);
-			if(!($target instanceof Questmaster))
-				return Server::out($actor, "You don't see them anywhere.");
-			
 			$value = implode(' ', array_slice($args, 3));
 			
-			if($command)
-				$this->$command($target, $actor, $value, $args);
+			$dm_command = $this->getDMQuestCommand($args[1]);
+
+			// User => Quest
+			$actors = $actor->getRoom()->getActors();
+			$target = null;
+			foreach($actors as $a)
+			{
+				if($a instanceof Questmaster)
+				{
+					$instance = $a->getQuestLog()->getQuestByInput($args[2]);
+					if($instance)
+					{
+						$target = $instance;
+						break;
+					}
+				}
+			}
+			$command = $this->getQuestCommand($args[1]);
+			if($command && $target)
+				return $this->$command($target, $actor, $value, $args);
+			
+			// DM => Quest
+			if($target && $actor->isDM() && $dm_command)
+				return $this->$dm_command($target, $actor, $value, $args);
+
+			// User => Questmaster
+			$target = $actor->getRoom()->getActorByInput($args[2]);
+			$command = $this->getQuestmasterCommand($args[1]);
+			if($command && $target)
+				return $this->$command($target, $actor, $value, $args);
+
+			$dm_command = $this->getDMQuestmasterCommand($args[1]);
+
+			// DM => Questmaster
+			if($target && $actor->isDM() && $dm_command)
+				return $this->$dm_command($target, $actor, $value, $args);
 
 			return Server::out($actor, "There is no quest action like that. Try help quest.");
 		}
@@ -76,49 +102,62 @@
 			);
 		}
 		
-		private function doAccept(Questmaster $questmaster, Actor $actor, $value, $args)
+		private function doAccept(QuestInstance $instance, Actor $actor, $value, $args)
 		{
-			$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[1]);
-			if(!$quest_instance)	
-				$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[2]);
+			$say = Alias::lookup('say');
+			$questmaster = $instance->getActor();
+			if(!$instance->getQuest()->isQualifiedToAccept($actor, $quest))
+				return $say->perform($questmaster, array($actor, $questmaster->getNotQualifiedMessage()));
 			
-			if(!$quest_instance->getQuest()->isQualifiedToAccept($actor, $questmaster))
-				return;
-			
-			if($quest_instance)
+			if($instance)
 			{
-				$actor->getQuestLog()->add(new QuestInstance($actor, $quest_instance->getQuest()));
-				return Server::out($actor, "You accept ".$questmaster->getAlias()."'s quest: ".$quest_instance->getQuest().".");
+				$actor->getQuestLog()->add(new QuestInstance($actor, $instance->getQuest()));
+				return $say->perform($questmaster, array($actor, $questmaster->getAcceptMessage($instance)));
 			}
 		}
 		
-		private function doCreate(Questmaster $questmaster, Actor $actor, $value, $args)
+		private function doShort(QuestInstance $instance, Actor $actor, $value, $args)
 		{
-			$questmaster->getQuestLog()->add(new mQuest());
-			Server::out($actor, $questmaster->getAlias(true)." has obtained a new quest!");
+			$old_short = $instance->getQuest()->getShort();
+			$instance->getQuest()->setShort($value);
+			return Server::out($actor, ucfirst($old_short)." has been renamed to ".$value.".");
+		}
+
+		private function doNouns(QuestInstance $instance, Actor $actor, $nouns, $args)
+		{
+			$instance->getQuest()->setNouns($nouns);
+			Server::out($actor, ucfirst($quest->getShort())."'s nouns set to: ".$quest->getNouns());
+		}
+
+		private function doGive(QuestInstance $instance, Actor $actor, $null, $args)
+		{
+			$target = $actor->getRoom()->getActorByInput($args[3]);
+			if(!$target)
+				return Server::out($actor, "They aren't here.");
+			$quest = $instance->getQuest();
+			$actor->getQuestLog()->remove($quest);
+			$target->getQuestLog()->add($quest);
+			Server::out($actor, "You give the quest called ".$quest->getShort()." to ".$target->getAlias().".");
+		}
+
+		private function getQuestCommand($input)
+		{
+			return $this->command(array('accept'), $input);
+		}
+
+		private function getQuestmasterCommand($input)
+		{
+			return $this->command(array('list'), $input);
 		}
 		
-		private function doShort(Questmaster $questmaster, Actor $actor, $value, $args)
+		private function getDMQuestCommand($input)
 		{
-			$quest_instance = $questmaster->getQuestLog()->getQuestByInput($args[3]);
-			if($quest_instance)
-			{
-				$value = implode(" ", array_slice($args, 4));
-				$old_short = $quest_instance->getQuest()->getShort();
-				$quest_instance->getQuest()->setShort($value);
-				return Server::out($actor, ucfirst($old_short)." has been renamed to ".$value.".");
-			}
-			Server::out($actor, "What quest?");
+			return $this->command(array('create', 'short', 'nouns', 'give'), $input);
 		}
-		
-		private function getCommand($input)
+
+		private function getDMQuestmasterCommand($input)
 		{
-			return $this->command(array('list', 'accept'), $input);
-		}
-		
-		private function getDMCommand($input)
-		{
-			return $this->command(array('create', 'short'), $input);
+			return $this->command(array(), $input);
 		}
 		
 		private function command($commands, $input)

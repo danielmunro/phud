@@ -29,6 +29,7 @@
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
 	use \Mechanics\Item;
+	use \Mechanics\Quest\Quest;
 	use \Items\Armor;
 	use \Items\Weapon;
 	use \Items\Food;
@@ -53,6 +54,8 @@
 					return $this->doCreateMob($actor, $args);
 				case strpos($args[1], 'shopkeeper') === 0:
 					return $this->doCreateShopkeeper($actor, $args);
+				case strpos($args[1], 'quest') === 0:
+					return $this->doCreateQuest($actor, $args);
 				case strpos($args[1], 'questmaster') === 0:
 					return $this->doCreateQuestmaster($actor, $args);
 				case strpos($args[1], 'armor') === 0:
@@ -115,6 +118,12 @@
 			$questmaster->save();
 			
 			$questmaster->getRoom()->announce($questmaster, $questmaster->getAlias(true)." poofs into existence.");
+		}
+
+		private function doCreateQuest(Actor $actor, $args)
+		{
+			$actor->getQuestLog()->add(new QuestInstance($actor, new Quest()));
+			Server::out($actor, "You've obtained a new quest!");
 		}
 	}
 ?>
