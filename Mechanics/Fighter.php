@@ -661,13 +661,7 @@
 				
 				$this->afterDeath($killer);
 				$this->getRoom()->getInventory()->add($corpse);
-				
-				if($this instanceof \Living\User)
-				{
-					$this->inventory = new Inventory();
-					$this->inventory->save();
-				}
-				
+								
 				if($killer instanceof \Living\User)
 					\Mechanics\Server::out($killer, "\n".$killer->prompt(), false);
 				
