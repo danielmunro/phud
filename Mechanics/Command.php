@@ -25,10 +25,9 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Living\User;
 	abstract class Command
 	{
-	
-		//public static $instances = array();
 		protected $dispositions = array();
 		
 		protected function __construct() {}
@@ -52,7 +51,7 @@
 			return $this->dispositions;
 		}
 		
-		public function hasArgCount(\Mechanics\Actor $actor, $args, $count)
+		public function hasArgCount(Actor $actor, $args, $count)
 		{
 			if(sizeof($args) < $count)
 			{
@@ -62,6 +61,19 @@
 			return true;
 		}
 	
+		public function tryPerform(User $user, $args)
+		{
+			if($this instanceof Command_DM && !$user->isDM())
+				return Server::out($user, "You cannot do that.");
+			else if($user->getDisposition() === Actor::DISPOSITION_SITTING)
+				return Server::out($user, "You need to stand up.");
+			else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING)
+				return Server::out($user, "You are asleep!");
+			
+			// Perform command
+			$this->perform($user, $args);
+		}
+
 		abstract public function perform(\Mechanics\Actor $actor, $args = array());
 	}
 ?>

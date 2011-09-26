@@ -124,7 +124,7 @@
 			return $this->ability_set;
 		}
 		
-		public function perform(Ability $ability, $args = array())
+		public function tryPerform(Ability $ability, $args = array())
 		{
 			$learned_ability = $this->ability_set->getLearnedAbility($ability);
 			if($learned_ability)
