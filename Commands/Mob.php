@@ -90,7 +90,7 @@
 		private function doInformation(Actor $actor, lMob $mob, $inf, $args)
 		{
 			Server::out($actor,
-					"info page on mob #".$mob->getId().":\n".
+					"info page on mob:\n".
 					"alias:                    ".$mob->getAlias()."\n".
 					"race:                     ".$mob->getRace()."\n".
 					"level:                    ".$mob->getLevel()."\n".

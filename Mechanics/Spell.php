@@ -87,7 +87,7 @@
 				$spell_class = self::exists($alias);
 				if($spell_class)
 				{
-					$spell_instance = new $spell_class(1, $actor->getId(), $actor->getType());
+					$spell_instance = new $spell_class();
 					$actor->getAbilitySet()->addAbility($spell_instance);
 				}
 			}

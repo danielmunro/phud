@@ -86,7 +86,7 @@
 		private function doInformation(Actor $actor, lShopkeeper $shopkeeper, $null, $args)
 		{
 			Server::out($actor,
-					"info page on shopkeeper #".$shopkeeper->getId().":\n".
+					"info page on shopkeeper:\n".
 					"alias:                    ".$shopkeeper->getAlias()."\n".
 					"race:                     ".$shopkeeper->getRace()."\n".
 					"level:                    ".$shopkeeper->getLevel()."\n".

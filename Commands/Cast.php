@@ -87,7 +87,7 @@
 			$actors = $actor->getRoom()->getActors();
 			foreach($actors as $rm_actor)
 				if($rm_actor instanceof \Living\User)
-					\Mechanics\Server::out($rm_actor, ($rm_actor->getId() == $actor->getId() ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor->getId() == $actor->getId() ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
+					\Mechanics\Server::out($rm_actor, ($rm_actor == $actor ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor == $actor ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
 			
 			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
 			

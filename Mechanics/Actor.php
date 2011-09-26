@@ -34,7 +34,6 @@
 		const DISPOSITION_SITTING = 2;
 		const DISPOSITION_FIGHTING = 3;
 		
-		protected $id = null;
 		protected $alias = '';
 		protected $long = '';
 		protected $level = 0;
@@ -103,11 +102,6 @@
 		public function getAffects()
 		{
 			return $this->affects;
-		}
-		
-		public function getId()
-		{
-			return $this->id;
 		}
 		
 		public function tick()
