@@ -78,33 +78,6 @@
 		{
 			self::$groups[static::$group][] = static::$name_familiar;
 		}
-		public static function grantGroup(Actor $actor, $group_name)
-		{
-			if(!isset(self::$groups[$group_name]))
-				throw new \Exceptions\Spell("Cannot grant group (".$group_name." -- does not exist)", \Exceptions\Spell::INVALID_GROUP);
-			foreach(self::$groups[$group_name] as $alias)
-			{
-				$spell_class = self::exists($alias);
-				if($spell_class)
-				{
-					$spell_instance = new $spell_class();
-					$actor->getAbilitySet()->addAbility($spell_instance);
-				}
-			}
-		}
-		public static function removeGroup(Actor $actor, $group_name)
-		{
-			if(!isset(self::$groups[$group_name]))
-				throw new \Exceptions\Spell("Cannot revoke group (".$group_name." -- does not exist)", \Exceptions\Spell::INVALID_GROUP);
-			foreach(self::$groups[$group_name] as $alias)
-			{
-				$spell_class = self::exists($alias);
-				if($spell_class)
-				{
-					$actor->getAbilitySet()->removeSpell($spell_class::$name_familiar);
-				}
-			}
-		}
 		public static function getGroups() { return self::$groups; }
 		public function getCreationPoints()
 		{
