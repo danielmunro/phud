@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Living\Mob;
+	use \Living\User;
 	class Server
 	{
 		
@@ -32,6 +34,7 @@
 		const PORT = 9000;
 		
 		private $socket = null;
+		private $sockets = array();
 		private $clients = array();
 		static $instance = null;
 		
@@ -48,6 +51,8 @@
 		
 		public static function start()
 		{
+			if(self::$instance)
+				return;
 			self::$instance = new Server();
 			self::$instance->run();
 			Debug::addDebugLine("Success...");
@@ -74,35 +79,19 @@
 		{
 			while(1)
 			{
-				$read = array($this->socket);
-				
-				foreach($this->clients as $i => $client)
-					if(isset($this->clients[$i]) && $this->clients[$i]->getSocket())
-						$read[$i + 1] = $this->clients[$i]->getSocket();
-				
+				$read = array_merge($this->sockets, array($this->socket));
 				$null = null;
 				socket_select($read, $null, $null, 0, 0);
 				
 				// Add new connection
-				if(in_array($this->socket, $read))
+				$key = array_search($this->socket, $read);
+				if($key !== false)
 				{
-					$added = false;
-					for($i = 0; $i < sizeof($this->clients); $i ++)
-						if(!isset($this->clients[$i]))
-						{
-							$socket = socket_accept($this->socket);
-							$this->clients[$i] = new Client($socket);
-							$added = $i;
-							break;
-						}
-					
-					if($added === false)
-					{
-						$socket = socket_accept($this->socket);
-						$this->clients[] = new Client($socket);
-						$added = sizeof($this->clients)-1;
-					}
-					self::out($this->clients[$added], 'By what name do you wish to be known? ', false);
+					$cl = new Client(socket_accept($this->socket));
+					$this->clients[] = $cl;
+					$this->sockets[] = $cl->getSocket();
+					unset($read[$key]);
+					self::out($cl, 'By what name do you wish to be known? ', false);
 				}
 				
 				// Pulse
@@ -110,82 +99,63 @@
 				$next_pulse = Pulse::instance()->getLastPulse() + 1;
 				if($seconds == $next_pulse)
 					Pulse::instance()->checkPulseEvents($next_pulse);
+
+				// For each socket that is reading input, modify the corresponding client's command buffer
+				foreach($read as $socket)
+				{
+					$key = array_search($socket, $this->sockets);
+					$input = trim(socket_read($socket, 1024));
+					if($input === '~')
+						$this->clients[$key]->clearCommandBuffer();
+					else
+						$this->clients[$key]->addCommandBuffer($input);
+				}
 				
 				// Input
-				foreach($this->clients as $i => $client)
-				{
-					if(!isset($this->clients[$i]))
-						continue;
-					
-					if(in_array($this->clients[$i]->getSocket(), $read))
-					{
-						$input = socket_read($this->clients[$i]->getSocket(), 1024);
-						if(strpos($input, 'room ') !== 0)
-							$input = trim($input);
-						
-						// Modify the command buffer appropriately
-						if(trim($input) == '~')
-							$this->clients[$i]->clearCommandBuffer();
-						else
-							$this->clients[$i]->addCommandBuffer($input);
-					}
-					
+				foreach($this->clients as $k => $cl)
+				{		
 					// Check for a delay in the user's commands
-					if($this->clients[$i]->getUser() && $this->clients[$i]->getUser()->getDelay())
+					if($cl->getUser() && $cl->getUser()->getDelay())
 						continue;
 					
-					$input = $this->clients[$i]->shiftCommandBuffer();
-					
+					// There's no delay, get the oldest command in the buffer and evaluate
+					$input = $cl->shiftCommandBuffer();
 					if(!empty($input))
 					{
 						// Check a repeat statement
-						if(trim($input) == '!')
-							$input = $this->clients[$i]->getLastInput();
+						if(trim($input) === '!')
+							$input = $cl->getLastInput();
 						else
-							$this->clients[$i]->setLastInput($input);
+							$cl->setLastInput($input);
 						
+						// Break down into separate arguments
 						$args = explode(' ', trim($input));
 						
-						if(!$this->clients[$i]->getUser())
+						// By now if the client does not have a user object it is because they are in the process of logging in
+						if(!$cl->getUser())
 						{
-							$logged = $this->clients[$i]->handleLogin($args);
-							if($logged === false)
-								unset($this->clients[$i]);
-							else if($logged === true)
-								Server::out($this->clients[$i], "\n".$this->clients[$i]->getUser()->prompt(), false);
-							continue;
+							$this->userLogin($cl, $args);
 						}
-						
-						$alias = Alias::lookup($args[0]);
-						if($alias instanceof Command)
+						else
 						{
-						
-							if($alias instanceof Command_DM && !$this->clients[$i]->getUser()->isDM())
-							{
-								self::out($this->clients[$i], "You cannot do that.");
-							}
-							else if(!sizeof($alias->getDispositions()) || in_array($this->clients[$i]->getUser()->getDisposition(), $alias->getDispositions()))
-							{
-								// Perform command
-								$alias->perform($this->clients[$i]->getUser(), $args);
-								self::out($this->clients[$i], "\n" . $this->clients[$i]->getUser()->prompt(), false);
-							}
-							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SITTING)
-							{
-								self::out($this->clients[$i], "You need to stand up.");
-							}
-							else if($this->clients[$i]->getUser()->getDisposition() === Actor::DISPOSITION_SLEEPING)
-							{
-								self::out($this->clients[$i], "You are asleep!");
-							}
-							continue;
+							// Client has a logged in user and is trying to perform either a command or ability
+							$alias = Alias::lookup($args[0]);
+							if($alias instanceof Command || ($alias instanceof Ability && $alias->isPerformable()))
+								$alias->tryPerform($cl->getUser(), $args);
+							else
+								self::out($cl, "\nHuh?");
+
+							self::out($cl, "\n" . $cl->getUser()->prompt(), false);
 						}
-						else if($alias instanceof Ability && $alias->isPerformable())
-						{
-							$this->clients[$i]->getUser()->perform($alias, $args);
-							self::out($this->clients[$i], "\n".$this->clients[$i]->getUser()->prompt(), false);
-							continue;
-						}
+					}
+
+					// Clean up clients/sockets
+					if(!$cl->getSocket())
+					{
+						unset($this->clients[$k]);
+						unset($this->sockets[$k]);
+						$this->clients = array_values($this->clients);
+						$this->sockets = array_values($this->sockets);
 					}
 				}
 			}
@@ -194,10 +164,10 @@
 		
 		public static function out($client, $message, $break_line = true)
 		{
-			if($client instanceof \Living\Mob)
+			if($client instanceof Mob)
 				return Debug::addDebugLine($client->getAlias(true).': '.$message);
 			
-			if($client instanceof \Living\User)
+			if($client instanceof User)
 				$client = $client->getClient();
 			
 			if(!($client instanceof Client) || is_null($client->getSocket()))
@@ -206,10 +176,18 @@
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
 		
 		}
+
+		private function userLogin(Client $cl, $args)
+		{
+			$user_status = $cl->handleLogin($args);
+			if($user_status === true)
+				Server::out($cl, "\n".$cl->getUser()->prompt(), false);
+			else if($user_status === false)
+				$this->disconnectClient($cl);
+		}
 		
 		private function openSocket()
 		{
-		
 			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
 			if($this->socket === false)
 				die('No socket');
