@@ -62,7 +62,7 @@
 				$this->skills[$alias] = $skill;
 		}
 
-		public function addSpellGroup($spell_group)
+		public function addSpellGroup(Spell_Group $spell_group)
 		{
 			$alias = $spell_group::getAlias();
 			if(!isset($this->spell_groups[$alias])
@@ -94,6 +94,53 @@
 					return $spell;
 			}
 			return null;
+		}
+
+		public function getSpellGroupByAlias($alias)
+		{
+			if(isset($this->spell_groups[$alias]))
+				return $this->spell_groups[$alias];
+			return null;
+		}
+
+		public function getSkillByInput($input)
+		{
+			return array_filter(
+					$this->skills,
+					function($s) use ($input)
+					{
+						return strpos($s::getAlias(), $input) === 0;
+					}
+				);
+		}
+
+		public function getSpellGroupByInput($input)
+		{
+			return array_filter(
+					$this->spell_groups,
+					function($sg) use ($input)
+					{
+						return strpos($sg::getAlias(), $input) === 0;
+					}
+				);
+		}
+
+		public function removeSkill(Skill $skill)
+		{
+			if(isset($this->skills[$skill::getAlias()]))
+			{
+				unset($this->skills[$skill::getAlias()]);
+				$this->skills = array_values($this->skills);
+			}
+		}
+
+		public function removeSpellGroup(Spell_Group $spell_group)
+		{
+			if(isset($this->spell_groups[$spell_group::getAlias()]))
+			{
+				unset($this->spell_groups[$spell_group::getAlias()]);
+				$this->spell_groups = array_values($this->spell_groups);
+			}
 		}
 		
 		public function getCreationPoints()

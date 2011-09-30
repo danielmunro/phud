@@ -260,57 +260,60 @@
 			}
 			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
 			{
-				$ability_list = array_merge(
-								$this->unverified_user->getDisciplinePrimary()->getAbilities(),
-								$this->unverified_user->getDisciplineFocus()->getOtherDiscipline($this->unverified_user)->getAbilities()
-							);
 				if($input == 'list' || $this->login['custom'] === 0)
 				{
 					$this->login['custom'] = 1;
-					$this->abilityList($ability_list);
+					$this->abilityList();
 				}
 				else if($input == 'add')
 				{
-					$try_add = Alias::lookup(implode(' ', $args));
-					
-					if(!$try_add instanceof Skill && !$try_add instanceof Spell_Group)
-						return Server::out($this, "You can't add that.");
-					
-					if($this->unverified_user->getAbilitySet()->getLearnedAbility($try_add))
+					// Set up some temp variables
+					$dp = $this->unverified_user->getDisciplinePrimary()->getAbilitySet();
+					$df = $this->unverified_user->getDisciplineFocus()->getAbilitySet();
+					$input_ability = implode(' ', $args);
+
+					// Check if the skill or spell group is already learned
+					if($this->unverified_user->getAbilitySet()->getSkillByInput($input_ability) ||
+						$this->unverified_user->getAbilitySet()->getSpellGroupByInput($input_ability))
 						return Server::out($this, "You already know that.");
-					
-					// Find out if it's a skill or spell
-					$look_in = array();
-					if($try_add instanceof Skill)
+
+					// Try to add it from the pool of available abilities
+					$ability = null;
+					if($ability = $dp->getSkillByInput($input_ability) || $ability = $df->getSkillByInput($input_ability))
 					{
-						if(in_array($try_add, $ability_list))
-						{
-							$this->unverified_user->getAbilitySet()->addSkill($try_add);
-							Server::out($this, "You added ".$try_add->getAlias().".");
-						}
+						$this->unverified_user->getAbilitySet()->addSkill($ability);
 					}
-					else if($try_add instanceof Spell_Group)
+					else if($ability = $dp->getSpellGroupByInput($input_ability) || $df->getSpellGroupByInput($input_ability))
 					{
-						$this->unverified_user->getAbilitySet()->addAbilities($try_add->getSpells());
-						Server::out($this, "You added ".$try_add->getAlias().".");
+						$this->unverified_user->getAbilitySet()->addSpellGroup($ability);
 					}
+
+					if($ability)
+						Server::out($this, "You added ".$ability::getAlias().".");
 					else
 						Server::out($this, "You can't add that.");
 				}
 				else if($input == 'drop')
 				{
-					$try_drop = Alias::lookup(implode(' ', $args));
-					$learned = $this->unverified_user->getAbilitySet()->getLearnedAbility($try_drop);
-					if($learned)
-					{
-						$this->unverified_user->getAbilitySet()->dropAbility($learned);
-						return Server::out($this, $learned." dropped.");
-					}
-					return Server::out($this, "You don't know that.");
+					// Set up some temp variables
+					$set = $this->unverified_user->getAbilitySet();
+					$input_ability = implode(' ', $args);
+
+					// Try to remove it
+					$ability = null;
+					if($ability = $set->getSkillByInput($input_ability))
+						$set->removeSkill($ability);
+					else if($ability = $set->getSpellGroupByInput($input_ability))
+						$set->removeSpellGroup($ability);
+
+					if($ability)
+						Server::out($this, "You remove ".$ability::getAlias().".");
+					else
+						Server::out($this, "You don't know that.");
 				}
 				else if($input == 'learned')
 				{
-					$this->abilityList($this->unverified_user->getAbilitySet()->getAbilities());
+					$this->abilityList();
 				}
 				else if($input == 'done')
 				{
@@ -398,47 +401,34 @@
 			}
 		}
 		
-		private function abilityList($ability_list)
+		private function abilityList()
 		{
 			Server::out($this, "\nspell groups:");
-			$groups = array();
-			foreach($ability_list as $i => $a)
+			$spell_groups = array_merge(
+						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
+						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSpellGroups()
+					);
+			$spell_groups = array_unique($spell_groups);
+			foreach($spell_groups as $spell_group)
 			{
-				if($a instanceof Learned_Ability)
+				if(!$this->unverified_user->getAbilitySet()->getSpellGroupByAlias($spell_group))
 				{
-					$s = $a->getAbility();
-					$learned_check = false;
-				}
-				else
-				{
-					$s = $a;
-					$learned_check = $this->unverified_user->getAbilitySet()->getLearnedAbility($s);
-				}
-				
-				if($s instanceof Spell && !$learned_check && !in_array($s->getSpellGroup(), $groups))
-				{
-					$padding = substr("                          ", strlen($s->getSpellGroup()->getAlias()));
-					Server::out($this, $s->getSpellGroup()->getAlias().$padding.$s->getCreationPoints()."cp");
-					$groups[] = $s->getSpellGroup();
+					$padding = substr("                          ", strlen($spell_group::getAlias()));
+					Server::out($this, $spell_group::getAlias().$padding.$spell_group::getCreationPoints()."cp");
 				}
 			}
 			Server::out($this, "\nskills:");
-			foreach($ability_list as $i => $a)
+			$skills = array_merge(
+						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
+						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSkills()
+					);
+			$skills = array_unique($skills);
+			foreach($skills as $skill)
 			{
-				if($a instanceof Learned_Ability)
+				if(!$this->unverified_user->getAbilitySet()->getSkillByAlias($skill::getAlias()))
 				{
-					$s = $a->getAbility();
-					$learned_check = false;
-				}
-				else
-				{
-					$s = $a;
-					$learned_check = $this->unverified_user->getAbilitySet()->getLearnedAbility($s);
-				}
-				if($s instanceof Skill && !$learned_check)
-				{
-					$padding = substr("                          ", strlen($s->getAlias()));
-					Server::out($this, $s->getAlias().$padding.$s->getCreationPoints()."cp");
+					$padding = substr("                          ", strlen($skill::getAlias()));
+					Server::out($this, $skill::getAlias().$padding.$skill::getCreationPoints()."cp");
 				}
 			}
 		}
