@@ -25,19 +25,20 @@
 	 *
 	 */
 	namespace Spell_Groups;
-	class Protective extends \Mechanics\Spell_Group
+	use \Spells\Armor;
+	use \Spells\Shield;
+
+	class Protective extends \Mechanics\Ability\Spell_Group
 	{
+		protected static $alias = 'protective';
+		protected static $creation_points = 5;
 	
-		protected $creation_points = 5;
-	
-		protected function __construct()
+		public function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('protective', $this);
 			$this->spells = array(
-				\Spells\Armor::instance(),
-				\Spells\Shield::instance()
+				new Armor(),
+				new Shield()
 			);
-			parent::__construct(self::GROUP_PROTECTIVE);
 		}
 	}
 ?>

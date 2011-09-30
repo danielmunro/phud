@@ -25,18 +25,18 @@
 	 *
 	 */
 	namespace Spell_Groups;
-	class Beguiling extends \Mechanics\Spell_Group
+	use \Spells\Sleep;
+
+	class Beguiling extends \Mechanics\Ability\Spell_Group
 	{
+		protected static $alias = 'beguiling';
+		protected static $creation_points = 5;
 	
-		protected $creation_points = 5;
-	
-		protected function __construct()
+		public function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('beguiling', $this);
 			$this->spells = array(
-				\Spells\Sleep::instance()
+				new Sleep()
 			);
-			parent::__construct(self::GROUP_BEGUILING);
 		}
 	}
 ?>

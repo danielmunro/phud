@@ -25,21 +25,24 @@
 	 *
 	 */
 	namespace Spell_Groups;
-	class Healing extends \Mechanics\Spell_Group
+	use \Spells\Cure_Light;
+	use \Spells\Cure_Serious;
+	use \Spells\Cure_Critical;
+	use \Spells\Heal;
+
+	class Healing extends \Mechanics\Ability\Spell_Group
 	{
+		protected static $alias = 'healing';
+		protected static $creation_points = 5;
 	
-		protected $creation_points = 5;
-	
-		protected function __construct()
+		public function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('healing', $this);
 			$this->spells = array(
-				\Spells\Cure_Light::instance(),
-				\Spells\Cure_Serious::instance(),
-				\Spells\Cure_Critical::instance(),
-				\Spells\Heal::instance()
+				new Cure_Light(),
+				new Cure_Serious(),
+				new Cure_Critical(),
+				new Heal()
 			);
-			parent::__construct(self::GROUP_HEALING);
 		}
 	}
 ?>

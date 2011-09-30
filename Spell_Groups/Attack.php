@@ -25,18 +25,18 @@
 	 *
 	 */
 	namespace Spell_Groups;
-	class Attack extends \Mechanics\Spell_Group
+	use \Spells\Magic_Missile;
+
+	class Attack extends \Mechanics\Ability\Spell_Group
 	{
+		protected static $alias = 'attack';
+		protected static $creation_points = 5;
 	
-		protected $creation_points = 5;
-	
-		protected function __construct()
+		public function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('attack', $this);
 			$this->spells = array(
-				\Spells\Magic_Missile::instance()
+				new Magic_Missile()
 			);
-			parent::__construct(self::GROUP_ATTACK);
 		}
 	}
 ?>
