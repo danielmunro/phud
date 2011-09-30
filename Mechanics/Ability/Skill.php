@@ -24,17 +24,11 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	abstract class Skill extends \Mechanics\Ability
+	namespace Mechanics\Ability;
+	abstract class Skill extends Ability
 	{
-		protected $creation_points = 0;
 		protected $is_performable = true;
 	
-		protected function __construct()
-		{
-			parent::__construct(self::TYPE_SKILL);
-		}
-		
 		public function isPerformable()
 		{
 			return $this->is_performable;

@@ -24,112 +24,89 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	class Ability_Set
+	namespace Mechanics\Ability;
+	class Set
 	{
 		
-		private $actor = null;
-		private $abilities = array();
+		private $skills = array();
 		private $spell_groups = array();
-		
-		public function __construct(Actor $actor = null)
-		{
-			$this->actor = $actor;
-		}
+
+		private static $instance = null;
 		
 		public function getSkills()
 		{
-			return
-				array_filter($this->abilities, function($learned)
-				{
-					return $learned->getAbility()->getType() === Ability::TYPE_SKILL;
-				});
+			return $this->skills;
 		}
 		public function getSpells()
 		{
-			return
-				array_filter($this->abilities, function($learned)
+			$spells = array();
+			array_walk(
+				$this->spell_groups,
+				function($g) use (&$spells)
 				{
-					return $learned->getAbility()->getType() === Ability::TYPE_SPELL;
-				});
+					$spells = array_merge($g->getSpells(), $spells);
+				}
+			);
+			return $spells;
 		}
 		
 		public function getSpellGroups()
 		{
 			return $this->spell_groups;
 		}
-		
-		public function getAbilities()
+
+		public function addSkill(Skill $skill)
 		{
-			return $this->abilities;
+			$alias = $skill::getAlias();
+			if(!isset($this->skills[$alias]))
+				$this->skills[$alias] = $skill;
 		}
-		
-		public function addAbilities($abilities)
+
+		public function addSpellGroup($spell_group)
 		{
-			foreach($abilities as $ability)
-			{
-				if($ability instanceof Learned_Ability)
-					$lookup = $ability->getAbility();
-				else
-					$lookup = $ability;
-				$this->addAbility($lookup);
-			}
-		}
-		
-		public function addAbility(Ability $instance, $percent = 1)
-		{
-			// Only add it if they don't already have it
-			if(!$this->getLearnedAbility($instance))
-			{
-				$this->abilities[] = new Learned_Ability($instance, $this->actor, $percent);
-				if($instance instanceof Spell)
-				{
-					$spell_group_alias = $instance->getSpellGroup()->getAlias()->getAliasName();
-					if(!in_array($spell_group_alias, $this->spell_groups))
-						$this->spell_groups[] = $spell_group_alias;
-				}
-			}
-		}
-		
-		public function getLearnedAbility($ability)
-		{
-			if($ability instanceof Spell_Group)
-				return in_array($ability, $this->spell_groups);
-			else if($ability instanceof Ability)
-			{
-				$found = array_filter($this->abilities, function($a) use ($ability)
-					{
-						return $a->getAbility() === $ability;
-					});
-				if($found)
-					return array_shift($found);
-			}
-			return null;
+			$alias = $spell_group::getAlias();
+			if(!isset($this->spell_groups[$alias])
+				$this->spell_groups[$alias] = $spell_group;
 		}
 		
 		public function getAbilitiesByHook($hook)
 		{
-			return array_filter($this->abilities, function($a) use ($hook)
+			$abilities = array_merge($this->skills, $this->getSpells());
+			return array_filter($abilities, function($a) use ($hook)
 				{
-					return $a->getAbility()->getHook() === $hook;
+					return $a->getHook() === $hook;
 				});
+		}
+
+		public function getSkillByAlias($alias)
+		{
+			if(isset($this->skills[$alias]))
+				return $this->skills[$alias];
+			return null;
+		}
+
+		public function getSpellByAlias($alias)
+		{
+			foreach($this->spell_groups as $g)
+			{
+				$spell = $g->getSpellByAlias($alias);
+				if($spell)
+					return $spell;
+			}
+			return null;
 		}
 		
 		public function getCreationPoints()
 		{
 			$creation_points = 0;
-			$spell_groups = array();
-			foreach($this->abilities as $learned_ability)
-			{
-				$ability = $learned_ability->getAbility();
-				if($ability instanceof Skill)
-					$creation_points += $ability->getCreationPoints();
-				else if($ability instanceof Spell && !in_array($ability->getSpellGroup()->getAlias()->getAliasName(), $spell_groups))
+			$abilities = array_merge($this->skills, $this->spells);
+			array_walk(
+				$abilities,
+				function($a) use (&$creation_points)
 				{
-					$spell_groups[] = $ability->getSpellGroup()->getAlias()->getAliasName();
-					$creation_points += $ability->getCreationPoints();
+					$creation_points += $a->getCreationPoints();
 				}
-			}
+			);	
 			return $creation_points;
 		}
 	}

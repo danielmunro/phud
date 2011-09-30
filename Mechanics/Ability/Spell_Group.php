@@ -24,7 +24,7 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Mechanics\Ability;
 	class Spell_Group
 	{
 		
@@ -38,45 +38,71 @@
 		const GROUP_ATTACK = 8;
 		const GROUP_BEGUILING = 9;
 		
-		protected $creation_points = 0;
+		protected static $creation_points = 0;
+		protected static $base_class = null;
+		protected static $alias = null;
+		protected $instance_type = 0;
 		protected $spells = array();
-		protected $base_class = null;
-		protected $alias = null;
-		private $instance_type = 0;
-		protected static $instances = array();
 		
 		protected function __construct($instance_type)
 		{
 			$this->instance_type = $instance_type;
+			$this->spells = $this->getGroupSpells();
 		}
 		
-		public static function instance()
+		public static function getCreationPoints()
 		{
-			$class = get_called_class();
-			Debug::addDebugLine($class.isset(self::$instances[$class]));
-			if(!isset(self::$instances[$class]))
-				self::$instances[$class] = new $class();
-			return self::$instances[$class];
+			return self::$creation_points;
 		}
 		
+		public static function getAlias()
+		{
+			return self::$alias;
+		}
+		
+		public static function getBaseClass()
+		{
+			return self::$base_class;
+		}
+
+		public function getInstanceType()
+		{
+			return $thiss->instance_type;
+		}
+
 		public function getSpells()
 		{
 			return $this->spells;
 		}
 		
-		public function getCreationPoints()
+		private function getGroupSpells()
 		{
-			return $this->creation_points;
-		}
-		
-		public function getAlias()
-		{
-			return $this->alias;
-		}
-		
-		public function getBaseClass()
-		{
-			return $this->base_class;
+			switch($this->instance_type)
+			{
+				case self::GROUP_PROTECTIVE:
+					return array(
+						new \Spells\Armor(),
+						new \Spells\Shield()
+					);
+				case self::GROUP_HEALING:
+					return array(
+						new \Spells\Cure_Light(),
+						new \Spells\Cure_Serious(),
+						new \Spells\Cure_Critical(),
+						new \Spells\Heal()
+					);
+				case self::GROUP_ATTACK:
+					return array(
+						new \Spells\Magic_Missile()
+					);
+				case self::GROUP_BEGUILING:
+					return array(
+						new \Spells\Sleep()
+					);
+				default:
+					return array();
+			}
+
 		}
 	}
 ?>

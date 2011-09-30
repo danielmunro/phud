@@ -62,7 +62,7 @@
 		{
 			Debug::addDebugLine("Calling initEnvironment() on game components...");
 			$req_init = array(
-							'\Mechanics\Ability',
+							'\Mechanics\Ability\Ability',
 							'\Mechanics\Command',
 							'\Mechanics\Race',
 							'\Mechanics\Discipline',
@@ -73,6 +73,7 @@
 				Debug::addDebugLine("initEnvironment() ".$required);
 				$required::runInstantiation();
 			}
+			die;
 		}
 		
 		public function run()
@@ -128,7 +129,7 @@
 						else
 							$cl->setLastInput($input);
 						
-						// Break down into separate arguments
+						// Break down user input into separate arguments
 						$args = explode(' ', trim($input));
 						
 						// By now if the client does not have a user object it is because they are in the process of logging in
@@ -138,13 +139,26 @@
 						}
 						else
 						{
-							// Client has a logged in user and is trying to perform either a command or ability
-							$alias = Alias::lookup($args[0]);
-							if($alias instanceof Command || ($alias instanceof Ability && $alias->isPerformable()))
-								$alias->tryPerform($cl->getUser(), $args);
-							else
-								self::out($cl, "\nHuh?");
+							// Evaluate user input for a command
+							$command = Alias::lookup($args[0]);
+							if($command instanceof Command)
+							{
+								$command->tryPerform($cl->getUser(), $args);
+								self::out($cl, "\n".$cl->getUser()->prompt(), false);
+								continue;
+							}
 
+							// No command was found -- attempt to perform an ability
+							$ability = $cl->getAbilitySet()->getAbilityByAlias($args[0]);
+							if($ability instanceof Ability && $ability->isPerformable())
+							{
+								$ability->perform($args);
+								self::out($cl, "\n".$cl->getUser()->prompt(), false);
+								continue;
+							}
+						
+							// Not sure what the user was trying to do
+							self::out($cl, "\nHuh?");
 							self::out($cl, "\n" . $cl->getUser()->prompt(), false);
 						}
 					}

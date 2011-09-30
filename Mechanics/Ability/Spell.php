@@ -24,69 +24,63 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
-	abstract class Spell extends \Mechanics\Ability
+	namespace Mechanics\Ability;
+	abstract class Spell extends Ability
 	{
 	
 		const TYPE_OFFENSIVE = 1;
 		const TYPE_PASSIVE = 2;
 	
-		protected $name_familiar = '';
-		protected $name_unfamiliar = '';
-		protected $min_mana = 15;
-		protected $spell_type = self::TYPE_PASSIVE;
-		protected $spell_group = null;
-		protected static $groups = array();
+		protected static $alias = '';
+		protected static $min_mana = 15;
+		protected static $spell_type = self::TYPE_PASSIVE;
 	
-		protected function __construct() { parent::__construct(self::TYPE_SPELL); }
-	
-		public function getManaCost($actor_level)
+		public static function getManaCost($actor_level)
 		{
-			return ceil(max($this->min_mana, 100 / (2 + $actor_level - self::$level)));
+			return ceil(max(self::$min_mana, 100 / (2 + $actor_level - self::$level)));
 		}
 		
-		public function getSpellGroup()
+		public static function getAlias()
 		{
-			if(!$this->spell_group)
-				$this->initSpellGroup();
-			return $this->spell_group;
+			if(func_num_args() === 0)
+				return self::$alias;
+			$args = func_get_args();
+			return self::getObfuscatedAlias($args[0], $args[1]);
 		}
-		
-		abstract protected function initSpellGroup();
-		
-		public static function getNameFamiliar() { return self::$name_familiar; }
-		public static function getNameUnfamiliar() { return self::$name_unfamiliar; }
-		public function getName(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
+
+		protected static function getObfuscatedAlias(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
 		{
-			if($observer->getLevel() >= self::$level && $observer->getDiscipline() == $caster->getDiscipline())
-				return static::$name_familiar;
-			else
-				return static::$name_unfamiliar;
+			if(get_class($caster->getDisciplinePrimary()) === get_class($observer->getDisciplinePrimary()))
+				return self::$alias;
+			$dictionary = array(
+						'cure' => 'judicandus',
+						'li' => 'di',
+						'ght' => 'es',
+						'sl' => 'grz',
+						'ee' => 'zz',
+						'p' => 'z',
+						'a' => 'br',
+						'm' => 'ulz',
+						'or' => 'i'
+					);
+			return str_replace(array_keys($dictionary), $dictionary, self::$alias);
 		}
+
 		protected static function calculateStandardDamage($level, $min, $exponent)
 		{
 			$base = $min + ($level ^ $exponent);
 			return ceil(rand($base / 2, $base * 2));
 		}
-		public static function getSpellType() { return self::$spell_type; }
+
+		public static function getSpellType()
+		{
+			return self::$spell_type;
+		}
+		
 		public function __toString()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
-		}
-		protected static function extraInstantiate()
-		{
-			self::$groups[static::$group][] = static::$name_familiar;
-		}
-		public static function getGroups() { return self::$groups; }
-		public function getCreationPoints()
-		{
-			return $this->getSpellGroup()->getCreationPoints();
-		}
-		public function getBaseClass()
-		{
-			return $this->getSpellGroup()->getBaseClass();
-		}
+			return self::$alias;
+		}	
 	}
 
 ?>

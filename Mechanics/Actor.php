@@ -25,6 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Mechanics\Ability\Set as Ability_Set;
 	abstract class Actor implements Affectable
 	{
 	
@@ -54,8 +55,8 @@
 		{
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
-			$this->ability_set = new Ability_Set($this);
-			$this->tick(true);
+			$this->ability_set = new Ability_Set();
+			$this->tick();
 		}
 		
 		public function getAlignment()
@@ -108,7 +109,7 @@
 		{
 			$abilities = $this->ability_set->getAbilitiesByHook(Ability::HOOK_TICK);
 			foreach($abilities as $ability)
-				$ability->perform();
+				$ability->perform($this);
 			
 			Pulse::instance()->registerNextTickEvent(function($user) { $user->tick(); }, $this);
 		}

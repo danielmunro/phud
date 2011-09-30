@@ -25,21 +25,20 @@
 	 *
 	 */
 	namespace Skills;
-	class Third_Attack extends \Mechanics\Skill
+	use Mechanics\Ability\Ability;
+	use Mechanics\Ability\Skill;
+	use Mechanics\Server;
+	class Third_Attack extends Skill
 	{
 	
-		protected $creation_points = 8;
-		protected $hook = \Mechanics\Ability::HOOK_HIT_ATTACK_ROUND;
+		protected static $alias = 'third attack';
+		protected static $level = 25;
+		protected static $creation_points = 8;
+		protected static $hook = Ability::HOOK_HIT_ATTACK_ROUND;
 	
-		protected function __construct()
+		public function perform($args = array())
 		{
-			$this->alias = new \Mechanics\Alias('third attack', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
-		{
-			$roll = \Mechanics\Server::chance() + 50;
+			$roll = Server::chance() + 50;
 			
 			$mod = $this->getEasyAttributeModifier($actor->getDex());
 			$mod += $this->getEasyAttributeModifier($actor->getStr());
@@ -51,7 +50,7 @@
 			else if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
 				$roll -= 5;
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				$actor->attack('3rd');
 			}

@@ -24,20 +24,18 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Mechanics\Ability;
+	use Mechanics\Debug;
+	use Mechanics\Actor;
 	abstract class Ability
 	{
 	
-		protected static $instances = array();
-		protected $level = 1;
-		protected $creation_points = 0;
-		private $type = 0;
-		protected $fail_message = '';
-		protected $alias = null;
-		protected $hook = 0;
-		
-		const TYPE_SKILL = 1;
-		const TYPE_SPELL = 2;
+		protected static $set = null;
+		protected static $alias = '';
+		protected static $level = 1;
+		protected static $creation_points = 0;
+		protected static $hook = 0;
+		protected $percent = 0;
 		
 		const TARGET_FIGHTING = 1;
 		const TARGET_ARGS = 2;
@@ -48,72 +46,41 @@
 		const HOOK_BUY_ITEM = 3;
 		const HOOK_HIT_ATTACK_ROUND = 4;
 	
-		protected function __construct($type)
+		protected function __construct($percent = 0)
 		{
-			$this->type = $type;
-		}
-		
-		public static function instance()
-		{
-			$class = get_called_class();
-			if(!isset(self::$instances[$class]))
-				self::$instances[$class] = new $class();
-			return self::$instances[$class];
-		}
-		
-		public static function runInstantiation()
-		{
-		
-			$dirs = array('Skills', 'Spells');
-			foreach($dirs as $dir)
-			{
-				$d = dir(dirname(__FILE__) . '/../'.$dir);
-				while($ability = $d->read())
-					if(substr($ability, -4) === ".php")
-					{
-						Debug::addDebugLine("init ability: ".$ability);
-						$class = $dir.'\\'.substr($ability, 0, strpos($ability, '.'));
-						$class::instance();
-					}
-			}
-		}
-		
-		public function getHook()
-		{
-			return $this->hook;
-		}
-		
-		public function getFailMessage()
-		{
-			return $this->fail_message;
-		}
-		
-		public function getCreationPoints()
-		{
-			return $this->creation_points;
-		}
+			$this->percent = $percent;
+		}	
+
+		abstract public function perform(Actor $actor, $args = array());
 	
-		abstract public function perform(Actor $actor, $percent = 0, $args = array());
-	
-		public function getType()
+		public function getPercent()
 		{
-			return $this->type;
+			return $this->percent;
+		}
+
+		public static function getHook()
+		{
+			return self::$hook;
 		}
 		
-		public function getAlias()
+		public static function getCreationPoints()
 		{
-			return $this->alias;
+			return self::$creation_points;
 		}
 		
-		public function getLevel()
+		public static function getAlias()
 		{
-			return $this->level;
+			return self::$alias;
+		}
+		
+		public static function getLevel()
+		{
+			return self::$level;
 		}
 		
 		public function __toString()
 		{
-			$class = get_called_class();
-			return substr($class, strpos($class, '\\') + 1);
+			return $this->alias;
 		}
 		
 		protected function getEasyAttributeModifier($attribute)

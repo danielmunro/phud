@@ -30,14 +30,9 @@
 	
 		protected $creation_points = 5;
 		protected $fail_message = '';
+		protected $alias = 'backstab';
 	
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('backstab', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)
@@ -51,7 +46,7 @@
 			
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				//$actor-> do some fight stuff
 				$actor->incrementDelay(2);

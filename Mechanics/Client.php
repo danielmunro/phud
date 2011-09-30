@@ -285,7 +285,7 @@
 					{
 						if(in_array($try_add, $ability_list))
 						{
-							$this->unverified_user->getAbilitySet()->addAbility($try_add);
+							$this->unverified_user->getAbilitySet()->addSkill($try_add);
 							Server::out($this, "You added ".$try_add->getAlias().".");
 						}
 					}
