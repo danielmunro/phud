@@ -31,12 +31,12 @@
 		private $skills = array();
 		private $spell_groups = array();
 
-		private static $instance = null;
 		
 		public function getSkills()
 		{
 			return $this->skills;
 		}
+
 		public function getSpells()
 		{
 			$spells = array();
@@ -69,13 +69,15 @@
 				$this->spell_groups[$alias] = $spell_group;
 		}
 		
-		public function getAbilitiesByHook($hook)
+		public function getSkillsByHook($hook)
 		{
-			$abilities = array_merge($this->skills, $this->getSpells());
-			return array_filter($abilities, function($a) use ($hook)
+			return array_filter(
+                $this->skills,
+                function($sk) use ($hook)
 				{
-					return $a->getHook() === $hook;
-				});
+					return $sk->getHook() === $hook;
+				}
+            );
 		}
 
 		public function getSkillByAlias($alias)
@@ -105,24 +107,30 @@
 
 		public function getSkillByInput($input)
 		{
-			return array_filter(
-					$this->skills,
-					function($s) use ($input)
-					{
-						return strpos($s::getAlias(), $input) === 0;
-					}
-				);
+            $matches = array();
+            foreach($this->skills as $sk)
+            {
+                if($sk::getAlias() === $input)
+                    return $sk;
+                if(strpos($sk::getAlias(), $input) === 0)
+                    $matches[] = $sk;
+            }
+            if($matches)
+                return array_shift($matches);
 		}
 
 		public function getSpellGroupByInput($input)
 		{
-			return array_filter(
-					$this->spell_groups,
-					function($sg) use ($input)
-					{
-						return strpos($sg::getAlias(), $input) === 0;
-					}
-				);
+            $matches = array();
+            foreach($this->spell_groups as $sg)
+            {
+                if($sg::getAlias() === $input)
+                    return $sg;
+                if(strpos($sg::getAlias(), $input) === 0)
+                    $matches[] = $sg;
+            }
+            if($matches)
+                return array_shift($matches);
 		}
 
 		public function removeSkill(Skill $skill)
