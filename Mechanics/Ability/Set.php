@@ -65,7 +65,7 @@
 		public function addSpellGroup(Spell_Group $spell_group)
 		{
 			$alias = $spell_group::getAlias();
-			if(!isset($this->spell_groups[$alias])
+			if(!isset($this->spell_groups[$alias]))
 				$this->spell_groups[$alias] = $spell_group;
 		}
 		

@@ -62,7 +62,6 @@
 		{
 			Debug::addDebugLine("Calling initEnvironment() on game components...");
 			$req_init = array(
-							'\Mechanics\Ability\Ability',
 							'\Mechanics\Command',
 							'\Mechanics\Race',
 							'\Mechanics\Discipline',
@@ -73,7 +72,6 @@
 				Debug::addDebugLine("initEnvironment() ".$required);
 				$required::runInstantiation();
 			}
-			die;
 		}
 		
 		public function run()
