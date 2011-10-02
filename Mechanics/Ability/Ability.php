@@ -61,27 +61,27 @@
 
 		public static function getHook()
 		{
-			return self::$hook;
+			return static::$hook;
 		}
 		
 		public static function getCreationPoints()
 		{
-			return self::$creation_points;
+			return static::$creation_points;
 		}
 		
 		public static function getAlias()
 		{
-			return self::$alias;
+			return static::$alias;
 		}
 		
 		public static function getLevel()
 		{
-			return self::$level;
+			return static::$level;
 		}
 		
 		public function __toString()
 		{
-			return $this->alias;
+			return static::$alias;
 		}
 		
 		protected function getEasyAttributeModifier($attribute)

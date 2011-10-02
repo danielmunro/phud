@@ -134,16 +134,15 @@
 
 		public function getSpellGroupByInput($input)
 		{
+            if(isset($this->spell_groups[$input]))
+                return $this->spell_groups[$input];
+
             $matches = array();
             foreach($this->spell_groups as $sg)
-            {
-                if($sg::getAlias() === $input)
-                    return $sg;
                 if(strpos($sg::getAlias(), $input) === 0)
                     $matches[] = $sg;
-            }
             if($matches)
-                return array_shift($matches);
+                return $matches[0];
 		}
 
 		public function removeSkill(Skill $skill)

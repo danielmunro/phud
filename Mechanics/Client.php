@@ -278,19 +278,27 @@
 						return Server::out($this, "You already know that.");
 
 					// Try to add it from the pool of available abilities
-					$ability = null;
-					if($ability = $dp->getSkillByInput($input_ability) || $ability = $df->getSkillByInput($input_ability))
+					$skill = $dp->getSkillByInput($input_ability);
+                    $spell_group = null;
+                    if(!$skill)
+                        $skill = $df->getSkillByInput($input_ability);
+                    if($skill)
 					{
-						$this->unverified_user->getAbilitySet()->addSkill($ability);
+						$this->unverified_user->getAbilitySet()->addSkill($skill);
+                        Server::out($this, "You added ".$skill::getAlias().".");
 					}
-					else if($ability = $dp->getSpellGroupByInput($input_ability) || $df->getSpellGroupByInput($input_ability))
-					{
-						$this->unverified_user->getAbilitySet()->addSpellGroup($ability);
+                    else
+                    {
+                        $spell_group = $dp->getSpellGroupByInput($input_ability);
+                        if(!$spell_group)
+                            $spell_group = $df->getSpellGroupByInput($input_ability);
+                        if($spell_group)
+                        {
+						    $this->unverified_user->getAbilitySet()->addSpellGroup($spell_group);
+                            Server::out($this, "You added ".$spell_group::getAlias().".");
+                        }
 					}
-
-					if($ability)
-						Server::out($this, "You added ".$ability::getAlias().".");
-					else
+                    if(!$skill && !$spell_group)
 						Server::out($this, "You can't add that.");
 				}
 				else if($input == 'drop')
@@ -408,7 +416,6 @@
 						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
 						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSpellGroups()
 					);
-			$spell_groups = array_unique($spell_groups);
 			foreach($spell_groups as $spell_group)
 			{
 				if(!$this->unverified_user->getAbilitySet()->getSpellGroupByAlias($spell_group::getAlias()))
@@ -422,7 +429,6 @@
 						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
 						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSkills()
 					);
-			$skills = array_unique($skills);
 			foreach($skills as $skill)
 			{
 				if(!$this->unverified_user->getAbilitySet()->getSkillByAlias($skill::getAlias()))

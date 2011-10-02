@@ -34,12 +34,12 @@
 		
 		public static function getCreationPoints()
 		{
-			return self::$creation_points;
+			return static::$creation_points;
 		}
 		
 		public static function getAlias()
 		{
-			return self::$alias;
+			return static::$alias;
 		}
 		
 		public function getSpells()
