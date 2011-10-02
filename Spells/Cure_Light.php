@@ -25,29 +25,26 @@
 	 *
 	 */
 	namespace Spells;
-	class Cure_Light extends \Mechanics\Spell
+    use \Mechanics\Ability\Spell;
+    use \Mechanics\Alias;
+    use \Mechanics\Server;
+
+	class Cure_Light extends Spell
 	{
 	
 		protected $name_familiar = 'cure light';
 		protected $name_unfamiliar = 'frzzz';
-		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('cure light', $this);
-			parent::__construct();
-		}
 		
 		protected function initSpellGroup()
 		{
 			$this->spell_group = \Spell_Groups\Healing::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(Actor $actor, $args = array())
 		{
-		
 			$amount = 1 + $actor->getLevel() / 2;
 			$target->setHp($target->getHp() + (int) $amount);
-			\Mechanics\Server::out($target, "You feel better!");
+			Server::out($target, "You feel better!");
 			return false;
 		}
 	}

@@ -25,24 +25,22 @@
 	 *
 	 */
 	namespace Spells;
-	class Heal extends \Mechanics\Spell
+    use \Mechanics\Ability\Spell;
+    use \Mechanics\Alias;
+    use \Mechanics\Actor;
+
+	class Heal extends Spell
 	{
 	
 		protected $name_familiar = 'heal';
 		protected $name_unfamiliar = 'oezes';
-		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('heal', $this);
-			parent::__construct();
-		}
 		
 		protected function initSpellGroup()
 		{
 			$this->spell_group = \Spell_Groups\Healing::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			$amount = 50;

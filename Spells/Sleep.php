@@ -43,7 +43,7 @@
 			$this->spell_group = \Spell_Groups\Beguiling::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
+		public function perform(\Mechanics\Actor $actor, $args = array())
 		{
 			
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);

@@ -25,24 +25,22 @@
 	 *
 	 */
 	namespace Spells;
-	class Cure_Critical extends \Mechanics\Spell
+    use \Mechanics\Ability\Spell;
+    use \Mechanics\Alias;
+    use \Mechanics\Actor;
+
+	class Cure_Critical extends Spell
 	{
 	
 		protected $name_familiar = 'cure critical';
 		protected $name_unfamiliar = 'tztzz frzzz';
-		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('cure critical', $this);
-			parent::__construct();
-		}
 		
 		protected function initSpellGroup()
 		{
 			$this->spell_group = \Spell_Groups\Healing::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
+		public function perform(Actor $actor, $args = null)
 		{
 		
 			$amount = 10 + $actor->getLevel() / 1.8;

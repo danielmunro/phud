@@ -25,24 +25,24 @@
 	 *
 	 */
 	namespace Spells;
-	class Shield extends \Mechanics\Spell
+    use \Mechanics\Ability\Spell;
+    use \Mechanics\Alias;
+    use \Mechanics\Actor;
+    use \Mechanics\Affect;
+    use \Mechanics\Server;
+
+	class Shield extends Spell
 	{
 	
 		protected $name_familiar = 'shield';
 		protected $name_unfamiliar = 'plysoxixithix';
-		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('shield', $this);
-			parent::__construct();
-		}
 		
 		protected function initSpellGroup()
 		{
 			$this->spell_group = \Spell_Groups\Protective::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $count = 0, $args = null)
+		public function perform(Actor $actor, $args = array())
 		{
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);
 			
@@ -51,7 +51,7 @@
 			
 			$target = $actor; //HACK
 			
-			$a = new \Mechanics\Affect();
+			$a = new Affect();
 			$a->setAffect(self::$name_familiar);
 			$a->setMessageAffect('Spell: shield: '.$mod_ac.' to armor class');
 			$a->setMessageEnd('You feel less protected.');
@@ -62,7 +62,7 @@
 			$atts->setAcPierce($mod_ac);
 			$atts->setAcMagic($mod_ac);
 			$a->apply($target);
-			\Mechanics\Server::out($target, "You feel more protected!");
+			Server::out($target, "You feel more protected!");
 			return false;
 		}
 	}

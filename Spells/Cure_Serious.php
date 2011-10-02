@@ -25,24 +25,22 @@
 	 *
 	 */
 	namespace Spells;
-	class Cure_Serious extends \Mechanics\Spell
+    use \Mechanics\Ability\Spell;
+    use \Mechanics\Alias;
+    use \Mechanics\Actor;
+
+	class Cure_Serious extends Spell
 	{
 	
 		protected $name_familiar = 'cure serious';
 		protected $name_unfamiliar = 'frzzz lam';
-		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('cure serious', $this);
-			parent::__construct();
-		}
 		
 		protected function initSpellGroup()
 		{
 			$this->spell_group = \Spell_Groups\Healing::instance();
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			$amount = 5 + $actor->getLevel() / 2;
