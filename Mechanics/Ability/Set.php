@@ -30,7 +30,12 @@
 		
 		private $skills = array();
 		private $spell_groups = array();
+        private $actor = null;
 
+        public function __construct(Actor $actor = null)
+        {
+            $this->actor = $actor;
+        }
 		
 		public function getSkills()
 		{
@@ -69,15 +74,11 @@
 				$this->spell_groups[$alias] = $spell_group;
 		}
 		
-		public function getSkillsByHook($hook)
+		public function applySkillsByHook($hook, $args)
 		{
-			return array_filter(
-                $this->skills,
-                function($sk) use ($hook)
-				{
-					return $sk->getHook() === $hook;
-				}
-            );
+            foreach($this->skills as $sk)
+				if($sk->getHook() === $hook && $sk->perform($this->actor, $args))
+                        return true;
 		}
 
 		public function getSkillByAlias($alias)

@@ -57,11 +57,7 @@
 							$battle->addActor($victim);
 						}
 						$aggressor->attack();
-						$attacks = $aggressor->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_HIT_ATTACK_ROUND);
-						foreach($attacks as $attack)
-						{
-							$attack->perform($victim);
-						}
+                        $aggressor->getAbilitySet()->applySkillsByHook(Ability::HOOK_HIT_ATTACK_ROUND, $victim);
 						$aggressor->decrementDelay();
 					}
 					else

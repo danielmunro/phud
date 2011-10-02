@@ -42,9 +42,10 @@
 		const TARGET_SELF = 3;
 		
 		const HOOK_TICK = 1;
-		const HOOK_HIT_DEFEND = 2;
+		const HOOK_HIT_EVADE = 2;
 		const HOOK_BUY_ITEM = 3;
 		const HOOK_HIT_ATTACK_ROUND = 4;
+        const HOOK_HIT_DAMAGE_REDUCTION = 5;
 	
 		protected function __construct($percent = 0)
 		{

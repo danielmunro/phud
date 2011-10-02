@@ -55,7 +55,7 @@
 		{
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
-			$this->ability_set = new Ability_Set();
+			$this->ability_set = new Ability_Set($this);
 			$this->tick();
 		}
 		
@@ -107,10 +107,7 @@
 		
 		public function tick()
 		{
-			$abilities = $this->ability_set->getAbilitiesByHook(Ability::HOOK_TICK);
-			foreach($abilities as $ability)
-				$ability->perform($this);
-			
+            $this->ability_set->applySkillsByHook(Ability::HOOK_TICK, $this);
 			Pulse::instance()->registerNextTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		

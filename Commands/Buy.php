@@ -65,11 +65,9 @@
 			if(!($item instanceof Item))
 				return Say::perform($target, $target->getNoItemMessage());
 			
-			$value = $item->getValue();
-			$abilities = $actor->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_BUY_ITEM);
-			foreach($abilities as $learned_ability)
-				$value += $learned_ability->perform($value);
-		
+            $value = $actor->getAbilitySet()->applySkillHooks(Ability::HOOK_BUY_ITEM, $item->getValue());
+            $value = $target->getAbilitySet()->applySkillHooks(Ability::HOOK_BUY_ITEM, $value);
+
 			if($actor->decreaseFunds($value) === false)
 				return Say::perform($target, $target->getNotEnoughMoneyMessage());
 			

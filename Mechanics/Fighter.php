@@ -560,12 +560,11 @@
 			
 			// Check for any skill to defend against a hit, such as parry, dodge, shield block, etc
 			if($type === Damage::TYPE_HIT)
-			{
-				$skills = $target->getAbilitySet()->getAbilitiesByHook(Ability::HOOK_HIT_DEFEND);
-				foreach($skills as $skill)
-					if($skill->perform($this))
-						return false;
-			}
+            {
+                if($target->getAbilitySet()->applySkillsByHook(Ability::HOOK_HIT_EVADE, $this))
+                    return true;
+                $damage += $target->getAbilitySet()->applySkillsByHook(Ability::HOOK_HIT_DAMAGE_REDUCTION, $damage);
+            }
 			
 			$target->setHp($target->getHp() - $damage);
 			return true;
