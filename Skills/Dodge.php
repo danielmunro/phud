@@ -38,7 +38,7 @@
         protected static $level = 5;
 		protected static $creation_points = 5;
 		protected static $is_performable = false;
-		protected static $ability_hook = Ability::HOOK_HIT_DEFEND;
+		protected static $ability_hook = Ability::HOOK_HIT_EVADE;
 	
 		public function perform(Actor $actor, $args = null)
 		{

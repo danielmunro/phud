@@ -32,7 +32,7 @@
 		private $spell_groups = array();
         private $actor = null;
 
-        public function __construct(Actor $actor = null)
+        public function __construct($actor = null)
         {
             $this->actor = $actor;
         }
@@ -67,12 +67,24 @@
 				$this->skills[$alias] = $skill;
 		}
 
+        public function addSkills($skills)
+        {
+            foreach($skills as $skill)
+                $this->addSkill($skill);
+        }
+
 		public function addSpellGroup(Spell_Group $spell_group)
 		{
 			$alias = $spell_group::getAlias();
 			if(!isset($this->spell_groups[$alias]))
 				$this->spell_groups[$alias] = $spell_group;
 		}
+
+        public function addSpellGroups($spell_groups)
+        {
+            foreach($spell_groups as $spell_group)
+                $this->addSpellGroup($spell_group);
+        }
 		
 		public function applySkillsByHook($hook, $args)
 		{
@@ -155,14 +167,14 @@
 		public function getCreationPoints()
 		{
 			$creation_points = 0;
-			$abilities = array_merge($this->skills, $this->spells);
+			$abilities = array_merge($this->skills, $this->spell_groups);
 			array_walk(
 				$abilities,
 				function($a) use (&$creation_points)
 				{
 					$creation_points += $a->getCreationPoints();
 				}
-			);	
+			);
 			return $creation_points;
 		}
 	}

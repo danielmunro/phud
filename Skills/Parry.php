@@ -28,7 +28,7 @@
     use \Mechanics\Ability\Skill;
     use \Mechanics\Actor;
     use \Mechanics\Equipped;
-    use \Mechanics\Ability;
+    use \Mechanics\Ability\Ability;
     use \Mechanics\Server;
 
 	class Parry extends Skill

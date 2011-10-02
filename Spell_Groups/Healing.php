@@ -25,12 +25,13 @@
 	 *
 	 */
 	namespace Spell_Groups;
+    use \Mechanics\Ability\Spell_Group;
 	use \Spells\Cure_Light;
 	use \Spells\Cure_Serious;
 	use \Spells\Cure_Critical;
 	use \Spells\Heal;
 
-	class Healing extends \Mechanics\Ability\Spell_Group
+	class Healing extends Spell_Group
 	{
 		protected static $alias = 'healing';
 		protected static $creation_points = 5;

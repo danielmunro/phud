@@ -27,7 +27,7 @@
 	namespace Mechanics\Ability;
 	abstract class Skill extends Ability
 	{
-		protected $is_performable = true;
+		protected static $is_performable = true;
 	
 		public function isPerformable()
 		{

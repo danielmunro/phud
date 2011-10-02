@@ -27,7 +27,6 @@
 	namespace Disciplines;
     use \Mechanics\DisciplinePrimary;
     use \Mechanics\Alias;
-    use \Skills;
 
 	class Warrior extends DisciplinePrimary
 	{
@@ -51,11 +50,11 @@
 		{
 			$this->ability_set->addSkills(
 				array(
-					new Bash(),
-					new Dodge(),
-					new Parry(),
-					new Kick(),
-					new Shield_Block()
+					new \Skills\Bash(),
+					new \Skills\Dodge(),
+					new \Skills\Parry(),
+					new \Skills\Kick(),
+					new \Skills\Shield_Block()
 				)
             );
 		}

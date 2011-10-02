@@ -47,12 +47,12 @@
 		const HOOK_HIT_ATTACK_ROUND = 4;
         const HOOK_HIT_DAMAGE_REDUCTION = 5;
 	
-		protected function __construct($percent = 0)
+		public function __construct($percent = 0)
 		{
 			$this->percent = $percent;
 		}	
 
-		abstract public function perform(Actor $actor, $args = array());
+		//abstract public function perform($actor, $args);
 	
 		public function getPercent()
 		{

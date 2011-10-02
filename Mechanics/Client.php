@@ -411,7 +411,7 @@
 			$spell_groups = array_unique($spell_groups);
 			foreach($spell_groups as $spell_group)
 			{
-				if(!$this->unverified_user->getAbilitySet()->getSpellGroupByAlias($spell_group))
+				if(!$this->unverified_user->getAbilitySet()->getSpellGroupByAlias($spell_group::getAlias()))
 				{
 					$padding = substr("                          ", strlen($spell_group::getAlias()));
 					Server::out($this, $spell_group::getAlias().$padding.$spell_group::getCreationPoints()."cp");

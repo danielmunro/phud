@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics; 
-    use Ability\Set as Ability_Set;
+    use \Mechanics\Ability\Set as Ability_Set;
 
 	abstract class Discipline
 	{

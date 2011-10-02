@@ -26,6 +26,8 @@
 	 */
 	namespace Mechanics;
 	use \Mechanics\Ability\Set as Ability_Set;
+    use \Mechanics\Ability\Ability;
+
 	abstract class Actor implements Affectable
 	{
 	
