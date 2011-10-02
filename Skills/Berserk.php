@@ -25,27 +25,28 @@
 	 *
 	 */
 	namespace Skills;
-	class Berserk extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Actor;
+    use \Mechanics\Server;
+    use \Mechanics\Affect;
+    use \Disciplines\Warrior;
+
+	class Berserk extends Skill
 	{
 	
-		protected $creation_points = 5;
-		protected $fail_message = 'Your face gets really red!';
+        protected static $alias = 'berserk';
+        protected static $level = 15;
+		protected static $creation_points = 5;
 		
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('berserk', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(Actor $actor, $chance = 0, $args = null)
 		{
 			$this->incrementDelay(2);
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			$roll += $this->getNormalAttributeModifier($actor->getStr());
 			
-			if($actor->getDisciplinePrimary() === \Disciplines\Warrior::instance())
+			if($actor->getDisciplinePrimary() === Warrior::instance())
 				$roll -= 10;
 			
 			$actor->setMovement($actor->getMovement() / 2);
@@ -54,11 +55,11 @@
 			if($roll > $chance)
 				return $this->fail_message;
 			
-			$p = $actor->getLevel() / \Mechanics\Actor::MAX_LEVEL;
+			$p = $actor->getLevel() / Actor::MAX_LEVEL;
 			$timeout = ceil(10 * $p);
 			$str = ceil(4 * $p);
 			$dex = ceil(2 * $p);
-			$a = new \Mechanics\Affect();
+			$a = new Affect();
 			$a->setAffect('berserk');
 			$a->setMessageAffect('Affect: berserk');
 			$a->setMessageEnd('You cool down.');

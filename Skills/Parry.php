@@ -25,23 +25,25 @@
 	 *
 	 */
 	namespace Skills;
-	class Parry extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Actor;
+    use \Mechanics\Equipped;
+    use \Mechanics\Ability;
+    use \Mechanics\Server;
+
+	class Parry extends Skill
 	{
+        
+        protected static $alias = 'parry';
+        protected static $level = 5;
+		protected static $creation_points = 5;
+		protected static $is_performable = false;
+		protected static $ability_hook = Ability::HOOK_HIT_EVADE;
 	
-		protected $creation_points = 5;
-		protected $is_performable = false;
-		protected $ability_hook = \Mechanics\Ability::HOOK_HIT_DEFEND;
-	
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('parry', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
+		public function perform(Actor $actor, $args = null)
 		{
 		
-			$weapon = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD_R);
+			$weapon = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD);
 			if(!$weapon)
 				return false;
 		
@@ -49,13 +51,13 @@
 			switch($actor->getSize())
 			{
 				case \Mechanics\Race::SIZE_TINY:
-					$roll -= 0.10;
+					$roll -= 10;
 					break;
 				case \Mechanics\Race::SIZE_SMALL:
-					$roll -= 0.05;
+					$roll -= 5;
 					break;
 				case \Mechanics\Race::SIZE_LARGE:
-					$roll += 0.05;
+					$roll += 5;
 					break;
 			}
 			
@@ -63,7 +65,7 @@
 			
 			$roll *= 1.25;
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				Server::out($actor, $args->getAlias(true) . ' parries your attack!');
 				Server::out($args, 'You parry ' . $actor->getAlias() . "'s attack!");

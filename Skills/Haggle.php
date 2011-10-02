@@ -25,24 +25,23 @@
 	 *
 	 */
 	namespace Skills;
-	class Haggle extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Ability\Ability;
+    use \Mechanics\Server;
+    use \Mechanics\Actor;
+
+	class Haggle extends Skill
 	{
 	
 		protected $creation_points = 3;
 		protected $is_performable = false;
-		protected $ability_hook = \Mechanics\Ability::HOOK_BUY_ITEM;
+		protected $ability_hook = Ability::HOOK_BUY_ITEM;
 	
-		protected function __construct()
+		public function perform(Actor $actor, $args = null)
 		{
-			$this->alias = new \Mechanics\Alias('haggle', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
-		{
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				return -(rand($args/10, $args/8));
 			}

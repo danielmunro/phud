@@ -25,25 +25,25 @@
 	 *
 	 */
 	namespace Skills;
-	class Bash extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Actor;
+    use \Mechanics\Server;
+    use \Mechanics\Affect;
+
+	class Bash extends Skill
 	{
 	
-		protected $creation_points = 5;
-		protected $fail_message = 'You fall flat on your face!';
+        protected static $alias = 'bash';
+        protected static $level = 1;
+		protected static $creation_points = 5;
 	
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('bash', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)
 				return;
 			
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			$roll -= $actor->getRace()->getSize() * 1.25;
 			$roll += $target->getRace()->getSize();
 			$roll += $this->getNormalAttributeModifier($actor->getStr());
@@ -52,14 +52,14 @@
 			
 			if($roll < $chance)
 			{
-				$a = new \Mechanics\Affect();
+				$a = new Affect();
 				$a->setAffect('stun');
 				$a->setTimeout(1);
 				$a->apply($target);
 				return "You slam into " . $target->getAlias() . " and send " . $target->getSex() . " flying!";
 			}
 			
-			return $this->fail_message;
+			return "You fall flat on your face!";
 		}
 	}
 ?>

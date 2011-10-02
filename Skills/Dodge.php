@@ -25,39 +25,40 @@
 	 *
 	 */
 	namespace Skills;
-	class Dodge extends \Mechanics\Skill
+    use \Mechanics\Ability\Ability;
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Actor;
+    use \Mechanics\Server;
+    use \Mechanics\Race;
+
+	class Dodge extends Skill
 	{
 	
-		protected $creation_points = 5;
-		protected $is_performable = false;
-		protected $ability_hook = \Mechanics\Ability::HOOK_HIT_DEFEND;
+        protected static $alias = 'dodge';
+        protected static $level = 5;
+		protected static $creation_points = 5;
+		protected static $is_performable = false;
+		protected static $ability_hook = Ability::HOOK_HIT_DEFEND;
 	
-		protected function __construct()
+		public function perform(Actor $actor, $args = null)
 		{
-			$this->alias = new \Mechanics\Alias('dodge', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
-		{
-			
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			switch($actor->getSize())
 			{
-				case \Mechanics\Race::SIZE_TINY:
+				case Race::SIZE_TINY:
 					$chance += 5;
 					break;
-				case \Mechanics\Race::SIZE_SMALL:
+				case Race::SIZE_SMALL:
 					$chance += 1;
 					break;
-				case \Mechanics\Race::SIZE_LARGE:
+				case Race::SIZE_LARGE:
 					$chance -= 5;
 					break;
 			}
 			
 			$roll += $this->getNormalAttributeModifier($actor->getDex());
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				Server::out($actor, $args->getAlias(true) . ' dodges your attack!');
 				Server::out($args, 'You dodge ' . $actor->getAlias() . "'s attack!");

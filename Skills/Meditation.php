@@ -25,29 +25,31 @@
 	 *
 	 */
 	namespace Skills;
-	class Meditation extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Ability\Ability;
+    use \Mechanics\Server;
+    use \Mechanics\Actor;
+    use \Disciplines\Cleric;
+    use \Disciplines\Warrior;
+    use \Disciplines\Thief;
+    use \Disciplines\Mage;
+
+	class Meditation extends Skill
 	{
 	
 		protected $creation_points = 5;
 		protected $is_performable = false;
-		protected $ability_hook = \Mechanics\Ability::HOOK_TICK;
+		protected $ability_hook = Ability::HOOK_TICK;
 	
-		protected function __construct()
+		public function perform(Actor $actor, $args = null)
 		{
-			$this->alias = new \Mechanics\Alias('meditation', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
-		{
-		
-			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_FIGHTING)
+			if($actor->getDisposition() === Actor::DISPOSITION_FIGHTING)
 				return;
 		
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			
 			$p = $actor->getDisciplineFocus();
-			if($p instanceof \Disciplines\Cleric)
+			if($p instanceof Cleric)
 				$roll -= 0.25;
 			
 			$roll += $this->getEasyAttributeModifier($actor->getWis());
@@ -57,16 +59,16 @@
 				$f = $actor->getDisciplineFocus();
 				switch($f)
 				{
-					case ($f instanceof \Disciplines\Warrior):
+					case ($f instanceof Warrior):
 						$hp_mod = rand(12, 18) / 100;
 						$mv_mod = rand(8, 12) / 100;
 						$ma_mod = 0;
-					case ($f instanceof \Disciplines\Thief):
+					case ($f instanceof Thief):
 						$mv_mod = rand(12, 18) / 100;
 						$hp_mod = rand(8, 12) / 100;
 						$ma_mod = 0;
-					case ($f instanceof \Disciplines\Mage):
-					case ($f instanceof \Disciplines\Cleric):
+					case ($f instanceof Mage):
+					case ($f instanceof Cleric):
 						$ma_mod = rand(15, 20) / 100;
 						$hp_mod = 0;
 						$mv_mod = 0;

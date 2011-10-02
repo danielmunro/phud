@@ -25,40 +25,44 @@
 	 *
 	 */
 	namespace Skills;
-	class Backstab extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Actor;
+    use \Mechanics\Server;
+    use \Disciplines\Thief;
+
+	class Backstab extends Skill
 	{
 	
-		protected $creation_points = 5;
-		protected $fail_message = '';
-		protected $alias = 'backstab';
+        protected static $alias = 'backstab';
+        protected static $level = 1;
+		protected static $creation_points = 5;
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)
 				return;
 			
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			
 			$d = $actor->getDisciplineFocus()->getOtherDiscipline($actor);
-			if($d instanceof \Disciplines\Thief)
+			if($d instanceof Thief)
 				$roll -= 10;
 			
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			
 			if($roll < $this->percent)
 			{
-				//$actor-> do some fight stuff
 				$actor->incrementDelay(2);
 				$actor->attack('bks');
 			}
 			else
 			{
 				$delay = 2;
-				if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
+				if($actor->getDisciplinePrimary() === Thief::instance())
 					$delay = 1;
 				$actor->incrementDelay($delay);
-				\Mechanics\Server::out($actor, "You fumble your backstab.");
+				Server::out($actor, "You fumble your backstab.");
 			}
 		}
 	}

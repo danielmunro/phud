@@ -25,28 +25,28 @@
 	 *
 	 */
 	namespace Skills;
-	class Shield_Block extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Server;
+    use \Mechanics\Actor;
+
+	class Shield_Block extends Skill
 	{
 	
-		protected $creation_points = 5;
-		protected $is_performable = false;
+        protected static $alias = 'shield block';
+        protected static $level = 10;
+		protected static $creation_points = 5;
+		protected static $is_performable = false;
 		
-		protected function __construct()
+		public function perform(Actor $actor, $args = null)
 		{
-			$this->alias = new \Mechanics\Alias('shield block', $this);
-			parent::__construct();
-		}
-		
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = null)
-		{
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			
 			$roll += $this->getEasyAttributeModifier($actor->getDex());
 			$roll += $this->getHardAttributeModifier($actor->getStr());
 			
 			$roll *= 1.25;
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				Server::out($actor, $args->getAlias(true) . " blocks your attack with " . $args->getDisplaySex() . " shield!");
 				Server::out($args, "You block " . $actor->getAlias() . "'s attack with your shield!");

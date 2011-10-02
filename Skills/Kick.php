@@ -25,36 +25,36 @@
 	 *
 	 */
 	namespace Skills;
-	class Kick extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Server;
+    use \Mechanics\Actor;
+    use \Mechanics\Damage;
+
+	class Kick extends Skill
 	{
 	
-		protected $creation_points = 5;
+        protected static $alias = 'kick';
+        protected static $level = 15;
+		protected static $creation_points = 5;
 	
-		protected function __construct()
-		{
-			$this->alias = new \Mechanics\Alias('kick', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			$target = $actor->reconcileTarget($args);
-			
 			if(!$target)
 				return;
 			
 			$actor->incrementDelay(1);
-			$roll = \Mechanics\Server::chance();
+			$roll = Server::chance();
 			$roll += $this->getEasyAttributeModifier($actor->getDex());
 			$roll -= $this->getEasyAttributeModifier($target->getDex());
 			
 			if($roll > $chance)
-				return \Mechanics\Server::out($actor, 'You fall flat on your face!');
+				return Server::out($actor, 'You fall flat on your face!');
 			
-			if($actor->damage($target, rand(1, 1 + $actor->getLevel()), \Mechanics\Damage::TYPE_BASH))
+			if($actor->damage($target, rand(1, 1 + $actor->getLevel()), Damage::TYPE_BASH))
 			{
-				\Mechanics\Server::out($actor, 'You kick ' . $target->getAlias() . ', causing him pain!');
-				\Mechanics\Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
+				Server::out($actor, 'You kick ' . $target->getAlias() . ', causing him pain!');
+				Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
 			}
 		}
 	}

@@ -25,33 +25,34 @@
 	 *
 	 */
 	namespace Skills;
-	class Second_Attack extends \Mechanics\Skill
+    use \Mechanics\Ability\Skill;
+    use \Mechanics\Ability\Ability;
+    use \Mechanics\Server;
+    use \Mechanics\Actor;
+    use \Disciplines\Warrior;
+    use \Disciplines\Thief;
+
+	class Second_Attack extends Skill
 	{
 	
 		protected $creation_points = 8;
-		protected $hook = \Mechanics\Ability::HOOK_HIT_ATTACK_ROUND;
+		protected $hook = Ability::HOOK_HIT_ATTACK_ROUND;
 	
-		protected function __construct()
+		public function perform(Actor $actor, $args = array())
 		{
-			$this->alias = new \Mechanics\Alias('second attack', $this);
-			parent::__construct();
-		}
-	
-		public function perform(\Mechanics\Actor $actor, $chance = 0, $args = array())
-		{
-			$roll = \Mechanics\Server::chance() + 25;
+			$roll = Server::chance() + 25;
 			
 			$mod = $this->getEasyAttributeModifier($actor->getDex());
 			$mod += $this->getEasyAttributeModifier($actor->getStr());
 			
 			$roll += $mod / 2;
 			
-			if($actor->getDisciplinePrimary() === \Disciplines\Warrior::instance())
+			if($actor->getDisciplinePrimary() === Warrior::instance())
 				$roll -= 15;
-			else if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
+			else if($actor->getDisciplinePrimary() === Thief::instance())
 				$roll -= 5;
 			
-			if($roll < $chance)
+			if($roll < $this->percent)
 			{
 				$actor->attack('2nd');
 			}

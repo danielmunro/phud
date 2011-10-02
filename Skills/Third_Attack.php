@@ -25,9 +25,12 @@
 	 *
 	 */
 	namespace Skills;
-	use Mechanics\Ability\Ability;
-	use Mechanics\Ability\Skill;
-	use Mechanics\Server;
+	use \Mechanics\Ability\Ability;
+	use \Mechanics\Ability\Skill;
+	use \Mechanics\Server;
+    use \Disciplines\Warrior;
+    use \Disciplines\Thief;
+
 	class Third_Attack extends Skill
 	{
 	
@@ -45,9 +48,9 @@
 			
 			$roll += $mod / 2;
 			
-			if($actor->getDisciplinePrimary() === \Disciplines\Warrior::instance())
+			if($actor->getDisciplinePrimary() === Warrior::instance())
 				$roll -= 15;
-			else if($actor->getDisciplinePrimary() === \Disciplines\Thief::instance())
+			else if($actor->getDisciplinePrimary() === Thief::instance())
 				$roll -= 5;
 			
 			if($roll < $this->percent)
