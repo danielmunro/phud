@@ -25,31 +25,37 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Cleric extends \Mechanics\DisciplinePrimary
+    use \Mechanics\DisciplinePrimary;
+    use \Mechanics\Alias;
+    use \Spell_Groups\Healing;
+    use \Spell_Groups\Protective;
+
+	class Cleric extends DisciplinePrimary
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('cleric', $this);
+			$this->alias = new Alias('cleric', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_focuses = array(
-												\Disciplines\Crusader::instance(),
-												\Disciplines\Paladin::instance(),
-												\Disciplines\Monk::instance(),
-												\Disciplines\Druid::instance()
-											);
+				Crusader::instance(),
+				Monk::instance(),
+				Paladin::instance(),
+				Druid::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities =
-						array_merge(
-							\Spell_Groups\Healing::instance()->getSpells(),
-							\Spell_Groups\Protective::instance()->getSpells()
-						);
+			$this->ability_set->addSpellGroups(
+			    array(
+                    new Healing(),
+                    new Protective()
+                )
+			);
 		}
 	}
 ?>

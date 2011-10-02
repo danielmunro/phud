@@ -25,31 +25,29 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Monk extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Monk extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('monk', $this);
+			$this->alias = new Alias('monk', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Cleric::instance(),
-											Thief::instance()
-										);
+				Cleric::instance(),
+				Thief::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Cleric::instance()->getAbilities(),
-							Thief::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSkills(Thief::instance()->getAbilitySet()->getSkills());
+            $this->ability_set->addSpellGroups(Cleric::instance()->getAbilitySet()->getSpellGroups());
 		}
 	}
 ?>

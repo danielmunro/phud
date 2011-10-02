@@ -25,29 +25,33 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Ranger extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Ranger extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('ranger', $this);
+			$this->alias = new Alias('ranger', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Thief::instance(),
-											Warrior::instance()
-										);
+				Thief::instance(),
+				Warrior::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							\Disciplines\Warrior::instance()->getAbilitySet()->getSkills(),
-							\Disciplines\Thief::instance()->getAbilitySet()->getSkills()
-						);
+			$this->ability_set->addSkills(
+                array_merge(
+                    Warrior::instance()->getAbilitySet()->getSkills(),
+			        Thief::instance()->getAbilitySet()->getSkills()
+				)
+            );
 		}
 	}
 ?>

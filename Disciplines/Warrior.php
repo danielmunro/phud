@@ -25,34 +25,39 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Warrior extends \Mechanics\DisciplinePrimary
+    use \Mechanics\DisciplinePrimary;
+    use \Mechanics\Alias;
+    use \Skills;
+
+	class Warrior extends DisciplinePrimary
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('warrior', $this);
+			$this->alias = new Alias('warrior', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_focuses = array(
-											\Disciplines\Samurai::instance(),
-											\Disciplines\Paladin::instance(),
-											\Disciplines\Ranger::instance(),
-											\Disciplines\Barbarian::instance()
-										);
+				Samurai::instance(),
+				Paladin::instance(),
+				Ranger::instance(),
+				Barbarian::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities =
-						array(
-							\Skills\Bash::instance(),
-							\Skills\Dodge::instance(),
-							\Skills\Parry::instance(),
-							\Skills\Kick::instance(),
-							\Skills\Shield_Block::instance()
-						);
+			$this->ability_set->addSkills(
+				array(
+					new Bash(),
+					new Dodge(),
+					new Parry(),
+					new Kick(),
+					new Shield_Block()
+				)
+            );
 		}
 	}
 ?>

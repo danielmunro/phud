@@ -25,31 +25,29 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Samurai extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Samurai extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('samurai', $this);
+			$this->alias = new Alias('samurai', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Mage::instance(),
-											Warrior::instance()
-										);
+				Mage::instance(),
+				Warrior::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Mage::instance()->getAbilities(),
-							Warrior::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups(Mage::instance()->getAbilitySet()->getSpellGroups());
+			$this->ability_set->addSkills(Warrior::instance()->getAbilitySet()->getSkills());
 		}
 	}
 ?>

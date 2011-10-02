@@ -25,12 +25,15 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Wizard extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Wizard extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('wizard', $this);
+			$this->alias = new Alias('wizard', $this);
 		}
 		
 		protected function initDisciplines()
@@ -38,14 +41,9 @@
 			$this->discipline_parts = array(Mage::instance());
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Mage::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups(Mage::instance()->getAbilitySet()->getSpellGroups());
 		}
 	}
 ?>

@@ -25,31 +25,35 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Druid extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Druid extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('druid', $this);
+			$this->alias = new Alias('druid', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Cleric::instance(),
-											Mage::instance()
-										);
+				Cleric::instance(),
+				Mage::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Cleric::instance()->getAbilities(),
-							Mage::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups( 
+				array_merge(
+					Cleric::instance()->getAbilitySet()->getSpellGroups(),
+					Mage::instance()->getAbilitySet()->getSpellGroups(),
+					array(
+					)
+				)
+            );
 		}
 	}
 ?>

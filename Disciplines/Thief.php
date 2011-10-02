@@ -25,34 +25,43 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Thief extends \Mechanics\DisciplinePrimary
+    use \Mechanics\DisciplinePrimary;
+    use \Mechanics\Alias;
+    use \Skills\Backstab;
+    use \Skills\Dodge;
+    use \Skills\Parry;
+    use \Skills\Kick;
+    use \Skills\Shield_Block;
+
+	class Thief extends DisciplinePrimary
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('thief', $this);
+			$this->alias = new Alias('thief', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_focuses = array(
-											\Disciplines\Rogue::instance(),
-											\Disciplines\Assassin::instance(),
-											\Disciplines\Monk::instance(),
-											\Disciplines\Ranger::instance()
-										);
+				Rogue::instance(),
+				Assassin::instance(),
+				Monk::instance(),
+				Ranger::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array(
-							\Skills\Backstab::instance(),
-							\Skills\Dodge::instance(),
-							\Skills\Parry::instance(),
-							\Skills\Kick::instance(),
-							\Skills\Shield_Block::instance()
-						);
+			$this->ability_set->addSkills( 
+				array(
+					new Backstab(),
+					new Dodge(),
+					new Parry(),
+					new Kick(),
+					new Shield_Block()
+				)
+            );
 		}
 	}
 ?>

@@ -25,31 +25,29 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Paladin extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Paladin extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('paladin', $this);
+			$this->alias = new Alias('paladin', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Cleric::instance(),
-											Warrior::instance()
-										);
+				Cleric::instance(),
+				Warrior::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Cleric::instance()->getAbilities(),
-							Warrior::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups(Cleric::instance()->getAbilitySet()->getSpellGroups());
+			$this->ability_set->addSkills(Warrior::instance()->getAbilitySet()->getSkills());
 		}
 	}
 ?>

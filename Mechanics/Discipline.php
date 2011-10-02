@@ -25,16 +25,14 @@
 	 *
 	 */
 	namespace Mechanics; 
+    use Ability\Set as Ability_Set;
+
 	abstract class Discipline
 	{
 		
-		protected $ability_set = null;
 		protected static $instances = array();
+		protected $ability_set = null;
 		protected $alias = null;
-		
-		protected function __construct()
-		{
-		}
 		
 		public static function runInstantiation()
 		{
@@ -56,17 +54,17 @@
 			return self::$instances[$class];
 		}
 		
-		public function getAbilities()
+		public function getAbilitySet()
 		{
 			if(!$this->ability_set)
 			{
 				$this->ability_set = new Ability_Set();
-				$this->initAbilities();
+				$this->initAbilitySet();
 			}
 			return $this->ability_set;
 		}
 		
-		abstract protected function initAbilities();
+		abstract protected function initAbilitySet();
 		
 		abstract protected function initDisciplines();
 		

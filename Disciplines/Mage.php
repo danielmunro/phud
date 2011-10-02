@@ -25,33 +25,37 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Mage extends \Mechanics\DisciplinePrimary
+    use \Mechanics\DisciplinePrimary;
+    use \Mechanics\Alias;
+    use \Spell_Groups\Attack;
+    use \Spell_Groups\Beguiling;
+
+	class Mage extends DisciplinePrimary
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('mage', $this);
+			$this->alias = new Alias('mage', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_focuses = array(
-											\Disciplines\Samurai::instance(),
-											\Disciplines\Assassin::instance(),
-											\Disciplines\Wizard::instance(),
-											\Disciplines\Druid::instance()
-										);
+				Samurai::instance(),
+				Assassin::instance(),
+				Wizard::instance(),
+				Druid::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities =
-						array_merge(
-							\Spell_Groups\Attack::instance()->getSpells(),
-							\Spell_Groups\Beguiling::instance()->getSpells(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups(
+                array(
+				    new Attack(),
+					new Beguiling()
+				)
+            );
 		}
 	}
 ?>

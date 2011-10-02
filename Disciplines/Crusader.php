@@ -25,12 +25,15 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Crusader extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Crusader extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('crusader', $this);
+			$this->alias = new Alias('crusader', $this);
 		}
 		
 		protected function initDisciplines()
@@ -38,14 +41,15 @@
 			$this->discipline_parts = array(Cleric::instance());
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Cleric::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSpellGroups( 
+				array_merge(
+					Cleric::instance()->getAbilitySet()->getSpellGroups(),
+					array(
+					)
+				)
+            );
 		}
 	}
 ?>

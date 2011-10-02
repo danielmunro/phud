@@ -25,12 +25,16 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Barbarian extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+    use \Skills;
+
+	class Barbarian extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('barbarian', $this);
+			$this->alias = new Alias('barbarian', $this);
 		}
 		
 		protected function initDisciplines()
@@ -38,15 +42,16 @@
 			$this->discipline_parts = array(Warrior::instance());
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Warrior::instance()->getAbilities(),
-							array(
-								\Skills\Berserk::instance()
-							)
-						);
+			$this->ability_set->addSkills(
+                array_merge(
+                    Warrior::instance()->getAbilitySet()->getSkills(),
+					array(
+						new Berserk()
+					)
+				)
+            );
 		}
 	}
 ?>

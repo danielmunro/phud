@@ -25,12 +25,15 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Rogue extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Rogue extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('rogue', $this);
+			$this->alias = new Alias('rogue', $this);
 		}
 		
 		protected function initDisciplines()
@@ -38,14 +41,15 @@
 			$this->discipline_parts = array(Thief::instance());
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Thief::instance()->getAbilities(),
-							array(
-							)
-						);
+			$this->ability_set->addSkills( 
+				array_merge(
+					Thief::instance()->getAbilities(),
+					array(
+					)
+				)
+            );
 		}
 	}
 ?>

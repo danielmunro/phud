@@ -25,31 +25,33 @@
 	 *
 	 */
 	namespace Disciplines;
-	class Assassin extends \Mechanics\DisciplineFocus
+    use \Mechanics\DisciplineFocus;
+    use \Mechanics\Alias;
+
+	class Assassin extends DisciplineFocus
 	{
 	
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('assassin', $this);
+			$this->alias = new Alias('assassin', $this);
 		}
 		
 		protected function initDisciplines()
 		{
 			$this->discipline_parts = array(
-											Mage::instance(),
-											Thief::instance()
-										);
+				Mage::instance(),
+				Thief::instance()
+			);
 		}
 		
-		protected function initAbilities()
+		protected function initAbilitySet()
 		{
-			$this->abilities = 
-						array_merge(
-							Mage::instance()->getAbilities(),
-							Thief::instance()->getAbilities(),
-							array(
-							)
-						);
+            $skills = Thief::instance()->getAbilitySet()->getSkills();
+            foreach($skills as $skill)
+                $this->ability_set->addSkill(new $skill());
+            $spell_groups = Mage::instance()->getAbilitySet()->getSpellGroups();
+            foreach($spell_groups as $spell_group)
+                $this->ability_set->addSpellGroup(new $spell_group());
 		}
 	}
 ?>
