@@ -46,12 +46,8 @@
 		
 		protected function initAbilitySet()
 		{
-            $skills = Thief::instance()->getAbilitySet()->getSkills();
-            foreach($skills as $skill)
-                $this->ability_set->addSkill(new $skill());
-            $spell_groups = Mage::instance()->getAbilitySet()->getSpellGroups();
-            foreach($spell_groups as $spell_group)
-                $this->ability_set->addSpellGroup(new $spell_group());
+			$this->ability_set->addSkills(Thief::instance()->getAbilitySet()->getSkills());
+            $this->ability_set->addSpellGroups(Mage::instance()->getAbilitySet()->getSpellGroups());
 		}
 	}
 ?>
