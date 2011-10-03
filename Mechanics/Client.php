@@ -116,7 +116,6 @@
 				else
 				{
 					Server::out($this, 'Wrong password.');
-					Server::getInstance()->disconnectClient($this);
 					return false;
 				}
 			}

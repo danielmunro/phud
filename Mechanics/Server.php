@@ -143,7 +143,7 @@
 							{
 								$command->tryPerform($cl->getUser(), $args);
 								self::out($cl, "\n".$cl->getUser()->prompt(), false);
-                                $this->cleanupSocket($cl, $k);
+                                $this->cleanupSocket($cl);
 								continue;
 							}
 
@@ -181,13 +181,14 @@
 		
 		}
 
-        private function cleanupSocket(Client $cl, $index)
+        private function cleanupSocket(Client $cl)
         {
             // Clean up clients/sockets
 			if(!is_resource($cl->getSocket()))
 			{
-	    		unset($this->clients[$index]);
-				unset($this->sockets[$index]);
+                $key = array_search($cl, $this->clients);
+	    		unset($this->clients[$key]);
+				unset($this->sockets[$key]);
 				$this->clients = array_values($this->clients);
 				$this->sockets = array_values($this->sockets);
 			}
@@ -216,6 +217,7 @@
 		public function disconnectClient(Client $client)
 		{
 			socket_close($client->getSocket());
+            $this->cleanupSocket($client);
 		}
 		
 		public static function getInstance()
