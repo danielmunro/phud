@@ -143,6 +143,7 @@
 							{
 								$command->tryPerform($cl->getUser(), $args);
 								self::out($cl, "\n".$cl->getUser()->prompt(), false);
+                                $this->cleanupSocket($cl, $k);
 								continue;
 							}
 
@@ -159,15 +160,6 @@
 							self::out($cl, "\nHuh?");
 							self::out($cl, "\n" . $cl->getUser()->prompt(), false);
 						}
-					}
-
-					// Clean up clients/sockets
-					if(!$cl->getSocket())
-					{
-						unset($this->clients[$k]);
-						unset($this->sockets[$k]);
-						$this->clients = array_values($this->clients);
-						$this->sockets = array_values($this->sockets);
 					}
 				}
 			}
@@ -188,6 +180,18 @@
 			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
 		
 		}
+
+        private function cleanupSocket(Client $cl, $index)
+        {
+            // Clean up clients/sockets
+			if(!is_resource($cl->getSocket()))
+			{
+	    		unset($this->clients[$index]);
+				unset($this->sockets[$index]);
+				$this->clients = array_values($this->clients);
+				$this->sockets = array_values($this->sockets);
+			}
+        }
 
 		private function userLogin(Client $cl, $args)
 		{

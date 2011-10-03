@@ -42,8 +42,8 @@
 			$skills = $actor->getAbilitySet()->getSkills();
 			foreach($skills as $s)
 			{
-				$pad = 20 - strlen($s->getAbility()->getAlias());
-				$label = $s->getAbility()->getAlias();
+				$pad = 20 - strlen($s::getAlias());
+				$label = $s::getAlias();
 				for($i = 0; $i < $pad; $i++)
 					$label .= ' ';
 				Server::out($actor, $label.': '.$s->getPercent().'%');
