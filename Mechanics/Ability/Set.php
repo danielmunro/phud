@@ -142,7 +142,7 @@
                 if(strpos($sg::getAlias(), $input) === 0)
                     $matches[] = $sg;
             if($matches)
-                return $matches[0];
+                return array_shift($matches);
 		}
 
 		public function removeSkill(Skill $skill)
