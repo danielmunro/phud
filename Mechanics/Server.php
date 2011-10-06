@@ -30,7 +30,7 @@
 	class Server
 	{
 		
-		const ADDRESS = '127.0.0.1';
+		const ADDRESS = '192.168.0.111';
 		const PORT = 9000;
 		
 		private $socket = null;
@@ -90,6 +90,7 @@
 					$this->clients[] = $cl;
 					$this->sockets[] = $cl->getSocket();
 					unset($read[$key]);
+					$this->handshake($cl);
 					self::out($cl, 'By what name do you wish to be known? ', false);
 				}
 				
@@ -104,6 +105,7 @@
 				{
 					$key = array_search($socket, $this->sockets);
 					$input = trim(socket_read($socket, 1024));
+					$input = self::_hybi10DecodeData($input);
 					if($input === '~')
 						$this->clients[$key]->clearCommandBuffer();
 					else
@@ -177,9 +179,114 @@
 			if(!($client instanceof Client) || is_null($client->getSocket()))
 				return;
 			
-			socket_write($client->getSocket(), $message . ($break_line === true ? "\r\n" : ""));
+			$data = self::_hybi10EncodeData($message . ($break_line === true ? "\r\n" : ""));
+
+			socket_write($client->getSocket(), $data, strlen($data));
 		
 		}
+
+		private function handshake(Client $cl)
+		{
+			$fnSockKey = function($headers) {
+				$lines = explode("\r\n", $headers);
+    	        foreach($lines as $line)
+        	    {
+            	    if(strpos($line, 'Sec-WebSocket-Key') === 0)
+					{
+    	                $ex = explode(": ", $line);
+        	            return $ex[1];
+            	    }
+            	}
+			};
+			$headers = socket_read($cl->getSocket(), 1024);
+            $upgrade = "HTTP/1.1 101 Switching Protocols\r\n" .
+						"Upgrade: websocket\r\n" .
+                        "Connection: Upgrade\r\n" .
+                        "WebSocket-Origin: http://localhost\r\n" .
+                        "WebSocket-Location: ws://localhost:9000\r\n" .
+                        "Sec-WebSocket-Accept: ".base64_encode(pack('H*', sha1($fnSockKey($headers)."258EAFA5-E914-47DA-95CA-C5AB0DC85B11")))."\r\n\r\n";
+        	socket_write($cl->getSocket(), $upgrade, strlen($upgrade));
+		}
+
+		private static function _hybi10EncodeData($data)
+		{
+			$frame = Array();
+			$mask = array(rand(0, 255), rand(0, 255), rand(0, 255), rand(0, 255));
+			$encodedData = '';
+			$frame[0] = 0x81;
+			$dataLength = strlen($data);
+			
+			if($dataLength <= 125)
+			{		
+				$frame[1] = $dataLength + 128;		
+			}
+			else
+			{
+				$frame[1] = 254;  
+				$frame[2] = $dataLength >> 8;
+				$frame[3] = $dataLength & 0xFF; 
+			}	
+			$frame = array_merge($frame, $mask);	
+			for($i = 0; $i < strlen($data); $i++)
+			{		
+				$frame[] = ord($data[$i]) ^ $mask[$i % 4];
+			}
+		 	for($i = 0; $i < sizeof($frame); $i++)
+			{
+				$encodedData .= chr($frame[$i]);
+			}		
+		 	return $encodedData;
+		}
+		
+		private static function _hybi10DecodeData($data)
+		{		
+			$bytes = $data;
+			$dataLength = '';
+			$mask = '';
+			$coded_data = '';
+			$decodedData = '';
+			$secondByte = sprintf('%08b', ord($bytes[1]));		
+			$masked = ($secondByte[0] == '1') ? true : false;		
+			$dataLength = ($masked === true) ? ord($bytes[1]) & 127 : ord($bytes[1]);
+			if($masked === true)
+			{
+				if($dataLength === 126)
+				{
+				   $mask = substr($bytes, 4, 4);
+		   		   $coded_data = substr($bytes, 8);
+		   		}
+				elseif($dataLength === 127)
+				{
+					$mask = substr($bytes, 10, 4);
+					$coded_data = substr($bytes, 14);
+				}
+				else
+				{
+					$mask = substr($bytes, 2, 4);		
+					$coded_data = substr($bytes, 6);		
+				}	
+				for($i = 0; $i < strlen($coded_data); $i++)
+				{		
+					$decodedData .= $coded_data[$i] ^ $mask[$i % 4];
+				}
+			}
+			else
+			{
+				if($dataLength === 126)
+				{		   
+				   $decodedData = substr($bytes, 4);
+		   		}
+				elseif($dataLength === 127)
+				{			
+					$decodedData = substr($bytes, 10);
+				}
+				else
+				{				
+					$decodedData = substr($bytes, 2);		
+				}		
+			}
+		 	return $decodedData;
+		 }
 
         private function cleanupSocket(Client $cl)
         {
