@@ -25,12 +25,12 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Item;
+	use \Mechanics\Item as mItem;
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
 	use \Mechanics\Server;
 	use \Mechanics\Ability;
-	use \Living\Shopkeeper;
+	use \Living\Shopkeeper as lShopkeeper;
 	class Buy extends \Mechanics\Command
 	{
 	
@@ -50,19 +50,19 @@
 			{
 				$targets = $actor->getRoom()->getActors();
 				foreach($targets as $potential_target)
-					if($potential_target instanceof Shopkeeper)
+					if($potential_target instanceof lShopkeeper)
 						$target = $potential_target;
 			}
 			
 			if(!($target instanceof Actor))
 				return Server::out($actor, "They are not here.");
 			
-			if(!($target instanceof Shopkeeper))
+			if(!($target instanceof lShopkeeper))
 				return Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
 			
 			$item = $target->getInventory()->getItemByInput($args[1]);
 			
-			if(!($item instanceof Item))
+			if(!($item instanceof mItem))
 				return Say::perform($target, $target->getNoItemMessage());
 			
             $value = $actor->getAbilitySet()->applySkillHooks(Ability::HOOK_BUY_ITEM, $item->getValue());

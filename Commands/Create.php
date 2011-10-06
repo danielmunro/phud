@@ -28,15 +28,15 @@
 	use \Mechanics\Server;
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
-	use \Mechanics\Item;
+	use \Mechanics\Item as mItem;
 	use \Mechanics\Quest\Quest;
 	use \Items\Armor;
 	use \Items\Weapon;
 	use \Items\Food;
-	use \Items\Drink;
+	use \Items\Drink as iDrink;
 	use \Items\Container;
 	use \Living\Mob;
-	use \Living\Shopkeeper;
+	use \Living\Shopkeeper as lShopkeeper;
 	use \Living\Questmaster;
 	class Create extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
@@ -65,7 +65,7 @@
 				case strpos($args[1], 'food') === 0:
 					return $this->doCreateItem($actor, new Food(), $args);
 				case strpos($args[1], 'drink') === 0:
-					return $this->doCreateItem($actor, new Drink(), $args);
+					return $this->doCreateItem($actor, new iDrink(), $args);
 				case strpos($args[1], 'container') === 0:
 					return $this->doCreateContainer($actor, new Container(), $args);
 				case strpos($args[2], 'copper') === 0:
@@ -81,7 +81,7 @@
 			Server::out($actor, "You create ".$amount." copper.");
 		}
 		
-		private function doCreateItem(Actor $actor, Item $item, $args)
+		private function doCreateItem(Actor $actor, mItem $item, $args)
 		{
 			if(sizeof($args) > 2)
 			{
@@ -104,7 +104,7 @@
 		
 		private function doCreateShopkeeper(Actor $actor, $args)
 		{
-			$shopkeeper = new Shopkeeper();
+			$shopkeeper = new lShopkeeper();
 			$shopkeeper->setRoom($actor->getRoom());
 			$shopkeeper->save();
 			

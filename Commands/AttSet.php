@@ -28,7 +28,7 @@
 	use \Mechanics\Alias;
 	use \Mechanics\Server;
 	use \Mechanics\Actor;
-	use \Mechanics\Item;
+	use \Mechanics\Item as mItem;
 	class AttSet extends \Mechanics\Command implements \Mechanics\Command_DM
 	{
 		
@@ -50,7 +50,7 @@
 			$label = '';
 			if($object instanceof Actor)
 				$label = $object->getAlias();
-			else if($object instanceof Item)
+			else if($object instanceof mItem)
 				$label = $object->getShort();
 		
 			$atts = $object->getAttributes();

@@ -27,7 +27,7 @@
 	namespace Commands;
 	use \Mechanics\Alias;
 	use \Mechanics\Actor;
-	use \Mechanics\Item;
+	use \Mechanics\Item as mItem;
 	use \Mechanics\Server;
 	use \Items\Corpse;
 	use \Living\User;
@@ -44,7 +44,7 @@
 		{
 			$item = $actor->getRoom()->getInventory()->getItemByInput($args[1]);
 			
-			if($item instanceof Item)
+			if($item instanceof mItem)
 			{
 				$actor->getRoom()->getInventory()->remove($item);
 				$copper = max(1, $item->getLevel()*3);
