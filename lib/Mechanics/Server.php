@@ -92,6 +92,7 @@
 					unset($read[$key]);
 					$this->handshake($cl);
 					self::out($cl, 'By what name do you wish to be known? ', false);
+					Debug::addDebugLine("Client connecting");
 				}
 				
 				// Pulse
@@ -105,16 +106,23 @@
 				{
 					$key = array_search($socket, $this->sockets);
 					$input = trim(socket_read($socket, 1024));
-					$input = self::_hybi10DecodeData($input);
-					if($input === '~')
-						$this->clients[$key]->clearCommandBuffer();
+					if($input)
+					{
+						$input = self::_hybi10DecodeData($input);
+						if($input === '~')
+							$this->clients[$key]->clearCommandBuffer();
+						else
+							$this->clients[$key]->addCommandBuffer($input);
+					}
 					else
-						$this->clients[$key]->addCommandBuffer($input);
+					{
+						$this->disconnectClient($this->clients[$key]);
+					}
 				}
 				
 				// Input
 				foreach($this->clients as $k => $cl)
-				{		
+				{
 					// Check for a delay in the user's commands
 					if($cl->getUser() && $cl->getUser()->getDelay())
 						continue;
@@ -305,9 +313,14 @@
 		{
 			$user_status = $cl->handleLogin($args);
 			if($user_status === true)
+			{
 				Server::out($cl, "\n".$cl->getUser()->prompt(), false);
+				Debug::addDebugLine($cl->getUser()->getAlias()." logged in");
+			}
 			else if($user_status === false)
+			{
 				$this->disconnectClient($cl);
+			}
 		}
 		
 		private function openSocket()
@@ -325,6 +338,7 @@
 		{
 			socket_close($client->getSocket());
             $this->cleanupSocket($client);
+			Debug::addDebugLine("client disconnected");
 		}
 		
 		public static function getInstance()
