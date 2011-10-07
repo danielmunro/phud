@@ -150,8 +150,8 @@
 							}
 
 							// No command was found -- attempt to perform an ability
-							$ability = $cl->getAbilitySet()->getAbilityByAlias($args[0]);
-							if($ability instanceof Ability && $ability->isPerformable())
+							$ability = $cl->getUser()->getAbilitySet()->getSkillByAlias($args[0]);
+							if($ability && $ability->isPerformable())
 							{
 								$ability->perform($args);
 								self::out($cl, "\n".$cl->getUser()->prompt(), false);
