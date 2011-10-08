@@ -52,6 +52,9 @@
 		protected $ability_set = null;
 		protected $affects = array();
 		protected $alignment = 0;
+
+		protected $x = 0;
+		protected $y = 0;
 		
 		public function __construct()
 		{
@@ -59,6 +62,26 @@
 			$this->equipped = new Equipped($this);
 			$this->ability_set = new Ability_Set($this);
 			$this->tick();
+		}
+
+		public function getX()
+		{
+			return $this->x;
+		}
+
+		public function setX($x)
+		{
+			$this->x = $x;
+		}
+
+		public function getY()
+		{
+			return $this->y;
+		}
+
+		public function setY($y)
+		{
+			$this->y = $y;
 		}
 		
 		public function getAlignment()
@@ -368,8 +391,7 @@
 		
 		public function __toString()
 		{
-			$class = get_class($this);
-			return substr($class, strpos($class, '\\') + 1);
+			return $this->getAlias();
 		}
 	}
 ?>
