@@ -46,6 +46,7 @@
 		private $area = '';
 		private $visibility = 1;
 		private $actors = array();
+		private $bg_image = '';
 	
 		const PURGATORY_ROOM_ID = 5;
 	
@@ -60,6 +61,16 @@
 								'up' => null,
 								'down' => null
 							);
+		}
+
+		public function getBGImage()
+		{
+			return $this->bg_image;
+		}
+
+		public function setBGImage($bg_image)
+		{
+			$this->bg_image = $bg_image;
 		}
 	
 		public function getVisibility()
