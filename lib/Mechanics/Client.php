@@ -217,10 +217,7 @@
 					$focuses = $discipline->getDisciplineFocuses();
 					$this->login['disciplinep'] = true;
 					$this->login['disciplinef'] = false;
-					Server::out($this, "Ok.\nSelect a discipline focus [", false);
-					foreach($focuses as $focus)
-						Server::out($this, $focus->getAlias()." ", false);
-					Server::out($this, "]: ", false);
+					Server::out($this, "Ok.\nSelect a discipline focus [".implode(" ", $focuses)."]: ", false);
 				}
 				else
 					Server::out($this, "That's not a primary discipline. What IS your primary discipline? ", false);
