@@ -28,7 +28,7 @@
 	use \Mechanics\Ability\Set as Ability_Set;
     use \Mechanics\Ability\Ability;
 
-	abstract class Actor implements Affectable
+	abstract class Actor implements Affectable, \JsonSerializable
 	{
 	
 		const MAX_LEVEL = 51;
@@ -400,6 +400,15 @@
 		public function __toString()
 		{
 			return $this->getAlias();
+		}
+
+		public function jsonSerialize()
+		{
+			return array(
+				'id' => $this->id,
+				'x' => $this->x,
+				'y' => $this->y
+			);
 		}
 	}
 ?>

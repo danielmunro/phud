@@ -101,7 +101,7 @@
 				if($seconds == $next_pulse)
 					Pulse::instance()->checkPulseEvents($next_pulse);
 
-				// For each socket that is reading input, modify the corresponding client's command buffer
+				// For each socket that is reading input, determine the type of request and attempt to fulfill it
 				foreach($read as $socket)
 				{
 					$key = array_search($socket, $this->sockets);
@@ -111,37 +111,7 @@
 					$payload = json_decode($json);
 					if(isset($payload->cmd))
 					{
-						if($payload->cmd == 'input')
-						{
-							if($payload->transport === '~')
-								$this->clients[$key]->clearCommandBuffer();
-							else
-								$this->clients[$key]->addCommandBuffer($payload->transport);
-						}
-						else if($payload->cmd == 'updateCoords')
-						{
-							$usr = $this->clients[$key]->getUser();
-							$usr->setX($payload->x);
-							$usr->setY($payload->y);
-							self::updateCoords($usr);
-						}
-						else if($payload->cmd == 'reqActors')
-						{
-							$usr = $this->clients[$key]->getUser();
-							$room = $usr->getRoom();
-							$data = [];
-							if($room) {
-								$actors = $room->getActors();
-								array_walk($actors, function($a) use ($usr, &$data) {
-									if($a != $usr)
-										$data[$a->getID()] = ['x' => $a->getX(), 'y' => $a->getY()];
-								});
-							}
-							if($data) {
-								$s = ['req' => 'actors', 'data' => $data];
-								self::send($this->clients[$key]->getSocket(), $s);
-							}
-						}
+						$this->evaluateClientRequest($this->clients[$key], $payload);
 					}
 					else
 					{
@@ -219,14 +189,48 @@
 			self::send($client->getSocket(), ['req' => 'out', 'data' => $message . ($break_line === true ? "\r\n" : "")]);
 		}
 
-		private static function updateCoords(Actor $actor)
+		private function evaluateClientRequest(Client $cl, $payload)
 		{
-			$room = $actor->getRoom();
-			if($room) {
-				array_walk($room->getActors(), function($a) use ($actor) {
-					if($a instanceof User && $a != $actor)
-						self::send($a->getClient()->getSocket(), ['req' => 'actor', 'data' => ['id' => $actor->getID(), 'x' => $actor->getX(), 'y' => $actor->getY()]]);
-				});
+			switch($payload->cmd) {
+				
+				// Modifying the user's command buffer
+				case 'input':
+					if($payload->transport === '~')
+						$cl->clearCommandBuffer();
+					else
+						$cl->addCommandBuffer($payload->transport);
+					return;
+				
+				// Broadcasting new coords of actor to room
+				case 'updateCoords':
+					$usr = $cl->getUser();
+					$usr->setX($payload->x);
+					$usr->setY($payload->y);
+					$room = $usr->getRoom();
+					if($room) {
+						array_walk($room->getActors(), function($a) use ($usr) {
+							if($a instanceof User && $a != $usr)
+								self::send($a->getClient()->getSocket(), ['req' => 'actor', 'data' => $usr]);
+						});
+					};
+					return;
+				
+				// Initial enter of room/mud -- request all information about the actors in the room
+				case 'reqActors':
+					$usr = $cl->getUser();
+					$room = $usr->getRoom();
+					$data = [];
+					if($room) {
+						$actors = $room->getActors();
+						array_walk($actors, function($a) use ($usr, &$data) {
+							if($a != $usr)
+								$data[$a->getID()] = $a;
+						});
+						if($data) {
+							self::send($cl->getSocket(), ['req' => 'actors', 'data' => $data]);
+						}
+					}
+					return;
 			}
 		}
 
@@ -254,9 +258,9 @@
 			$user_status = $cl->handleLogin($args);
 			if($user_status === true)
 			{
-				self::send($cl->getSocket(), ['req' => 'userStatus', 'data' => 'logged_in']);
 				$u = $cl->getUser();
-				self::roomPush($u, ['req' => 'actor', 'data' => ['id' => $u->getID(), 'x' => $u->getX(), 'y' => $u->getY()]]);
+				self::send($cl->getSocket(), ['req' => 'loggedIn', 'data' => $u]);
+				self::roomPush($u, ['req' => 'actor', 'data' => $u]);
 				self::out($cl, "\n".$cl->getUser()->prompt(), false);
 				Debug::addDebugLine($cl->getUser()->getAlias()." logged in");
 			}
