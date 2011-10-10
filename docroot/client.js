@@ -28,7 +28,6 @@ $(function()
 	});
 	initSock(function() {
 		input.focus();
-		map = new Map();
 	});
 });
 
@@ -54,9 +53,10 @@ function parse(transport)
 			return map.actors(transport.data);
 		case 'actor':
 			return map.actor(transport.data);
-		case 'userStatus':
-			if(transport.data == 'logged_in')
-				map.requestActors();
+		case 'loggedIn':
+			user = new User(transport.data);
+			map = new Map();
+			map.requestActors();
 			return;
 	}
 }
@@ -68,7 +68,6 @@ function initSock(fn)
 	sock.onopen = function() {
 		console.log('connection open');
 		fn();
-		user = new User(50, 50);
 	};
 	
 	sock.onmessage = function(m) {
@@ -95,8 +94,8 @@ function Map()
 	var _canvas = $('#frame');
 	var _context = _canvas[0].getContext('2d');
 	var _actors = {};
-	_canvas.css('height', _height);
-	_canvas.css('width', _width);
+
+	//send({'cmd': 'reqMap'});
 
 	return {
 		redraw: function() {
@@ -117,19 +116,20 @@ function Map()
 		},
 		actors: function(data) {
 			_actors = data;
+			this.redraw();
 		},
 		actor: function(data) {
-			_actors[data['id']] = {'x': data['x'], 'y': data['y']};
-			console.log('my actors: '+JSON.stringify(_actors));
+			_actors[data['id']] = data;
 			this.redraw();
 		}
 	};
 }
 
-function User(x, y)
+function User(data)
 {
-	var _x = x;
-	var _y = y;
+	var _id = data['id'];
+	var _x = data['x'];
+	var _y = data['y'];
 	
 	return {
 		getX: function() {
