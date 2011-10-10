@@ -37,6 +37,7 @@
 		const DISPOSITION_SITTING = 2;
 		const DISPOSITION_FIGHTING = 3;
 		
+		protected $id = '';
 		protected $alias = '';
 		protected $long = '';
 		protected $level = 0;
@@ -62,6 +63,13 @@
 			$this->equipped = new Equipped($this);
 			$this->ability_set = new Ability_Set($this);
 			$this->tick();
+
+			$this->id = microtime();
+		}
+
+		public function getID()
+		{
+			return $this->id;
 		}
 
 		public function getX()
