@@ -105,14 +105,43 @@
 				foreach($read as $socket)
 				{
 					$key = array_search($socket, $this->sockets);
-					$input = trim(socket_read($socket, 1024));
-					if($input)
+					$input = trim(socket_read($socket, 5120));
+					$json = self::_hybi10DecodeData($input);
+					Debug::addDebugLine($json);
+					$payload = json_decode($json);
+					if(isset($payload->cmd))
 					{
-						$input = self::_hybi10DecodeData($input);
-						if($input === '~')
-							$this->clients[$key]->clearCommandBuffer();
-						else
-							$this->clients[$key]->addCommandBuffer($input);
+						if($payload->cmd == 'input')
+						{
+							if($payload->transport === '~')
+								$this->clients[$key]->clearCommandBuffer();
+							else
+								$this->clients[$key]->addCommandBuffer($payload->transport);
+						}
+						else if($payload->cmd == 'updateCoords')
+						{
+							$usr = $this->clients[$key]->getUser();
+							$usr->setX($payload->x);
+							$usr->setY($payload->y);
+							self::updateCoords($usr);
+						}
+						else if($payload->cmd == 'reqActors')
+						{
+							$usr = $this->clients[$key]->getUser();
+							$room = $usr->getRoom();
+							$data = [];
+							if($room) {
+								$actors = $room->getActors();
+								array_walk($actors, function($a) use ($usr, &$data) {
+									if($a != $usr)
+										$data[$a->getID()] = ['x' => $a->getX(), 'y' => $a->getY()];
+								});
+							}
+							if($data) {
+								$s = ['req' => 'actors', 'data' => $data];
+								self::send($this->clients[$key]->getSocket(), $s);
+							}
+						}
 					}
 					else
 					{
@@ -187,12 +216,101 @@
 			if(!($client instanceof Client) || is_null($client->getSocket()))
 				return;
 			
-			$data = self::_hybi10EncodeData($message . ($break_line === true ? "\r\n" : ""));
-
-			socket_write($client->getSocket(), $data, strlen($data));
-		
+			self::send($client->getSocket(), ['req' => 'out', 'data' => $message . ($break_line === true ? "\r\n" : "")]);
 		}
 
+		private static function updateCoords(Actor $actor)
+		{
+			$room = $actor->getRoom();
+			if($room) {
+				array_walk($room->getActors(), function($a) use ($actor) {
+					if($a instanceof User && $a != $actor)
+						self::send($a->getClient()->getSocket(), ['req' => 'actor', 'data' => ['id' => $actor->getID(), 'x' => $actor->getX(), 'y' => $actor->getY()]]);
+				});
+			}
+		}
+
+		private static function send($socket, $data)
+		{
+			$json = self::_hybi10EncodeData(json_encode($data));
+			socket_write($socket, $json, strlen($json));
+		}
+
+        private function cleanupSocket(Client $cl)
+        {
+            // Clean up clients/sockets
+			if(!is_resource($cl->getSocket()))
+			{
+                $key = array_search($cl, $this->clients);
+	    		unset($this->clients[$key]);
+				unset($this->sockets[$key]);
+				$this->clients = array_values($this->clients);
+				$this->sockets = array_values($this->sockets);
+			}
+        }
+
+		private function userLogin(Client $cl, $args)
+		{
+			$user_status = $cl->handleLogin($args);
+			if($user_status === true)
+			{
+				self::send($cl->getSocket(), ['req' => 'userStatus', 'data' => 'logged_in']);
+				$u = $cl->getUser();
+				self::roomPush($u, ['req' => 'actor', 'data' => ['id' => $u->getID(), 'x' => $u->getX(), 'y' => $u->getY()]]);
+				self::out($cl, "\n".$cl->getUser()->prompt(), false);
+				Debug::addDebugLine($cl->getUser()->getAlias()." logged in");
+			}
+			else if($user_status === false)
+			{
+				$this->disconnectClient($cl);
+			}
+		}
+
+		private function roomPush(Actor $actor, $data)
+		{
+			$actors = $actor->getRoom()->getActors();
+			foreach($actors as $a)
+				if($a instanceof User && $a != $actor)
+					self::send($a->getClient()->getSocket(), $data);
+		}
+		
+		private function openSocket()
+		{
+			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
+			if($this->socket === false)
+				die('No socket');
+			socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
+			socket_bind($this->socket, self::ADDRESS, self::PORT) or die('Could not bind to address');
+			socket_listen($this->socket);
+		
+		}
+		
+		public function disconnectClient(Client $client)
+		{
+			$user = $client->getUser();
+			if($user && $user->getRoom()) {
+				$user->getRoom()->actorRemove($user);
+			}
+			socket_close($client->getSocket());
+            $this->cleanupSocket($client);
+			Debug::addDebugLine("client disconnected");
+		}
+		
+		public static function getInstance()
+		{
+			return self::$instance;
+		}
+		
+		public function getSocket()
+		{
+			return $this->socket;
+		}
+		
+		public static function chance()
+		{
+			return rand(0, 10000) / 100;
+		}
+		
 		private function handshake(Client $cl)
 		{
 			$fnSockKey = function($headers) {
@@ -254,106 +372,34 @@
 			$coded_data = '';
 			$decodedData = '';
 			$secondByte = sprintf('%08b', ord($bytes[1]));		
-			$masked = ($secondByte[0] == '1') ? true : false;		
-			$dataLength = ($masked === true) ? ord($bytes[1]) & 127 : ord($bytes[1]);
-			if($masked === true)
+			$dataLength = ord($bytes[1]) & 127;
+			if($dataLength === 126)
 			{
-				if($dataLength === 126)
-				{
-				   $mask = substr($bytes, 4, 4);
-		   		   $coded_data = substr($bytes, 8);
-		   		}
-				elseif($dataLength === 127)
-				{
-					$mask = substr($bytes, 10, 4);
-					$coded_data = substr($bytes, 14);
-				}
-				else
-				{
-					$mask = substr($bytes, 2, 4);		
-					$coded_data = substr($bytes, 6);		
-				}	
-				for($i = 0; $i < strlen($coded_data); $i++)
-				{		
-					$decodedData .= $coded_data[$i] ^ $mask[$i % 4];
-				}
+			   $mask = substr($bytes, 4, 4);
+	   		   $coded_data = substr($bytes, 8);
+	   		}
+			elseif($dataLength === 127)
+			{
+				$mask = substr($bytes, 10, 4);
+				$coded_data = substr($bytes, 14);
 			}
 			else
 			{
-				if($dataLength === 126)
-				{		   
-				   $decodedData = substr($bytes, 4);
-		   		}
-				elseif($dataLength === 127)
-				{			
-					$decodedData = substr($bytes, 10);
-				}
-				else
-				{				
-					$decodedData = substr($bytes, 2);		
-				}		
+				$mask = substr($bytes, 2, 4);		
+				$coded_data = substr($bytes, 6);		
+			}	
+			for($i = 0; $i < strlen($coded_data); $i++)
+			{		
+				$decodedData .= $coded_data[$i] ^ $mask[$i % 4];
 			}
+
+			// HACK/BUGFIX -- for some reason the last char gets chopped off
+			// sometimes. Manually add it back for now
+			if(strlen($decodedData) && substr($decodedData, -1) !== "}")
+				$decodedData .= "}";
+
 		 	return $decodedData;
 		 }
 
-        private function cleanupSocket(Client $cl)
-        {
-            // Clean up clients/sockets
-			if(!is_resource($cl->getSocket()))
-			{
-                $key = array_search($cl, $this->clients);
-	    		unset($this->clients[$key]);
-				unset($this->sockets[$key]);
-				$this->clients = array_values($this->clients);
-				$this->sockets = array_values($this->sockets);
-			}
-        }
-
-		private function userLogin(Client $cl, $args)
-		{
-			$user_status = $cl->handleLogin($args);
-			if($user_status === true)
-			{
-				Server::out($cl, "\n".$cl->getUser()->prompt(), false);
-				Debug::addDebugLine($cl->getUser()->getAlias()." logged in");
-			}
-			else if($user_status === false)
-			{
-				$this->disconnectClient($cl);
-			}
-		}
-		
-		private function openSocket()
-		{
-			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
-			if($this->socket === false)
-				die('No socket');
-			socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
-			socket_bind($this->socket, self::ADDRESS, self::PORT) or die('Could not bind to address');
-			socket_listen($this->socket);
-		
-		}
-		
-		public function disconnectClient(Client $client)
-		{
-			socket_close($client->getSocket());
-            $this->cleanupSocket($client);
-			Debug::addDebugLine("client disconnected");
-		}
-		
-		public static function getInstance()
-		{
-			return self::$instance;
-		}
-		
-		public function getSocket()
-		{
-			return $this->socket;
-		}
-		
-		public static function chance()
-		{
-			return rand(0, 10000) / 100;
-		}
 	}
 ?>
