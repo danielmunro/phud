@@ -45,7 +45,6 @@
 			if($actor instanceof User)
 			{
 				$actor->save();
-				$actor->getRoom()->actorRemove($actor);
 				Server::out($actor, "Good bye!\r\n");
 				Server::getInstance()->disconnectClient($actor->getClient());
 				$actor->getClient()->clearSocket();
