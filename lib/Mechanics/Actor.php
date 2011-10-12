@@ -27,8 +27,9 @@
 	namespace Mechanics;
 	use \Mechanics\Ability\Set as Ability_Set;
     use \Mechanics\Ability\Ability;
+	use \JsonSerializable;
 
-	abstract class Actor implements Affectable, \JsonSerializable
+	abstract class Actor implements Affectable, JsonSerializable
 	{
 	
 		const MAX_LEVEL = 51;
