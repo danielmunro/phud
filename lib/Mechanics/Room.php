@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Mechanics;
-	class Room
+	use JsonSerializable;
+
+	class Room implements JsonSerializable
 	{
 	
 		const START_ROOM = 1;
@@ -281,6 +283,23 @@
 			$db = Dbr::instance();
 			$db->set($this->id, serialize($this));
 			$this->actors = $actors;
+		}
+
+		public function jsonSerialize()
+		{
+			return array(
+				'id' => $this->id,
+				'title' => $this->title,
+				'description' => $this->description,
+				'area' => $this->area,
+				'north' => $this->north,
+				'south' => $this->south,
+				'east' => $this->east,
+				'west' => $this->west,
+				'up' => $this->up,
+				'down' => $this->down,
+				'actors' => $this->actors
+			);
 		}
 	}
 
