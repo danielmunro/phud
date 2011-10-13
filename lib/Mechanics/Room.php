@@ -182,16 +182,13 @@
 		
 		public function actorAdd(Actor $actor)
 		{
-			$this->actors[] = $actor;
+			$this->actors[$actor->getID()] = $actor;
 		}
 		public function actorRemove(Actor $actor)
 		{
-			$key = array_search($actor, $this->actors);
-			if($key === false)
+			if(!isset($this->actors[$actor->getID()]))
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
-			unset($this->actors[$key]);
-			$this->actors = array_values($this->actors);
-			
+			unset($this->actors[$actor->getID()]);
 		}
 		public function getActors()
 		{
@@ -298,6 +295,7 @@
 				'west' => $this->west,
 				'up' => $this->up,
 				'down' => $this->down,
+				'bg_image' => $this->bg_image,
 				'actors' => $this->actors
 			);
 		}
