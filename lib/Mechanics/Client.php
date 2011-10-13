@@ -8,6 +8,7 @@
 		private $socket = null;
 		private $command_buffer = array();
 		private $login = array('alias' => false);
+		private $api_methods = array('input', 'updateCoords', 'reqRoom');
 		protected $last_input = '';
 		
 		public function __construct($socket)
@@ -68,7 +69,40 @@
 			$pw_hash = sha1($this->unverified_user->getAlias().$this->unverified_user->getDateCreated().$password);
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
-		
+
+		///////////////////////////////////////////////////////////
+		// Client requests
+		///////////////////////////////////////////////////////////
+		public function evaluateRequest($payload)
+		{
+			$method = $payload->cmd;
+			if(in_array($method, $this->api_methods)) {
+				return $this->$method($payload);	
+			}
+			Debug::addDebugLine("Invalid request from client: ".print_r($payload, true));
+		}
+
+		private function input($payload)
+		{
+			if($payload->transport === '~')
+				$this->clearCommandBuffer();
+			else
+				$this->addCommandBuffer($payload->transport);
+		}
+
+		private function updateCoords($payload)
+		{
+			$usr = $this->getUser();
+			$usr->setX($payload->x);
+			$usr->setY($payload->y);
+			Server::roomPush($usr, ['req' => 'actor', 'data' => $usr]);
+		}
+
+		private function reqRoom()
+		{
+			return ['req' => 'room', 'data' => $this->user->getRoom()];
+		}
+	
 		///////////////////////////////////////////////////////////
 		// Login
 		///////////////////////////////////////////////////////////

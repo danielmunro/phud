@@ -111,10 +111,15 @@
 					$payload = json_decode($json);
 					if(isset($payload->cmd))
 					{
-						$this->evaluateClientRequest($this->clients[$key], $payload);
+						$result = $this->clients[$key]->evaluateRequest($payload);
+						if(is_array($result))
+							self::send($this->sockets[$key], $result);
 					}
 					else
 					{
+						Debug::addDebugLine("client unexpectedly disconnected.");
+						Debug::addDebugLine(print_r($json, true));
+						Debug::addDebugLine(print_r($payload, true));
 						$this->disconnectClient($this->clients[$key]);
 					}
 				}
@@ -189,49 +194,12 @@
 			self::send($client->getSocket(), ['req' => 'out', 'data' => $message . ($break_line === true ? "\r\n" : "")]);
 		}
 
-		private function evaluateClientRequest(Client $cl, $payload)
+		public function roomPush(Actor $actor, $data)
 		{
-			switch($payload->cmd) {
-				
-				// Modifying the user's command buffer
-				case 'input':
-					if($payload->transport === '~')
-						$cl->clearCommandBuffer();
-					else
-						$cl->addCommandBuffer($payload->transport);
-					return;
-				
-				// Broadcasting new coords of actor to room
-				case 'updateCoords':
-					$usr = $cl->getUser();
-					$usr->setX($payload->x);
-					$usr->setY($payload->y);
-					$room = $usr->getRoom();
-					if($room) {
-						array_walk($room->getActors(), function($a) use ($usr) {
-							if($a instanceof User && $a != $usr)
-								self::send($a->getClient()->getSocket(), ['req' => 'actor', 'data' => $usr]);
-						});
-					};
-					return;
-				
-				// Initial enter of room/mud -- request all information about the actors in the room
-				case 'reqActors':
-					$usr = $cl->getUser();
-					$room = $usr->getRoom();
-					$data = [];
-					if($room) {
-						$actors = $room->getActors();
-						array_walk($actors, function($a) use ($usr, &$data) {
-							if($a != $usr)
-								$data[$a->getID()] = $a;
-						});
-						if($data) {
-							self::send($cl->getSocket(), ['req' => 'actors', 'data' => $data]);
-						}
-					}
-					return;
-			}
+			$actors = $actor->getRoom()->getActors();
+			foreach($actors as $a)
+				if($a instanceof User && $a != $actor)
+					self::send($a->getClient()->getSocket(), $data);
 		}
 
 		private static function send($socket, $data)
@@ -270,14 +238,6 @@
 			}
 		}
 
-		private function roomPush(Actor $actor, $data)
-		{
-			$actors = $actor->getRoom()->getActors();
-			foreach($actors as $a)
-				if($a instanceof User && $a != $actor)
-					self::send($a->getClient()->getSocket(), $data);
-		}
-		
 		private function openSocket()
 		{
 			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
