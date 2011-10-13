@@ -1,7 +1,9 @@
 var sock;
-var map;
-var users = [];
+var room;
 var user;
+var canvas_height = 145;
+var canvas_width = 295;
+var border_padding = 15;
 
 $(function()
 {
@@ -9,7 +11,7 @@ $(function()
 	input.bind('keydown', function(e) {
 		var pressed = e.which || e.keyCode;
 		if(pressed == 13) {
-			sock.send(JSON.stringify({'cmd': 'input', 'transport': input.val()}));
+			send({'cmd': 'input', 'transport': input.val()});
 			input.val('');
 			out('\n');
 		}
@@ -45,33 +47,49 @@ function scrollConsole()
 
 function parse(transport)
 {
-	console.log(transport.req+': '+JSON.stringify(transport.data));
 	switch(transport.req) {
+		
+		// Output to console
 		case 'out':
 			return out(transport.data);
-		case 'actors':
-			return map.actors(transport.data);
+
+		// Reload one actor (if they move, etc)
 		case 'actor':
-			return map.actor(transport.data);
+			room.actor(transport.data);
+			break;
+
+		// Logged in, build context for the user
 		case 'loggedIn':
 			user = new User(transport.data);
-			map = new Map();
-			map.requestActors();
-			return;
+			room = new Room();
+			break;
+
+		// Loading room info
+		case 'room':
+			room.load(transport.data);
+			break;
+	}
+	if(room) {
+		room.redraw();
 	}
 }
 
-function initSock(fn)
+function initSock(callback)
 {
 	sock = new WebSocket("ws://24.17.220.111:9000");
 	
 	sock.onopen = function() {
 		console.log('connection open');
-		fn();
+		callback();
 	};
 	
-	sock.onmessage = function(m) {
-		parse(eval('('+m.data+')'));
+	sock.onmessage = function(transport) {
+		var msg = eval('('+transport.data+')');
+		if(msg.req != 'out') {
+			// Don't log stuff going to the console, too spammy
+			console.log('recv: '+msg.req+': '+JSON.stringify(msg.data));
+		}
+		parse(msg);
 	};
 	
 	sock.onclose = function() {
@@ -87,40 +105,78 @@ function send(json)
 	sock.send(s);
 }
 
-function Map()
+function Room()
 {
-	var _height = 500;
-	var _width = 800;
 	var _canvas = $('#frame');
+	var _offset_x = 0;
+	var _offset_y = 0;
+	var _height = 0;
+	var _width = 0;
 	var _context = _canvas[0].getContext('2d');
 	var _actors = {};
+	var _bg_image = null;
+	var _bg_image_loaded = false;
 
-	//send({'cmd': 'reqMap'});
+	// Initialize the room info
+	send({'cmd': 'reqRoom'});
 
 	return {
+		load: function(data) {
+			// background image stuff
+			_bg_image_loaded = false;
+			_bg_image = new Image();
+			_bg_image.src = '/resources/'+data['bg_image'];
+			_bg_image.onload = function() {
+				room.BGImageLoaded();
+			};
+
+			// actors
+			_actors = data['actors'];
+		},
 		redraw: function() {
-			_context.clearRect(0, 0, _height, _width);
-			if(user) {
-				user.redraw();
+			// Clear the existing screen
+			_context.clearRect(0, 0, canvas_height, canvas_width);
+
+			// Redraw the background image if it exists
+			if(_bg_image_loaded) {
+				_context.drawImage(_bg_image, _offset_x, _offset_y);
 			}
+
+			// Redraw the actors
 			for(a in _actors) {
 				_context.fillStyle = "rgb(255, 0, 0)";
-				_context.fillRect(_actors[a]['x'], _actors[a]['y'], 5, 5);
+				var x = _actors[a]['x'];
+				var y = _actors[a]['y'];
+				if(_actors[a]['id'] == user.getID()) {
+					x = user.getOffsetX();
+					y = user.getOffsetY();
+				}
+				// TODO don't draw actors that are off screen
+				_context.fillRect(x, y, 5, 5);
 			}
 		},
 		getContext: function() {
 			return _context;
 		},
-		requestActors: function() {
-			send({'cmd': 'reqActors'});
-		},
-		actors: function(data) {
-			_actors = data;
-			this.redraw();
-		},
 		actor: function(data) {
 			_actors[data['id']] = data;
-			this.redraw();
+		},
+		BGImageLoaded: function() {
+			_height = _bg_image.height;
+			_width = _bg_image.width;
+			_bg_image_loaded = true;
+		},
+		getHeight: function() {
+			return _height;
+		},
+		getWidth: function() {
+			return _width;
+		},
+		moveOffsetX: function(x) {
+			_offset_x += x;
+		},
+		moveOffsetY: function(y) {
+			_offset_y += y;
 		}
 	};
 }
@@ -130,31 +186,64 @@ function User(data)
 	var _id = data['id'];
 	var _x = data['x'];
 	var _y = data['y'];
+	var _offset_x = 0;
+	var _offset_y = 0;
 	
 	return {
+		getID: function() {
+			return _id;
+		},
 		getX: function() {
 			return _x;
 		},
 		getY: function() {
 			return _y;
 		},
+		getOffsetX: function() {
+			return _offset_x;
+		},
+		getOffsetY: function() {
+			return _offset_y;
+		},
 		moveX: function(x) {
-			_x += x;
-			map.redraw();
-			this.updateCoords();
+			var new_x = _x + x;
+			if(new_x < room.getWidth() && new_x > 0) {
+				_x = new_x;
+				_offset_x += x;
+				if(_offset_x < border_padding) {
+					_offset_x = border_padding;
+					room.moveOffsetX(-x);
+				}
+				else if(_offset_x > canvas_width - border_padding) {
+					_offset_x = canvas_width - border_padding;
+					room.moveOffsetX(-x);
+				}
+				this.moved();
+			}
 		},
 		moveY: function(y) {
-			_y += y;
-			map.redraw();
-			this.updateCoords();
+			var new_y = _y + y;
+			if(new_y < room.getHeight() && new_y > 0) {
+				_y = new_y;
+				_offset_y += y;
+				if(_offset_y < border_padding) {
+					_offset_y = border_padding;
+					room.moveOffsetY(-y);
+				}
+				else if(_offset_y > canvas_height - border_padding) {
+					_offset_y = canvas_height - border_padding;
+					room.moveOffsetY(-y);
+				}
+				this.moved();
+			}
 		},
-		redraw: function() {
-			var img = map.getContext();
-			img.fillStyle = "rgb(255, 0, 0)";
-			img.fillRect(_x, _y, 5, 5);
-		},
-		updateCoords: function() {
+		moved: function() {
+			room.actor(this.getProperties());
+			room.redraw();
 			send({'cmd': 'updateCoords', 'x': _x, 'y': _y});
+		},
+		getProperties: function() {
+			return {'id': _id, 'x': _x, 'y': _y};
 		}
 	};
 }
