@@ -3,7 +3,7 @@ var room;
 var user;
 var canvas_height = 145;
 var canvas_width = 295;
-var border_padding = 15;
+var border_padding = 30;
 
 $(function()
 {
@@ -33,12 +33,6 @@ $(function()
 	});
 });
 
-function out(message)
-{
-	$('#out').append(message.replace(/\n/, '<br />'));
-	scrollConsole();
-}
-
 function scrollConsole()
 {
 	var o = $('#out');
@@ -47,35 +41,46 @@ function scrollConsole()
 
 function parse(transport)
 {
-	switch(transport.req) {
-		
-		// Output to console
-		case 'out':
-			return out(transport.data);
-
-		// Reload one actor (if they move, etc)
-		case 'actor':
-			room.actor(transport.data);
-			break;
-
-		// Logged in, build context for the user
-		case 'loggedIn':
-			user = new User(transport.data);
-			room = new Room();
-			break;
-
-		// Loading room info
-		case 'room':
-			room.load(transport.data);
-			break;
+	var api_methods = ['out', 'loggedIn', 'room.actor', 'room.load', 'user.images'];
+	if(api_methods.indexOf(transport.req) > -1) {
+		var m = transport.req;
+		eval(m+'(transport.data)');
+	} else {
+		console.log('invalid method: '+m);
 	}
-	if(room) {
-		room.redraw();
-	}
+}
+
+function out(data)
+{
+	$('#out').append(data.replace(/\n/, '<br />'));
+	scrollConsole();
+}
+
+function loggedIn(data)
+{
+	user = new User(data);
+	room = new Room();
+
+	// request room info from the server
+	send({'cmd': 'reqRoom'});
+	//send({'cmd': 'reqUserImages'});
 }
 
 function initSock(callback)
 {
+	/**
+	 * there are three events associated with a websocket:
+	 * 
+	 * onopen() - which is fired after making the initial request to the server (by requesting a new WebSocket())
+	 * and the server successfully completes the handshake. Currently, phud is configured to accept handshakes
+	 * following the hybi-10 draft (Chrome 14).
+	 *
+	 * onmessage() - this event is fired when we get data from the server. For the purposes of this application,
+	 * all data is sent and received in JSON.
+	 *
+	 * onclose() - will fire when the server is no longer responsive and the connection is lost.
+	 */
+	
 	sock = new WebSocket("ws://24.17.220.111:9000");
 	
 	sock.onopen = function() {
@@ -117,9 +122,6 @@ function Room()
 	var _bg_image = null;
 	var _bg_image_loaded = false;
 
-	// Initialize the room info
-	send({'cmd': 'reqRoom'});
-
 	return {
 		load: function(data) {
 			// background image stuff
@@ -128,7 +130,12 @@ function Room()
 			_bg_image.src = '/resources/'+data['bg_image'];
 			_bg_image.onload = function() {
 				room.BGImageLoaded();
+				room.redraw();
 			};
+
+			// set offsets
+			_offset_x = -user.getX();
+			_offset_y = -user.getY();
 
 			// actors
 			_actors = data['actors'];
@@ -141,6 +148,8 @@ function Room()
 			if(_bg_image_loaded) {
 				_context.drawImage(_bg_image, _offset_x, _offset_y);
 			}
+
+			console.log(_offset_x+', '+_offset_y);
 
 			// Redraw the actors
 			for(a in _actors) {
@@ -186,9 +195,10 @@ function User(data)
 	var _id = data['id'];
 	var _x = data['x'];
 	var _y = data['y'];
-	var _offset_x = 0;
-	var _offset_y = 0;
-	
+	var _offset_x = parseInt(canvas_width / 2);
+	var _offset_y = parseInt(canvas_height / 2);
+	var _images = {};
+
 	return {
 		getID: function() {
 			return _id;
@@ -207,7 +217,7 @@ function User(data)
 		},
 		moveX: function(x) {
 			var new_x = _x + x;
-			if(new_x < room.getWidth() && new_x > 0) {
+			if(new_x < room.getWidth() && new_x > border_padding) {
 				_x = new_x;
 				_offset_x += x;
 				if(_offset_x < border_padding) {
@@ -223,7 +233,7 @@ function User(data)
 		},
 		moveY: function(y) {
 			var new_y = _y + y;
-			if(new_y < room.getHeight() && new_y > 0) {
+			if(new_y < room.getHeight() && new_y > border_padding) {
 				_y = new_y;
 				_offset_y += y;
 				if(_offset_y < border_padding) {
@@ -241,6 +251,9 @@ function User(data)
 			room.actor(this.getProperties());
 			room.redraw();
 			send({'cmd': 'updateCoords', 'x': _x, 'y': _y});
+		},
+		images: function(data) {
+			_images = data;
 		},
 		getProperties: function() {
 			return {'id': _id, 'x': _x, 'y': _y};
