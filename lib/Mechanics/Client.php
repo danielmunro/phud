@@ -8,7 +8,7 @@
 		private $socket = null;
 		private $command_buffer = array();
 		private $login = array('alias' => false);
-		private $api_methods = array('input', 'updateCoords', 'reqRoom');
+		private $api_methods = array('input', 'updateCoords', 'reqRoom', 'reqImages');
 		protected $last_input = '';
 		
 		public function __construct($socket)
@@ -95,12 +95,17 @@
 			$usr = $this->getUser();
 			$usr->setX($payload->x);
 			$usr->setY($payload->y);
-			Server::roomPush($usr, ['req' => 'actor', 'data' => $usr]);
+			Server::roomPush($usr, ['req' => 'room.actor', 'data' => $usr]);
 		}
 
 		private function reqRoom()
 		{
-			return ['req' => 'room', 'data' => $this->user->getRoom()];
+			return ['req' => 'room.load', 'data' => $this->user->getRoom()];
+		}
+
+		private function reqImages()
+		{
+			return ['req' => 'user.images', 'data' => $this->user->getImages()];
 		}
 	
 		///////////////////////////////////////////////////////////

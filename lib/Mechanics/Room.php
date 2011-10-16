@@ -49,6 +49,7 @@
 		private $visibility = 1;
 		private $actors = array();
 		private $bg_image = '';
+		private $bg_image_collisions = '';
 	
 		const PURGATORY_ROOM_ID = 5;
 	
@@ -73,6 +74,18 @@
 		public function setBGImage($bg_image)
 		{
 			$this->bg_image = $bg_image;
+		}
+
+
+		public function getBGImageCollisions()
+		{
+			return $this->bg_image_collisions;
+		}
+
+
+		public function setBGImageCollisions($bg_image_collisions)
+		{
+			$this->bg_image_collisions = $bg_image_collisions;
 		}
 	
 		public function getVisibility()
@@ -296,6 +309,7 @@
 				'up' => $this->up,
 				'down' => $this->down,
 				'bg_image' => $this->bg_image,
+				'bg_image_collisions' => $this->bg_image_collisions,
 				'actors' => $this->actors
 			);
 		}

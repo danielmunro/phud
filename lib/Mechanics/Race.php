@@ -51,6 +51,8 @@
 		const PART_WINGS = 14;
 		const PART_TAIL = 15;
 
+		const RESOURCE_IMAGES = '/resources';
+
 		private static $instances = array();
 		protected $attributes = null;
 		protected $max_attributes = null;
@@ -70,6 +72,7 @@
 		protected $playable = false;
 		protected $creation_points = 0;
 		protected $alias = null;
+		protected $images = array();
 		
 		protected function __construct()
 		{
@@ -95,6 +98,11 @@
 					$called_class = $namespace.'\\'.$class;
 					new $called_class();
 				}
+		}
+
+		public function getImages()
+		{
+			return $this->images;
 		}
 		
 		public static function getParts(\Mechanics\Actor $actor)

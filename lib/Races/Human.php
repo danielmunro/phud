@@ -79,11 +79,13 @@
 				\Disciplines\Rogue::instance(),
 				\Disciplines\Wizard::instance()
 			);
-			
-			parent::__construct();
-		
-		}
 	
+			$i = self::RESOURCE_IMAGES;
+			$this->images = [
+				'*' => $i.'/human.png'
+			];
+		
+			parent::__construct();
+		}
 	}
-
 ?>

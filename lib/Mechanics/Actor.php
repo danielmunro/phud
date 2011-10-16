@@ -33,10 +33,15 @@
 	{
 	
 		const MAX_LEVEL = 51;
+		
 		const DISPOSITION_STANDING = 0;
 		const DISPOSITION_SLEEPING = 1;
 		const DISPOSITION_SITTING = 2;
 		const DISPOSITION_FIGHTING = 3;
+		
+		const SEX_NEUTRAL = 1;
+		const SEX_FEMALE = 2;
+		const SEX_MALE = 3;
 		
 		protected $id = '';
 		protected $alias = '';
@@ -91,6 +96,11 @@
 		public function setY($y)
 		{
 			$this->y = $y;
+		}
+
+		public function getImages()
+		{
+			return $this->getRace()->getImages($this->sex);
 		}
 		
 		public function getAlignment()
@@ -291,15 +301,17 @@
 		
 		public function getSex()
 		{
-			if(!$this->sex)
-				$this->sex = 'it';
-			return $this->sex;
+			if($this->sex === self::SEX_FEMALE)
+				return 'f';
+			else if($this->sex === self::SEX_MALE)
+				return 'm';
+			else
+				return 'it';
 		}
 		
 		public function setSex($sex)
 		{
-			if($sex == 'm' || $sex == 'f')
-			{
+			if($sex === self::SEX_FEMALE || $sex === self::SEX_MALE || $sex === self::SEX_NEUTRAL) {
 				$this->sex = $sex;
 				return true;
 			}

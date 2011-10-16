@@ -107,7 +107,6 @@
 					$key = array_search($socket, $this->sockets);
 					$input = trim(socket_read($socket, 5120));
 					$json = self::_hybi10DecodeData($input);
-					Debug::addDebugLine($json);
 					$payload = json_decode($json);
 					if(isset($payload->cmd))
 					{
@@ -117,10 +116,9 @@
 					}
 					else
 					{
-						Debug::addDebugLine("client unexpectedly disconnected.");
+						Debug::addDebugLine("client input bug: ");
 						Debug::addDebugLine(print_r($json, true));
-						Debug::addDebugLine(print_r($payload, true));
-						$this->disconnectClient($this->clients[$key]);
+						//$this->disconnectClient($this->clients[$key]);
 					}
 				}
 				
@@ -228,7 +226,7 @@
 			{
 				$u = $cl->getUser();
 				self::send($cl->getSocket(), ['req' => 'loggedIn', 'data' => $u]);
-				self::roomPush($u, ['req' => 'actor', 'data' => $u]);
+				self::roomPush($u, ['req' => 'room.actor', 'data' => $u]);
 				self::out($cl, "\n".$cl->getUser()->prompt(), false);
 				Debug::addDebugLine($cl->getUser()->getAlias()." logged in");
 			}
@@ -335,6 +333,11 @@
 			$mask = '';
 			$coded_data = '';
 			$decodedData = '';
+
+			// HACK/BUGFIX -- ???
+			if(!isset($bytes[1])) {
+				return false;
+			}
 			$secondByte = sprintf('%08b', ord($bytes[1]));		
 			$dataLength = ord($bytes[1]) & 127;
 			if($dataLength === 126)
