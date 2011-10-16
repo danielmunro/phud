@@ -63,7 +63,7 @@ function loggedIn(data)
 
 	// request room info from the server
 	send({'cmd': 'reqRoom'});
-	//send({'cmd': 'reqUserImages'});
+	send({'cmd': 'reqImages'});
 }
 
 function initSock(callback)
@@ -120,18 +120,29 @@ function Room()
 	var _context = _canvas[0].getContext('2d');
 	var _actors = {};
 	var _bg_image = null;
-	var _bg_image_loaded = false;
+	var _bg_image_collisions = null;
+	var _images_loaded = false;
+	
+	_canvas.bind('click', function(e_cl) {
+		var x = e_cl.pageX || e_cl.clientX;
+		var y = e_cl.pageY || e_cl.clientY;
+		console.log('click at '+x+', '+y);
+	});
 
 	return {
 		load: function(data) {
 			// background image stuff
-			_bg_image_loaded = false;
-			_bg_image = new Image();
-			_bg_image.src = '/resources/'+data['bg_image'];
-			_bg_image.onload = function() {
-				room.BGImageLoaded();
-				room.redraw();
+			_images_loaded = false;
+			var fn_image_loaded = function() {
+				if(room.imagesLoaded())
+					room.redraw();
 			};
+			_bg_image = new Image();
+			_bg_image_collisions = new Image();
+			_bg_image.src = '/resources/'+data['bg_image'];	
+			_bg_image_collisions.src = '/resources/'+data['bg_image_collisions'];
+			_bg_image.onload = fn_image_loaded;
+			_bg_image_collisions.onload = fn_image_loaded;
 
 			// set offsets
 			_offset_x = -user.getX();
@@ -145,23 +156,21 @@ function Room()
 			_context.clearRect(0, 0, canvas_height, canvas_width);
 
 			// Redraw the background image if it exists
-			if(_bg_image_loaded) {
+			if(_images_loaded) {
 				_context.drawImage(_bg_image, _offset_x, _offset_y);
 			}
 
 			console.log(_offset_x+', '+_offset_y);
 
 			// Redraw the actors
+			// TODO don't draw actors that are off screen
 			for(a in _actors) {
-				_context.fillStyle = "rgb(255, 0, 0)";
-				var x = _actors[a]['x'];
-				var y = _actors[a]['y'];
 				if(_actors[a]['id'] == user.getID()) {
-					x = user.getOffsetX();
-					y = user.getOffsetY();
+					_context.drawImage(user.getWalkingImage(), user.getOffsetX(), user.getOffsetY());
+				} else {
+					_context.fillStyle = "rgb(255, 0, 0)";
+					_context.fillRect(_actors[a]['x'], _actors[a]['y'], 5, 5);
 				}
-				// TODO don't draw actors that are off screen
-				_context.fillRect(x, y, 5, 5);
 			}
 		},
 		getContext: function() {
@@ -170,10 +179,19 @@ function Room()
 		actor: function(data) {
 			_actors[data['id']] = data;
 		},
-		BGImageLoaded: function() {
-			_height = _bg_image.height;
-			_width = _bg_image.width;
-			_bg_image_loaded = true;
+		imagesLoaded: function() {
+			console.log('calling imagesLoaded');
+			if(_images_loaded)
+				return true;
+			if(_bg_image.complete) {
+				_height = _bg_image.height;
+				_width = _bg_image.width;
+			}
+			if(_bg_image.complete && _bg_image_collisions.complete) {
+				_images_loaded = true;
+				return true;
+			}
+			return false;
 		},
 		getHeight: function() {
 			return _height;
@@ -253,7 +271,15 @@ function User(data)
 			send({'cmd': 'updateCoords', 'x': _x, 'y': _y});
 		},
 		images: function(data) {
-			_images = data;
+			for(i in data) {
+				console.log('loading image '+i+', '+data[i]);
+				_images[i] = new Image();
+				_images[i].src = data[i];
+			}
+		},
+		getWalkingImage: function() {
+			if(_images['*'])
+				return _images['*'];
 		},
 		getProperties: function() {
 			return {'id': _id, 'x': _x, 'y': _y};
