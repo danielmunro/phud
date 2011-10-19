@@ -16,16 +16,16 @@ $(function()
 			out('\n');
 		}
 		else if(pressed == 37) {
-			user.moveX(-5);
+			send({'cmd': 'moveX', 'x': -5});
 		}
 		else if(pressed == 38) {
-			user.moveY(-5);
+			send({'cmd': 'moveY', 'y': -5});
 		}
 		else if(pressed == 39) {
-			user.moveX(5);
+			send({'cmd': 'moveX', 'x': 5});
 		}
 		else if(pressed == 40) {
-			user.moveY(5);
+			send({'cmd': 'moveY', 'y': 5});
 		}
 	});
 	initSock(function() {
@@ -41,7 +41,7 @@ function scrollConsole()
 
 function parse(transport)
 {
-	var api_methods = ['out', 'loggedIn', 'room.actor', 'room.load', 'user.images'];
+	var api_methods = ['out', 'loggedIn', 'room.actor', 'room.load', 'user.images', 'user.moveX', 'user.moveY'];
 	if(api_methods.indexOf(transport.req) > -1) {
 		var m = transport.req;
 		eval(m+'(transport.data)');
@@ -160,13 +160,11 @@ function Room()
 				_context.drawImage(_bg_image, _offset_x, _offset_y);
 			}
 
-			console.log(_offset_x+', '+_offset_y);
-
 			// Redraw the actors
 			// TODO don't draw actors that are off screen
 			for(a in _actors) {
-				if(_actors[a]['id'] == user.getID()) {
-					_context.drawImage(user.getWalkingImage(), user.getOffsetX(), user.getOffsetY());
+				if(_actors[a]['id'] == user.getID() && user.getImage('walking')) {
+					_context.drawImage(user.getImage('walking'), user.getOffsetX(), user.getOffsetY());
 				} else {
 					_context.fillStyle = "rgb(255, 0, 0)";
 					_context.fillRect(_actors[a]['x'], _actors[a]['y'], 5, 5);
@@ -180,7 +178,7 @@ function Room()
 			_actors[data['id']] = data;
 		},
 		imagesLoaded: function() {
-			console.log('calling imagesLoaded');
+			console.log('calling imagesLoaded: '+_images_loaded);
 			if(_images_loaded)
 				return true;
 			if(_bg_image.complete) {
@@ -234,41 +232,16 @@ function User(data)
 			return _offset_y;
 		},
 		moveX: function(x) {
-			var new_x = _x + x;
-			if(new_x < room.getWidth() && new_x > border_padding) {
-				_x = new_x;
-				_offset_x += x;
-				if(_offset_x < border_padding) {
-					_offset_x = border_padding;
-					room.moveOffsetX(-x);
-				}
-				else if(_offset_x > canvas_width - border_padding) {
-					_offset_x = canvas_width - border_padding;
-					room.moveOffsetX(-x);
-				}
-				this.moved();
-			}
+			_x += x;
+			_offset_x += x;
+			console.log('user offset '+_offset_x+', '+_offset_y);
+			room.redraw();
 		},
 		moveY: function(y) {
-			var new_y = _y + y;
-			if(new_y < room.getHeight() && new_y > border_padding) {
-				_y = new_y;
-				_offset_y += y;
-				if(_offset_y < border_padding) {
-					_offset_y = border_padding;
-					room.moveOffsetY(-y);
-				}
-				else if(_offset_y > canvas_height - border_padding) {
-					_offset_y = canvas_height - border_padding;
-					room.moveOffsetY(-y);
-				}
-				this.moved();
-			}
-		},
-		moved: function() {
-			room.actor(this.getProperties());
+			_y += y;
+			_offset_y += y;
+			console.log('user offset '+_offset_x+', '+_offset_y);
 			room.redraw();
-			send({'cmd': 'updateCoords', 'x': _x, 'y': _y});
 		},
 		images: function(data) {
 			for(i in data) {
@@ -277,12 +250,11 @@ function User(data)
 				_images[i].src = data[i];
 			}
 		},
-		getWalkingImage: function() {
+		getImage: function(type) {
+			if(_images[type])
+				return _images[type];
 			if(_images['*'])
 				return _images['*'];
-		},
-		getProperties: function() {
-			return {'id': _id, 'x': _x, 'y': _y};
 		}
 	};
 }
