@@ -80,9 +80,13 @@
 				\Disciplines\Wizard::instance()
 			);
 	
-			$i = self::RESOURCE_IMAGES;
+			$i = realpath(__DIR__.'/../../docroot').self::RESOURCE_IMAGES;
 			$this->images = [
-				'*' => $i.'/human.png'
+				'*' => [
+					'resource' => imagecreatefrompng($i.'/human.png'),
+					'abspath' => $i.'/human.png',
+					'src' => 'resources/human.png'
+				]
 			];
 		
 			parent::__construct();

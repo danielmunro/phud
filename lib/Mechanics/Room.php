@@ -49,7 +49,9 @@
 		private $visibility = 1;
 		private $actors = array();
 		private $bg_image = '';
+		private $bg_image_res = null;
 		private $bg_image_collisions = '';
+		private $bg_image_collisions_res = null;
 	
 		const PURGATORY_ROOM_ID = 5;
 	
@@ -74,6 +76,7 @@
 		public function setBGImage($bg_image)
 		{
 			$this->bg_image = $bg_image;
+			$this->bg_image_res = imagecreatefrompng(__DIR__.'/../../docroot/resources/'.$bg_image);
 		}
 
 
@@ -82,12 +85,33 @@
 			return $this->bg_image_collisions;
 		}
 
-
 		public function setBGImageCollisions($bg_image_collisions)
 		{
 			$this->bg_image_collisions = $bg_image_collisions;
+			$this->bg_image_collisions_res = imagecreatefrompng(__DIR__.'/../../docroot/resources/'.$bg_image_collisions);
 		}
-	
+		
+		public function detectCollision($image, $pos_x, $pos_y)
+		{
+			$image = $this->bg_image_collisions_res;
+			$w = imagesx($image);
+			$h = imagesy($image);
+			Debug::addDebugLine("image w, h: ".$w.", ".$h);
+			for($y = 0; $y < $h; $y++)
+				for($x = 0; $x < $w; $x++)
+				{
+					$index = imagecolorat($image, $x, $y);
+					$colors = imagecolorsforindex($image, $index);
+					if($colors['alpha'] < 127)
+					{
+						$index2 = imagecolorat($this->bg_image_collisions_res, $x, $y);
+						$colors2 = imagecolorsforindex($this->bg_image_collisions_res, $index2);
+						if($colors['alpha'] > 0)
+							return true;
+					}
+				}
+		}
+
 		public function getVisibility()
 		{
 			return $this->visibility;
@@ -242,7 +266,11 @@
 			$room_serialized = $db->get($id);
 			if($room_serialized)
 			{
-				self::$instances[$id] = unserialize($room_serialized);
+				$i = unserialize($room_serialized);
+				// reload image resources
+				$i->setBGImage($i->getBGImage());
+				$i->setBGImageCollisions($i->getBGImageCollisions());
+				self::$instances[$id] = $i;
 			}
 			else
 			{

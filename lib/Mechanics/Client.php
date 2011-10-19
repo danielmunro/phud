@@ -8,7 +8,7 @@
 		private $socket = null;
 		private $command_buffer = array();
 		private $login = array('alias' => false);
-		private $api_methods = array('input', 'updateCoords', 'reqRoom', 'reqImages');
+		private $api_methods = array('input', 'updateCoords', 'reqRoom', 'reqImages', 'moveX', 'moveY');
 		protected $last_input = '';
 		
 		public function __construct($socket)
@@ -90,12 +90,44 @@
 				$this->addCommandBuffer($payload->transport);
 		}
 
+		/**
 		private function updateCoords($payload)
 		{
 			$usr = $this->getUser();
 			$usr->setX($payload->x);
 			$usr->setY($payload->y);
 			Server::roomPush($usr, ['req' => 'room.actor', 'data' => $usr]);
+		}
+		*/
+
+		private function moveX($payload)
+		{
+			$u = $this->user;
+			$new_x = $u->getX() + $payload->x;
+			$collision = $u->getRoom()->detectCollision($u->getImage('walking', 'resource'), $new_x, $u->getY());
+			Debug::addDebugLine("collision: ".print_r($collision, true));
+			if(!$collision)
+			{
+				Debug::addDebugLine("moving x");
+				$u->setX($new_x);
+				Server::roomPush($u, ['req' => 'room.actor', 'data' => $u]);
+				return ['req' => 'user.moveX', 'data' => $payload->x];
+			}
+		}
+
+		private function moveY($payload)
+		{
+			$u = $this->user;
+			$new_y = $u->getY() + $payload->y;
+			$collision = $u->getRoom()->detectCollision($u->getImage('walking', 'resource'), $u->getX(), $new_y);
+			Debug::addDebugLine("collision: ".print_r($collision, true));
+			if(!$collision)
+			{
+				Debug::addDebugLine("moving y");
+				$u->setY($u->getY() + $payload->y);
+				Server::roomPush($u, ['req' => 'room.actor', 'data' => $u]);
+				return ['req' => 'user.moveY', 'data' => $payload->y];
+			}
 		}
 
 		private function reqRoom()
@@ -105,7 +137,7 @@
 
 		private function reqImages()
 		{
-			return ['req' => 'user.images', 'data' => $this->user->getImages()];
+			return ['req' => 'user.images', 'data' => $this->user->getImagesSrc()];
 		}
 	
 		///////////////////////////////////////////////////////////

@@ -100,8 +100,9 @@
 				}
 		}
 
-		public function getImages()
+		public function getImages($sex)
 		{
+			// ignore sex
 			return $this->images;
 		}
 		
