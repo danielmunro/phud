@@ -27,6 +27,8 @@
 	namespace Races;
 	use \Mechanics\Alias;
 	use \Mechanics\Attributes;
+	use \Mechanics\Sprite;
+
 	class Human extends \Mechanics\Race
 	{
 	
@@ -80,12 +82,9 @@
 				\Disciplines\Wizard::instance()
 			);
 	
-			$i = realpath(__DIR__.'/../../docroot').self::RESOURCE_IMAGES;
 			$this->images = [
 				'*' => [
-					'resource' => imagecreatefrompng($i.'/human.png'),
-					'abspath' => $i.'/human.png',
-					'src' => 'resources/human.png'
+					new Sprite('human.png')
 				]
 			];
 		

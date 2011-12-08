@@ -104,7 +104,7 @@
 		{
 			$u = $this->user;
 			$new_x = $u->getX() + $payload->x;
-			$collision = $u->getRoom()->detectCollision($u->getImage('walking', 'resource'), $new_x, $u->getY());
+			$collision = $u->getRoom()->getMap()->getSprite()->collidesWith($u->getSprite('walking'), $new_x, $u->getY());
 			Debug::addDebugLine("collision: ".print_r($collision, true));
 			if(!$collision)
 			{

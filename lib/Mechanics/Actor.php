@@ -98,25 +98,15 @@
 			$this->y = $y;
 		}
 
-		public function getImage($type, $which = 'src')
+		public function getSprite($type)
 		{
 			// type == type of image (walking, standing, attacking)
-			// which == resource of image or url to image
-			$images = $this->getRace()->getImages($this->sex);
+			$images = $this->getRace()->getSprites($this->sex);
 			if(isset($images[$type]))
 				return $images[$type][$which];
 			// use the default image if one is not available
 			if(isset($images['*']))
 				return $images['*'][$which];
-		}
-
-		public function getImagesSrc()
-		{
-			$src = [];
-			array_walk($this->getRace()->getImages($this->sex), function($i, $key) use (&$src) {
-				$src[$key] = $i['src'];
-			});
-			return $src;
 		}
 		
 		public function getAlignment()

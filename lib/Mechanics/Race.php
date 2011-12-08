@@ -51,8 +51,6 @@
 		const PART_WINGS = 14;
 		const PART_TAIL = 15;
 
-		const RESOURCE_IMAGES = '/resources';
-
 		private static $instances = array();
 		protected $attributes = null;
 		protected $max_attributes = null;
