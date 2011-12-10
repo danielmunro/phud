@@ -24,35 +24,30 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics\Quest;
-	use \Living\User as User;
-	class Log
-	{
-		use Usable;
-
-		protected $user = null;
-		protected $quests = array();
+	namespace Mechanics;
 	
-		public function __construct(User $user)
+	trait Usable
+	{
+		public function getUsableByInput($usables, $input)
 		{
-			$this->user = $user;
-		}
-		
-		public function add(Quest $quest)
-		{
-			$this->quests[] = new Instance($this->user, $quest);
-		}
-		
-		public function remove(Quest $quest)
-		{
-			$key = array_search($quest, $this->quests);
-			if($key !== false)
-				array_splice($this->quests, $key, 1);
+			foreach($usables as $u) {
+				if(strpos(strtolower($u), $input) === 0) {
+					return $u;
+				}
+			}
 		}
 
-		public function getQuestByInput($input)
+		public function getUsableNounByInput($usables, $input)
 		{
-			return $this->getUsableNounByInput($this->quests, $input);
+			foreach($usables as $u) {
+				$nouns = explode(' ', $u->getNouns());
+				foreach($nouns as $n) {
+					if(strpos($n, $input) === 0) {
+						return $u;
+					}
+				}
+			}
+			return false;
 		}
 	}
 ?>

@@ -25,10 +25,10 @@
 	 *
 	 */
 	namespace Mechanics;
-	use JsonSerializable;
 
-	class Room implements JsonSerializable
+	class Room
 	{
+		use Usable;
 	
 		const START_ROOM = 1;
 	
@@ -139,21 +139,7 @@
 		
 		public function getDoorByInput($input)
 		{
-			$doors = array_filter(
-				$this->doors,
-				function($d) use ($input)
-				{
-					if($d)
-					{
-						$nouns = explode(' ', $d->getNouns());
-						foreach($nouns as $n)
-							if(strpos($n, $input) === 0)
-								return true;
-					}
-					return false;
-				}
-			);
-			return array_shift($doors);
+			return $this->getUsableNounByInput($doors, $input);
 		}
 		
 		public function getNorth() { return $this->getDirection('north', $this->north); }
@@ -229,11 +215,7 @@
 			$room_serialized = $db->get($id);
 			if($room_serialized)
 			{
-				$i = unserialize($room_serialized);
-				// reload image resources
-				//$i->setBGImage($i->getBGImage());
-				//$i->setBGImageCollisions($i->getBGImageCollisions());
-				self::$instances[$id] = $i;
+				self::$instances[$id] = unserialize($room_serialized);
 			}
 			else
 			{
@@ -285,24 +267,5 @@
 			$db->set($this->id, serialize($this));
 			$this->actors = $actors;
 		}
-
-		public function jsonSerialize()
-		{
-			return array(
-				'id' => $this->id,
-				'title' => $this->title,
-				'description' => $this->description,
-				'area' => $this->area,
-				'north' => $this->north,
-				'south' => $this->south,
-				'east' => $this->east,
-				'west' => $this->west,
-				'up' => $this->up,
-				'down' => $this->down,
-				'map' => $this->map,
-				'actors' => $this->actors
-			);
-		}
 	}
-
 ?>

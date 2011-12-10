@@ -25,11 +25,13 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Items\Container;
+
 	class Inventory
 	{
+		use Usable;
 	
 		protected $items = array();
-		
 		private static $instances = array();
 		
 		public function __construct()
@@ -50,7 +52,6 @@
 		
 		public function remove(Item $item)
 		{
-			
 			$i = array_search($item, $this->items);
 			
 			if($i !== false)
@@ -66,39 +67,17 @@
 		
 		public function getItemByInput($input)
 		{
-			if(is_array($input))
-				$input = $input[1];
-		
-			foreach($this->items as $item)
-			{
-				$nouns = $item->getNouns();
-				if(!is_array($nouns))
-					$nouns = explode(' ', $nouns);
-				foreach($nouns as $noun)
-					if(strpos($noun, $input) === 0)
-						return $item;
-			}
-		
+			return $this->getUsableNounByInput($this->items, $input);
 		}
 		
 		public function getContainerByInput($input)
 		{
-			if(is_array($input))
-				$input = $input[1];
-			foreach($this->items as $item)
-			{
-				$nouns = $item->getNouns();
-				if(!is_array($nouns))
-					$nouns = explode(' ', $nouns);
-				foreach($nouns as $noun)
-					if(strpos($noun, $input[1]) === 0 && $item instanceof \Items\Container)
-						return $item;
-			}
+			$container = $this->getUsableNounByInput($this->items, $input);
+			return $container instanceof Container ? $container : null;
 		}
 		
 		public function displayContents($show_prices = false)
 		{
-		
 			$buffer = '';
 			if(sizeof($this->items) > 0)
 			{

@@ -27,11 +27,9 @@
 	namespace Mechanics;
 	use \Mechanics\Ability\Set as Ability_Set;
     use \Mechanics\Ability\Ability;
-	use \JsonSerializable;
 
-	abstract class Actor implements Affectable, JsonSerializable
+	abstract class Actor implements Affectable
 	{
-	
 		const MAX_LEVEL = 51;
 		
 		const DISPOSITION_STANDING = 0;
@@ -59,9 +57,6 @@
 		protected $ability_set = null;
 		protected $affects = array();
 		protected $alignment = 0;
-
-		protected $x = 0;
-		protected $y = 0;
 		
 		public function __construct()
 		{
@@ -69,46 +64,8 @@
 			$this->equipped = new Equipped($this);
 			$this->ability_set = new Ability_Set($this);
 			$this->tick();
-
-			$this->id = microtime();
 		}
 
-		public function getID()
-		{
-			return $this->id;
-		}
-
-		public function getX()
-		{
-			return $this->x;
-		}
-
-		public function setX($x)
-		{
-			$this->x = $x;
-		}
-
-		public function getY()
-		{
-			return $this->y;
-		}
-
-		public function setY($y)
-		{
-			$this->y = $y;
-		}
-
-		public function getSprite($type)
-		{
-			// type == type of image (walking, standing, attacking)
-			$images = $this->getRace()->getSprites($this->sex);
-			if(isset($images[$type]))
-				return $images[$type][$which];
-			// use the default image if one is not available
-			if(isset($images['*']))
-				return $images['*'][$which];
-		}
-		
 		public function getAlignment()
 		{
 			return $this->alignment;
@@ -419,15 +376,6 @@
 		public function __toString()
 		{
 			return $this->getAlias();
-		}
-
-		public function jsonSerialize()
-		{
-			return array(
-				'id' => $this->id,
-				'x' => $this->x,
-				'y' => $this->y
-			);
 		}
 	}
 ?>

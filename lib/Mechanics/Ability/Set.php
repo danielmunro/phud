@@ -27,6 +27,7 @@
 	namespace Mechanics\Ability;
 	class Set
 	{
+		use Usable;
 		
 		private $skills = array();
 		private $spell_groups = array();
@@ -120,29 +121,12 @@
 
 		public function getSkillByInput($input)
 		{
-            $matches = array();
-            foreach($this->skills as $sk)
-            {
-                if($sk::getAlias() === $input)
-                    return $sk;
-                if(strpos($sk::getAlias(), $input) === 0)
-                    $matches[] = $sk;
-            }
-            if($matches)
-                return array_shift($matches);
+			return $this->getUsableByInput($this->skills, $input);
 		}
 
 		public function getSpellGroupByInput($input)
 		{
-            if(isset($this->spell_groups[$input]))
-                return $this->spell_groups[$input];
-
-            $matches = array();
-            foreach($this->spell_groups as $sg)
-                if(strpos($sg::getAlias(), $input) === 0)
-                    $matches[] = $sg;
-            if($matches)
-                return array_shift($matches);
+			return $this->getUsableByInput($this->spell_groups, $input);
 		}
 
 		public function removeSkill(Skill $skill)
