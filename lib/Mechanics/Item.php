@@ -25,8 +25,9 @@
 	 *
 	 */
 	namespace Mechanics;
-	abstract class Item implements Affectable
+	abstract class Item
 	{
+		use Affectable;
 	
 		protected $short = 'a generic item';
 		protected $long = 'A generic item lays here';
@@ -37,7 +38,6 @@
 		protected $attributes = null;
 		protected $level = 0;
 		protected $material = 'generic';
-		protected $affects = array();
 		
 		const MATERIAL_ADAMANTITE = 'adamantite';
 		const MATERIAL_ALLOY = 'alloy';
@@ -150,26 +150,6 @@
 		public function getMaterial()
 		{
 			return $this->material;
-		}
-		
-		public function addAffect(\Mechanics\Affect $affect)
-		{
-			$this->affects[] = $affect;
-		}
-		
-		public function removeAffect(\Mechanics\Affect $affect)
-		{
-			$key = array_search($affect, $this->affects);
-			if($key !== false)
-			{
-				unset($this->affects[$key]);
-				$this->affects = array_values($this->affects);
-			}
-		}
-		
-		public function getAffects()
-		{
-			return $this->affects;
 		}
 		
 		public function getAttributes()

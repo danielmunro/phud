@@ -25,6 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
+	
 	class Affect
 	{
 	
@@ -101,7 +102,7 @@
 				return $this->args;
 		}
 		
-		public function apply(\Mechanics\Affectable $affectable)
+		public function apply(Affectable $affectable)
 		{
 			$affectable->addAffect($this);
 			if($this->timeout > 0)

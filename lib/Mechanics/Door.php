@@ -129,12 +129,9 @@
 			$this->default_is_hidden = $default_is_hidden;
 		}
 		
-		/**
-		public function getHiddenMessage() { return $this->hidden_message; }
-		public function getHiddenAction() { return $this->hidden_action; }
-		public function setHidden($hidden) { $this->hidden = $hidden; }
-		public function getHiddenItemId() { return $this->hidden_item_id; }
-		public function getHiddenShowCommand() { return $this->hidden_show_command; }
-		*/
+		public function __toString()
+		{
+			return $this->short;
+		}
 	}
 ?>

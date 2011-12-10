@@ -25,25 +25,25 @@
 	 *
 	 */
 	namespace Commands;
-	class Kill extends \Mechanics\Command
+	use \Mechanics\Command;
+	use \Mechanics\Actor;
+	use \Mechanics\Alias;
+	use \Mechanics\Server;
+
+	class Kill extends Command
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('kill', $this);
+			new Alias('kill', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target)
+			if(!$actor->reconcileTarget($args))
 				return;
-			
-			\Mechanics\Server::out($actor, "You scream and attack!");
+			Server::out($actor, "You scream and attack!");
 		}
-	
 	}
-
 ?>

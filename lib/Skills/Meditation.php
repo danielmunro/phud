@@ -43,7 +43,7 @@
 	
 		public function perform(Actor $actor, $args = null)
 		{
-			if($actor->getDisposition() === Actor::DISPOSITION_FIGHTING)
+			if($actor->getDisposition() === Actor::DISPOSITION_STANDING)
 				return;
 		
 			$roll = Server::chance();

@@ -29,10 +29,12 @@
 	use \Mechanics\Actor;
 	use \Mechanics\Item as mItem;
 	use \Mechanics\Server;
+	use \Mechanics\Command;
 	use \Items\Corpse;
 	use \Living\User;
 	use \Living\Mob;
-	class Sacrifice extends \Mechanics\Command
+
+	class Sacrifice extends Command
 	{
 	
 		protected function __construct()
@@ -50,8 +52,8 @@
 				$copper = max(1, $item->getLevel()*3);
 				if(!($item instanceof Corpse))
 					$copper = min($copper, $item->getValue());
-				Server::out($actor, "Mojo finds ".$item->getShort()." pleasing and rewards you.");
-				$actor->getRoom()->announce($actor, $actor->getAlias()." sacrifices ".$item->getShort()." to Mojo.");
+				Server::out($actor, "Mojo finds ".$item." pleasing and rewards you.");
+				$actor->getRoom()->announce($actor, $actor." sacrifices ".$item." to Mojo.");
 				$actor->addCopper($copper);
 				return;
 			}
@@ -61,14 +63,14 @@
 				if($mob instanceof Mob)
 				{
 					$actor->getRoom()->actorRemove($mob);
-					return Server::out($actor, "You slay ".$mob->getAlias()." and eat its soul in the name of your gods.");
+					return Server::out($actor, "You slay ".$mob." and eat its soul in the name of your gods.");
 				}
 				
 				$door = $actor->getRoom()->getDoorByInput($args[1]);
 				if($door instanceof Door)
 				{
 					$actor->getRoom()->removeDoor($door);
-					return Server::out($actor, ucfirst($door->getShort())." crumbles into dust and disappears into the wind.");
+					return Server::out($actor, ucfirst($door)." crumbles into dust and disappears into the wind.");
 				}
 			}
 			Server::out($actor, "You can't find that.");

@@ -27,7 +27,6 @@
 	namespace Mechanics;
 	abstract class Fighter extends Actor
 	{
-	
 		const MAX_ATTRIBUTE = 25;
 		
 		protected $experience = 0;
@@ -579,35 +578,29 @@
 			
 			if(is_array($args))
 				$specified_target = $this->getRoom()->getActorByInput($args);
-			else if($args instanceof Fighter)
+			else if($args instanceof self)
 				$specified_target = $args;
 				
 			if($specified_target === $this)
 			{
-				Server::out($this, "You can't target yourself!");
-				return;
+				return Server::out($this, "You can't target yourself!");
 			}
 			if(!$actor_target)
 			{
 				if(!$specified_target)
 				{
-					Server::out($this, "No one is there.");
-					return false;
+					return Server::out($this, "No one is there.");
 				}
 				$this->initiateBattle($specified_target);
 				return $specified_target;
 			}
-			else if(!($actor_target instanceof Fighter))
-			{
-				Server::out($this, "I don't think they would like that very much.");
-				return false;
-			}
+			else if(!($actor_target instanceof self))
+				return Server::out($this, "I don't think they would like that very much.");
 			else if($actor_target && !$specified_target)
 				return $actor_target;
 			else if($actor_target === $specified_target)
 				return $actor_target;
 			Server::out($this, "Whoa there sparky, don't you think one is enough?");
-			return false;
 		}
 		
 		public function checkAlive($killer = null)
@@ -705,8 +698,6 @@
 		
 		protected function handleDeath($move_soul = true)
 		{
-			//if($move_soul)
-			//	$this->setRoom($);
 			$this->setHp(1);
 			Debug::addDebugLine($this->getAlias(true) . ' died.');
 			Server::out($this, 'You have been KILLED!');

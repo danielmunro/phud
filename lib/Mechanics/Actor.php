@@ -28,14 +28,15 @@
 	use \Mechanics\Ability\Set as Ability_Set;
     use \Mechanics\Ability\Ability;
 
-	abstract class Actor implements Affectable
+	abstract class Actor
 	{
+		use Affectable;
+	
 		const MAX_LEVEL = 51;
 		
 		const DISPOSITION_STANDING = 0;
-		const DISPOSITION_SLEEPING = 1;
-		const DISPOSITION_SITTING = 2;
-		const DISPOSITION_FIGHTING = 3;
+		const DISPOSITION_SITTING = 1;
+		const DISPOSITION_SLEEPING = 2;
 		
 		const SEX_NEUTRAL = 1;
 		const SEX_FEMALE = 2;
@@ -86,30 +87,6 @@
 			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
 				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
 			$this->disposition = $disposition;
-		}
-		
-		/**
-		 * AFFECTS - array of affects (object type Affect) currently applied to the actor
-		 */
-		public function addAffect(Affect $affect)
-		{
-			$i = $affect->getAffect();
-			$this->affects[$i] = $affect;
-		}
-		
-		public function removeAffect(Affect $affect)
-		{
-			$i = array_search($affect, $this->affects);
-			if($i !== false)
-			{
-				unset($this->affects[$i]);
-				$this->affects = array_keys($this->affects);
-			}
-		}
-		
-		public function getAffects()
-		{
-			return $this->affects;
 		}
 		
 		public function tick()
