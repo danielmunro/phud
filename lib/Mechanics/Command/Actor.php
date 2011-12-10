@@ -24,9 +24,11 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Mechanics\Command;
+	use \Mechanics\Actor;
 
-	interface DM
+	abstract class Actor extends Command
 	{
+		abstract public function perform(Actor $actor, $args = array());
 	}
 ?>

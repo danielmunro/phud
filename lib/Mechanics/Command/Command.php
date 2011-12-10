@@ -24,8 +24,9 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Mechanics\Command;
 	use \Living\User;
+
 	abstract class Command
 	{
 		protected $dispositions = array();
@@ -35,7 +36,7 @@
 		public function runInstantiation()
 		{
 			$namespace = 'Commands';
-			$d = dir(dirname(__FILE__) . '/../'.$namespace);
+			$d = dir(dirname(__FILE__) . '/../../'.$namespace);
 			while($command = $d->read())
 				if(substr($command, -4) === ".php")
 				{
@@ -70,10 +71,7 @@
 			else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING)
 				return Server::out($user, "You are asleep!");
 			
-			// Perform command
 			$this->perform($user, $args);
 		}
-
-		abstract public function perform(\Mechanics\Actor $actor, $args = array());
 	}
 ?>
