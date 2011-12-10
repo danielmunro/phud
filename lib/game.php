@@ -27,12 +27,19 @@
 	 *
 	 */
 	
+	// basic config
 	date_default_timezone_set('America/Los_Angeles');
 	gc_enable();
 	set_time_limit(0);
+	use \Mechanics\Debug;
+	use \Mechanics\Server;
 
-	\Mechanics\Debug::newLog();
-	\Mechanics\Server::start();
+	// reset the logs
+	Debug::clearLog();
+
+	// initiate and run the server
+	$s = new Server();
+	$s->run();
 	
 	// Autoloader
 	function __autoload($class)

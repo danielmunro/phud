@@ -30,7 +30,7 @@
 		
 		private static $enabled = true;
 	
-		public static function newLog()
+		public static function clearLog()
 		{
 			if(!self::$enabled)
 				return;

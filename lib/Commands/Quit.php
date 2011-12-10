@@ -47,8 +47,6 @@
 				$actor->save();
 				Server::out($actor, "Good bye!\r\n");
 				Server::getInstance()->disconnectClient($actor->getClient());
-				$actor->getClient()->clearSocket();
-				unset($actor);
 			}
 		}
 	}

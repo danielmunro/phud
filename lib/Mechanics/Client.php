@@ -8,17 +8,12 @@
 		private $socket = null;
 		private $command_buffer = array();
 		private $login = array('alias' => false);
-		private $api_methods = array('input', 'updateCoords', 'reqRoom', 'reqImages', 'moveX', 'moveY');
 		protected $last_input = '';
 		
 		public function __construct($socket)
 		{
 			$this->socket = $socket;
-		}
-		
-		public function setUser(User $user)
-		{
-			$this->user = $user;
+			Server::out($this, 'By what name do you wish to be known? ', false);
 		}
 		
 		public function getUser()
@@ -30,38 +25,65 @@
 		{
 			return $this->socket;
 		}
-		
-		public function clearSocket()
+
+		public function checkCommandBuffer()
 		{
-			$this->socket = null;
-		}
-		
-		public function addCommandBuffer($input)
-		{
-			$this->command_buffer[] = $input;
-		}
-		
-		public function clearCommandBuffer()
-		{
-			$this->command_buffer = array();
-		}
-		
-		public function shiftCommandBuffer()
-		{
-			if(sizeof($this->command_buffer) > 0)
-				return array_shift($this->command_buffer);
-			else
-				return null;
-		}
-		
-		public function setLastInput($input)
-		{
-			$this->last_input = $input;
-		}
-		
-		public function getLastInput()
-		{
-			return $this->last_input;
+			$n = null;
+			
+			// Check for input from the socket
+			$s = [$this->socket];
+			socket_select($s, $n, $n, 0, 0);
+			if($s) {
+				$input = socket_read($s[0], 5120);
+				if($input === '~')
+					$this->command_buffer = [];
+				else
+					$this->command_buffer[] = $input;
+			}
+
+			// Cases where we don't want to check the buffer, the client has a delay or the command buffer is empty
+			if(($this->user && $this->user->getDelay()) || empty($this->command_buffer)) {
+				return;
+			}
+
+			// Read from the user's command buffer
+			$input = array_shift($this->command_buffer);
+			if(!empty($input)) {
+				// Check a repeat statement
+				if(trim($input) === '!')
+					$input = $this->last_input;
+				else
+					$this->last_input = $input;
+				
+				// Break down client input into separate arguments and evaluate
+				$args = explode(' ', trim($input));
+				if(!$this->user)
+				{
+					$this->userLogin($args);
+				}
+				else
+				{
+					// Evaluate user input for a command
+					$command = Alias::lookup($args[0]);
+					if($command instanceof Command)
+					{
+						$command->tryPerform($this->user, $args);
+						return Server::out($this, "\n".$this->user->prompt(), false);
+					}
+
+					// No command was found -- attempt to perform an ability
+					$ability = $this->user->getAbilitySet()->getSkillByAlias($args[0]);
+					if($ability && $ability->isPerformable())
+					{
+						$ability->perform($args);
+						return Server::out($this, "\n".$this->user->prompt(), false);
+					}
+				
+					// Not sure what the user was trying to do
+					Server::out($this, "\nHuh?");
+					Server::out($this, "\n" . $this->user->prompt(), false);
+				}
+			}
 		}
 		
 		public function isValidated($password)
@@ -69,81 +91,26 @@
 			$pw_hash = sha1($this->unverified_user->getAlias().$this->unverified_user->getDateCreated().$password);
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
-
-		///////////////////////////////////////////////////////////
-		// Client requests
-		///////////////////////////////////////////////////////////
-		public function evaluateRequest($payload)
-		{
-			$method = $payload->cmd;
-			if(in_array($method, $this->api_methods)) {
-				return $this->$method($payload);	
-			}
-			Debug::addDebugLine("Invalid request from client: ".print_r($payload, true));
-		}
-
-		private function input($payload)
-		{
-			if($payload->transport === '~')
-				$this->clearCommandBuffer();
-			else
-				$this->addCommandBuffer($payload->transport);
-		}
-
-		/**
-		private function updateCoords($payload)
-		{
-			$usr = $this->getUser();
-			$usr->setX($payload->x);
-			$usr->setY($payload->y);
-			Server::roomPush($usr, ['req' => 'room.actor', 'data' => $usr]);
-		}
-		*/
-
-		private function moveX($payload)
-		{
-			$u = $this->user;
-			$new_x = $u->getX() + $payload->x;
-			$collision = $u->getRoom()->getMap()->getSprite()->collidesWith($u->getSprite('walking'), $new_x, $u->getY());
-			Debug::addDebugLine("collision: ".print_r($collision, true));
-			if(!$collision)
-			{
-				Debug::addDebugLine("moving x");
-				$u->setX($new_x);
-				Server::roomPush($u, ['req' => 'room.actor', 'data' => $u]);
-				return ['req' => 'user.moveX', 'data' => $payload->x];
-			}
-		}
-
-		private function moveY($payload)
-		{
-			$u = $this->user;
-			$new_y = $u->getY() + $payload->y;
-			$collision = $u->getRoom()->detectCollision($u->getImage('walking', 'resource'), $u->getX(), $new_y);
-			Debug::addDebugLine("collision: ".print_r($collision, true));
-			if(!$collision)
-			{
-				Debug::addDebugLine("moving y");
-				$u->setY($u->getY() + $payload->y);
-				Server::roomPush($u, ['req' => 'room.actor', 'data' => $u]);
-				return ['req' => 'user.moveY', 'data' => $payload->y];
-			}
-		}
-
-		private function reqRoom()
-		{
-			return ['req' => 'room.load', 'data' => $this->user->getRoom()];
-		}
-
-		private function reqImages()
-		{
-			return ['req' => 'user.images', 'data' => $this->user->getImagesSrc()];
-		}
 	
 		///////////////////////////////////////////////////////////
 		// Login
 		///////////////////////////////////////////////////////////
-		public function handleLogin($args)
+
+		private function userLogin($args)
+		{
+			$user_status = $this->handleLogin($args);
+			if($user_status === true)
+			{
+				Server::out($this, "\n".$this->user->prompt(), false);
+				Debug::addDebugLine($this->user->getAlias()." logged in");
+			}
+			else if($user_status === false)
+			{
+				Server::getInstance()->disconnectClient($this);
+			}
+		}
+
+		private function handleLogin($args)
 		{
 			$input = array_shift($args);
 			if($this->login['alias'] === false)

@@ -27,7 +27,6 @@
 	namespace Races;
 	use \Mechanics\Alias;
 	use \Mechanics\Attributes;
-	use \Mechanics\Sprite;
 
 	class Human extends \Mechanics\Race
 	{
@@ -82,12 +81,6 @@
 				\Disciplines\Wizard::instance()
 			);
 	
-			$this->images = [
-				'*' => [
-					new Sprite('human.png')
-				]
-			];
-		
 			parent::__construct();
 		}
 	}

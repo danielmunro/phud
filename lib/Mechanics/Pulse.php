@@ -76,22 +76,24 @@
 		public function checkTickEvents()
 		{
 			$events = array_shift($this->events[self::EVENT_TICK]);
-			if($events)
-			{
+			if($events) {
 				foreach($events as $event)
 					$event['fn']($event['args']);
 			}
 		}
 		
-		public function checkPulseEvents($seconds)
+		public function checkPulseEvents()
 		{
-			$this->seconds = $seconds;
-			$this->next_tick--;
-			if(isset($this->events[self::EVENT_PULSE][$this->seconds]))
-			{
-				foreach($this->events[self::EVENT_PULSE][$this->seconds] as $event)
-					$event['fn']($event['args']);
-				unset($this->events[self::EVENT_PULSE][$this->seconds]);
+			$seconds = date('U');
+			$next_pulse = $this->tick + 1;
+			if($seconds == $next_pulse) {
+				$this->seconds = $seconds;
+				$this->next_tick--;
+				if(isset($this->events[self::EVENT_PULSE][$this->seconds])) {
+					foreach($this->events[self::EVENT_PULSE][$this->seconds] as $event)
+						$event['fn']($event['args']);
+					unset($this->events[self::EVENT_PULSE][$this->seconds]);
+				}
 			}
 		}
 		
@@ -112,11 +114,6 @@
 			
 			$this->events[$type][$duration][] = array('fn' => $fn, 'args' => $args);
 			return sizeof($this->events[$type][$duration]);
-		}
-		
-		public function getLastPulse()
-		{
-			return $this->seconds;
 		}
 	}
 ?>

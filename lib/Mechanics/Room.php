@@ -181,13 +181,14 @@
 		
 		public function actorAdd(Actor $actor)
 		{
-			$this->actors[$actor->getID()] = $actor;
+			$this->actors[] = $actor;
 		}
 		public function actorRemove(Actor $actor)
 		{
-			if(!isset($this->actors[$actor->getID()]))
+			$key = array_search($actor, $this->actors);
+			if($key === false)
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
-			unset($this->actors[$actor->getID()]);
+			unset($this->actors[$key]);
 		}
 		public function getActors()
 		{
