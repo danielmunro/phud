@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Mechanics\Quest;
-	use \Living\User as User;
+	use \Living\User as User,
+		\Mechanics\Usable;
+
 	class Log
 	{
 		use Usable;

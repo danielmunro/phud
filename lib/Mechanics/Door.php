@@ -27,7 +27,6 @@
 	namespace Mechanics;
 	class Door
 	{
-	
 		private $id = 0;
 		private $short = 'a door';
 		private $long = 'a generic door is here.';

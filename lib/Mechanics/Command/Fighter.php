@@ -25,10 +25,10 @@
 	 *
 	 */
 	namespace Mechanics\Command;
-	use \Mechanics\Actor;
+	use \Mechanics\Fighter as mFighter;
 
 	abstract class Fighter extends Command
 	{
-		abstract public function perform(Fighter $fighter, $args = array());
+		abstract public function perform(mFighter $fighter, $args = array());
 	}
 ?>

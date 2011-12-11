@@ -56,7 +56,6 @@
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $ability_set = null;
-		protected $affects = array();
 		protected $alignment = 0;
 		
 		public function __construct()

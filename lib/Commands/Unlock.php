@@ -25,19 +25,25 @@
 	 *
 	 */
 	namespace Commands;
-	class Unlock extends \Mechanics\Command
-	{
+	use \Mechanics\Alias,
+		\Mechanics\Door as mDoor,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command;
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+	class Unlock extends Command
+	{
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('unlock', $this);
+			new Alias('unlock', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-		
+			/**
+			@TODO redo this crap
 			if(sizeof($args) < 2)
 				return Server::out($actor, 'Unlock what?');
 		
@@ -58,6 +64,7 @@
 					return Server::out($actor, "You unlock " . $door->getShort() . " with " . $item->getShort() . ".");
 				}
 			
+			*/
 			Server::out($actor, "You don't have the key!");
 		}
 	}

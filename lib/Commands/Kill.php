@@ -25,12 +25,13 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Command;
-	use \Mechanics\Actor;
-	use \Mechanics\Alias;
-	use \Mechanics\Server;
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Fighter as cFighter,
+		\Mechanics\Fighter as mFighter;
 
-	class Kill extends Command
+	class Kill extends cFighter
 	{
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
@@ -39,11 +40,11 @@
 			new Alias('kill', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(mFighter $fighter, $args = array())
 		{
-			if(!$actor->reconcileTarget($args))
+			if(!$fighter->reconcileTarget($args))
 				return;
-			Server::out($actor, "You scream and attack!");
+			Server::out($fighter, "You scream and attack!");
 		}
 	}
 ?>

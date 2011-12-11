@@ -25,17 +25,24 @@
 	 *
 	 */
 	namespace Commands;
-	class Get extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Items\Container,
+		\Items\Item as iItem,
+		\Mechanics\Item as mItem;
+
+	class Get extends Command
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('get', $this);
+			new Alias('get', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			if(sizeof($args) === 2)
@@ -50,17 +57,17 @@
 				
 				// getting something from somewhere
 				$container = $actor->getRoom()->getInventory()->getContainerByInput($args);
-				if(!($container instanceof \Items\Container))
+				if(!($container instanceof Container))
 					$container = $actor->getInventory()->getContainerByInput($args);
-				if(!($container instanceof \Items\Container))
-					return \Mechanics\Server::out($actor, "Nothing is there.");
+				if(!($container instanceof Container))
+					return Server::out($actor, "Nothing is there.");
 				
 				if($args[0] == 'all')
 				{
 					foreach($container->getInventory()->getItems() as $item)
 					{
 						$item->transferOwnership($container->getInventory(), $actor->getInventory());
-						\Mechanics\Server::out($actor, 'You get ' . $item->getShort() . ' from ' . $container->getShort() . '.');
+						Server::out($actor, 'You get '.$item.' from '.$container.'.');
 					}
 					return;
 				}
@@ -69,25 +76,25 @@
 				
 					$item = $container->getInventory()->getItemByInput(array('', $args[0]));
 				
-					if($item instanceof \Items\Item)
-						$from = ' from ' . $container->getShort();
+					if($item instanceof iItem)
+						$from = ' from ' . $container;
 					else
-						return \Mechanics\Server::out($actor, "You see nothing like that.");
+						return Server::out($actor, "You see nothing like that.");
 				}
 			}
 			
-			if($item instanceof \Mechanics\Item)
+			if($item instanceof mItem)
 			{
 				if(!$item->getCanOwn())
-					return \Mechanics\Server::out($actor, "You cannot pick that up.");
+					return Server::out($actor, "You cannot pick that up.");
 				
 				$container->getInventory()->remove($item);
 				$actor->getInventory()->add($item);
-				\Mechanics\Server::out($actor, 'You get ' . $item->getShort() . (isset($from) ? $from : '') . '.');
+				Server::out($actor, 'You get '.$item.(isset($from) ? $from : '') . '.');
 			}
 			else
 			{
-				\Mechanics\Server::out($actor, 'You see nothing like that.');
+				Server::out($actor, 'You see nothing like that.');
 			}
 		
 		}

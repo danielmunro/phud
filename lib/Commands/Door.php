@@ -25,53 +25,60 @@
 	 *
 	 */
 	namespace Commands;
-	class Door extends \Mechanics\Command implements \Mechanics\Command_DM
+	use \Mechanics\Alias;
+	use \Mechanics\Server;
+	use \Mechanics\Door as mDoor;
+	use \Mechanics\Room as mRoom;
+	use \Mechanics\Command\DM;
+	use \Living\User;
+
+	class Door extends DM
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('door', $this);
+			new Alias('door', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(User $user, $args = array())
 		{
 			if(sizeof($args) <= 1)
-				return \Mechanics\Server::out($actor, "What were you trying to do?");
+				return Server::out($user, "What were you trying to do?");
 		
 			$command = $this->getCommand($args[1]);
 			if($command)
 			{
 				$fn = 'do'.ucfirst($command);
-				$this->$fn($actor, $args);
+				$this->$fn($user, $args);
 			}
 		}
 		
-		private function doInformation(\Mechanics\Actor $actor, $args)
+		private function doInformation(User $user, $args)
 		{
 		}
 		
-		private function doCreate(\Mechanics\Actor $actor, $args)
+		private function doCreate(User $user, $args)
 		{
-			if(!$this->hasArgCount($actor, $args, 3))
+			if(!$this->hasArgCount($user, $args, 3))
 				return;
 			
-			$direction = \Mechanics\Room::getDirectionStr($args[2]);
+			$direction = mRoom::getDirectionStr($args[2]);
 			if(!$direction)
-				return \Mechanics\Server::out($actor, "That direction doesn't exist.");
+				return Server::out($user, "That direction doesn't exist.");
 			
-			$door1 = new \Mechanics\Door();
+			$door1 = new mDoor();
 			
 			$fn = 'get'.ucfirst($direction);
-			$dir_id = $actor->getRoom()->$fn();
-			$room = \Mechanics\Room::find($dir_id);
-			$rev_dir = \Mechanics\Room::getReverseDirection($direction);
-			$door2 = new \Mechanics\Door();
+			$dir_id = $user->getRoom()->$fn();
+			$room = mRoom::find($dir_id);
+			$rev_dir = mRoom::getReverseDirection($direction);
+			$door2 = new mDoor();
 			$door1->setPartnerDoor($door2);
 			$door2->setPartnerDoor($door1);
-			$actor->getRoom()->setDoor($direction, $door1);
+			$user->getRoom()->setDoor($direction, $door1);
 			$room->setDoor($rev_dir, $door2);
 			
-			\Mechanics\Server::out($actor, "You have created ".$door1->getShort()." to the ".$direction." direction, and ".$door2->getShort()." to the ".$rev_dir." direction.");
+			Server::out($user, "You have created ".$door1." to the ".$direction." direction, and ".$door2." to the ".$rev_dir." direction.");
 		}
 		
 		private function getCommand($arg)

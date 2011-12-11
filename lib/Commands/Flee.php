@@ -25,20 +25,26 @@
 	 *
 	 */
 	namespace Commands;
-	class Flee extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Fighter,
+		\Mechanics\Fighter as mFighter;
+
+	class Flee extends Fighter
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('flee', $this);
+			new Alias('flee', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(mFighter $fighter, $args = array())
 		{
 			if(!$actor->reconcileTarget())
-				return \Mechanics\Server::out($actor, "Flee from who?");
+				return Server::out($actor, "Flee from who?");
 			
 			$actor->getBattle()->removeActor($actor);
 			
@@ -66,9 +72,9 @@
 			);
 			foreach($directions as $dir => $id)
 			{
-				$command = \Mechanics\Alias::lookup($dir);
+				$command = Alias::lookup($dir);
 				$command->perform($actor);
-				\Mechanics\Server::out($actor, "You run scared!");
+				Server::out($actor, "You run scared!");
 				return;
 			}
 		}

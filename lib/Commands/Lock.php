@@ -25,22 +25,28 @@
 	 *
 	 */
 	namespace Commands;
-	class Lock extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Command;
+
+	class Lock extends Command
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('lock', $this);
+			new Alias('lock', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			if(sizeof($args) < 2)
 				return Server::out($actor, 'Unlock what?');
 		
+			/**
+			@TODO redo this crap
 			$door = Command::findObjectByArgs(
 									Door::findByRoomId($actor->getRoom()->getId()),
 									$args[1]);
@@ -61,6 +67,7 @@
 					return Server::out($actor, "You lock " . $door->getShort() . " with " . $item->getShort() . ".");
 				}
 			
+			*/
 			Server::out($actor, "You don't have the key!");
 		}
 	}

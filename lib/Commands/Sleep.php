@@ -25,22 +25,26 @@
 	 *
 	 */
 	namespace Commands;
-	class Sleep extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Actor,
+		\Mechanics\Command\Command;
+		
+	class Sleep extends Command
 	{
-	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('sleep', $this);
+			new Alias('sleep', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_SLEEPING)
-				return \Mechanics\Server::out($actor, "You are already sleeping.");
+			if($actor->getDisposition() === Actor::DISPOSITION_SLEEPING)
+				return Server::out($actor, "You are already sleeping.");
 			
-			\Mechanics\Server::out($actor, "You lie down and go to sleep.");
-			$actor->getRoom()->announce($actor, $actor->getAlias(true)." lies down and goes to sleep.");
-			$actor->setDisposition(\Mechanics\Actor::DISPOSITION_SLEEPING);
+			Server::out($actor, "You lie down and go to sleep.");
+			$actor->getRoom()->announce($actor, ucfirst($actor)." lies down and goes to sleep.");
+			$actor->setDisposition(Actor::DISPOSITION_SLEEPING);
 		}
 	
 	}

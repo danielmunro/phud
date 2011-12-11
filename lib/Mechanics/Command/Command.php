@@ -25,7 +25,11 @@
 	 *
 	 */
 	namespace Mechanics\Command;
-	use \Living\User;
+	use \Living\User,
+		\Mechanics\Debug,
+		\Mechanics\Server,
+		\ReflectionClass,
+		\Mechanics\Actor;
 
 	abstract class Command
 	{
@@ -43,7 +47,10 @@
 					Debug::addDebugLine("init command: ".$command);
 					$class = substr($command, 0, strpos($command, '.'));
 					$called_class = $namespace.'\\'.$class;
-					new $called_class();
+					$reflection = new ReflectionClass($called_class);
+					if(!$reflection->isAbstract()) {
+						new $called_class();
+					}
 				}
 		}
 	
@@ -64,7 +71,7 @@
 	
 		public function tryPerform(User $user, $args)
 		{
-			if($this instanceof Command_DM && !$user->isDM())
+			if($this instanceof DM && !$user->isDM())
 				return Server::out($user, "You cannot do that.");
 			else if($user->getDisposition() === Actor::DISPOSITION_SITTING)
 				return Server::out($user, "You need to stand up.");

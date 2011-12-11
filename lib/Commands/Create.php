@@ -25,20 +25,22 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Server;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Item as mItem;
-	use \Mechanics\Quest\Quest;
-	use \Items\Armor;
-	use \Items\Weapon;
-	use \Items\Food;
-	use \Items\Drink as iDrink;
-	use \Items\Container;
-	use \Living\Mob;
-	use \Living\Shopkeeper as lShopkeeper;
-	use \Living\Questmaster;
-	class Create extends \Mechanics\Command implements \Mechanics\Command_DM
+	use \Mechanics\Server,
+		\Mechanics\Alias,
+		\Mechanics\Item as mItem,
+		\Mechanics\Quest\Quest,
+		\Mechanics\Command\DM,
+		\Items\Armor,
+		\Items\Weapon,
+		\Items\Food,
+		\Items\Drink as iDrink,
+		\Items\Container,
+		\Living\Mob,
+		\Living\User as lUser,
+		\Living\Shopkeeper as lShopkeeper,
+		\Living\Questmaster;
+
+	class Create extends DM
 	{
 	
 		protected function __construct()
@@ -46,84 +48,84 @@
 			new Alias('create', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
 			switch($args[1])
 			{
 				case strpos($args[1], 'mob') === 0:
-					return $this->doCreateMob($actor, $args);
+					return $this->doCreateMob($user, $args);
 				case strpos($args[1], 'shopkeeper') === 0:
-					return $this->doCreateShopkeeper($actor, $args);
+					return $this->doCreateShopkeeper($user, $args);
 				case strpos($args[1], 'quest') === 0:
-					return $this->doCreateQuest($actor, $args);
+					return $this->doCreateQuest($user, $args);
 				case strpos($args[1], 'questmaster') === 0:
-					return $this->doCreateQuestmaster($actor, $args);
+					return $this->doCreateQuestmaster($user, $args);
 				case strpos($args[1], 'armor') === 0:
-					return $this->doCreateItem($actor, new Armor(), $args);
+					return $this->doCreateItem($user, new Armor(), $args);
 				case strpos($args[1], 'weapon') === 0:
-					return $this->doCreateItem($actor, new Weapon(), $args);
+					return $this->doCreateItem($user, new Weapon(), $args);
 				case strpos($args[1], 'food') === 0:
-					return $this->doCreateItem($actor, new Food(), $args);
+					return $this->doCreateItem($user, new Food(), $args);
 				case strpos($args[1], 'drink') === 0:
-					return $this->doCreateItem($actor, new iDrink(), $args);
+					return $this->doCreateItem($user, new iDrink(), $args);
 				case strpos($args[1], 'container') === 0:
-					return $this->doCreateContainer($actor, new Container(), $args);
+					return $this->doCreateContainer($user, new Container(), $args);
 				case strpos($args[2], 'copper') === 0:
-					return $this->doCreateCopper($actor, $args[1]);
+					return $this->doCreateCopper($user, $args[1]);
 				default:
-					return Server::out($actor, "What do you want to create?");
+					return Server::out($user, "What do you want to create?");
 			}
 		}
 		
-		private function doCreateCopper($actor, $amount)
+		private function doCreateCopper($user, $amount)
 		{
-			$actor->addCopper($amount);
-			Server::out($actor, "You create ".$amount." copper.");
+			$user->addCopper($amount);
+			Server::out($user, "You create ".$amount." copper.");
 		}
 		
-		private function doCreateItem(Actor $actor, mItem $item, $args)
+		private function doCreateItem(User $user, mItem $item, $args)
 		{
 			if(sizeof($args) > 2)
 			{
 				$short = implode(' ', array_slice($args, 2));
 				$item->setShort($short);
 			}
-			$actor->getInventory()->add($item);
-			return Server::out($actor, ucfirst($item->getShort())." poofs into existence.");
+			$user->getInventory()->add($item);
+			return Server::out($user, ucfirst($item->getShort())." poofs into existence.");
 		}
 		
-		private function doCreateMob(Actor $actor, $args)
+		private function doCreateMob(User $user, $args)
 		{
 			$mob = new Mob();
-			$mob->setRoom($actor->getRoom());
+			$mob->setRoom($user->getRoom());
 			$mob->setStartRoom();
 			$mob->save();
 			
 			$mob->getRoom()->announce($mob, $mob->getAlias(true)." poofs into existence.");
 		}
 		
-		private function doCreateShopkeeper(Actor $actor, $args)
+		private function doCreateShopkeeper(User $user, $args)
 		{
 			$shopkeeper = new lShopkeeper();
-			$shopkeeper->setRoom($actor->getRoom());
+			$shopkeeper->setRoom($user->getRoom());
 			$shopkeeper->save();
 			
 			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." poofs into existence.");
 		}
 		
-		private function doCreateQuestmaster(Actor $actor, $args)
+		private function doCreateQuestmaster(User $user, $args)
 		{
 			$questmaster = new Questmaster();
-			$questmaster->setRoom($actor->getRoom());
+			$questmaster->setRoom($user->getRoom());
 			$questmaster->save();
 			
 			$questmaster->getRoom()->announce($questmaster, $questmaster->getAlias(true)." poofs into existence.");
 		}
 
-		private function doCreateQuest(Actor $actor, $args)
+		private function doCreateQuest(User $user, $args)
 		{
-			$actor->getQuestLog()->add(new QuestInstance($actor, new Quest()));
-			Server::out($actor, "You've obtained a new quest!");
+			$user->getQuestLog()->add(new QuestInstance($user, new Quest()));
+			Server::out($user, "You've obtained a new quest!");
 		}
 	}
 ?>

@@ -25,18 +25,19 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Server;
-	class Skill extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+
+	class Skill extends User
 	{
-	
 		protected function __construct()
 		{
 			new Alias('skill', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
 			Server::out($actor, "Skills: ");
 			$skills = $actor->getAbilitySet()->getSkills();

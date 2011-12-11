@@ -1,6 +1,8 @@
 <?php
 
 	namespace Mechanics;
+	use \Mechanics\Command\Command;
+
 	class Client
 	{
 		private $user = null;

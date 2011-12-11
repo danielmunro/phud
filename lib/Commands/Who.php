@@ -25,25 +25,28 @@
 	 *
 	 */
 	namespace Commands;
-	class Who extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\User as cUser,
+		\Living\User as lUser;
+	
+	class Who extends cUser
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('who', $this);
+			new Alias('who', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			
-			\Mechanics\Server::out($actor, 'Who list:');
-			$users = \Living\User::getInstances();
-			foreach($users as $user)
-			{
-				\Mechanics\Server::out($actor, '[' . $user->getLevel() . ' ' . $user->getRace() . ' ' . $user->getDiscipline() . '] ' . $user->getAlias());
+			Server::out($user, 'Who list:');
+			$users = lUser::getInstances();
+			foreach($users as $u) {
+				Server::out($user, '[' . $u->getLevel() . ' ' . $u->getRace() . ' ' . $u->getDiscipline() . '] ' . $u->getAlias());
 			}
 			$size = sizeof($users);
-			\Mechanics\Server::out($actor, $size . ' player' . ($size != 1 ? 's' : '') . ' found.');
+			Server::out($user, $size . ' player' . ($size != 1 ? 's' : '') . ' found.');
 		}
 	
 	}

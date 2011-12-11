@@ -25,22 +25,22 @@
 	 *
 	 */
 	namespace Commands;
-	class Inventory extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+
+	class Inventory extends User
 	{
-	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('inventory', $this);
+			new Alias('inventory', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-		
-			\Mechanics\Server::out($actor, 'Your inventory:');
-			\Mechanics\Server::out($actor, $actor->getInventory()->displayContents());
-		
+			Server::out($user, 'Your inventory:');
+			Server::out($user, $user->getInventory()->displayContents());
 		}
-	
 	}
-
 ?>

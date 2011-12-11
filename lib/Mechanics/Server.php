@@ -44,7 +44,7 @@
 			Debug::addDebugLine("Initializing environment");
 			foreach(
 				array(
-					'\Mechanics\Command',
+					'\Mechanics\Command\Command',
 					'\Mechanics\Race',
 					'\Mechanics\Discipline',
 					'\Living\Mob'

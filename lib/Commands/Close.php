@@ -25,21 +25,26 @@
 	 *
 	 */
 	namespace Commands;
-	class Close extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Mechanics\Door as mDoor;
+
+	class Close extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('close', $this);
+			new Alias('close', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-		
 			if(sizeof($args) == 1)
-				return \Mechanics\Server::out($actor, 'Close what?');
+				return Server::out($actor, 'Close what?');
 			
 			$door = $actor->getRoom()->getDoorByInput($args[1]);
 			
@@ -47,16 +52,16 @@
 			{
 				switch($door->getDisposition())
 				{
-					case \Mechanics\Door::DISPOSITION_OPEN:
-						$door->setDisposition(\Mechanics\Door::DISPOSITION_CLOSED);
-						$door->getParnterDoor()->setDisposition(\Mechanics\Door::DISPOSITION_CLOSED);
-						return \Mechanics\Server::out($actor, 'You close ' . $door->getShort() . '.');
-					case \Mechanics\Door::DISPOSITION_CLOSED:
-					case \Mechanics\Door::DISPOSITION_LOCKED:
-						return \Mechanics\Server::out($actor, ucfirst($door->getShort()) . ' is already closed.');
+					case mDoor::DISPOSITION_OPEN:
+						$door->setDisposition(mDoor::DISPOSITION_CLOSED);
+						$door->getParnterDoor()->setDisposition(mDoor::DISPOSITION_CLOSED);
+						return Server::out($actor, 'You close '.$door.'.');
+					case mDoor::DISPOSITION_CLOSED:
+					case mDoor::DISPOSITION_LOCKED:
+						return Server::out($actor, ucfirst($door) . ' is already closed.');
 				}					
 			}
-			return \Mechanics\Server::out($actor, "You can't close anything like that.");
+			return Server::out($actor, "You can't close anything like that.");
 		}
 	}
 ?>

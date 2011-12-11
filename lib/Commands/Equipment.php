@@ -25,21 +25,22 @@
 	 *
 	 */
 	namespace Commands;
-	class Equipment extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command;
+
+	class Equipment extends Command
 	{
-	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('equipment', $this);
+			new Alias('equipment', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-		
-			\Mechanics\Server::out($actor, 'Your equipment:');
-			\Mechanics\Server::out($actor, $actor->getEquipped()->displayContents());		
+			Server::out($actor, 'Your equipment:');
+			Server::out($actor, $actor->getEquipped()->displayContents());		
 		}
-	
 	}
-
 ?>

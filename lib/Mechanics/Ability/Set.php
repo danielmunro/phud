@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Mechanics\Ability;
+	use \Mechanics\Usable;
+
 	class Set
 	{
 		use Usable;

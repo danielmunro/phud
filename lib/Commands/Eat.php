@@ -25,33 +25,40 @@
 	 *
 	 */
 	namespace Commands;
-	class Eat extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Items\Item as iItem,
+		\Items\Food;
+	
+	class Eat extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('eat', $this);
+			new Alias('eat', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof \Items\Item))
-				return \Mechanics\Server::out($actor, "Nothing like that is here.");
+			if(!($item instanceof iItem))
+				return Server::out($actor, "Nothing like that is here.");
 			
-			if(!($item instanceof \Items\Food))
-				return \Mechanics\Server::out($actor, "You can't eat that!");
+			if(!($item instanceof Food))
+				return Server::out($actor, "You can't eat that!");
 			
 			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()->getFull())
-				return \Mechanics\Server::out($actor, "You are too full.");
+				return Server::out($actor, "You are too full.");
 			
 			$actor->increaseNourishment($item->getNourishment());
 			$actor->getInventory()->remove($item, true);
-			\Mechanics\Server::out($actor, "You eat " . $item->getShort() . ".");
+			Server::out($actor, "You eat " . $item->getShort() . ".");
 		}
 	}
 ?>

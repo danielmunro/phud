@@ -25,15 +25,19 @@
 	 *
 	 */
 	namespace Commands;
-	class Say extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\Command;
+
+	class Say extends Command
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('say', $this);
+			new Alias('say', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
 			$actors = $actor->getRoom()->getActors();
@@ -48,9 +52,9 @@
 			
 			foreach($actors as $a)
 				if($a->getAlias() == $actor->getAlias())
-					\Mechanics\Server::out($a, "You say, \"" . $message ."\"");
+					Server::out($a, "You say, \"" . $message ."\"");
 				else
-					\Mechanics\Server::out($a, $actor->getAlias(true) . " says, \"" . $message . "\"");
+					Server::out($a, ucfirst($actor) . " says, \"" . $message . "\"");
 		}
 	}
 ?>

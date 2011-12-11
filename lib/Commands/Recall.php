@@ -25,19 +25,24 @@
 	 *
 	 */
 	namespace Commands;
-	class Recall extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Room as mRoom,
+		\Mechanics\Command\Command;
+
+	class Recall extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('recall', $this);
+			new Alias('recall', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			$actor->setRoom(\Mechanics\Room::find(1));
+			$actor->setRoom(mRoom::find(1));
 		}
 	}
 ?>

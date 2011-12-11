@@ -25,36 +25,29 @@
 	 *
 	 */
 	namespace Commands;
-	class Save extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Command\Command,
+		\Living\User,
+		\Living\Mob as mMob;
+
+	class Save extends Command
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('save', $this);
+			new Alias('save', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			/**
-			if(sizeof($args))
-			{
-				$target = $actor->getRoom()->getActorByInput($args);
-				if($target && method_exists($target, 'save'))
-				{
-					$target->save();
-					return \Mechanics\Server::out($actor, 'Done.');
-				}
-				else
-					return \Mechanics\Server::out($actor, 'Cannot do that.');
-			}
-			*/
-			if($actor instanceof \Living\User || $actor instanceof \Living\Mob)
-			{
+			if(method_exists($actor, 'save')) {
 				$actor->save();
-				return \Mechanics\Server::out($actor, 'Done.');
+				Server::out($actor, 'Done.');
 			}
-			else
-				return \Mechanics\Server::out($actor, 'Cannot do that.');
+			else {
+				return Server::out($actor, 'Cannot do that.');
+			}
 		}
 	}
 ?>

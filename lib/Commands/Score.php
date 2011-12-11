@@ -25,42 +25,44 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Server;
-	class Score extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+
+	class Score extends User
 	{
-	
 		protected function __construct()
 		{
 			new Alias('score', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			Server::out($actor, 'You are ' . $actor->getAlias() . ', a ' . $actor->getRace().' '.$actor->getDisciplineFocus());
-			Server::out($actor, 'Attributes: Str ' . $actor->getStr() . '(' . $actor->getBaseStr() . ') ' .
-			'Int ' . $actor->getInt() . '(' . $actor->getBaseInt() . ') ' . 
-			'Wis ' . $actor->getWis() . '(' . $actor->getBaseWis() . ') ' .
-			'Dex ' . $actor->getDex() . '(' . $actor->getBaseDex() . ') ' .
-			'Con ' . $actor->getCon() . '(' . $actor->getBaseCon() . ') ' .
-			'Cha ' . $actor->getCha() . '(' . $actor->getBaseCha() . ')');
+			Server::out($user, 'You are ' . $user->getAlias() . ', a ' . $user->getRace().' '.$user->getDisciplineFocus());
+			Server::out($user, 'Attributes: Str ' . $user->getStr() . '(' . $user->getBaseStr() . ') ' .
+			'Int ' . $user->getInt() . '(' . $user->getBaseInt() . ') ' . 
+			'Wis ' . $user->getWis() . '(' . $user->getBaseWis() . ') ' .
+			'Dex ' . $user->getDex() . '(' . $user->getBaseDex() . ') ' .
+			'Con ' . $user->getCon() . '(' . $user->getBaseCon() . ') ' .
+			'Cha ' . $user->getCha() . '(' . $user->getBaseCha() . ')');
 			
 			Server::out(
-				$actor, 'Hp: ' . $actor->getHp() . '/' . $actor->getMaxHp() .
-				' Mana: ' . $actor->getMana() . '/' . $actor->getMaxMana() .
-				' Movement: ' . $actor->getMovement() . '/' . $actor->getMaxMovement());
+				$user, 'Hp: ' . $user->getHp() . '/' . $user->getMaxHp() .
+				' Mana: ' . $user->getMana() . '/' . $user->getMaxMana() .
+				' Movement: ' . $user->getMovement() . '/' . $user->getMaxMovement());
 			
-			$experience = (int) ($actor->getExperiencePerLevel() - ($actor->getExperience() % $actor->getExperiencePerLevel()));
-			Server::out($actor,
-				'Level ' . $actor->getLevel() . ', ' . $experience . ' experience to next level');
-			Server::out($actor,
-				$actor->getGold() . ' gold, ' . $actor->getSilver() . ' silver, ' . $actor->getCopper() . ' copper.');
+			$experience = (int) ($user->getExperiencePerLevel() - ($user->getExperience() % $user->getExperiencePerLevel()));
+			Server::out($user,
+				'Level ' . $user->getLevel() . ', ' . $experience . ' experience to next level');
+			Server::out($user,
+				$user->getGold() . ' gold, ' . $user->getSilver() . ' silver, ' . $user->getCopper() . ' copper.');
 		
-			Server::out($actor, 'You are' . self::getAcString($actor->getAcBash()) . 'against bashing.');
-			Server::out($actor, 'You are' . self::getAcString($actor->getAcSlash()) . 'against slashing.');
-			Server::out($actor, 'You are' . self::getAcString($actor->getAcPierce()) . 'against piercing.');
-			Server::out($actor, 'You are' . self::getAcString($actor->getAcMagic()) . 'against magic.');
+			Server::out($user, 'You are' . self::getAcString($user->getAcBash()) . 'against bashing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAcSlash()) . 'against slashing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAcPierce()) . 'against piercing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAcMagic()) . 'against magic.');
 		
 		}
 		

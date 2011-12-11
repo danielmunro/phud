@@ -25,18 +25,17 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Item as mItem;
-	use \Mechanics\Server;
-	use \Mechanics\Command;
-	use \Items\Corpse;
-	use \Living\User;
-	use \Living\Mob;
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Item as mItem,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Items\Corpse,
+		\Living\User as lUser,
+		\Living\Mob as lMob;
 
 	class Sacrifice extends Command
 	{
-	
 		protected function __construct()
 		{
 			new Alias('sacrifice', $this);

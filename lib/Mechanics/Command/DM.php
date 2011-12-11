@@ -24,9 +24,9 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Mechanics\Command;
 
-	interface DM
+	abstract class DM extends User
 	{
 	}
 ?>

@@ -25,15 +25,16 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Item as mItem;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Server;
-	use \Mechanics\Ability;
-	use \Living\Shopkeeper as lShopkeeper;
-	class Buy extends \Mechanics\Command
+	use \Mechanics\Item as mItem,
+		\Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Ability,
+		\Mechanics\Command\Command,
+		\Living\Shopkeeper as lShopkeeper;
+
+	class Buy extends Command
 	{
-	
 		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()

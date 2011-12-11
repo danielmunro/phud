@@ -28,7 +28,7 @@
 
 	trait Affectable
 	{
-		private $affects = [];
+		protected $affects = [];
 
 		public function addAffect(Affect $affect)
 		{
@@ -39,7 +39,7 @@
 		{
 			$key = array_search($affect, $this->affects);
 			if($key !== false)
-				unset($this->affects[$key];
+				unset($this->affects[$key]);
 		}
 
 		public function getAffects()

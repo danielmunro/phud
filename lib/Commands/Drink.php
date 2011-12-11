@@ -25,46 +25,54 @@
 	 *
 	 */
 	namespace Commands;
-	class Drink extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Debug,
+		\Mechanics\Alias,
+		\Items\Item as iItem,
+		\Items\Drink as iDrink,
+		\Mechanics\Command\Command;
+
+	class Drink extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('drink', $this);
+			new Alias('drink', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
-			\Mechanics\Debug::addDebugLine($actor->getAlias(true) . " is drinking... ", false);
 			$item = null;
-			
+			/**
+			@TODO redo this crap
 			if(sizeof($args) > 1)
 				$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof \Items\Item))
+			if(!($item instanceof iItem))
 			{
 				$items = $actor->getRoom()->getInventory()->getItems();
 				foreach($items as $i)
-					if($i instanceof \Items\Drink)
+					if($i instanceof iDrink)
 						$item = $i;
 			}
+			*/
 			
-			if(!($item instanceof \Items\Item))
-				return \Mechanics\Server::out($actor, "Nothing like that is here.");
+			if(!($item instanceof iItem))
+				return Server::out($actor, "Nothing like that is here.");
 			
-			if(!($item instanceof \Items\Drink))
-				return \Mechanics\Server::out($actor, "You can't drink that!");
+			if(!($item instanceof iDrink))
+				return Server::out($actor, "You can't drink that!");
 			
 			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()->getFull())
-				return \Mechanics\Server::out($actor, "You are too full.");
+				return Server::out($actor, "You are too full.");
 			
 			$actor->increaseThirst($item->getThirst());
 			
-			\Mechanics\Debug::addDebugLine('water from ' . $item->getShort() . '.');
-			\Mechanics\Server::out($actor, "You drink water from " . $item->getShort() . ".");
+			Server::out($actor, "You drink water from ".$item.".");
 		}
 	}
 ?>

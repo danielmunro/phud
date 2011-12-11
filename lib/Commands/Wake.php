@@ -25,25 +25,29 @@
 	 *
 	 */
 	namespace Commands;
-	class Wake extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command;
+
+	class Wake extends Command
 	{
-	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('wake', $this);
+			new Alias('wake', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
-			if($actor->getDisposition() === \Mechanics\Actor::DISPOSITION_STANDING)
-				return \Mechanics\Server::out($actor, "You are already awake.");
+			if($actor->getDisposition() === Actor::DISPOSITION_STANDING)
+				return Server::out($actor, "You are already awake.");
 			
 			if(array_key_exists('sleep', $actor->getAffects()))
-				return \Mechanics\Server::out($actor, "You can't wake up!");
+				return Server::out($actor, "You can't wake up!");
 			
-			\Mechanics\Server::out($actor, "You wake up and stand up.");
-			$actor->getRoom()->announce($actor, $actor->getAlias(true)." wakes up and stands up.");
-			$actor->setDisposition(\Mechanics\Actor::DISPOSITION_STANDING);
+			Server::out($actor, "You wake up and stand up.");
+			$actor->getRoom()->announce($actor, ucfirst($actor)." wakes up and stands up.");
+			$actor->setDisposition(Actor::DISPOSITION_STANDING);
 		}
 	
 	}

@@ -25,26 +25,32 @@
 	 *
 	 */
 	namespace Commands;
-	class Drop extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Mechanics\Item as mItem;
+
+	class Drop extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('drop', $this);
+			new Alias('drop', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof \Mechanics\Item))
-				return \Mechanics\Server::out($actor, "You do not have anything like that.");
+			if(!($item instanceof mItem))
+				return Server::out($actor, "You do not have anything like that.");
 			
 			$item->transferOwnership($actor->getInventory(), $actor->getRoom()->getInventory());
 
-			\Mechanics\Server::out($actor, "You drop " . $item->getShort() . ".");
+			Server::out($actor, "You drop ".$item.".");
 		}
 	}
 ?>

@@ -25,26 +25,31 @@
 	 *
 	 */
 	namespace Commands;
-	class Make extends \Mechanics\Command implements \Mechanics\Command_DM
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\DM,
+		\Living\User as lUser;
+
+	class Make extends DM
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('make', $this);
+			new Alias('make', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			$target = $actor->getRoom()->getActorByInput($args[1]);
-			$command = \Mechanics\Alias::lookup($args[2]);
+			$target = $user->getRoom()->getActorByInput($args[1]);
+			$command = Alias::lookup($args[2]);
 			if($target && $command)
 			{
 				$command->perform($target, $args);
-				\Mechanics\Server::out($actor, "Done.");
+				Server::out($user, "Done.");
 			}
 			else
 			{
-				\Mechanics\Server::out($actor, "Cannot be done.");
+				Server::out($user, "Cannot be done.");
 			}
 		}
 	

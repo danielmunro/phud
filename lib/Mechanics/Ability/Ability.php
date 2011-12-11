@@ -27,9 +27,9 @@
 	namespace Mechanics\Ability;
 	use Mechanics\Debug;
 	use Mechanics\Actor;
+
 	abstract class Ability
 	{
-	
 		protected static $set = null;
 		protected static $alias = '';
 		protected static $level = 1;

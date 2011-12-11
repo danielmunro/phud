@@ -25,28 +25,34 @@
 	 *
 	 */
 	namespace Commands;
-	class Grant extends \Mechanics\Command implements \Mechanics\Command_DM
+	use \Mechanics\Alias;
+	use \Mechanics\Ability;
+	use \Mechanics\Server;
+	use \Mechanics\Command\DM;
+	use \Living\User;
+
+	class Grant extends DM
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('grant', $this);
+			new Alias('grant', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(User $user, $args = array())
 		{
-			$target = $actor;//$actor->getRoom()->getActorByInput($args);
-			$ability = \Mechanics\Ability::lookup($args[1]);
+			$target = $user;//$actor->getRoom()->getActorByInput($args);
+			$ability = Ability::lookup($args[1]);
 			$percent = $args[2];
 			if(!is_numeric($percent) || $percent < 1 || $percent > 100)
 				$percent = 1;
 			if($ability)
 			{
 				$target->getAbilitySet()->addAbility($ability, $percent);
-				\Mechanics\Server::out($target, $actor->getAlias(true)." has bestowed the knowledge of ".$ability->getName()." on you.");
-				return \Mechanics\Server::out($actor, "You've granted ".$ability->getName()." to ".$target->getAlias().".");
+				Server::out($target, $user->getAlias(true)." has bestowed the knowledge of ".$ability->getName()." on you.");
+				return Server::out($user, "You've granted ".$ability->getName()." to ".$target->getAlias().".");
 			}
-			\Mechanics\Server::out($actor, "Ability not found.");
+			Server::out($user, "Ability not found.");
 		}
 	
 	}

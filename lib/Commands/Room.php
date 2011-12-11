@@ -25,41 +25,42 @@
 	 *
 	 */
 	namespace Commands;
-	class Room extends \Mechanics\Command implements \Mechanics\Command_DM
+	use \Mechanics\Alias;
+	use \Mechanics\Server;
+	use \Mechanics\Room as mRoom;
+	use \Mechanics\Command\DM;
+	use \Living\User as lUser;
+
+	class Room extends DM
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('room', $this);
+			new Alias('room', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-		
-			// Technically yes...
-			//if($actor->getLevel() < \Mechanics\Actor::MAX_LEVEL)
-			//	return \Mechanics\Server::out($actor, "You cannot do that.");
-			
 			if($args[1] == 'new' || $args[1] == 'create')
 			{
 			
 				$direction = $this->isValidDirection($args[2]);
 				if(!$direction)
-					return \Mechanics\Server::out($actor, "That direction doesn't exist.");
+					return Server::out($user, "That direction doesn't exist.");
 			
-				$room = new \Mechanics\Room();
+				$room = new mRoom();
 				$room->save();
-				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
-				$new_direction = \Mechanics\Room::getReverseDirection($direction);
-				$room->{'set' . ucfirst($new_direction)}($actor->getRoom()->getId());
+				$user->getRoom()->{'set' . ucfirst($direction)}($room->getId());
+				$new_direction = mRoom::getReverseDirection($direction);
+				$room->{'set' . ucfirst($new_direction)}($user->getRoom()->getId());
 				$room->save();
-				$actor->getRoom()->save();
+				$user->getRoom()->save();
 				
-				return \Mechanics\Server::out($actor, "You've created a new room to the " . $direction . ".");
+				return Server::out($user, "You've created a new room to the " . $direction . ".");
 			}
 			
 			if($args[1] == 'id')
-				return \Mechanics\Server::out($actor, "ID: " . $actor->getRoom()->getId());
+				return Server::out($user, "ID: " . $user->getRoom()->getId());
 			
 			$property = $this->isValidProperty($args[1]);
 			if($property)
@@ -68,9 +69,9 @@
 				array_shift($args);
 				array_shift($args);
 				$value = implode(' ', $args);
-				$actor->getRoom()->$fn($value);
-				$actor->getRoom()->save();
-				return \Mechanics\Server::out($actor, 'Property set.');
+				$user->getRoom()->$fn($value);
+				$user->getRoom()->save();
+				return Server::out($user, 'Property set.');
 			}
 			
 			if($args[1] == 'copy')
@@ -78,31 +79,31 @@
 			
 				$direction = $this->isValidDirection($args[2]);
 				if(!$direction)
-					return \Mechanics\Server::out($actor, "That direction doesn't exist.");
+					return Server::out($user, "That direction doesn't exist.");
 			
-				$room = new \Mechanics\Room();
+				$room = new mRoom();
 				$room->save();
-				$actor->getRoom()->{'set' . ucfirst($direction)}($room->getId());
-				$actor->getRoom()->save();
-				$new_direction = \Mechanics\Room::getReverseDirection($direction);
-				$room->setTitle($actor->getRoom()->getTitle());
-				$room->setDescription($actor->getRoom()->getDescription());
-				$room->setArea($actor->getRoom()->getArea());
-				$room->{'set' . ucfirst($new_direction)}($actor->getRoom()->getId());
+				$user->getRoom()->{'set' . ucfirst($direction)}($room->getId());
+				$user->getRoom()->save();
+				$new_direction = mRoom::getReverseDirection($direction);
+				$room->setTitle($user->getRoom()->getTitle());
+				$room->setDescription($user->getRoom()->getDescription());
+				$room->setArea($user->getRoom()->getArea());
+				$room->{'set' . ucfirst($new_direction)}($user->getRoom()->getId());
 				$room->save();
-				return \Mechanics\Server::out($actor, 'Property set.');
+				return Server::out($user, 'Property set.');
 			}
 			
 			if(strpos('information', $args[1]) === 0)
 			{
-				return \Mechanics\Server::out($actor, 
-								"Information on room (#".$actor->getRoom()->getId()."):\n".
-								"title:                  ".$actor->getRoom()->getTitle()."\n".
-								"area:                   ".$actor->getRoom()->getArea()."\n".
-								"description:\n".$actor->getRoom()->getDescription());
+				return Server::out($user, 
+								"Information on room (#".$user->getRoom()->getId()."):\n".
+								"title:                  ".$user->getRoom()->getTitle()."\n".
+								"area:                   ".$user->getRoom()->getArea()."\n".
+								"description:\n".$user->getRoom()->getDescription());
 			}
 			
-			return \Mechanics\Server::out($actor, "What was that?");
+			return Server::out($user, "What was that?");
 			
 		}
 		

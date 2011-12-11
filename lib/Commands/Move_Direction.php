@@ -24,7 +24,13 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics;
+	namespace Commands;
+	use \Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Room as mRoom,
+		\Mechanics\Door as mDoor,
+		\Mechanics\Command\Command;
+
 	abstract class Move_Direction extends Command
 	{
 
@@ -43,13 +49,13 @@
 			
 			if($args[0] > -1)
 			{
-				$room = Room::find($args[0]);
+				$room = mRoom::find($args[0]);
 				$door = $room->getDoor($args[1]);
-				if($door instanceof Door)
+				if($door instanceof mDoor)
 				{
 					if($door->isHidden())
 						return Server::out($actor, 'Alas, you cannot go that way.');
-					if($door->getDisposition() != Door::DISPOSITION_OPEN)
+					if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
 						return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 				}
 				if($actor->getMovement() >= $actor->getRace()->getMovementCost() || $actor->getLevel() > Actor::MAX_LEVEL)

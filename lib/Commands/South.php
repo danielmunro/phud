@@ -25,15 +25,18 @@
 	 *
 	 */
 	namespace Commands;
-	class South extends \Mechanics\Move_Direction
+	use \Mechanics\Alias,
+		\Mechanics\Actor;
+
+	class South extends Move_Direction
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('south', $this);
+			new Alias('south', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			parent::perform($actor, array($actor->getRoom()->getSouth(), 'south'));
 		}

@@ -25,22 +25,27 @@
 	 *
 	 */
 	namespace Commands;
-	class Put extends \Mechanics\Command
-	{
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Command\Command,
+		\Items\Container,
+		\Items\Item as iItem;
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+	class Put extends Command
+	{
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('put', $this);
+			new Alias('put', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
 			$item = $actor->getInventory()->getItemByInput($args);
 			
-			if(!($item instanceof Item))
+			if(!($item instanceof iItem))
 				return Server::out($actor, "You don't appear to have that.");
 			
 			array_shift($args);
@@ -53,7 +58,7 @@
 			
 			$item->transferOwnership($actor->getInventory(), $target->getInventory());
 			
-			Server::out($actor, "You put " . $item->getShort() . " in " . $target->getShort() . ".");
+			Server::out($actor, "You put ".$item." in ".$target.".");
 		}
 	}
 ?>

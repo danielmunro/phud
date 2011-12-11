@@ -25,28 +25,30 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Server;
-	class Spell extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+
+	class Spell extends User
 	{
-	
 		protected function __construct()
 		{
 			new Alias('spell', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			Server::out($actor, "Spells: ");
-			$spells = $actor->getAbilitySet()->getSpells();
+			Server::out($user, "Spells: ");
+			$spells = $user->getAbilitySet()->getSpells();
 			foreach($spells as $s)
 			{
+				// @TODO fix this crap
 				$pad = 20 - strlen($s::getAlias());
 				$label = $s::getAlias();
 				for($i = 0; $i < $pad; $i++)
 					$label .= ' ';
-				Server::out($actor, $label.': '.$s->getPercent().'%');
+				Server::out($user, $label.': '.$s->getPercent().'%');
 			}
 		}
 	

@@ -25,10 +25,10 @@
 	 *
 	 */
 	namespace Mechanics\Command;
-	use \Mechanics\Actor;
+	use \Living\User as lUser;
 
 	abstract class User extends Command
 	{
-		abstract public function perform(User $user, $args = array());
+		abstract public function perform(lUser $user, $args = array());
 	}
 ?>

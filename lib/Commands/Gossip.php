@@ -25,17 +25,19 @@
 	 *
 	 */
 	namespace Commands;
-	class Gossip extends \Mechanics\Command
-	{
+	use \Mechanics\Alias,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
 	
+	class Gossip extends User
+	{
 		protected function __construct()
 		{
-			new \Mechanics\Alias('gossip', $this);
+			new Alias('gossip', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-		
 			if(is_array($args))
 			{
 				array_shift($args);
@@ -44,7 +46,7 @@
 			else
 				$message = $args;
 		
-			$actors = User::getInstances();
+			$actors = lUser::getInstances();
 			
 			foreach($actors as $a)
 				if($actor->getAlias() == $a->getAlias())

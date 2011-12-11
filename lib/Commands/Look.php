@@ -25,30 +25,40 @@
 	 *
 	 */
 	namespace Commands;
-	class Look extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Affect,
+		\Mechanics\Actor,
+		\Mechanics\Command\User,
+		\Living\User as lUser,
+		\Items\Item as iItem,
+		\Mechanics\Door as mDoor,
+		\Mechanics\Room as mRoom;
+
+	class Look extends User
 	{
 		
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 		
 		protected function __construct()
 		{
-			new \Mechanics\Alias('look', $this);
+			new Alias('look', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			if(!$args || sizeof($args) == 1) // The actor is looking
+			if(!$args || sizeof($args) == 1) // The user is looking
 			{
-				if(!$actor->getRoom()->getVisibility() && !\Mechanics\Affect::isAffecting($actor, \Mechanics\Affect::GLOW))
-					return \Mechanics\Server::out($actor, "You can't see anything, it's so dark!");
+				if(!$user->getRoom()->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
+					return Server::out($user, "You can't see anything, it's so dark!");
 				
-				\Mechanics\Server::out($actor, $actor->getRoom()->getTitle());
-				\Mechanics\Server::out($actor, $actor->getRoom()->getDescription() . "\n");
+				Server::out($user, $user->getRoom()->getTitle());
+				Server::out($user, $user->getRoom()->getDescription() . "\n");
 				
-				$doors = $actor->getRoom()->getDoors();
+				$doors = $user->getRoom()->getDoors();
 				array_walk(
 					$doors,
-					function($door) use ($actor)
+					function($door) use ($user)
 					{
 						if($door)
 						{
@@ -56,88 +66,84 @@
 							if($door->isHidden())
 								$display = rand(0, 3) === 3 ? true : false;
 							if($display)
-								\Mechanics\Server::out($actor, ucfirst($door->getLong()) . "\n");
+								Server::out($user, ucfirst($door->getLong()) . "\n");
 						}
 					}
 				);
 				
-				\Mechanics\Server::out($actor, 'Exits [' .
-					($actor->getRoom()->getNorth() >= 0 ? ' N ' : '') .
-					($actor->getRoom()->getSouth() >= 0 ? ' S ' : '') .
-					($actor->getRoom()->getEast()  >= 0 ? ' E ' : '') .
-					($actor->getRoom()->getWest()  >= 0 ? ' W ' : '') .
-					($actor->getRoom()->getUp()    >= 0 ? ' U ' : '') .
-					($actor->getRoom()->getDown()  >= 0 ? ' D ' : '') . ']');
-				$items = $actor->getRoom()->getInventory()->getItems();
+				Server::out($user, 'Exits [' .
+					($user->getRoom()->getNorth() >= 0 ? ' N ' : '') .
+					($user->getRoom()->getSouth() >= 0 ? ' S ' : '') .
+					($user->getRoom()->getEast()  >= 0 ? ' E ' : '') .
+					($user->getRoom()->getWest()  >= 0 ? ' W ' : '') .
+					($user->getRoom()->getUp()    >= 0 ? ' U ' : '') .
+					($user->getRoom()->getDown()  >= 0 ? ' D ' : '') . ']');
+				$items = $user->getRoom()->getInventory()->getItems();
 				
 				if(is_array($items) && sizeof($items) > 0)
 					foreach($items as $key => $item)
-						\Mechanics\Server::out($actor, 
+						Server::out($user, 
 							ucfirst($item->getShort()) . ' is here.');
 				
 				
-				$people = $actor->getRoom()->getActors();
+				$people = $user->getRoom()->getActors();
 				foreach($people as $a)
-					if($a != $actor)
-						\Mechanics\Server::out($actor, $a->getAlias(true) . ' is here.');
+					if($a != $user)
+						Server::out($user, $a->getAlias(true) . ' is here.');
 				return;
 			}
 			
 			// Actor is looking at something... find out what it is
-			$target = $actor->getRoom()->getActorByInput($args);
+			$target = $user->getRoom()->getActorByInput($args);
 			
 			if(empty($target))
-				$target = $actor->getRoom()->getInventory()->getItemByInput($args);
+				$target = $user->getRoom()->getInventory()->getItemByInput($args);
 			
 			if(empty($target))
-				$target = $actor->getInventory()->getItemByInput($args);
+				$target = $user->getInventory()->getItemByInput($args);
 			
 			if(!empty($target))
-				return \Mechanics\Server::out($actor, $target->lookDescribe());
+				return Server::out($user, $target->lookDescribe());
 			
 			// Direction
 			if(strpos($args[1], 'n') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getNorth(), 'north');
+				return self::lookDirection($user, $user->getRoom()->getNorth(), 'north');
 			
 			if(strpos($args[1], 's') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getSouth(), 'south');
+				return self::lookDirection($user, $user->getRoom()->getSouth(), 'south');
 			
 			if(strpos($args[1], 'e') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getEast(), 'east');
+				return self::lookDirection($user, $user->getRoom()->getEast(), 'east');
 			
 			if(strpos($args[1], 'w') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getWest(), 'west');
+				return self::lookDirection($user, $user->getRoom()->getWest(), 'west');
 			
 			if(strpos($args[1], 'u') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getUp(), 'up');
+				return self::lookDirection($user, $user->getRoom()->getUp(), 'up');
 			
 			if(strpos($args[1], 'd') === 0)
-				return self::lookDirection($actor, $actor->getRoom()->getDown(), 'down');
+				return self::lookDirection($user, $user->getRoom()->getDown(), 'down');
 			
-			//$env = \Mechanics\Environment
-			
-			\Mechanics\Server::out($actor, 'Nothing is there.');
+			Server::out($user, 'Nothing is there.');
 		}
 		
-		public static function lookDirection(&$actor, $room_id, $direction)
+		public static function lookDirection(&$user, $room_id, $direction)
 		{
 			// Closed/locked door
-			$door = \Mechanics\Door::findByRoomAndDirection($room_id, $direction);
-			if($door instanceof \Mechanics\Door)
+			$door = mDoor::findByRoomAndDirection($room_id, $direction);
+			if($door instanceof mDoor)
 			{
 				if($door->getHidden())
-					return \Mechanics\Server::out($actor, Items\Item::getInstance($door->getHiddenItemId())->getLong());
-				if($door->getDisposition() != \Mechanics\Door::DISPOSITION_OPEN)
-					return \Mechanics\Server::out($actor, ucfirst($door->getLong($room_id)));
+					return Server::out($user, iItem::getInstance($door->getHiddenItemId())->getLong());
+				if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
+					return Server::out($user, ucfirst($door->getLong($room_id)));
 			}
 			
-			// No north
 			if($room_id == 0)
-				return \Mechanics\Server::out($actor, 'You see nothing ' . $direction . '.');
-			// Something to the north
+				return Server::out($user, 'You see nothing ' . $direction . '.');
 			else
-				return \Mechanics\Server::out($actor, 'To the ' . $direction . ', you see: ' .
-					\Mechanics\Room::find($room_id)->getTitle() . '.');
+				return Server::out($user, 'To the ' . $direction . ', you see: ' .
+					mRoom::find($room_id)->getTitle() . '.');
 		}
 	}
 ?>

@@ -25,26 +25,32 @@
 	 *
 	 */
 	namespace Commands;
-	class Wear extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Mechanics\Equipment as mEquipment;
+
+	class Wear extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('wear', $this);
+			new Alias('wear', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			$item = $actor->getInventory()->getItemByInput($args);
 			
 			if(!$item)
-				return \Mechanics\Server::out($actor, 'You have nothing like that in your inventory.');
+				return Server::out($actor, 'You have nothing like that in your inventory.');
 			
-			if(!($item instanceof \Mechanics\Equipment))
-				return \Mechanics\Server::out($actor, "You cannot equip " . $item->getShort() . ".");
+			if(!($item instanceof mEquipment))
+				return Server::out($actor, "You cannot equip ".$item.".");
 			
 			return $actor->getEquipped()->equip($item);
 		}

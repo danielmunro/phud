@@ -25,13 +25,15 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Server;
-	use \Mechanics\Actor;
-	use \Mechanics\Item as mItem;
-	use \Mechanics\Equipment as mEquipment;
-	use \Items\Weapon;
-	class Item extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Living\User as lUser,
+		\Mechanics\Item as mItem,
+		\Mechanics\Equipment as mEquipment,
+		\Mechanics\Command\DM,
+		\Items\Weapon;
+
+	class Item extends DM
 	{
 	
 		protected function __construct()
@@ -39,13 +41,13 @@
 			new Alias('item', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
 		
 			if(sizeof($args) < 3)
-				return Server::out($actor, "What were you trying to do?");
+				return Server::out($user, "What were you trying to do?");
 		
-			$item = $actor->getInventory()->getItemByInput($args[1]);
+			$item = $user->getInventory()->getItemByInput($args[1]);
 			$value = implode(' ', array_slice($args, 3));
 			
 			$command = '';
@@ -57,112 +59,112 @@
 				$command = $this->getItemCommand($args[2]);
 			
 			if(!$item)
-				return Server::out($actor, "You can't find it.");
+				return Server::out($user, "You can't find it.");
 			
 			if(!$command)
-				return Server::out($actor, "You can't do that.");
+				return Server::out($user, "You can't do that.");
 			
 			$fn = 'do'.ucfirst($command);
-			$this->$fn($actor, $item, $value, $args);
+			$this->$fn($user, $item, $value, $args);
 		}
 		
-		private function doInformation(Actor $actor, mItem $item, $value, $args)
+		private function doInformation(lUser $user, mItem $item, $value, $args)
 		{
-			Server::out($actor, $item->getInformation());
+			Server::out($user, $item->getInformation());
 		}
 		
-		private function doNouns(Actor $actor, mItem $item, $value, $args)
+		private function doNouns(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setNouns($value);
-			return Server::out($actor, $item->getShort()."'s nouns now set to: ".$item->getNouns());
+			return Server::out($user, $item->getShort()."'s nouns now set to: ".$item->getNouns());
 		}
 		
-		private function doShort(Actor $actor, mItem $item, $value, $args)
+		private function doShort(lUser $user, mItem $item, $value, $args)
 		{
-			$old_short = $item->getShort(true);
+			$old_short = ucfirst($item);
 			$arg_short = implode(' ', array_slice($args, 3));
 			$item->setShort($arg_short);
-			Server::out($actor, $old_short."'s short description is now set to: ".$item->getShort());
+			Server::out($user, $old_short."'s short description is now set to: ".$item);
 		}
 		
-		private function doLong(Actor $actor, mItem $item, $value, $args)
+		private function doLong(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setLong($value);
-			Server::out($actor, $item->getShort(true)."'s long description is now set to: ".$item->getLong());
+			Server::out($user, ucfirst($item)."'s long description is now set to: ".$item->getLong());
 		}
 		
-		private function doMaterial(Actor $actor, mItem $item, $value, $args)
+		private function doMaterial(lUser $user, mItem $item, $value, $args)
 		{
-			$material = \Mechanics\Item::findMaterial($value);
+			$material = mItem::findMaterial($value);
 			if($material)
 			{
 				$item->setMaterial($material);
-				return Server::out($actor, $item->getShort(true)."'s new material is: ".$item->getMaterial());
+				return Server::out($user, ucfirst($item)."'s new material is: ".$item->getMaterial());
 			}
-			Server::out($actor, "That material doesn't exist.");
+			Server::out($user, "That material doesn't exist.");
 		}
 		
-		private function doValue(Actor $actor, mItem $item, $value, $args)
+		private function doValue(lUser $user, mItem $item, $value, $args)
 		{
 			if(!is_numeric($value))
-				return Server::out($actor, "You can't set ".$item->getShort()."'s value to that.");
+				return Server::out($user, "You can't set ".$item."'s value to that.");
 			
 			$item->setValue($value);
-			Server::out($actor, $item->getShort(true)." is now worth ".$item->getValue()." copper.");
+			Server::out($user, ucfirst($item)." is now worth ".$item->getValue()." copper.");
 		}
 		
-		private function doWeight(Actor $actor, mItem $item, $value, $args)
+		private function doWeight(lUser $user, mItem $item, $value, $args)
 		{
 			if(!is_numeric($value) || $value < 0 || $value > 1000)
-				return Server::out($actor, "You can't set ".$item->getShort()."'s weight to that.");
+				return Server::out($user, "You can't set ".$item."'s weight to that.");
 			
 			$item->setWeight($value);
-			Server::out($actor, $item->getShort(true)." now weighs ".$item->getWeight()." pounds.");
+			Server::out($user, ucfirst($item)." now weighs ".$item->getWeight()." pounds.");
 		}
 		
-		private function doOwnable(Actor $actor, mItem $item, $value, $args)
+		private function doOwnable(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setCanOwn($value);
-			Server::out($actor, $item->getShort(true)." ".($item->getCanOwn()?"can":"cannot")." be owned.");
+			Server::out($user, ucfirst($item)." ".($item->getCanOwn()?"can":"cannot")." be owned.");
 		}
 		
-		private function doLevel(Actor $actor, mItem $item, $value, $args)
+		private function doLevel(lUser $user, mItem $item, $value, $args)
 		{
 			if(intval($value) == $value && $value > 0 && $value < 52)
 			{
 				$item->setLevel($value);
-				return Server::out($actor, $item->getShort(true)." is now level ".$item->getLevel().".");
+				return Server::out($user, ucfirst($item)." is now level ".$item->getLevel().".");
 			}
-			Server::out($actor, "That is not a valid level.");
+			Server::out($user, "That is not a valid level.");
 		}
 		
-		private function doType(Actor $actor, mItem $item, $value, $args)
+		private function doType(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setWeaponType($value);
-			Server::out($actor, $item->getShort(true)." morphs into a ".$item->getWeaponTypeLabel().".");
+			Server::out($user, ucfirst($item)." morphs into a ".$item->getWeaponTypeLabel().".");
 		}
 		
-		private function doDamage(Actor $actor, mItem $item, $value, $args)
+		private function doDamage(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setDamageType($value);
-			Server::out($actor, $item->getShort(true)." now does ".\Mechanics\Damage::getDamageTypeLabel($item->getDamageType())." damage.");
+			Server::out($user, ucfirst($item)." now does ".Damage::getDamageTypeLabel($item->getDamageType())." damage.");
 		}
 		
-		private function doVerb(Actor $actor, mItem $item, $value, $args)
+		private function doVerb(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setVerb($value);
-			Server::out($actor, $item->getShort(true)."'s verb is now: ".$item->getVerb().".");
+			Server::out($user, ucfirst($item)."'s verb is now: ".$item->getVerb().".");
 		}
 		
-		private function doPosition(Actor $actor, mItem $item, $position, $args)
+		private function doPosition(lUser $user, mItem $item, $position, $args)
 		{
 			$position = mEquipment::getPositionByStr($position);
 			if($position !== false)
 			{
 				$item->setPosition($position);
-				return Server::out($actor, $item->getShort(true)."'s position is now: ".$position.".");
+				return Server::out($user, ucfirst($item)."'s position is now: ".$position.".");
 			}
-			Server::out($actor, "That's an invalid position.");
+			Server::out($user, "That's an invalid position.");
 		}
 		
 		private function getItemCommand($arg)

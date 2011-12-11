@@ -25,15 +25,17 @@
 	 *
 	 */
 	namespace Commands;
-	class Down extends \Mechanics\Move_Direction
+	use \Mechanics\Alias,
+		\Mechanics\Actor;
+
+	class Down extends Move_Direction
 	{
-	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('down', $this);
+			new Alias('down', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			parent::perform($actor, array($actor->getRoom()->getDown(), 'down'));
 		}

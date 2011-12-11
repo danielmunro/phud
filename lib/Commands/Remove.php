@@ -25,28 +25,34 @@
 	 *
 	 */
 	namespace Commands;
-	class Remove extends \Mechanics\Command
+	use \Mechanics\Actor,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Equipment,
+		\Mechanics\Command\Command;
+
+	class Remove extends Command
 	{
 	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('remove', $this);
+			new Alias('remove', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 		
 			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
 			
-			if($equipment instanceof \Mechanics\Equipment)
+			if($equipment instanceof Equipment)
 			{
 				$actor->getEquipped()->remove($equipment);
-				\Mechanics\Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
+				Server::out($actor, 'You remove ' . $equipment->getShort() . '.');
 			}
 			else
-				return \Mechanics\Server::out($actor, 'You are not wearing anything like that.');
+				return Server::out($actor, 'You are not wearing anything like that.');
 		}
 	
 	}

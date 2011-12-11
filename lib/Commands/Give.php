@@ -25,10 +25,14 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Server;
-	use \Mechanics\Actor;
-	class Give extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Actor,
+		\Mechanics\Command\Command,
+		\Living\Shopkeeper as lShopkeeper,
+		\Living\User as lUser;
+	
+	class Give extends Command
 	{
 	
 		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
@@ -73,7 +77,7 @@
 				$actor->$fn(-$give_amount);
 				$target->$fn($give_amount);
 				
-				Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to " . $target->getAlias() . ".");
+				Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to ".$target.".");
 				Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
 			}
 			else
@@ -84,16 +88,16 @@
 				if(empty($item))
 					return Server::out($actor, "You don't appear to have that.");
 			
-				if($target instanceof \Living\Shopkeeper && $actor instanceof \Living\User && !$actor->isDM())
-					return Server::out($actor, $target->getAlias(true)." doesn't look interested.");
+				if($target instanceof lShopkeeper && $actor instanceof lUser && !$actor->isDM())
+					return Server::out($actor, ucfirst($target)." doesn't look interested.");
 			
 				if(!($target instanceof Actor))
 					return Server::out($actor, "You don't see them here.");
 				
 				$actor->getInventory()->remove($item);
 				$target->getInventory()->add($item);
-				Server::out($actor, "You give " . $item->getShort() . " to " . $target->getAlias() . ".");
-				Server::out($target, $actor->getAlias(true) . " gives you " . $item->getShort() . ".");
+				Server::out($actor, "You give ".$item." to ".$target.".");
+				Server::out($target, ucfirst($actor)." gives you ".$item.".");
 			}
 		}
 	

@@ -25,17 +25,24 @@
 	 *
 	 */
 	namespace Commands;
-	class Cast extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\Command,
+		\Mechanics\Spell as mSpell,
+		\Mechanics\Fighter as mFighter,
+		\Living\User as lUser;
+
+	class Cast extends Command
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 		
 		protected function __construct()
 		{
-			new \Mechanics\Alias('cast', $this);
+			new Alias('cast', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
 			// DETERMINE THE SPELL
@@ -53,7 +60,7 @@
 			}
 			
 			if(!$spell)
-				return \Mechanics\Server::out($actor, "You don't know that spell.");
+				return Server::out($actor, "You don't know that spell.");
 			
 			// DETERMINE THE TARGET
 			$target = null;
@@ -62,38 +69,38 @@
 				$target = $actor->getRoom()->getActorByInput($args);
 			
 			if(isset($last) && !$target)
-				return \Mechanics\Server::out($actor, "You don't see them."); // Specified target not found
+				return Server::out($actor, "You don't see them."); // Specified target not found
 			
 			if(!$target)
 				$target = $actor->getTarget();
 			
 			// Target the caster
-			if(!$target && $spell::getSpellType() == \Mechanics\Spell::TYPE_PASSIVE)
+			if(!$target && $spell::getSpellType() == mSpell::TYPE_PASSIVE)
 				$target = $actor;
 			
 			if(!$target)
-				return \Mechanics\Server::out($actor, "Who do you want to cast that on?"); // No target specified and no default
+				return Server::out($actor, "Who do you want to cast that on?"); // No target specified and no default
 			
-			if(!($target instanceof Fighter) && $spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE) // Can't cast an offensive spell on a non fighter
-				return \Mechanics\Server::out($actor, "They wouldn't like that very much.");
+			if(!($target instanceof mFighter) && $spell::getSpellType() == Spell::TYPE_OFFENSIVE) // Can't cast an offensive spell on a non fighter
+				return Server::out($actor, "They wouldn't like that very much.");
 			
 			// CONCENTRATION
 			if(rand(0, 100) > $spell->getPercent())
 			{
 				$actor->setMana($actor->getMana() - ceil($spell->getManaCost($actor->getLevel()) / 2));
-				return \Mechanics\Server::out($actor, "You lost your concentration.");
+				return Server::out($actor, "You lost your concentration.");
 			}
 			
 			$actors = $actor->getRoom()->getActors();
 			foreach($actors as $rm_actor)
-				if($rm_actor instanceof \Living\User)
-					\Mechanics\Server::out($rm_actor, ($rm_actor == $actor ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor == $actor ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
+				if($rm_actor instanceof lUser)
+					Server::out($rm_actor, ($rm_actor == $actor ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor == $actor ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
 			
 			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
 			
 			$spell::perform($actor, $target);
 			
-			if($spell::getSpellType() == \Mechanics\Spell::TYPE_OFFENSIVE && $actor != $target)
+			if($spell::getSpellType() == mSpell::TYPE_OFFENSIVE && $actor != $target)
 				$actor->reconcileTarget($target);
 		}
 	}

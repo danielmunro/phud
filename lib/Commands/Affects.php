@@ -25,22 +25,28 @@
 	 *
 	 */
 	namespace Commands;
-	class Affects extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+
+	class Affects extends User
 	{
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('affects', $this);
+			new Alias('affects', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
 		
-			\Mechanics\Server::out($actor, 'You are affected by: ');
-			$affects = $actor->getAffects();
+			Server::out($user, 'You are affected by: ');
+			$affects = $user->getAffects();
 			foreach($affects as $affect)
 				if($affect->getMessageAffect())
-					\Mechanics\Server::out($actor, $affect->getMessageAffect() . '. ' . $affect->getTimeout() . ' ticks.');
+					Server::out($actor, $affect->getMessageAffect() . '. ' . $affect->getTimeout() . ' ticks.');
 		}
 	}
 ?>

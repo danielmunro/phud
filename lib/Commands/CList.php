@@ -25,34 +25,40 @@
 	 *
 	 */
 	namespace Commands;
-	class CList extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Actor,
+		\Mechanics\Command\User as cUser,
+		\Living\User as lUser,
+		\Living\Shopkeeper as lShopkeeper;
+
+	class CList extends cUser
 	{
-	
-		protected $dispositions = array(\Mechanics\Actor::DISPOSITION_STANDING, \Mechanics\Actor::DISPOSITION_SITTING);
+		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
 	
 		protected function __construct()
 		{
-			new \Mechanics\Alias('list', $this);
+			new Alias('list', $this);
 		}
 	
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
 			
 			if(sizeof($args) == 3)
-				$target = $actor->getRoom()->getActorByInput($args);
+				$target = $user->getRoom()->getUserByInput($args);
 			else
 			{
-				$targets = $actor->getRoom()->getActors();
+				$targets = $user->getRoom()->getActors();
 				foreach($targets as $potential_target)
-					if($potential_target instanceof \Living\Shopkeeper)
+					if($potential_target instanceof lShopkeeper)
 						$target = $potential_target;
 			}
 			
 			if(!isset($target))
-				return \Mechanics\Server::out($actor, "They are not here.");
+				return Server::out($user, "They are not here.");
 			
-			if(!($target instanceof \Living\Shopkeeper))
-				return \Mechanics\Server::out($actor, "They are not selling anything.");
+			if(!($target instanceof lShopkeeper))
+				return Server::out($user, "They are not selling anything.");
 			
 			Say::perform($target, $target->getListItemMessage() . "\n" . $target->getInventory()->displayContents(true));
 		}

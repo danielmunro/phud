@@ -25,29 +25,26 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Actor;
-	use \Mechanics\Server;
-	use \Living\User;
-	class Quit extends \Mechanics\Command
+	use \Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
+	class Quit extends User
 	{
-	
 		protected function __construct()
 		{
 			new Alias('quit', $this);
 		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			if(array_key_exists('sleep', $actor->getAffects()))
-				return Server::out($actor, "You need to be able to wake up first.");
+			if(array_key_exists('sleep', $user->getAffects()))
+				return Server::out($user, "You need to be able to wake up first.");
 			
-			if($actor instanceof User)
-			{
-				$actor->save();
-				Server::out($actor, "Good bye!\r\n");
-				Server::getInstance()->disconnectClient($actor->getClient());
-			}
+			$user->save();
+			Server::out($user, "Good bye!\r\n");
+			Server::getInstance()->disconnectClient($user->getClient());
 		}
 	}
 ?>
