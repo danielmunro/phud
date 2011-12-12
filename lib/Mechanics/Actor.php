@@ -49,7 +49,7 @@
 		protected $gold = 0;
 		protected $silver = 0;
 		protected $copper = 0;
-		protected $sex = '';
+		protected $sex = 0;
 		protected $disposition = 0; // sitting, sleeping, standing
 		protected $race = 'critter';
 		protected $room_id = -1;
@@ -149,93 +149,58 @@
 			return $this->copper;
 		}
 		
-		public function addCopper($copper)
-		{
-			$this->copper += $copper;
-		}
-		
-		public function setCopper($copper)
-		{
-			$this->copper = $copper;
-		}
-		
 		public function getSilver()
 		{
 			return $this->silver;
-		}
-		
-		
-		public function addSilver($silver)
-		{
-			$this->silver += $silver;
-		}
-		
-		public function setSilver($silver)
-		{
-			$this->silver = $silver;
 		}
 		
 		public function getGold()
 		{
 			return $this->gold;
 		}
-		
-		public function addGold($gold)
+
+		public function getWorth()
 		{
-			$this->gold += $gold;
+			return $this->copper + ($this->silver * 100) + ($this->gold * 1000);
+		}
+
+		public function addCopper($amount)
+		{
+			$this->copper += abs($amount);
+		}
+
+		public function addSilver($amount)
+		{
+			$this->silver += abs($amount);
 		}
 		
-		public function setGold($gold)
+		public function addGold($amount)
 		{
-			$this->gold = $gold;
+			$this->gold += abs($amount);
 		}
-		
-		public function decreaseFunds($value)
+
+		public function decreaseFunds($copper)
 		{
-			$copper = $this->copper;
-			$silver = $this->silver;
-			$gold = $this->gold;
-			
-			if($copper > $value)
-				return $this->copper -= $value;
-			else
-			{
-				$value -= $copper;
-				$copper = 0;
+			$copper = abs($copper);
+			if($this->getWorth() < $copper) {
+				return false; // Not enough money
 			}
-			$value = $value / 100;
-			if($silver > $value)
-			{
-				$silver -= $value;
-				$value = 0;
-			}			
-			else
-			{
-				$value -= $silver;
-				$silver = 0;
-			}
-			$value = $value / 100;
-			if($gold > $value)
-			{
-				$gold -= $value;
-				$value = 0;
-			}
-			else
-			{
-				$value -= $gold;
-				$gold = 0;
-			}
+
+			$this->copper -= $copper; // Remove the money
 			
-			if($value > 0)
-				return false;
-			
-			$this->copper = $copper;
-			$this->silver = $silver;
-			$this->gold = $gold;
-			
-			return true;
+			// ensure that copper amount stays above zero
+			while($this->copper < 0) {
+				if($this->silver > 0) {
+					$this->silver--;
+					$this->copper += 100;
+					continue;
+				}
+				if($this->gold > 0) {
+					$this->gold--;
+					$this->copper += 1000;
+				}
+			}
 		}
-		
 		// End money
 		
 		public function getSex()
@@ -257,13 +222,7 @@
 			return false;
 		}
 		
-		public function initRoom(\Mechanics\Room $room)
-		{
-			$room->actorAdd($this);
-			$this->room_id = $room->getId();
-		}
-		
-		public function setRoom(\Mechanics\Room $room)
+		public function setRoom(Room $room)
 		{
 			if($this->room_id > -1)
 				$this->getRoom()->actorRemove($this);
@@ -332,7 +291,6 @@
 		
 		public function lookDescribe()
 		{
-		
 			if($this->sex === 'm')
 				$sex = 'him';
 			else if($this->sex === 'f')
@@ -346,7 +304,6 @@
 			
 			return  $this->long . "\r\n" . 
 					$this->getAlias(true).'.';
-		
 		}
 		
 		public function __toString()

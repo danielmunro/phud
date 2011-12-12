@@ -89,11 +89,16 @@
 			if($seconds == $next_pulse) {
 				$this->seconds = $seconds;
 				$this->next_tick--;
-				if(isset($this->events[self::EVENT_PULSE][$this->seconds])) {
-					foreach($this->events[self::EVENT_PULSE][$this->seconds] as $event)
-						$event['fn']($event['args']);
-					unset($this->events[self::EVENT_PULSE][$this->seconds]);
-				}
+				$this->runEvents();
+			}
+		}
+
+		private function runEvents()
+		{
+			if(isset($this->events[self::EVENT_PULSE][$this->seconds])) {
+				foreach($this->events[self::EVENT_PULSE][$this->seconds] as $event)
+					$event['fn']($event['args']);
+				unset($this->events[self::EVENT_PULSE][$this->seconds]);
 			}
 		}
 		

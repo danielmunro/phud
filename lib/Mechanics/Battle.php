@@ -16,7 +16,9 @@
 		
 		public function addActor(Actor $actor)
 		{
-			$this->actors[] = $actor;
+			if(array_search($actor, $this->actors) === false) {
+				$this->actors[] = $actor;
+			}
 		}
 		
 		public function getActors()
@@ -56,7 +58,9 @@
 							$victim->setTarget($aggressor);
 							$battle->addActor($victim);
 						}
+						// (Reg)
 						$aggressor->attack();
+						// (2nd, 3rd, Hst)
                         $aggressor->getAbilitySet()->applySkillsByHook(Ability::HOOK_HIT_ATTACK_ROUND, $victim);
 						$aggressor->decrementDelay();
 					}

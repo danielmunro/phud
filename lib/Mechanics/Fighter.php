@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Items\Food;
+
 	abstract class Fighter extends Actor
 	{
 		const MAX_ATTRIBUTE = 25;
@@ -550,13 +552,6 @@
 		
 		public function damage(Fighter $target, $damage, $type = Damage::TYPE_HIT)
 		{
-		
-			// Don't do anything if dead
-			// Don't hit yerself
-			// Check for safe rooms, imms, non mobs & non players, etc
-			if(!$target->isAlive() || !$this->isAlive() || $this === $target || $target->isSafe())
-				return false;
-			
 			// Check for any skill to defend against a hit, such as parry, dodge, shield block, etc
 			if($type === Damage::TYPE_HIT)
             {
@@ -605,57 +600,48 @@
 		
 		public function checkAlive($killer = null)
 		{
-		
 			if(!$this->isAlive())
 			{
-			
 				$this->setTarget(null);
 				$killer->setTarget(null);
 			
-				if($this->getAlias() != $killer->getAlias())
-				{
-					Debug::addDebugLine($killer->getAlias(true) . ' killed ' . $this->getAlias() . ".");
-					Server::out($killer, 'You have KILLED ' . $this->getAlias() . '.');
-					$killer->applyExperienceFrom($this);
-				}
+				Debug::addDebugLine(ucfirst($killer).' killed '.$this.".");
+				Server::out($killer, 'You have KILLED '.$this.'.');
+				$killer->applyExperienceFrom($this);
 				
 				if($this instanceof \Living\User)
 					$nouns = $this->getAlias();
 				elseif($this instanceof \Living\Mob)
 					$nouns = $this->getNouns();
-				
-				$gold = intval($this->gold * 0.75);
-				$killer->addGold($gold);
-				$this->gold -= $gold;
-				
-				$silver = intval($this->silver * 0.75);
-				$killer->addSilver($silver);
-				$this->silver -= $silver;
-				
-				$copper = intval($this->copper * 0.75);
-				$killer->addCopper($copper);
-				$this->copper -= $copper;
-				
-				$this->gold = intval($this->gold/3);
-				$this->silver = intval($this->silver/3);
-				$this->copper = intval($this->copper/3);
-				
+
+				$gold = round($this->gold / 3);
+				$silver = round($this->silver / 3);
+				$copper = round($this->copper / 3);
+
 				$corpse = new \Items\Corpse();
-				$corpse->setLong('A corpse of ' . $this->getAlias() . ' lies here.');
-				$corpse->setShort('a corpse of ' . $this->getAlias());
+				$corpse->setLong('A corpse of '.$this.' lies here.');
+				$corpse->setShort('a corpse of '.$this);
 				$corpse->setNouns('corpse '.$nouns);
 				$corpse->setWeight(100);
 				$corpse->getInventory()->transferItemsFrom($this->inventory);
 				
-				$corpse->setGold($this->gold * 2);
-				$corpse->setSilver($this->silver * 2);
-				$corpse->setCopper($this->copper * 2);
+				$killer->addGold($gold);
+				$killer->addSilver($silver);
+				$killer->addCopper($copper);
+
+				$this->gold = $gold;
+				$this->silver = $silver;
+				$this->copper = $copper;
+
+				$corpse->addGold($gold);
+				$corpse->addSilver($silver);
+				$corpse->addCopper($copper);
 				
 				$this->afterDeath($killer);
 				$this->getRoom()->getInventory()->add($corpse);
 								
 				if($killer instanceof \Living\User)
-					\Mechanics\Server::out($killer, "\n".$killer->prompt(), false);
+					Server::out($killer, "\n".$killer->prompt(), false);
 				
 				$this->handleDeath();
 				return false;
@@ -665,34 +651,22 @@
 		
 		protected function afterDeath($killer)
 		{
-			$r = -1;//ceil(rand(0, 3));
-			if($r < 0)
+			$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
+			$r = round(rand(0, 3));
+			if($r > 1)
 			{
-				return $this->getRoom()->announce($this, "You hear ".$this->getAlias()."'s death cry.");
-			}
-			else
-			{
-				$parts = array(
-					'brains' => "'s brains splash all over you!",
-					'guts' => ' spills '.$this->getDisplaySex().' guts all over the floor.',
-					'heart' => "'s heart is torn from ".$this->getDisplaySex(). " chest."
-				);
+				$parts = [
+					['brains', "'s brains splash all over you!"],
+					['guts', ' spills '.$this->getDisplaySex().' guts all over the floor.'],
+					['heart', "'s heart is torn from ".$this->getDisplaySex(). " chest."]
+				];
 				$r = round(rand(0, sizeof($parts)-1));
-				if($r == 1)
-				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The brains of '.$this->getAlias().' is here.', 'the brains of '.$this->getAlias(), 'brains', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['brains']);
-				}
-				else if($r == 2)
-				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The entrails of '.$this->getAlias().' is here.', 'the entrails of '.$this->getAlias(), 'entrails', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['guts']);
-				}
-				else if($r == 3)
-				{
-					$this->getRoom()->getInventory()->add(new \Items\Food(0, 'The heart of '.$this->getAlias().' is here.', 'the heart of '.$this->getAlias(), 'heart', 0, 1, 1));
-					\Mechanics\Server::out($killer, $this->getAlias(true).$parts['heart']);
-				}
+				$meat = new Food();
+				$meat->setShort('the '.$parts[$r][0].' of '.$this);
+				$meat->setLong('The '.$parts[$r][0].' of '.$this.' is here.');
+				$meat->setNourishment(1);
+				$this->getRoom()->getInventory()->add($meat);
+				Server::out($killer, ucfirst($this).$parts[$r][1]);
 			}
 		}
 		
@@ -703,19 +677,14 @@
 			Server::out($this, 'You have been KILLED!');
 		}
 		
-		private function initiateBattle(Actor $actor)
+		private function initiateBattle(self $fighter)
 		{
-			if($actor === $this)
+			if($fighter === $this)
 				return false;
-			$this->setTarget($actor);
-			if($actor->getBattle())
-				return $actor->getBattle()->addActor($this);
-			$this->setBattle(new Battle($this));
-		}
-		
-		public function setBattle(Battle $battle)
-		{
-			$this->battle = $battle;
+			$this->setTarget($fighter);
+			if($fighter->getBattle())
+				return $fighter->getBattle()->addActor($this);
+			$this->battle = new Battle($this);
 		}
 		
 		public function getBattle()
