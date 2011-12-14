@@ -109,7 +109,7 @@
 		
 		private function isValidProperty($property)
 		{
-			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down', 'BGImage');
+			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down');
 		
 			foreach($dirs as $p)
 				if(strpos($p, $property) === 0)

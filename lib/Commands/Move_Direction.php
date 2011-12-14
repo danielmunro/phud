@@ -27,6 +27,7 @@
 	namespace Commands;
 	use \Mechanics\Actor,
 		\Mechanics\Server,
+		\Mechanics\Alias,
 		\Mechanics\Room as mRoom,
 		\Mechanics\Door as mDoor,
 		\Mechanics\Command\Command;

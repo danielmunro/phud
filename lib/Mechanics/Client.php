@@ -435,8 +435,10 @@
 				$this->user->setAlias($this->login['alias']);
 				$this->user->addCopper(20);
 				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
+				var_dump(Room::find(Room::START_ROOM));
 				$this->user->setRoom(Room::find(Room::START_ROOM));
 				$this->user->setClient($this);
+				echo 'hai';
 				$this->user->save();
 				
 				$look = Alias::lookup('look');

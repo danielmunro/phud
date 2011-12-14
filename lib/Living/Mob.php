@@ -25,14 +25,16 @@
 	 *
 	 */
 	namespace Living;
-	use \Mechanics\Dbr;
-	use \Mechanics\Pulse;
-	use \Mechanics\Room;
-	use \Mechanics\Debug;
-	use \Mechanics\Alias;
-	class Mob extends \Mechanics\Fighter
+	use \Mechanics\Dbr,
+		\Mechanics\Pulse,
+		\Mechanics\Room,
+		\Mechanics\Debug,
+		\Mechanics\Alias,
+		\Mechanics\Fighter,
+		\Mechanics\Persistable;
+
+	class Mob extends Fighter
 	{
-	
 		protected $movement_ticks = 10;
 		protected $last_move;
 		protected $auto_flee = false;
@@ -69,14 +71,11 @@
 		
 		public function save()
 		{
-			$this->start_room_id = $this->getRoom()->getId();
-			if(!$this->id)
-				$this->id = microtime();
-			$db = Dbr::instance();
-			$db->set($this->id, serialize($this));
-			$db->sAdd('mobs', $this->id);
+			parent::save();
+			$dbr = Dbr::instance();
+			$dbr->sAdd('mobs', $this->id);
 		}
-		
+
 		public function delete()
 		{
 			$db = Dbr::instance();

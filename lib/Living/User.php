@@ -25,12 +25,16 @@
 	 *
 	 */
 	namespace Living;
-	use \Mechanics\Server;
-	use \Mechanics\Dbr;
-	use \Mechanics\Alias;
-	use \Mechanics\Quest\Quest;
-	use \Mechanics\Quest\Log as QuestLog;
-	class User extends \Mechanics\Fighter
+	use \Mechanics\Server,
+		\Mechanics\Dbr,
+		\Mechanics\Client,
+		\Mechanics\Fighter,
+		\Mechanics\Alias,
+		\Mechanics\Quest\Quest,
+		\Mechanics\Persistable,
+		\Mechanics\Quest\Log as QuestLog;
+
+	class User extends Fighter
 	{
 		protected $nourishment = 5;
 		protected $thirst = 5;
@@ -75,7 +79,7 @@
 			return $this->client;
 		}
 		
-		public function setClient(\Mechanics\Client $client)
+		public function setClient(Client $client)
 		{
 			$this->client = $client;
 		}
@@ -180,15 +184,6 @@
 			return $this->nourishment == $this->getRace()->getThirst();
 		}
 		
-		public function save()
-		{
-			$client = $this->client;
-			$this->client = null;
-			$db = Dbr::instance();
-			$db->set($this->alias, serialize($this));
-			$this->client = $client;
-		}
-		
 		public function handleDeath()
 		{
 			parent::handleDeath();
@@ -240,6 +235,10 @@
 		{
 			return preg_match('/^[A-Za-z]{2,12}$/i', $alias);
 		}
-	}
 
+		public function save()
+		{
+			return parent::save($this->alias);
+		}
+	}
 ?>

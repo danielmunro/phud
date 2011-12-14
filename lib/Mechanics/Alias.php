@@ -38,8 +38,12 @@
 			
 			$possibilities = array();
 			foreach(self::$instances as $key => $instance)
-				if(strpos($key, $alias_name) === 0)
+				if(strpos($key, $alias_name) === 0) {
 					$possibilities[] = $instance;
+					if(empty($key) || empty($alias_name)) {
+						var_dump(self::$instances);die;
+					}
+				}
 			
 			usort($possibilities, function($a, $b)
 				{

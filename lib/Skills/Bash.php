@@ -56,7 +56,8 @@
 				$a->setAffect('stun');
 				$a->setTimeout(1);
 				$a->apply($target);
-				return "You slam into " . $target->getAlias() . " and send " . $target->getSex() . " flying!";
+				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
+				return "You slam into " . $target->getAlias() . " and send " . $target->getSex($sexes) . " flying!";
 			}
 			
 			return "You fall flat on your face!";

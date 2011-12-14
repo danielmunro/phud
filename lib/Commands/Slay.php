@@ -25,21 +25,26 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias,
-		\Mechanics\Actor;
+	use \Mechanics\Server,
+		\Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Command\DM,
+		\Living\Mob as lMob,
+		\Living\User as lUser;
 
-	class Down extends Move_Direction
+	class Slay extends DM
 	{
 		protected function __construct()
 		{
-			new Alias('down', $this, Alias::PRIORITY_HIGH);
+			new Alias('slay', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			parent::perform($actor, array($actor->getRoom()->getDown(), 'down'));
+			$target = $user->getRoom()->getActorByInput($args[1]);
+			Server::out($user, "You slay ".$target." in cold blood!");
+			$user->getRoom()->announce($user, ucfirst($user)." slays ".$target." in cold blood!");
+			$target->delete();
 		}
-	
 	}
-
 ?>

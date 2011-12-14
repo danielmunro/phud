@@ -25,12 +25,13 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Server;
-	use \Mechanics\Alias;
-	use \Mechanics\Race;
-	use \Mechanics\Command\DM;
-	use \Living\Shopkeeper as lShopkeeper;
-	use \Living\User as lUser;
+	use \Mechanics\Server,
+		\Mechanics\Alias,
+		\Mechanics\Actor,
+		\Mechanics\Race,
+		\Mechanics\Command\DM,
+		\Living\Shopkeeper as lShopkeeper,
+		\Living\User as lUser;
 
 	class Shopkeeper extends DM
 	{
@@ -46,7 +47,7 @@
 				return;
 		
 			$command_fn = $this->getCommand($args[2]);
-			$shopkeeper = $user->getRoom()->getlUserByInput($args[1]);
+			$shopkeeper = $user->getRoom()->getActorByInput($args[1]);
 			$value = implode(' ', array_slice($args, 3));
 			
 			if($command_fn && $shopkeeper instanceof lShopkeeper)
@@ -87,6 +88,7 @@
 		
 		private function doInformation(lUser $user, lShopkeeper $shopkeeper, $null, $args)
 		{
+			$sexes = [Actor::SEX_MALE=>'male',Actor::SEX_FEMALE=>'female',Actor::SEX_NEUTRAL=>'it'];
 			Server::out($user,
 					"info page on shopkeeper:\n".
 					"alias:                    ".$shopkeeper->getAlias()."\n".
@@ -96,7 +98,7 @@
 					"max worth:                ".$shopkeeper->getGold().'g '.$shopkeeper->getSilver().'s '.$shopkeeper->getCopper()."c\n".
 					"movement ticks:           ".$shopkeeper->getMovementTicks()."\n".
 					"unique:                   ".($shopkeeper->isUnique()?'yes':'no')."\n".
-					"sex:                      ".($shopkeeper->getSex()=='m'?'male':'female')."\n".
+					"sex:                      ".$shopkeeper->getDisplaySex($sexes)."\n".
 					"start room:               ".$shopkeeper->getStartRoom()->getTitle()." (#".$shopkeeper->getStartRoom()->getId().")\n".
 					"area:                     ".$shopkeeper->getArea()."\n".
 					"long:\n".
@@ -132,8 +134,19 @@
 		
 		private function doSex(lUser $user, lShopkeeper $shopkeeper, $sex, $args)
 		{
-			if($shopkeeper->setSex($sex))
+			if(strpos('male', $sex) === 0) {
+				$shopkeeper->setSex(Actor::SEX_MALE);
 				return Server::out($user, $shopkeeper->getAlias(true)." is now a ".strtoupper($shopkeeper->getDisplaySex()).".");
+			}
+			if(strpos('female', $sex) === 0) {
+				$shopkeeper->setSex(Actor::SEX_FEMALE);
+				return Server::out($user, $shopkeeper->getAlias(true)." is now a ".strtoupper($shopkeeper->getDisplaySex()).".");
+			}
+			if(strpos('neutral', $sex) === 0) {
+				$shopkeeper->setSex(Actor::SEX_NEUTRAL);
+				return Server::out($user, $shopkeeper->getAlias(true)." is now a ".strtoupper($shopkeeper->getDisplaySex()).".");
+			}
+			Server::out($user, "What?");
 		}
 		
 		private function doMovement(lUser $user, lShopkeeper $shopkeeper, $movement, $args)

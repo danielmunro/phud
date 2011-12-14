@@ -181,7 +181,7 @@
 			$msg_you .= $item->getShort();
 			$msg_others .= $item->getShort();
 			
-			$sex = $this->actor->getSex() == 'm' ? 'his' : 'her';
+			$sex = $this->actor->getDisplaySex();
 			
 			switch($equipped->getPosition())
 			{

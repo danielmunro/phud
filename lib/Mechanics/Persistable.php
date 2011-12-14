@@ -24,22 +24,28 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	use \Mechanics\Alias,
-		\Mechanics\Actor;
+	namespace Mechanics;
 
-	class Down extends Move_Direction
+	trait Persistable
 	{
-		protected function __construct()
-		{
-			new Alias('down', $this, Alias::PRIORITY_HIGH);
-		}
-	
-		public function perform(Actor $actor, $args = array())
-		{
-			parent::perform($actor, array($actor->getRoom()->getDown(), 'down'));
-		}
-	
-	}
+		protected $id = '';
 
+		public function save($key = null)
+		{
+			if(method_exists($this, 'beforeSave')) {
+				$tmp = $this->beforeSave();
+			}
+			if(!$this->id) {
+				$this->id = microtime().rand(0, 100000);
+			}
+			if($key === null) {
+				$key = $this->id;
+			}
+			$dbr = Dbr::instance();
+			$dbr->set($key, serialize($this));
+			if(method_exists($this, 'afterSave')) {
+				$this->afterSave($tmp);
+			}
+		}
+	}
 ?>

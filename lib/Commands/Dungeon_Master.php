@@ -26,20 +26,23 @@
 	 */
 	namespace Commands;
 	use \Mechanics\Alias,
-		\Mechanics\Actor;
+		\Mechanics\Ability,
+		\Mechanics\Server,
+		\Mechanics\Command\User,
+		\Living\User as lUser;
 
-	class Down extends Move_Direction
+	class Dungeon_Master extends User
 	{
+	
 		protected function __construct()
 		{
-			new Alias('down', $this, Alias::PRIORITY_HIGH);
+			new Alias('dungeon master', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(lUser $user, $args = array())
 		{
-			parent::perform($actor, array($actor->getRoom()->getDown(), 'down'));
+			$user->setDM(true);
+			Server::out($user, "You are now the dungeon master.");
 		}
-	
 	}
-
 ?>

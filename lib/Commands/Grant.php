@@ -42,6 +42,10 @@
 		public function perform(User $user, $args = array())
 		{
 			$target = $user;//$actor->getRoom()->getActorByInput($args);
+			if($args[1] === 'admin') {
+				$user->setDM(true);
+				return;
+			}
 			$ability = Ability::lookup($args[1]);
 			$percent = $args[2];
 			if(!is_numeric($percent) || $percent < 1 || $percent > 100)

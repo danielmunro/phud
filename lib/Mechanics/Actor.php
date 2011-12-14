@@ -25,12 +25,13 @@
 	 *
 	 */
 	namespace Mechanics;
-	use \Mechanics\Ability\Set as Ability_Set;
-    use \Mechanics\Ability\Ability;
+	use \Mechanics\Ability\Set as Ability_Set,
+		\Mechanics\Ability\Ability,
+		\Living\User;
 
 	abstract class Actor
 	{
-		use Affectable;
+		use Affectable, Persistable;
 	
 		const MAX_LEVEL = 51;
 		
@@ -42,7 +43,6 @@
 		const SEX_FEMALE = 2;
 		const SEX_MALE = 3;
 		
-		protected $id = '';
 		protected $alias = '';
 		protected $long = '';
 		protected $level = 0;
@@ -50,7 +50,7 @@
 		protected $silver = 0;
 		protected $copper = 0;
 		protected $sex = 0;
-		protected $disposition = 0; // sitting, sleeping, standing
+		protected $disposition = 0;
 		protected $race = 'critter';
 		protected $room_id = -1;
 		protected $inventory = null;
@@ -110,7 +110,7 @@
 		public function getAlias($upper = null)
 		{
 			if($upper === null)
-				return $this instanceof \Living\User ? ucfirst($this->alias) : $this->alias;
+				return $this instanceof User ? ucfirst($this->alias) : $this->alias;
 			else
 				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
@@ -133,11 +133,6 @@
 		public function getEquipped()
 		{
 			return $this->equipped;
-		}
-		
-		public function getDescription()
-		{
-			return $this->long;
 		}
 		
 		///////////////////////////////////////////////////////////////////////////
@@ -205,12 +200,19 @@
 		
 		public function getSex()
 		{
-			if($this->sex === self::SEX_FEMALE)
-				return 'f';
-			else if($this->sex === self::SEX_MALE)
-				return 'm';
-			else
-				return 'it';
+			return $this->sex;
+		}
+		
+		public function getDisplaySex($set = [])
+		{
+			if(empty($set)) {
+				$set = [self::SEX_MALE=>'his', self::SEX_FEMALE=>'her', self::SEX_NEUTRAL=>'its'];
+			}
+			$key = array_search($this->sex, $set);
+			if($key !== false) {
+				return $set[$this->sex];
+			}
+			return 'its';
 		}
 		
 		public function setSex($sex)
@@ -279,31 +281,15 @@
 			return false;
 		}
 		
-		public function getDisplaySex()
-		{
-			if($this->getSex() == 'm')
-				return 'his';
-			else if($this->getSex() == 'f')
-				return 'her';
-			else
-				return 'its';
-		}
-		
 		public function lookDescribe()
 		{
-			if($this->sex === 'm')
-				$sex = 'him';
-			else if($this->sex === 'f')
-				$sex = 'her';
-			
-			if(!isset($sex))
-				$sex = 'it';
-			
+			$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
+
 			if(!$this->long)
-				$this->long = 'You see nothing special about ' . $sex . '.';
+				return 'You see nothing special about '.$this->getDisplaySex($sexes).'.';
 			
 			return  $this->long . "\r\n" . 
-					$this->getAlias(true).'.';
+					ucfirst($this).'.';
 		}
 		
 		public function __toString()

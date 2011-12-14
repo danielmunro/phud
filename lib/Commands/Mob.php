@@ -45,7 +45,7 @@
 				return Server::out($user, "What were you trying to do?");
 		
 			$command = $this->getCommand($args[2]);
-			$mob = $user->getRoom()->getUserByInput($args[1]);
+			$mob = $user->getRoom()->getActorByInput($args[1]);
 			$value = implode(' ', array_slice($args, 3));
 			
 			if($mob instanceof lMob && $command)
@@ -90,6 +90,7 @@
 		
 		private function doInformation(User $user, lMob $mob, $inf, $args)
 		{
+			$sexes = [Actor::SEX_MALE=>'male',Actor::SEX_FEMALE=>'female',Actor::SEX_NEUTRAL=>'it'];
 			Server::out($user,
 					"info page on mob:\n".
 					"alias:                    ".$mob->getAlias()."\n".
@@ -102,7 +103,7 @@
 					"auto flee:                ".$mob->getAutoFlee()."\n".
 					"unique:                   ".($mob->isUnique()?'yes':'no')."\n".
 					"respawn time:             ".$mob->getDefaultRespawnTicks()."\n".
-					"sex:                      ".($mob->getSex()=='m'?'male':'female')."\n".
+					"sex:                      ".$mob->getDisplaySex($sexes)."\n".
 					"start room:               ".$mob->getStartRoom()->getTitle()." (#".$mob->getStartRoom()->getId().")\n".
 					"area:                     ".$mob->getArea()."\n".
 					"long:\n".

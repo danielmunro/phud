@@ -28,13 +28,12 @@
 
 	class Room
 	{
-		use Usable;
+		use Usable, Persistable;
 	
 		const START_ROOM = 1;
 	
 		static $instances = array();
 		
-		private $id = null;
 		private $title = 'Generic room';
 		private $description = 'A nondescript room.';
 		private $north = -1;
@@ -256,15 +255,16 @@
 			if($direction == 'down')
 				return 'up';
 		}
-		
-		public function save()
+
+		protected function beforeSave()
 		{
 			$actors = $this->actors;
-			$this->actors = array();
-			if(!$this->id)
-				$this->id = microtime();
-			$db = Dbr::instance();
-			$db->set($this->id, serialize($this));
+			$this->actors = [];
+			return $actors;
+		}
+
+		protected function afterSave($actors)
+		{
 			$this->actors = $actors;
 		}
 	}
