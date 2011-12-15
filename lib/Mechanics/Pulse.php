@@ -85,7 +85,7 @@
 		public function checkPulseEvents()
 		{
 			$seconds = date('U');
-			$next_pulse = $this->tick + 1;
+			$next_pulse = $this->seconds + 1;
 			if($seconds == $next_pulse) {
 				$this->seconds = $seconds;
 				$this->next_tick--;

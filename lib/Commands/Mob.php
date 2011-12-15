@@ -58,7 +58,7 @@
 			Server::out($user, "What do you want to do to ".$mob->getAlias()."?");
 		}
 		
-		private function doRace(User $user, lMob $mob, $race, $args)
+		private function doRace(lUser $user, lMob $mob, $race, $args)
 		{
 			$race = Alias::lookup($arg_race);
 			if(!($race instanceof Race))
@@ -69,7 +69,7 @@
 			$mob->getRoom()->announce($mob, $mob->getAlias(true)." shapeshifts into a ".$race->getAlias().".");
 		}
 		
-		private function doLong(User $user, lMob $mob, $long, $args)
+		private function doLong(lUser $user, lMob $mob, $long, $args)
 		{
 			$mob->setLong($arg_long);
 			$mob->save();
@@ -77,7 +77,7 @@
 			Server::out($user, $mob->getAlias(true)."'s description now reads: ".$mob->getLong());
 		}
 		
-		private function doLevel(User $user, lMob $mob, $level, $args)
+		private function doLevel(lUser $user, lMob $mob, $level, $args)
 		{
 			if(!is_numeric($level))
 				return Server::out($user, "Number of levels granted must be a number.");
@@ -88,7 +88,7 @@
 			return Server::out($user, "You grant ".$mob->getAlias()." ".$level." level".($level==1?'':'s'));
 		}
 		
-		private function doInformation(User $user, lMob $mob, $inf, $args)
+		private function doInformation(lUser $user, lMob $mob, $inf, $args)
 		{
 			$sexes = [Actor::SEX_MALE=>'male',Actor::SEX_FEMALE=>'female',Actor::SEX_NEUTRAL=>'it'];
 			Server::out($user,
@@ -110,22 +110,22 @@
 					($mob->getLong() ? $mob->getLong() : "Nothing."));
 		}
 		
-		private function doGold(User $user, lMob $mob, $value, $args)
+		private function doGold(lUser $user, lMob $mob, $value, $args)
 		{
 			$this->doWorth($user, $mob, $value, $args, 'gold');
 		}
 		
-		private function doSilver(User $user, lMob $mob, $value, $args)
+		private function doSilver(lUser $user, lMob $mob, $value, $args)
 		{
 			$this->doWorth($user, $mob, $value, $args, 'silver');
 		}
 		
-		private function doCopper(User $user, lMob $mob, $value, $args)
+		private function doCopper(lUser $user, lMob $mob, $value, $args)
 		{
 			$this->doWorth($user, $mob, $value, $args, 'copper');
 		}
 		
-		private function doWorth(User $user, lMob $mob, $amount, $args, $type)
+		private function doWorth(lUser $user, lMob $mob, $amount, $args, $type)
 		{
 			if(!is_numeric($amount) || $amount < 0 || $amount > 99999)
 				return Server::out($user, "Invalid amount of ".$type." to give ".$mob->getAlias().".");
@@ -137,7 +137,7 @@
 			Server::out($user, "You set ".$mob->getAlias()."'s ".$type." amount to ".$amount.".");
 		}
 		
-		private function doRespawn(User $user, lMob $mob, $ticks, $args)
+		private function doRespawn(lUser $user, lMob $mob, $ticks, $args)
 		{
 			if(!is_numeric($ticks))
 				return Server::out($user, "What respawn time?");
@@ -146,59 +146,59 @@
 			Server::out($user, "You set ".$mob->getAlias()."'s respawn to ".$ticks." ticks.");
 		}
 		
-		private function doSex(User $user, lMob $mob, $sex, $args)
+		private function doSex(lUser $user, lMob $mob, $sex, $args)
 		{
 			if($mob->setSex($sex))
 				return Server::out($user, $mob->getAlias(true)." is now a ".strtoupper($mob->getDisplaySex()).".");
 		}
 		
-		private function doAutoflee(User $user, lMob $mob, $auto_flee, $args)
+		private function doAutoflee(lUser $user, lMob $mob, $auto_flee, $args)
 		{
 			$mob->setAutoFlee($auto_flee);
 			Server::out($user, $mob->getAlias(true)."'s auto flee is set to ".$auto_flee." hp.");
 		}
 		
-		private function doMovement(User $user, lMob $mob, $movement, $args)
+		private function doMovement(lUser $user, lMob $mob, $movement, $args)
 		{
 			$mob->setMovementTicks($movement);
 			Server::out($user, $mob->getAlias()."'s movement speed set to ".$movement." ticks.");
 		}
 		
-		private function doArea(User $user, lMob $mob, $area, $args)
+		private function doArea(lUser $user, lMob $mob, $area, $args)
 		{
 			$mob->setArea($area);
 			Server::out($user, $mob->getAlias(true)."'s area is now set to ".$area.".");
 		}
 		
-		private function doHp(User $user, lMob $mob, $hp, $args)
+		private function doHp(lUser $user, lMob $mob, $hp, $args)
 		{
 			$mob->setHp($hp);
 			$mob->setMaxHp($hp);
 			Server::out($user, $mob->getAlias(true)."'s hp is now set to ".$hp.".");
 		}
 		
-		private function doMana(User $user, lMob $mob, $mana, $args)
+		private function doMana(lUser $user, lMob $mob, $mana, $args)
 		{
 			$mob->setMana($mana);
 			$mob->setMaxMana($mana);
 			Server::out($user, $mob->getAlias(true)."'s mana is now set to ".$mana.".");
 		}
 		
-		private function doMv(User $user, lMob $mob, $movement, $args)
+		private function doMv(lUser $user, lMob $mob, $movement, $args)
 		{
 			$mob->setMovement($movement);
 			$mob->setMaxMovement($movement);
 			Server::out($user, $mob->getAlias(true)."'s movement points are now set to ".$movement.".");
 		}
 		
-		private function doAlias(User $user, lMob $mob, $alias, $args)
+		private function doAlias(lUser $user, lMob $mob, $alias, $args)
 		{
 			$old_alias = $mob->getAlias(true);
 			$mob->setAlias($alias);
 			Server::out($user, $old_alias."'s alias has changed to: ".$mob->getAlias().".");
 		}
 		
-		private function doNouns(User $user, lMob $mob, $nouns, $args)
+		private function doNouns(lUser $user, lMob $mob, $nouns, $args)
 		{
 			$mob->setNouns($nouns);
 			Server::out($user, $mob->getAlias(true)."'s nouns have changed to: ".$mob->getNouns().".");
