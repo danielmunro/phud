@@ -47,5 +47,10 @@
 				$this->afterSave($tmp);
 			}
 		}
+		
+		public function getID()
+		{
+			return $this->id;
+		}
 	}
 ?>

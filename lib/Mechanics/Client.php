@@ -22,6 +22,11 @@
 		{
 			return $this->user;
 		}
+
+		public function clearUser()
+		{
+			$this->user = null;
+		}
 		
 		public function getSocket()
 		{
@@ -70,7 +75,10 @@
 					if($command instanceof Command)
 					{
 						$command->tryPerform($this->user, $args);
-						return Server::out($this, "\n".$this->user->prompt(), false);
+						if($this->user) {
+							Server::out($this, "\n".$this->user->prompt(), false);
+						}
+						return;
 					}
 
 					// No command was found -- attempt to perform an ability
@@ -426,6 +434,7 @@
 					$this->unverified_user->addTrains(10 - $this->login['attr']);
 					$this->login['attr'] = true;
 					$this->login['finish'] = false;
+					echo 1;
 				}
 			}
 			
@@ -435,10 +444,8 @@
 				$this->user->setAlias($this->login['alias']);
 				$this->user->addCopper(20);
 				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
-				var_dump(Room::find(Room::START_ROOM));
 				$this->user->setRoom(Room::find(Room::START_ROOM));
 				$this->user->setClient($this);
-				echo 'hai';
 				$this->user->save();
 				
 				$look = Alias::lookup('look');

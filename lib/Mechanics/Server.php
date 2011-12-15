@@ -79,12 +79,9 @@
 			while(1) {
 				Pulse::instance()->checkPulseEvents();
 				$this->scanNewConnections();
-				array_walk(
-					$this->clients,
-					function($c) {
-						$c->checkCommandBuffer();
-					}
-				);
+				foreach($this->clients as $c) {
+					$c->checkCommandBuffer();
+				}
 			}
 		}
 
@@ -108,14 +105,16 @@
 
 			if($client instanceof Client) {
 
+				if(!is_resource($client->getSocket())) {
+					return false;
+				}
+				
 				$data = $message . ($break_line === true ? "\r\n" : "");
 				$bytes_written = socket_write($client->getSocket(), $data, strlen($data));
 
 				if($bytes_written === false) {
-					$err_code = socket_last_error();
-					$err_text = socket_strerror($err_code);
-					Debug::addDebugLine("Socket write error [".$err_code."] ".$err_text);
-					self::getInstance()->disconnectClient($client);
+					Debug::addDebugLine("Socket write error, client link dead");
+					return false;
 				}
 			}
 		}
@@ -124,17 +123,19 @@
 		{
 			// Take the user out of its room
 			$user = $client->getUser();
-			if($user && $user->getRoom())
+			if($user && $user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
+			}
 			
 			// clean out the client
+			//$client->clearUser();
 			socket_close($client->getSocket());
 			$key = array_search($client, $this->clients);
 			unset($this->clients[$key]);
 
 			// reindex arrays
 			$this->clients = array_values($this->clients);
-			Debug::addDebugLine("client disconnected");
+			Debug::addDebugLine($user." disconnected");
 		}
 		
 		public static function chance()

@@ -70,7 +70,7 @@
 					return $this->doCreateItem($user, new iDrink(), $args);
 				case strpos($args[1], 'container') === 0:
 					return $this->doCreateContainer($user, new Container(), $args);
-				case strpos($args[2], 'copper') === 0:
+				case isset($args[2]) && strpos($args[2], 'copper') === 0:
 					return $this->doCreateCopper($user, $args[1]);
 				default:
 					return Server::out($user, "What do you want to create?");

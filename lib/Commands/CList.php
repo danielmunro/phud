@@ -60,7 +60,8 @@
 			if(!($target instanceof lShopkeeper))
 				return Server::out($user, "They are not selling anything.");
 			
-			Say::perform($target, $target->getListItemMessage() . "\n" . $target->getInventory()->displayContents(true));
+			Say::perform($target, $target->getListItemMessage());
+			Server::out($user, $target->getInventory()->displayContents(true));
 		}
 	}
 ?>

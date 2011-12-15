@@ -27,6 +27,7 @@
 	namespace Commands;
 	use \Mechanics\Alias,
 		\Mechanics\Server,
+		\Mechanics\Actor,
 		\Mechanics\Command\Command;
 
 	class Say extends Command

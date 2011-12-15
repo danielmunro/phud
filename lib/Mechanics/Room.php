@@ -166,13 +166,17 @@
 		
 		public function actorAdd(Actor $actor)
 		{
+			Debug::addDebugLine($actor.' ('.$actor->getID().') is arriving to '.$this.' ('.$this->getID().')');
 			$this->actors[] = $actor;
 		}
 		public function actorRemove(Actor $actor)
 		{
+			Debug::addDebugLine($actor.' ('.$actor->getID().') is leaving '.$this.' ('.$this->getID().')');
 			$key = array_search($actor, $this->actors);
-			if($key === false)
+			if($key === false) {
+				Debug::addDebugLine($actor.' is not here');
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
+			}
 			unset($this->actors[$key]);
 		}
 		public function getActors()
@@ -266,6 +270,11 @@
 		protected function afterSave($actors)
 		{
 			$this->actors = $actors;
+		}
+
+		public function __toString()
+		{
+			return $this->title;
 		}
 	}
 ?>
