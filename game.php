@@ -44,7 +44,7 @@
 	// Autoloader
 	function __autoload($class)
 	{
-		$path = str_replace("\\", "/", $class).".php";
+		$path = 'lib/'.str_replace("\\", "/", $class).".php";
 		if(file_exists($path))
 			require_once($path);
 	}
