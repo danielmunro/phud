@@ -41,7 +41,7 @@
 		
 		public function perform(lUser $user, $args = array())
 		{
-			$object = $user->getRoom()->getUserByInput($args[1]);
+			$object = $user->getRoom()->getActorByInput($args[1]);
 			if(!$object)
 				$object = $user->getRoom()->getInventory()->getItemByInput($args[1]);
 			if(!$object)
@@ -60,19 +60,16 @@
 			if(strpos('hp', $args[2]) === 0)
 			{
 				$atts->setHp($args[3]);
-				$atts->setMaxHp($args[3]);
 				Server::out($user, "You set ".$label."'s hp to ".$args[3].".");
 			}
 			else if(strpos('mana', $args[2]) === 0)
 			{
 				$atts->setMana($args[3]);
-				$atts->setMaxMana($args[3]);
 				Server::out($user, "You set ".$label."'s mana to ".$args[3].".");
 			}
 			else if(strpos('movement', $args[2]) === 0)
 			{
 				$atts->setMovement($args[3]);
-				$atts->setMaxMovement($args[3]);
 				Server::out($user, "You set ".$label."'s movement to ".$args[3].".");
 			}
 			else if(strpos('str', $args[2]) === 0)
