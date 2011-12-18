@@ -27,6 +27,7 @@
 	namespace Commands;
 	use \Mechanics\Server,
 		\Mechanics\Alias,
+		\Mechanics\Actor,
 		\Mechanics\Race,
 		\Mechanics\Debug,
 		\Mechanics\Command\DM,
