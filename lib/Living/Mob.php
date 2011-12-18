@@ -49,6 +49,10 @@
 		protected $copper_repop = 0;
 		protected $alias = 'a generic mob';
 		protected $nouns = 'generic mob';
+		protected $path = [];
+		protected $is_recording_path = false;
+		protected $path_index = 0;
+		protected $last_path_index = 0;
 		
 		const FLEE_PERCENT = 10;
 		
@@ -83,13 +87,43 @@
 			$db->sRem('mobs', $this->id);
 			$this->getRoom()->actorRemove($this);
 		}
+
+		public function getPath()
+		{
+			return $this->path;
+		}
+
+		public function isRecordingPath($toggle = null)
+		{
+			if($toggle === null) {
+				return $this->is_recording_path;
+			} else if(is_bool($toggle)) {
+				$this->is_recording_path = $toggle;
+			}
+		}
+
+		public function addPath($input)
+		{
+			$this->path[] = $input;
+		}
+
+		public function resetPath()
+		{
+			$this->path = [];
+		}
 		
 		private function registerMove()
 		{
-			if($this->movement_ticks)
+			if($this->movement_ticks && !$this->is_recording_path)
 			{
 				$ticks = Pulse::getRandomSeconds($this->movement_ticks);
-				Pulse::instance()->registerEvent($ticks, function($mob) { $mob->move(); }, $this, Pulse::EVENT_TICK);
+				Pulse::instance()->registerEvent(
+					$ticks,
+					function($mob) {
+						$mob->move();
+					},
+					$this, Pulse::EVENT_TICK
+				);
 			}
 		}
 		
@@ -100,7 +134,7 @@
 				$this->registerMove();
 				return;
 			}
-			
+
 			$directions = array(
 							'north' => $this->getRoom()->getNorth(),
 							'south' => $this->getRoom()->getSouth(),
@@ -108,21 +142,37 @@
 							'west' => $this->getRoom()->getWest(),
 							'up' => $this->getRoom()->getUp(),
 							'down' => $this->getRoom()->getDown());
-			$direction = rand(0, sizeof($directions)-1);
-			$directions = array_filter(
-									$directions,
-									function($d)
-									{
-										return $d !== -1;
-									}
-								);
-			uasort(
-				$directions,
-				function($i)
-				{
-					return rand(0, 1);
+
+			if($this->path) {
+				$i = $this->path_index > $this->last_path_index ? $this->path_index++ : $this->path_index--;
+				$this->last_path_index = $this->path_index;
+				$this->path_index = $i;
+				$sp = sizeof($this->path);
+				if($this->path_index >= $sp - 1) {
+					$this->path_index = $sp - 1;
+					$this->last_path_index = $sp;
+				} else if($this->path_index < 0) {
+					$this->path_index = 1;
+					$this->last_path_index = 0;
 				}
-			);
+				$directions = [$this->path[$i]];
+			} else {
+				$direction = rand(0, sizeof($directions)-1);
+				$directions = array_filter(
+										$directions,
+										function($d)
+										{
+											return $d !== -1;
+										}
+									);
+				uasort(
+					$directions,
+					function($i)
+					{
+						return rand(0, 1);
+					}
+				);
+			}
 			$areas = explode(' ', $this->area);
 			foreach($directions as $dir => $room_id)
 			{

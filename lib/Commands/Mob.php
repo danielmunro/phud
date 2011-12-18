@@ -28,7 +28,10 @@
 	use \Mechanics\Server,
 		\Mechanics\Alias,
 		\Mechanics\Race,
+		\Mechanics\Debug,
 		\Mechanics\Command\DM,
+		\Mechanics\Event\Listener,
+		\Mechanics\Event\Subscriber,
 		\Living\Mob as lMob,
 		\Living\User as lUser;
 
@@ -163,6 +166,35 @@
 			$mob->setMovementTicks($movement);
 			Server::out($user, $mob->getAlias()."'s movement speed set to ".$movement." ticks.");
 		}
+
+		private function doPath(lUser $user, lMob $mob, $movement, $args)
+		{
+			$mob->isRecordingPath(true);
+			$movement_subscriber = new Subscriber(
+				Subscriber::TYPE_ACTOR_MOVED,
+				$mob,
+				function($user, $mob) {
+					Debug::addDebugLine('Adding path to '.$mob.': '.$user->getClient()->getLastInput());
+					$mob->addPath($user->getClient()->getLastInput());
+				}
+			);
+			$user->addSubscriber($movement_subscriber);
+			$user->addSubscriber(
+				new Subscriber(
+					Subscriber::TYPE_USER_INPUT,
+					$mob,
+					function($user) {
+						return $user->getClient()->getLastInput() === 'path';
+					},
+					function($user, $mob) use ($movement_subscriber) {
+						$mob->isRecordingPath(false);
+						Server::out($user, "Path completed.");
+						$user->removeSubscriber($movement_subscriber);
+						return true;
+					}
+				)
+			);
+		}
 		
 		private function doArea(lUser $user, lMob $mob, $area, $args)
 		{
@@ -206,7 +238,7 @@
 		
 		private function getCommand($arg)
 		{
-			$commands = array('alias', 'nouns', 'race', 'level', 'hp', 'mana', 'mv', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area');
+			$commands = array('alias', 'nouns', 'race', 'level', 'hp', 'mana', 'mv', 'information', 'long', 'gold', 'silver', 'copper', 'respawn', 'movement', 'autoflee', 'sex', 'area', 'path');
 			
 			$command = array_filter($commands, function($c) use ($arg) 
 				{

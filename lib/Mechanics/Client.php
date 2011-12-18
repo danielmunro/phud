@@ -1,7 +1,8 @@
 <?php
 
 	namespace Mechanics;
-	use \Mechanics\Command\Command;
+	use \Mechanics\Command\Command,
+		\Mechanics\Event\Subscriber;
 
 	class Client
 	{
@@ -33,6 +34,11 @@
 			return $this->socket;
 		}
 
+		public function getLastInput()
+		{
+			return $this->last_input;
+		}
+
 		public function checkCommandBuffer()
 		{
 			$n = null;
@@ -45,7 +51,7 @@
 				if($input === '~')
 					$this->command_buffer = [];
 				else
-					$this->command_buffer[] = $input;
+					$this->command_buffer[] = trim($input);
 			}
 
 			// Cases where we don't want to check the buffer, the client has a delay or the command buffer is empty
@@ -70,6 +76,7 @@
 				}
 				else
 				{
+					$this->user->fire(Subscriber::TYPE_USER_INPUT);
 					// Evaluate user input for a command
 					$command = Alias::lookup($args[0]);
 					if($command instanceof Command)

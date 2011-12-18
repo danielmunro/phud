@@ -30,6 +30,7 @@
 		\Mechanics\Alias,
 		\Mechanics\Room as mRoom,
 		\Mechanics\Door as mDoor,
+		\Mechanics\Event\Subscriber,
 		\Mechanics\Command\Command;
 
 	abstract class Move_Direction extends Command
@@ -69,6 +70,7 @@
 					{
 						$look = Alias::lookup('look');
 						$look->perform($actor);
+						$actor->fire(Subscriber::TYPE_ACTOR_MOVED);
 					}
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					
