@@ -246,17 +246,17 @@
 		
 		public static function getReverseDirection($direction)
 		{
-			if($direction == 'north')
+			if(strpos('north', $direction) === 0)
 				return 'south';
-			if($direction == 'south')
+			if(strpos('south', $direction) === 0)
 				return 'north';
-			if($direction == 'east')
+			if(strpos('east', $direction) === 0)
 				return 'west';
-			if($direction == 'west')
+			if(strpos('west', $direction) === 0)
 				return 'east';
-			if($direction =='up')
+			if(strpos('up', $direction) === 0)
 				return 'down';
-			if($direction == 'down')
+			if(strpos('down', $direction) === 0)
 				return 'up';
 		}
 

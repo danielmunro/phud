@@ -51,8 +51,8 @@
 		protected $nouns = 'generic mob';
 		protected $path = [];
 		protected $is_recording_path = false;
-		protected $path_index = 0;
-		protected $last_path_index = 0;
+		protected $path_index = -1;
+		protected $last_path_index = -2;
 		
 		const FLEE_PERCENT = 10;
 		
@@ -144,20 +144,31 @@
 							'down' => $this->getRoom()->getDown());
 
 			if($this->path) {
-				$i = $this->path_index > $this->last_path_index ? $this->path_index++ : $this->path_index--;
-				$this->last_path_index = $this->path_index;
-				$this->path_index = $i;
-				$sp = sizeof($this->path);
-				if($this->path_index >= $sp - 1) {
-					$this->path_index = $sp - 1;
-					$this->last_path_index = $sp;
-				} else if($this->path_index < 0) {
-					$this->path_index = 1;
-					$this->last_path_index = 0;
+				if($this->path_index > $this->last_path_index) {
+					$this->path_index++;
+					$this->last_path_index++;
+					if($this->path_index > sizeof($this->path)-1) {
+						$this->path_index = sizeof($this->path)-1;
+						$this->last_path_index = sizeof($this->path);
+						$direction = Room::getReverseDirection($this->path[$this->path_index]);
+					} else {
+						$direction = $this->path[$this->path_index];
+					}
+				} else {
+					$this->path_index--;
+					$this->last_path_index--;
+					if($this->path_index < 0) {
+						$this->path_index = 0;
+						$this->last_path_index = -1;
+						$direction = $this->path[$this->path_index];
+					} else {
+						$direction = Room::getReverseDirection($this->path[$this->path_index]);
+					}
 				}
+				Debug::addDebugLine($this.' is moving, path index: '.$this->path_index.', direction: '.$direction);
 				foreach($directions as $alias => $d) {
-					if(strpos($alias, $this->path[$i]) !== false) {
-						$directions = [$this->path[$i] => $d];
+					if(strpos($alias, $direction) === 0) {
+						$directions = [$direction => $d];
 					}
 				}
 			} else {
@@ -180,7 +191,9 @@
 			$areas = explode(' ', $this->area);
 			foreach($directions as $dir => $room_id)
 			{
-				if(in_array(Room::find($room_id)->getArea(), $areas))
+				$other_areas = explode(' ', Room::find($room_id)->getArea());
+				$intersection = array_intersect($areas, $other_areas);
+				if($intersection)
 				{
 					$command = Alias::lookup($dir);
 					$command->perform($this);

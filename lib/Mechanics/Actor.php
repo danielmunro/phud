@@ -208,8 +208,7 @@
 			if(empty($set)) {
 				$set = [self::SEX_MALE=>'his', self::SEX_FEMALE=>'her', self::SEX_NEUTRAL=>'its'];
 			}
-			$key = array_search($this->sex, $set);
-			if($key !== false) {
+			if(isset($set[$this->sex])) {
 				return $set[$this->sex];
 			}
 			return 'its';
