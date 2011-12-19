@@ -27,7 +27,6 @@
 	namespace Commands;
 	use \Mechanics\Server,
 		\Mechanics\Alias,
-		\Mechanics\Actor,
 		\Mechanics\Race,
 		\Mechanics\Debug,
 		\Mechanics\Command\DM,
@@ -184,14 +183,14 @@
 				new Subscriber(
 					Subscriber::TYPE_USER_INPUT,
 					$mob,
-					function($user) {
-						return $user->getClient()->getLastInput() === 'path';
-					},
 					function($user, $mob) use ($movement_subscriber) {
-						$mob->isRecordingPath(false);
-						Server::out($user, "Path completed.");
-						$user->removeSubscriber($movement_subscriber);
-						return true;
+						Debug::addDebugLine('Checking input for path event: '.$user->getClient()->getLastInput());
+						if($user->getClient()->getLastInput() === 'path') {
+							$mob->isRecordingPath(false);
+							Server::out($user, "Path completed.");
+							$user->removeSubscriber($movement_subscriber);
+							return Subscriber::EVENT_FIRED_TERMINATE;
+						}
 					}
 				)
 			);

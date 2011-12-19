@@ -24,41 +24,11 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Mechanics\Event;
-	use \Mechanics\Debug;
+	namespace Mechanics;
+	use \Living\User;
 
-	class Subscriber
+	interface Performable
 	{
-		const TYPE_ACTOR_MOVED = 1;
-		const TYPE_USER_INPUT = 2;
-
-		const EVENT_FIRED = 1;
-		const EVENT_FIRED_TERMINATE = 2;
-
-		protected $type = 0;
-		protected $subscriber = null;
-		protected $callback = null;
-
-		public function __construct($type, $subscriber, $callback)
-		{
-			$this->type = $type;
-			$this->subscriber = $subscriber;
-			$this->callback = $callback;
-		}
-
-		public function getType()
-		{
-			return $this->type;
-		}
-
-		public function getSubscriber()
-		{
-			return $this->subscriber;
-		}
-
-		public function getCallback()
-		{
-			return $this->callback;
-		}
+		public function tryPerform(User $user, $args = []);
 	}
 ?>

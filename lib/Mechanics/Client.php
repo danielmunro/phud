@@ -76,29 +76,14 @@
 				}
 				else
 				{
-					$this->user->fire(Subscriber::TYPE_USER_INPUT);
-					// Evaluate user input for a command
-					$command = Alias::lookup($args[0]);
-					if($command instanceof Command)
-					{
-						$command->tryPerform($this->user, $args);
-						if($this->user) {
-							Server::out($this, "\n".$this->user->prompt(), false);
-						}
-						return;
+					$fired = $this->user->fire(Subscriber::TYPE_USER_INPUT);
+					if($fired === Subscriber::EVENT_FIRED) {
+						Server::out($this, "\n".$this->user->prompt(), false);
+					} else {
+						// Not sure what the user was trying to do
+						Server::out($this, "\nHuh?");
+						Server::out($this, "\n" . $this->user->prompt(), false);
 					}
-
-					// No command was found -- attempt to perform an ability
-					$ability = $this->user->getAbilitySet()->getSkillByAlias($args[0]);
-					if($ability && $ability->isPerformable())
-					{
-						$ability->perform($args);
-						return Server::out($this, "\n".$this->user->prompt(), false);
-					}
-				
-					// Not sure what the user was trying to do
-					Server::out($this, "\nHuh?");
-					Server::out($this, "\n" . $this->user->prompt(), false);
 				}
 			}
 		}
@@ -107,6 +92,23 @@
 		{			
 			$pw_hash = sha1($this->unverified_user->getAlias().$this->unverified_user->getDateCreated().$password);
 			return $this->unverified_user->getPassword() == $pw_hash;
+		}
+
+		protected function getSubscriberUserInput()
+		{
+			return new Subscriber(
+				Subscriber::TYPE_USER_INPUT,
+				$this,
+				function($user, $client) {
+					$input = $client->getLastInput();
+					$args = explode(' ', $input);
+					$performable = Alias::lookup($args[0]);
+					if($performable instanceof Performable) {
+						$performable->tryPerform($this->user, $args);
+						return Subscriber::EVENT_FIRED;
+					}
+				}
+			);
 		}
 	
 		///////////////////////////////////////////////////////////
@@ -166,6 +168,8 @@
 					$this->unverified_user = null;
 					$look = Alias::lookup('look');
 					$look->perform($this->user);
+
+					$this->user->addSubscriber($this->getSubscriberUserInput());
 					return true;
 				}
 				else
@@ -454,6 +458,8 @@
 				$this->user->setRoom(Room::find(Room::START_ROOM));
 				$this->user->setClient($this);
 				$this->user->save();
+
+				$this->user->addSubscriber($this->getSubscriberUserInput());
 				
 				$look = Alias::lookup('look');
 				$look->perform($this->user);

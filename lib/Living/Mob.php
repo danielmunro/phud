@@ -155,7 +155,11 @@
 					$this->path_index = 1;
 					$this->last_path_index = 0;
 				}
-				$directions = [$this->path[$i]];
+				foreach($directions as $alias => $d) {
+					if(strpos($alias, $this->path[$i]) !== false) {
+						$directions = [$this->path[$i] => $d];
+					}
+				}
 			} else {
 				$direction = rand(0, sizeof($directions)-1);
 				$directions = array_filter(

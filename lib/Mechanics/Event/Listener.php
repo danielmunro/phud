@@ -51,17 +51,20 @@
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
 			}
+			Debug::addDebugLine(sizeof($this->subscribers[$event_type]).' subscribers found');
+			$is_fired = false;
 			foreach($this->subscribers[$event_type] as $i => $subscriber) {
-				$condition = $subscriber->getCondition();
-				if($condition($this, $subscriber->getSubscriber())) {
-					Debug::addDebugLine('Found event and condition passed');
-					$callback = $subscriber->getCallback();
-					if($callback($this, $subscriber->getSubscriber())) {
-						Debug::addDebugLine('Removing event from callback returning true');
-						unset($this->subscribers[$event_type][$i]);
-					}
+				$callback = $subscriber->getCallback();
+				$result = $callback($this, $subscriber->getSubscriber());
+				if($result === Subscriber::EVENT_FIRED_TERMINATE) {
+					unset($this->subscribers[$event_type][$i]);
+					$result = Subscriber::EVENT_FIRED;
+				}
+				if(!$is_fired) {
+					$is_fired = $result;
 				}
 			}
+			return $is_fired;
 		}
 	}
 ?>
