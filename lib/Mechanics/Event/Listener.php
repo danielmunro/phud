@@ -27,7 +27,7 @@
 	namespace Mechanics\Event;
 	use \Mechanics\Debug;
 
-	trait Listener
+	trait Broadcaster
 	{
 		protected $subscribers = [];
 

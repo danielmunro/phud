@@ -32,12 +32,12 @@
 		\Mechanics\Alias,
 		\Mechanics\Quest\Quest,
 		\Mechanics\Persistable,
-		\Mechanics\Event\Listener,
+		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
 	class User extends Fighter
 	{
-		use Listener;
+		use Broadcaster;
 
 		protected $nourishment = 5;
 		protected $thirst = 5;

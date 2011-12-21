@@ -31,7 +31,7 @@
 		\Mechanics\Race,
 		\Mechanics\Debug,
 		\Mechanics\Command\DM,
-		\Mechanics\Event\Listener,
+		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Subscriber,
 		\Living\Mob as lMob,
 		\Living\User as lUser;
