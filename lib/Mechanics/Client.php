@@ -78,7 +78,7 @@
 				else
 				{
 					$fired = $this->user->fire(Event::EVENT_USER_INPUT);
-					if($fired === Subscriber::EVENT_FIRED) {
+					if($fired === Subscriber::BROADCAST_RECEIVED) {
 						Server::out($this, "\n".$this->user->prompt(), false);
 					} else {
 						// Not sure what the user was trying to do
@@ -106,7 +106,7 @@
 					$performable = Alias::lookup($args[0]);
 					if($performable instanceof Performable) {
 						$performable->tryPerform($this->user, $args);
-						return Subscriber::EVENT_FIRED;
+						return Subscriber::BROADCAST_RECEIVED;
 					}
 				}
 			);

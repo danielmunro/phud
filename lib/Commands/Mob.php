@@ -191,7 +191,7 @@
 							$mob->isRecordingPath(false);
 							Server::out($user, "Path completed.");
 							$user->removeSubscriber($movement_subscriber);
-							return Subscriber::EVENT_FIRED_TERMINATE;
+							return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
 						}
 					}
 				)

@@ -52,19 +52,19 @@
 				$this->subscribers[$event_type] = [];
 			}
 			Debug::addDebugLine(sizeof($this->subscribers[$event_type]).' subscribers found');
-			$is_fired = false;
+			$is_received = false;
 			foreach($this->subscribers[$event_type] as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
 				$result = $callback($this, $subscriber->getSubscriber());
-				if($result === Subscriber::EVENT_FIRED_TERMINATE) {
+				if($result === Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER) {
 					unset($this->subscribers[$event_type][$i]);
-					$result = Subscriber::EVENT_FIRED;
+					$result = Subscriber::BROADCAST_RECEIVED;
 				}
-				if(!$is_fired) {
-					$is_fired = $result;
+				if(!$is_received) {
+					$is_received = $result;
 				}
 			}
-			return $is_fired;
+			return $is_received;
 		}
 	}
 ?>

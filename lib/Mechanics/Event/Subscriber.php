@@ -29,8 +29,8 @@
 
 	class Subscriber
 	{
-		const EVENT_FIRED = 1;
-		const EVENT_FIRED_TERMINATE = 2;
+		const BROADCAST_RECEIVED = 1;
+		const BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER = 2;
 
 		protected $type = 0;
 		protected $subscriber = null;
