@@ -25,6 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Living\User;
 	
 	class Affect
 	{
@@ -88,6 +89,12 @@
 		{
 			return $this->timeout;
 		}
+
+		public function decreaseTimeout()
+		{
+			$this->timeout--;
+			return $this->timeout < 0;
+		}
 		
 		public function setArgs($args)
 		{
@@ -105,20 +112,23 @@
 		public function apply(Affectable $affectable)
 		{
 			$affectable->addAffect($this);
-			if($this->timeout > 0)
-				Pulse::instance()->registerEvent(
-					$this->timeout,
-					function($args)
-					{
-						$affectable = $args[0];
-						$affect = $args[1];
-						$affectable->removeAffect($affect);
-						if($affect->getMessageEnd() && $affect instanceof \Living\User)
-							Server::out($affectable, $affect->getMessageEnd());
-					},
-					array($affectable, $this),
-					Pulse::EVENT_TICK
+			if($this->timeout > 0) {
+				Server::instance()->addSubscriber(
+					new Subscriber(
+						Event::EVENT_TICK,
+						$this,
+						function($affect) use ($affectable) {
+							if($affect->decreaseTimeout()) {
+								$affectable->removeAffect($affect);
+								if($affect->getMessageEnd() $affectable instanceof User) {
+									Server::out($affectable, $affect->getMessageEnd());
+								}
+								return Event::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+							}
+						}
+					)
 				);
+			}
 		}
 	}
 ?>

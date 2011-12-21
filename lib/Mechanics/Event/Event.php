@@ -31,5 +31,7 @@
 	{
 		const EVENT_ACTOR_MOVED = 1;
 		const EVENT_USER_INPUT = 2;
+		const EVENT_PULSE = 3;
+		const EVENT_TICK = 4;
 	}
 ?>

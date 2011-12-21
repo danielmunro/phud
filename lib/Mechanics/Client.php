@@ -126,7 +126,7 @@
 			}
 			else if($user_status === false)
 			{
-				Server::getInstance()->disconnectClient($this);
+				Server::instance()->disconnectClient($this);
 			}
 		}
 

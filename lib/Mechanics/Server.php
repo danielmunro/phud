@@ -25,11 +25,14 @@
 	 *
 	 */
 	namespace Mechanics;
-	use \Living\Mob;
-	use \Living\User;
+	use \Living\Mob,
+		\Mechanics\Event\Event,
+		\Mechanics\Event\Broadcaster,
+		\Living\User;
 	
 	class Server
 	{
+		use Broadcaster;
 		
 		const ADDRESS = '192.168.0.111';
 		const PORT = 9000;
@@ -40,6 +43,7 @@
 		
 		public function __construct()
 		{
+			self::$instance = $this;
 			// initialize important classes/instances like commands and mobs
 			Debug::addDebugLine("Initializing environment");
 			foreach(
@@ -67,20 +71,28 @@
 			socket_close($this->socket);
 		}
 
-		public static function getInstance()
+		public static function instance()
 		{
 			return self::$instance;
 		}
 		
 		public function run()
 		{
-			// This instance of the server is going to run and won't release control
-			self::$instance = $this;
+			$pulse = intval(date('U'));
+			$next_tick = $pulse + intval(round(rand(30, 40)));
 			while(1) {
-				Pulse::instance()->checkPulseEvents();
 				$this->scanNewConnections();
 				foreach($this->clients as $c) {
 					$c->checkCommandBuffer();
+				}
+				$new_pulse = intval(date('U'));
+				if($pulse + 1 === $new_pulse) {
+					$this->fire(Event::EVENT_PULSE);
+					$pulse = $new_pulse;
+				}
+				if($pulse === $next_tick) {
+					$this->fire(Event::EVENT_TICK);
+					$next_tick = $pulse + intval(round(rand(30, 40)));
 				}
 			}
 		}
@@ -141,6 +153,11 @@
 		public static function chance()
 		{
 			return rand(0, 10000) / 100;
+		}
+
+		public function __toString()
+		{
+			return self::ADDRESS.':'.self::PORT;
 		}
 	}
 ?>

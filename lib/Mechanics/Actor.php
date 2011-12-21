@@ -63,7 +63,15 @@
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
 			$this->ability_set = new Ability_Set($this);
-			$this->tick();
+			Server::instance()->addSubscriber(
+				new Subscriber(
+					Event::EVENT_TICK,
+					$this,
+					function($subscriber, $actor) {
+						$actor->tick();
+					}
+				)
+			);
 		}
 
 		public function getAlignment()
@@ -91,7 +99,6 @@
 		public function tick()
 		{
             $this->ability_set->applySkillsByHook(Ability::HOOK_TICK, $this);
-			Pulse::instance()->registerNextTickEvent(function($user) { $user->tick(); }, $this);
 		}
 		
 		public function getAbilitySet()

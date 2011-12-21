@@ -44,7 +44,7 @@
 			
 			$user->save();
 			Server::out($user, "Good bye!\r\n");
-			Server::getInstance()->disconnectClient($user->getClient());
+			Server::instance()->disconnectClient($user->getClient());
 		}
 	}
 ?>

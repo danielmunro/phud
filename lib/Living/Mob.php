@@ -26,17 +26,21 @@
 	 */
 	namespace Living;
 	use \Mechanics\Dbr,
-		\Mechanics\Pulse,
 		\Mechanics\Room,
 		\Mechanics\Debug,
 		\Mechanics\Alias,
 		\Mechanics\Fighter,
+		\Mechanics\Server,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\Mechanics\Persistable;
 
 	class Mob extends Fighter
 	{
-		protected $movement_ticks = 10;
-		protected $last_move;
+		protected $movement_pulses = 100;
+		protected $movement_pulses_timeout = 100;
+		protected $respawn_ticks = 5;
+		protected $respawn_ticks_timeout = 5;
 		protected $auto_flee = false;
 		protected $unique = false;
 		protected $respawn_time;
@@ -59,17 +63,19 @@
 		public function __construct()
 		{
 			parent::__construct();
+			Server::instance()->addSubscriber($this->getMovementSubscriber());
 		}
 		
 		public static function runInstantiation()
 		{
 			$db = Dbr::instance();
 			$mob_ids = $db->sMembers('mobs');
+			$server = Server::instance();
 			foreach($mob_ids as $mob_id)
 			{
 				$mob = unserialize($db->get($mob_id));
 				$mob->getRoom()->actorAdd($mob);
-				$mob->registerMove();
+				$server->addSubscriber($mob->getMovementSubscriber());
 			}
 		}
 		
@@ -111,19 +117,29 @@
 		{
 			$this->path = [];
 		}
-		
-		private function registerMove()
+
+		public function getMovementSubscriber()
 		{
-			if($this->movement_ticks && !$this->is_recording_path)
-			{
-				$ticks = Pulse::getRandomSeconds($this->movement_ticks);
-				Pulse::instance()->registerEvent(
-					$ticks,
-					function($mob) {
-						$mob->move();
-					},
-					$this, Pulse::EVENT_TICK
-				);
+			return new Subscriber(
+				Event::EVENT_PULSE,
+				$this,
+				function($subscriber, $mob) {
+					$mob->evaluateMove();
+					if($mob->getMovementPulses() === 0) {
+						return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+					}
+				}
+			);
+		}
+
+		public function evaluateMove()
+		{
+			$this->movement_pulses_timeout--;
+			if($this->movement_pulses_timeout < 0) {
+				$min = $this->movement_pulses * 0.9;
+				$max = $this->movement_pulses * 1.1;
+				$this->movement_pulses_timeout = round(rand($min, $max));
+				$this->move();
 			}
 		}
 		
@@ -131,7 +147,6 @@
 		{
 			if($this->getRoom()->getId() === Room::PURGATORY_ROOM_ID)
 			{
-				$this->registerMove();
 				return;
 			}
 
@@ -197,31 +212,40 @@
 				{
 					$command = Alias::lookup($dir);
 					$command->perform($this);
-					$this->registerMove();
 					return;
 				}
 			}
-			
-			// Now the mob is stuck. Slow down their movement and try again.
-			if($this->movement_ticks < 10)
-				$this->movement_ticks = 10;
-			$this->registerMove();
 		}
 		
 		public function handleDeath()
 		{
 			parent::handleDeath(false);
 			$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
-			$seconds = Pulse::getRandomSeconds($this->respawn_time);
-			Pulse::instance()->registerEvent(
-				$seconds,
-				function($mob)
-				{
-					$mob->setRoom($mob->getStartRoom());
-					$mob->getRoom()->announce($mob, $mob->getAlias(true).' arrives in a puff of smoke.');
-				},
-				$this
+			$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - 2, $this->respawn_ticks + 2));
+			Server::instance()->addSubscriber(
+				new Subscriber(
+					Event::EVENT_TICKS,
+					$this,
+					function($subscriber, $mob) {
+						$mob->evaluateRespawn();
+						if($mob->isAlive()) {
+							return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+						}
+					}
+				)
 			);
+		}
+
+		public function evaluateRespawn()
+		{
+			$this->respawn_ticks_timeout--;
+			if($this->respawn_ticks_timeout < 0) {
+				$this->setHp($this->getMaxHp());
+				$this->setMana($this->getMaxMana());
+				$this->setMovement($this->getMaxMovement());
+				$this->setRoom($this->getStartRoom());
+				$this->getRoom()->announce($this, ucfirst($this).' arrives in a puff of smoke.');
+			}
 		}
 		
 		public function setRace($race)
@@ -234,31 +258,6 @@
 			$this->attributes->setDex($atts->getDex());
 			$this->attributes->setCon($atts->getCon());
 			$this->attributes->setCha($atts->getCha());
-		}
-		
-		public function decreaseRespawnTime()
-		{
-			return $this->respawn_time--;
-		}
-		
-		public function resetRespawnTime()
-		{
-			$this->respawn_time = $this->default_respawn_ticks;
-		}
-		
-		public function getRespawnTime()
-		{
-			return $this->respawn_time;
-		}
-		
-		public function getDefaultRespawnTicks()
-		{
-			return $this->default_respawn_ticks;
-		}
-		
-		public function setDefaultRespawnTicks($ticks)
-		{
-			$this->default_respawn_ticks = $ticks;
 		}
 		
 		public function getExperiencePerLevel()
@@ -276,14 +275,14 @@
 			$this->start_room_id = $this->room_id;
 		}
 		
-		public function getMovementTicks()
+		public function getMovementPulses()
 		{
-			return $this->movement_ticks;
+			return $this->movement_pulses;
 		}
-		
-		public function setMovementTicks($movement_ticks)
+
+		public function getRespawnTicks()
 		{
-			$this->movement_ticks = $movement_ticks;
+			return $this->respawn_ticks;
 		}
 		
 		public function getNouns()
