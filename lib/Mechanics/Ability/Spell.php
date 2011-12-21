@@ -42,10 +42,7 @@
 		
 		public static function getAlias()
 		{
-			if(func_num_args() === 0)
-				return self::$alias;
-			$args = func_get_args();
-			return self::getObfuscatedAlias($args[0], $args[1]);
+			return static::$alias;
 		}
 
 		protected static function getObfuscatedAlias(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
@@ -74,12 +71,12 @@
 
 		public static function getSpellType()
 		{
-			return self::$spell_type;
+			return static::$spell_type;
 		}
 		
 		public function __toString()
 		{
-			return self::$alias;
+			return static::$alias;
 		}	
 	}
 

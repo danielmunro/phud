@@ -131,6 +131,15 @@
 			return $this->getUsableByInput($this->spell_groups, $input);
 		}
 
+		public function getSpellByInput($input)
+		{
+			$spells = [];
+			foreach($this->spell_groups as $sp) {
+				$spells = array_merge($spells, $sp->getSpells());
+			}
+			return $this->getUsableByInput($spells, $input);
+		}
+
 		public function removeSkill(Skill $skill)
 		{
 			if(isset($this->skills[$skill::getAlias()]))

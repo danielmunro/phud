@@ -46,5 +46,10 @@
 		{
 			return $this->spells;
 		}
+
+		public function __toString()
+		{
+			return static::$alias;
+		}
 	}
 ?>

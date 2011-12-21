@@ -71,12 +71,7 @@
 				
 				// Break down client input into separate arguments and evaluate
 				$args = explode(' ', trim($input));
-				if(!$this->user)
-				{
-					$this->userLogin($args);
-				}
-				else
-				{
+				if($this->user) {
 					$fired = $this->user->fire(Event::EVENT_INPUT);
 					if($fired === Subscriber::BROADCAST_RECEIVED) {
 						Server::out($this, "\n".$this->user->prompt(), false);
@@ -85,6 +80,8 @@
 						Server::out($this, "\nHuh?");
 						Server::out($this, "\n" . $this->user->prompt(), false);
 					}
+				} else {
+					$this->userLogin($args);
 				}
 			}
 		}
@@ -95,7 +92,7 @@
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
 
-		protected function getSubscriberUserInput()
+		protected function getSubscriberClientInput()
 		{
 			return new Subscriber(
 				Event::EVENT_INPUT,
@@ -170,7 +167,7 @@
 					$look = Alias::lookup('look');
 					$look->perform($this->user);
 
-					$this->user->addSubscriber($this->getSubscriberUserInput());
+					$this->user->addSubscriber($this->getSubscriberClientInput());
 					return true;
 				}
 				else
@@ -460,7 +457,7 @@
 				$this->user->setClient($this);
 				$this->user->save();
 
-				$this->user->addSubscriber($this->getSubscriberUserInput());
+				$this->user->addSubscriber($this->getSubscriberClientInput());
 				
 				$look = Alias::lookup('look');
 				$look->perform($this->user);

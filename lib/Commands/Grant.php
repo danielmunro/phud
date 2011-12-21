@@ -25,11 +25,11 @@
 	 *
 	 */
 	namespace Commands;
-	use \Mechanics\Alias;
-	use \Mechanics\Ability;
-	use \Mechanics\Server;
-	use \Mechanics\Command\DM;
-	use \Living\User;
+	use \Mechanics\Alias,
+		\Mechanics\Ability\Ability,
+		\Mechanics\Server,
+		\Mechanics\Command\DM,
+		\Living\User;
 
 	class Grant extends DM
 	{
@@ -46,7 +46,7 @@
 				$user->setDM(true);
 				return;
 			}
-			$ability = Ability::lookup($args[1]);
+			$ability = Alias::lookup($args[1]);
 			$percent = $args[2];
 			if(!is_numeric($percent) || $percent < 1 || $percent > 100)
 				$percent = 1;

@@ -34,8 +34,7 @@
 	class Shield extends Spell
 	{
 	
-		protected $name_familiar = 'shield';
-		protected $name_unfamiliar = 'plysoxixithix';
+		protected static $alias = 'shield';
 		
 		protected function initSpellGroup()
 		{

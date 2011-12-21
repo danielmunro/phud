@@ -44,8 +44,8 @@
 			foreach($spells as $s)
 			{
 				// @TODO fix this crap
-				$pad = 20 - strlen($s::getAlias());
-				$label = $s::getAlias();
+				$pad = 20 - strlen($s);
+				$label = $s->__toString();
 				for($i = 0; $i < $pad; $i++)
 					$label .= ' ';
 				Server::out($user, $label.': '.$s->getPercent().'%');

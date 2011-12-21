@@ -27,6 +27,8 @@
 	namespace Mechanics;
 	use \Mechanics\Ability\Set as Ability_Set,
 		\Mechanics\Ability\Ability,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\Living\User;
 
 	abstract class Actor

@@ -29,7 +29,7 @@
 		\Mechanics\Actor,
 		\Mechanics\Server,
 		\Mechanics\Command\Command,
-		\Mechanics\Spell as mSpell,
+		\Mechanics\Ability\Spell as mSpell,
 		\Mechanics\Fighter as mFighter,
 		\Living\User as lUser;
 
@@ -39,7 +39,7 @@
 		
 		protected function __construct()
 		{
-			new Alias('cast', $this);
+			new Alias('cast', $this, Alias::PRIORITY_HIGH);
 		}
 		
 		public function perform(Actor $actor, $args = array())
@@ -50,13 +50,13 @@
 			array_shift($args);
 			$input = implode(' ', $args);
 			
-			$spell = $actor->getAbilitySet()->isValidSpell($input);
+			$spell = $actor->getAbilitySet()->getSpellByInput($input);
 			if(!$spell)
 			{
 				$last = array_pop($args);
 				$input = implode(' ', $args);
 				if($input)
-					$spell = $actor->getAbilitySet()->isValidSpell($input);
+					$spell = $actor->getAbilitySet()->getSpellByInput($input);
 			}
 			
 			if(!$spell)

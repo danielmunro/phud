@@ -32,7 +32,7 @@
 	class Armor extends Spell
 	{
 	
-		protected $name_familiar = 'armor';
+		protected static $alias = 'armor';
 		protected $name_unfamiliar = 'plysoxix';
 		
 		protected function initSpellGroup()
