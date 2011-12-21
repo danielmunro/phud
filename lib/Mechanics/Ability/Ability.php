@@ -30,60 +30,38 @@
 
 	abstract class Ability
 	{
-		protected static $set = null;
-		protected static $alias = '';
-		protected static $level = 1;
-		protected static $creation_points = 0;
-		protected static $hook = 0;
-		protected $percent = 0;
+		protected $discipline = null;
+		protected $required_skill = 0;
 		
-		const TARGET_FIGHTING = 1;
-		const TARGET_ARGS = 2;
-		const TARGET_SELF = 3;
-		
-		const HOOK_TICK = 1;
-		const HOOK_HIT_EVADE = 2;
-		const HOOK_BUY_ITEM = 3;
-		const HOOK_HIT_ATTACK_ROUND = 4;
-        const HOOK_HIT_DAMAGE_REDUCTION = 5;
-	
-		public function __construct($percent = 0)
-		{
-			$this->percent = $percent;
-		}	
+		protected function __construct() {}
 
-		//abstract public function perform($actor, $args);
-	
-		public function getPercent()
+		public function getDiscipline()
 		{
-			return $this->percent;
+			return $this->discipline;
 		}
 
-		public static function getHook()
+		public function getRequiredSkill()
 		{
-			return static::$hook;
+			return $this->required_skill;
 		}
-		
-		public static function getCreationPoints()
+
+		public static function runInstantiation()
 		{
-			return static::$creation_points;
+			$namespaces = ['Skills', 'Spells'];
+			foreach($namespaces as $namespace) {
+				$d = dir(dirname(__FILE__) . '/../../'.$namespace);
+				while($ability = $d->read()) {
+					if(substr($ability, -4) === ".php") {
+						Debug::addDebugLine("init : ".$ability);
+						$class = substr($ability, 0, strpos($ability, '.'));
+						$called_class = $namespace.'\\'.$class;
+						$reflection = new ReflectionClass($called_class);
+						new $called_class();
+					}
+				}
+			}
 		}
-		
-		public static function getAlias()
-		{
-			return static::$alias;
-		}
-		
-		public static function getLevel()
-		{
-			return static::$level;
-		}
-		
-		public function __toString()
-		{
-			return static::$alias;
-		}
-		
+	
 		protected function getEasyAttributeModifier($attribute)
 		{
 			switch($attribute)

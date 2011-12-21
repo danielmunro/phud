@@ -51,7 +51,8 @@
 					'\Mechanics\Command\Command',
 					'\Mechanics\Race',
 					'\Mechanics\Discipline',
-					'\Living\Mob'
+					'\Living\Mob',
+					'\Mechanics\Ability\Ability'
 				) as $required) {
 				Debug::addDebugLine("initializing ".$required);
 				$required::runInstantiation();

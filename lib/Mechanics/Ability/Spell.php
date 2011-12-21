@@ -27,11 +27,6 @@
 	namespace Mechanics\Ability;
 	abstract class Spell extends Ability
 	{
-	
-		const TYPE_OFFENSIVE = 1;
-		const TYPE_PASSIVE = 2;
-	
-		protected static $alias = '';
 		protected static $min_mana = 15;
 		protected static $spell_type = self::TYPE_PASSIVE;
 	
@@ -43,24 +38,6 @@
 		public static function getAlias()
 		{
 			return static::$alias;
-		}
-
-		protected static function getObfuscatedAlias(\Mechanics\Actor $caster, \Mechanics\Actor $observer)
-		{
-			if(get_class($caster->getDisciplinePrimary()) === get_class($observer->getDisciplinePrimary()))
-				return self::$alias;
-			$dictionary = array(
-						'cure' => 'judicandus',
-						'li' => 'di',
-						'ght' => 'es',
-						'sl' => 'grz',
-						'ee' => 'zz',
-						'p' => 'z',
-						'a' => 'br',
-						'm' => 'ulz',
-						'or' => 'i'
-					);
-			return str_replace(array_keys($dictionary), $dictionary, self::$alias);
 		}
 
 		protected static function calculateStandardDamage($level, $min, $exponent)

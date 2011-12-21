@@ -25,19 +25,23 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Actor;
-    use \Mechanics\Server;
-    use \Disciplines\Thief;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Alias,
+    	\Mechanics\Actor,
+    	\Mechanics\Server,
+    	\Disciplines\Thief;
 
 	class Backstab extends Skill
 	{
+		protected $required_skill = 20;
+
+		protected function __construct()
+		{
+			$this->discipline = Alias::lookup('stealth');
+			new Alias('backstab', $this);
+		}
 	
-        protected static $alias = 'backstab';
-        protected static $level = 1;
-		protected static $creation_points = 5;
-	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)

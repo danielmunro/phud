@@ -30,13 +30,8 @@
 
 	abstract class Skill extends Ability implements Performable
 	{
-		protected static $is_performable = true;
+		protected $is_performable = true;
 	
-		public function isPerformable()
-		{
-			return $this->is_performable;
-		}
-
 		public function tryPerform(User $user, $args = [])
 		{
 			if($this->is_performable) {

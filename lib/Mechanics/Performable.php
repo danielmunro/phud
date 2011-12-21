@@ -30,5 +30,7 @@
 	interface Performable
 	{
 		public function tryPerform(User $user, $args = []);
+
+		public function perform(Actor $actor, $args = []);
 	}
 ?>
