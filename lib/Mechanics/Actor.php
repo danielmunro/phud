@@ -67,7 +67,7 @@
 				new Subscriber(
 					Event::EVENT_TICK,
 					$this,
-					function($subscriber, $actor) {
+					function($subscriber, $server, $actor) {
 						$actor->tick();
 					}
 				)

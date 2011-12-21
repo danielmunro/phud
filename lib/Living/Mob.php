@@ -123,10 +123,10 @@
 			return new Subscriber(
 				Event::EVENT_PULSE,
 				$this,
-				function($subscriber, $mob) {
+				function($subscriber, $broadcaster, $mob) {
 					$mob->evaluateMove();
 					if($mob->getMovementPulses() === 0) {
-						return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+						$subscriber->kill();
 					}
 				}
 			);
@@ -278,6 +278,11 @@
 		public function getMovementPulses()
 		{
 			return $this->movement_pulses;
+		}
+
+		public function setMovementPulses($pulses)
+		{
+			$this->movement_pulses = intval($pulses);
 		}
 
 		public function getRespawnTicks()

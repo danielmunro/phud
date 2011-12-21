@@ -165,18 +165,18 @@
 		
 		private function doMovement(lUser $user, lMob $mob, $movement, $args)
 		{
-			$mob->setMovementTicks($movement);
+			$mob->setMovementPulses($movement);
 			Server::out($user, $mob->getAlias()."'s movement speed set to ".$movement." ticks.");
 		}
 
 		private function doPath(lUser $user, lMob $mob, $movement, $args)
 		{
+			Server::out($user, ucfirst($mob)." is now looking to you to divine a path.");
 			$mob->isRecordingPath(true);
 			$movement_subscriber = new Subscriber(
 				Event::EVENT_MOVED,
 				$mob,
-				function($user, $mob) {
-					Debug::addDebugLine('Adding path to '.$mob.': '.$user->getClient()->getLastInput());
+				function($subscriber, $user, $mob) {
 					$mob->addPath($user->getClient()->getLastInput());
 				}
 			);
@@ -185,13 +185,14 @@
 				new Subscriber(
 					Event::EVENT_INPUT,
 					$mob,
-					function($user, $mob) use ($movement_subscriber) {
+					function($input_subscriber, $user, $mob) use ($movement_subscriber) {
 						Debug::addDebugLine('Checking input for path event: '.$user->getClient()->getLastInput());
 						if($user->getClient()->getLastInput() === 'path') {
 							$mob->isRecordingPath(false);
 							Server::out($user, "Path completed.");
 							$user->removeSubscriber($movement_subscriber);
-							return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+							$input_subscriber->kill();
+							return Subscriber::BROADCAST_RECEIVED;
 						}
 					}
 				)

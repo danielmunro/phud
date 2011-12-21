@@ -96,7 +96,7 @@
 					"level:                    ".$shopkeeper->getLevel()."\n".
 					"nouns:                    ".$shopkeeper->getNouns()."\n".
 					"max worth:                ".$shopkeeper->getGold().'g '.$shopkeeper->getSilver().'s '.$shopkeeper->getCopper()."c\n".
-					"movement ticks:           ".$shopkeeper->getMovementTicks()."\n".
+					"movement pulses:          ".$shopkeeper->getMovementPulses()."\n".
 					"unique:                   ".($shopkeeper->isUnique()?'yes':'no')."\n".
 					"sex:                      ".$shopkeeper->getDisplaySex($sexes)."\n".
 					"start room:               ".$shopkeeper->getStartRoom()->getTitle()." (#".$shopkeeper->getStartRoom()->getId().")\n".
@@ -153,8 +153,8 @@
 		{
 			if(!is_numeric($movement))
 				return Server::out($user, "What movement speed?");
-			$shopkeeper->setMovementTicks($movement);
-			Server::out($user, $shopkeeper->getAlias()."'s movement speed set to ".$movement." ticks.");
+			$shopkeeper->setMovementPulses($movement);
+			Server::out($user, $shopkeeper->getAlias()."'s movement speed set to ".$movement." pulses.");
 		}
 		
 		private function doArea(lUser $user, lShopkeeper $shopkeeper, $area, $args)

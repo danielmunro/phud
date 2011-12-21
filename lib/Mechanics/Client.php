@@ -100,12 +100,12 @@
 			return new Subscriber(
 				Event::EVENT_INPUT,
 				$this,
-				function($user, $client) {
+				function($subscriber, $broadcaster, $client) {
 					$input = $client->getLastInput();
 					$args = explode(' ', $input);
 					$performable = Alias::lookup($args[0]);
 					if($performable instanceof Performable) {
-						$performable->tryPerform($this->user, $args);
+						$performable->tryPerform($client->getUser(), $args);
 						return Subscriber::BROADCAST_RECEIVED;
 					}
 				}

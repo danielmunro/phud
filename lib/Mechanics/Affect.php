@@ -117,13 +117,13 @@
 					new Subscriber(
 						Event::EVENT_TICK,
 						$this,
-						function($affect) use ($affectable) {
+						function($subscriber, $server, $affect) use ($affectable) {
 							if($affect->decreaseTimeout()) {
 								$affectable->removeAffect($affect);
 								if($affect->getMessageEnd() $affectable instanceof User) {
 									Server::out($affectable, $affect->getMessageEnd());
 								}
-								return Event::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+								$subscriber->kill();
 							}
 						}
 					)

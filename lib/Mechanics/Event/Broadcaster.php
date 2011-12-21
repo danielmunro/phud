@@ -47,18 +47,17 @@
 
 		public function fire($event_type)
 		{
-			Debug::addDebugLine('Checking event on '.$this.' for '.$event_type);
+			$debug = $this.' firing event for '.$event_type;
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
 			}
-			Debug::addDebugLine(sizeof($this->subscribers[$event_type]).' subscribers found');
+			Debug::addDebugLine($debug.', '.sizeof($this->subscribers[$event_type]).' subscribers found');
 			$is_received = false;
 			foreach($this->subscribers[$event_type] as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
-				$result = $callback($this, $subscriber->getSubscriber());
-				if($result === Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER) {
+				$result = $callback($subscriber, $this, $subscriber->getSubscriber());
+				if($subscriber->isKilled()) {
 					unset($this->subscribers[$event_type][$i]);
-					$result = Subscriber::BROADCAST_RECEIVED;
 				}
 				if(!$is_received) {
 					$is_received = $result;

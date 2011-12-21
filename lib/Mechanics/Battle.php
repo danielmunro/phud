@@ -12,10 +12,10 @@
 				new Subscriber(
 					Event::EVENT_PULSE,
 					$this,
-					function($subscriber, $battle) {
+					function($subscriber, $server, $battle) {
 						$participant_count = $battle->attackRound();
 						if($participant_count === 0) {
-							return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+							$subscriber->kill();
 						}
 					}
 				)

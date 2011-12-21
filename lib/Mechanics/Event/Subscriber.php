@@ -35,6 +35,7 @@
 		protected $type = 0;
 		protected $subscriber = null;
 		protected $callback = null;
+		protected $killed = false;
 
 		public function __construct($type, $subscriber, $callback)
 		{
@@ -56,6 +57,16 @@
 		public function getCallback()
 		{
 			return $this->callback;
+		}
+
+		public function kill()
+		{
+			$this->killed = true;
+		}
+
+		public function isKilled()
+		{
+			return $this->killed;
 		}
 	}
 ?>
