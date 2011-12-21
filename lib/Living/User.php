@@ -239,6 +239,18 @@
 			return preg_match('/^[A-Za-z]{2,12}$/i', $alias);
 		}
 
+		public function beforeSave()
+		{
+			$subscribers = $this->subscribers;
+			unset($this->subscribers);
+			return $subscribers;
+		}
+
+		public function afterSave($subscribers)
+		{
+			$this->subscribers = $subscribers;
+		}
+
 		public function save()
 		{
 			return parent::save($this->alias);
