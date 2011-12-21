@@ -77,7 +77,7 @@
 				}
 				else
 				{
-					$fired = $this->user->fire(Event::EVENT_USER_INPUT);
+					$fired = $this->user->fire(Event::EVENT_INPUT);
 					if($fired === Subscriber::BROADCAST_RECEIVED) {
 						Server::out($this, "\n".$this->user->prompt(), false);
 					} else {
@@ -98,7 +98,7 @@
 		protected function getSubscriberUserInput()
 		{
 			return new Subscriber(
-				Event::EVENT_USER_INPUT,
+				Event::EVENT_INPUT,
 				$this,
 				function($user, $client) {
 					$input = $client->getLastInput();

@@ -29,9 +29,9 @@
 
 	class Event
 	{
-		const EVENT_ACTOR_MOVED = 1;
-		const EVENT_USER_INPUT = 2;
-		const EVENT_PULSE = 3;
-		const EVENT_TICK = 4;
+		const EVENT_MOVED = 'moved';
+		const EVENT_INPUT = 'input';
+		const EVENT_PULSE = 'pulse';
+		const EVENT_TICK = 'tick';
 	}
 ?>

@@ -71,7 +71,7 @@
 					{
 						$look = Alias::lookup('look');
 						$look->perform($actor);
-						$actor->fire(Event::EVENT_ACTOR_MOVED);
+						$actor->fire(Event::EVENT_MOVED);
 					}
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					
