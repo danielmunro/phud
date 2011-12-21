@@ -120,7 +120,7 @@
 						function($subscriber, $server, $affect) use ($affectable) {
 							if($affect->decreaseTimeout()) {
 								$affectable->removeAffect($affect);
-								if($affect->getMessageEnd() $affectable instanceof User) {
+								if($affect->getMessageEnd() && $affectable instanceof User) {
 									Server::out($affectable, $affect->getMessageEnd());
 								}
 								$subscriber->kill();
