@@ -2,6 +2,7 @@
 
 	namespace Mechanics;
 	use \Mechanics\Command\Command,
+		\Mechanics\Event\Event,
 		\Mechanics\Event\Subscriber;
 
 	class Client
@@ -76,7 +77,7 @@
 				}
 				else
 				{
-					$fired = $this->user->fire(Subscriber::TYPE_USER_INPUT);
+					$fired = $this->user->fire(Event::EVENT_USER_INPUT);
 					if($fired === Subscriber::EVENT_FIRED) {
 						Server::out($this, "\n".$this->user->prompt(), false);
 					} else {
@@ -97,7 +98,7 @@
 		protected function getSubscriberUserInput()
 		{
 			return new Subscriber(
-				Subscriber::TYPE_USER_INPUT,
+				Event::EVENT_USER_INPUT,
 				$this,
 				function($user, $client) {
 					$input = $client->getLastInput();

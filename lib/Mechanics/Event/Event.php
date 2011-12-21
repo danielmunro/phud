@@ -24,38 +24,12 @@
 	 * @package Phud
 	 *
 	 */
+	
 	namespace Mechanics\Event;
-	use \Mechanics\Debug;
 
-	class Subscriber
+	class Event
 	{
-		const EVENT_FIRED = 1;
-		const EVENT_FIRED_TERMINATE = 2;
-
-		protected $type = 0;
-		protected $subscriber = null;
-		protected $callback = null;
-
-		public function __construct($type, $subscriber, $callback)
-		{
-			$this->type = $type;
-			$this->subscriber = $subscriber;
-			$this->callback = $callback;
-		}
-
-		public function getType()
-		{
-			return $this->type;
-		}
-
-		public function getSubscriber()
-		{
-			return $this->subscriber;
-		}
-
-		public function getCallback()
-		{
-			return $this->callback;
-		}
+		const EVENT_ACTOR_MOVED = 1;
+		const EVENT_USER_INPUT = 2;
 	}
 ?>

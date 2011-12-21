@@ -30,6 +30,7 @@
 		\Mechanics\Alias,
 		\Mechanics\Room as mRoom,
 		\Mechanics\Door as mDoor,
+		\Mechanics\Event\Event,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Command\Command;
 
@@ -70,7 +71,7 @@
 					{
 						$look = Alias::lookup('look');
 						$look->perform($actor);
-						$actor->fire(Subscriber::TYPE_ACTOR_MOVED);
+						$actor->fire(Event::EVENT_ACTOR_MOVED);
 					}
 					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
 					

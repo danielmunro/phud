@@ -31,7 +31,8 @@
 		\Mechanics\Race,
 		\Mechanics\Debug,
 		\Mechanics\Command\DM,
-		\Mechanics\Event\Broadcaster,
+		\Mechanics\Event\Event,
+		\Mechanics\Event\Listener,
 		\Mechanics\Event\Subscriber,
 		\Living\Mob as lMob,
 		\Living\User as lUser;
@@ -172,7 +173,7 @@
 		{
 			$mob->isRecordingPath(true);
 			$movement_subscriber = new Subscriber(
-				Subscriber::TYPE_ACTOR_MOVED,
+				Event::EVENT_ACTOR_MOVED,
 				$mob,
 				function($user, $mob) {
 					Debug::addDebugLine('Adding path to '.$mob.': '.$user->getClient()->getLastInput());
@@ -182,7 +183,7 @@
 			$user->addSubscriber($movement_subscriber);
 			$user->addSubscriber(
 				new Subscriber(
-					Subscriber::TYPE_USER_INPUT,
+					Event::EVENT_USER_INPUT,
 					$mob,
 					function($user, $mob) use ($movement_subscriber) {
 						Debug::addDebugLine('Checking input for path event: '.$user->getClient()->getLastInput());
