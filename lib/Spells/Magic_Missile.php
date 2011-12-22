@@ -25,23 +25,22 @@
 	 *
 	 */
 	namespace Spells;
-	class Magic_Missile extends \Mechanics\Spell
+	use \Mechanics\Spell,
+		\Mechanics\Actor,
+		\Mechanics\Server;
+
+	class Magic_Missile extends Spell
 	{
-	
-		protected $name_familiar = 'magic missile';
-		protected $name_unfamiliar = 'oqisasi';
-		protected $spell_type = self::TYPE_OFFENSIVE;
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Attack::instance();
+			self::addAlias('magic missile', $this);
 		}
 		
-		public function perform(\Mechanics\Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = array())
 		{
 			
 			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));
-			\Mechanics\Server::out($actor, "You smite " . $target->getAlias() . '!');
+			Server::out($actor, "You smite " . $target->getAlias() . '!');
 		}
 	}
 

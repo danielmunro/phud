@@ -25,36 +25,29 @@
 	 *
 	 */
 	namespace Spells;
-	class Sleep extends \Mechanics\Spell
+	use \Mechanics\Spell,
+		\Mechanics\Actor,
+		\Mechanics\Affect,
+		\Mechanics\Server;
+
+	class Sleep extends Spell
 	{
-	
-		protected $name_familiar = 'sleep';
-		protected $name_unfamiliar = 'teruo';
-		protected $spell_type = self::TYPE_OFFENSIVE;
-		
 		protected function __construct()
 		{
-			$this->alias = new \Mechanics\Alias('sleep', $this);
-			parent::__construct();
+			self::addAlias('sleep', $this);
 		}
 		
-		protected function initSpellGroup()
+		public function perform(Actor $actor, $args = array())
 		{
-			$this->spell_group = \Spell_Groups\Beguiling::instance();
-		}
-		
-		public function perform(\Mechanics\Actor $actor, $args = array())
-		{
-			
 			$timeout = 1 + ceil($actor->getLevel() * 0.9);
-			$target->setDisposition(\Mechanics\Actor::DISPOSITION_SLEEPING);
-			$a = new \Mechanics\Affect();
+			$target->setDisposition(Actor::DISPOSITION_SLEEPING);
+			$a = new Affect();
 			$a->setAffect(self::$name_familiar);
 			$a->setMessageAffect('Spell: sleep');
 			$a->setTimeout($timeout);
 			$a->apply($target);
 			$target->getRoom()->announce($target, $target->getAlias(true)." goes to sleep.");
-			\Mechanics\Server::out($target, "You go to sleep.");
+			Server::out($target, "You go to sleep.");
 		}
 	}
 

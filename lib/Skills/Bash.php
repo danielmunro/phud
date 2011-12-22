@@ -34,6 +34,11 @@
 	{
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 20;
+
+		protected function __construct()
+		{
+			self::addAlias('bash', $this);
+		}
 	
 		public function perform(Actor $actor, $percent, $args = [])
 		{

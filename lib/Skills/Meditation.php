@@ -36,10 +36,10 @@
 
 	class Meditation extends Skill
 	{
-	
-		protected $creation_points = 5;
-		protected $is_performable = false;
-		protected $ability_hook = Ability::HOOK_TICK;
+		protected function __construct()
+		{
+			self::addAlias('meditation', $this);
+		}
 	
 		public function perform(Actor $actor, $args = null)
 		{

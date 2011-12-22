@@ -33,12 +33,9 @@
 
 	class Shield extends Spell
 	{
-	
-		protected static $alias = 'shield';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Protective::instance();
+			self::addAlias('shield', $this);
 		}
 		
 		public function perform(Actor $actor, $args = array())

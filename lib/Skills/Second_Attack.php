@@ -34,9 +34,10 @@
 
 	class Second_Attack extends Skill
 	{
-	
-		protected $creation_points = 8;
-		protected $hook = Ability::HOOK_HIT_ATTACK_ROUND;
+		protected function __construct()
+		{
+			self::addAlias('second attack', $this);
+		}
 	
 		public function perform(Actor $actor, $args = array())
 		{

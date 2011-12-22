@@ -32,10 +32,10 @@
 
 	class Haggle extends Skill
 	{
-	
-		protected $creation_points = 3;
-		protected $is_performable = false;
-		protected $ability_hook = Ability::HOOK_BUY_ITEM;
+		protected function __construct()
+		{
+			self::addAlias('haggle', $this);
+		}
 	
 		public function perform(Actor $actor, $args = null)
 		{

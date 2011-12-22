@@ -33,7 +33,23 @@
 
 	class Parry extends Skill
 	{
-		protected static $is_performable = false;
+		protected function __construct()
+		{
+			self::addAlias('parry', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_ATTACKED,
+				function($subscriber, $parry, $client, $attack_event) {
+					$user = $client->getUser();
+					if($parry->perform($user, $user->getProficiencyIn($parry->getProficiency()))) {
+						$attack_event->suppress();
+					}
+				}
+			);
+		}
 	
 		public function perform(Actor $actor, $args = null)
 		{

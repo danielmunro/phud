@@ -32,10 +32,10 @@
 
 	class Kick extends Skill
 	{
-	
-        protected static $alias = 'kick';
-        protected static $level = 15;
-		protected static $creation_points = 5;
+		protected function __construct()
+		{
+			self::addAlias('kick', $this);
+		}
 	
 		public function perform(Actor $actor, $args = array())
 		{

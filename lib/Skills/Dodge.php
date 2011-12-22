@@ -33,12 +33,10 @@
 
 	class Dodge extends Skill
 	{
-	
-        protected static $alias = 'dodge';
-        protected static $level = 5;
-		protected static $creation_points = 5;
-		protected static $is_performable = false;
-		protected static $ability_hook = Ability::HOOK_HIT_EVADE;
+		protected function __construct()
+		{
+			self::addAlias('dodge', $this);
+		}
 	
 		public function perform(Actor $actor, $args = null)
 		{

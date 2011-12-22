@@ -38,7 +38,22 @@
 
 		protected function __construct()
 		{
-			new Alias('backstab', $this);
+			self::addAlias('backstab', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_INPUT,
+				function($subscriber, $backstab, $client, $input) {
+					if(strpos('backstab', $input) === 0) {
+						// @TODO check if user can do this
+						$args = explode(' ', $input);
+						$user = $client->getUser();
+						$backstab->perform($user, $user->getProficiencyIn($backstab->getProficiency()), $args);
+					}
+				}
+			);
 		}
 	
 		public function perform(Actor $actor, $percent, $args = [])
@@ -50,17 +65,15 @@
 
 			$roll = Server::chance() - $percent;
 			$roll += $this->getHardAttributeModifier($actor->getDex());
+			$delay = 2;
 			
 			if($roll < $this->percent)
 			{
-				$actor->incrementDelay(2);
+				$actor->incrementDelay($delay);
 				$actor->attack('bks');
 			}
 			else
 			{
-				$delay = 2;
-				if($stealth->getMastery() > Discipline::NOVICE)
-					$delay = 1;
 				$actor->incrementDelay($delay);
 				Server::out($actor, "You fumble your backstab.");
 			}

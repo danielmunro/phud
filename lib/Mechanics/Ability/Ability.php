@@ -25,12 +25,16 @@
 	 *
 	 */
 	namespace Mechanics\Ability;
-	use Mechanics\Debug,
-		Mechanics\Actor,
+	use \Mechanics\Debug,
+		\Mechanics\Actor,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\ReflectionClass;
 
 	abstract class Ability
 	{
+		use Alias;
+
 		protected $proficiency = '';
 		protected $required_proficiency = 0;
 		

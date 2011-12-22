@@ -33,11 +33,10 @@
 
 	class Third_Attack extends Skill
 	{
-	
-		protected static $alias = 'third attack';
-		protected static $level = 25;
-		protected static $creation_points = 8;
-		protected static $hook = Ability::HOOK_HIT_ATTACK_ROUND;
+		protected function __construct()
+		{
+			self::addAlias('third attack', $this);
+		}
 	
 		public function perform($args = array())
 		{

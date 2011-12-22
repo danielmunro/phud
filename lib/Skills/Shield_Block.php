@@ -31,11 +31,10 @@
 
 	class Shield_Block extends Skill
 	{
-	
-        protected static $alias = 'shield block';
-        protected static $level = 10;
-		protected static $creation_points = 5;
-		protected static $is_performable = false;
+		protected function __construct()
+		{
+			self::addAlias('shield block', $this);
+		}
 		
 		public function perform(Actor $actor, $args = null)
 		{

@@ -31,13 +31,9 @@
 
 	class Heal extends Spell
 	{
-	
-		protected $name_familiar = 'heal';
-		protected $name_unfamiliar = 'oezes';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Healing::instance();
+			self::addAlias('heal', $this);
 		}
 		
 		public function perform(Actor $actor, $args = array())

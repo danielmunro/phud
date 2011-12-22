@@ -31,13 +31,9 @@
 
 	class Armor extends Spell
 	{
-	
-		protected static $alias = 'armor';
-		protected $name_unfamiliar = 'plysoxix';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Protective::instance();
+			self::addAlias('armor');
 		}
 		
 		public function perform(Actor $actor, $args = array())

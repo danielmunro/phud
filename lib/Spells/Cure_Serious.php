@@ -31,13 +31,9 @@
 
 	class Cure_Serious extends Spell
 	{
-	
-		protected $name_familiar = 'cure serious';
-		protected $name_unfamiliar = 'frzzz lam';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Healing::instance();
+			self::addAlias('cure serious', $this);
 		}
 		
 		public function perform(Actor $actor, $args = array())

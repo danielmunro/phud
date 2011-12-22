@@ -31,13 +31,9 @@
 
 	class Cure_Critical extends Spell
 	{
-	
-		protected $name_familiar = 'cure critical';
-		protected $name_unfamiliar = 'tztzz frzzz';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Healing::instance();
+			self::addAlias('cure critical', $this);
 		}
 		
 		public function perform(Actor $actor, $args = null)

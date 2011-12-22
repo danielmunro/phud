@@ -31,13 +31,9 @@
 
 	class Cure_Light extends Spell
 	{
-	
-		protected $name_familiar = 'cure light';
-		protected $name_unfamiliar = 'frzzz';
-		
-		protected function initSpellGroup()
+		protected function __construct()
 		{
-			$this->spell_group = \Spell_Groups\Healing::instance();
+			self::addAlias('cure light', $this);
 		}
 		
 		public function perform(Actor $actor, $args = array())
