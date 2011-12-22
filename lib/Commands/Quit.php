@@ -34,7 +34,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('quit', $this);
+			self::addAlias('quit', $this);
 		}
 		
 		public function perform(lUser $user, $args = array())

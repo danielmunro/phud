@@ -36,7 +36,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('affects', $this);
+			self::addAlias('affects', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

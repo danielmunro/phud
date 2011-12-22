@@ -39,7 +39,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('give', $this);
+			self::addAlias('give', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

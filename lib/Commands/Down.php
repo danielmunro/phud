@@ -32,7 +32,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('down', $this, Alias::PRIORITY_HIGH);
+			self::addAlias('down', $this, 11);
 		}
 	
 		public function perform(Actor $actor, $args = array())

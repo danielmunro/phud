@@ -33,7 +33,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('gossip', $this);
+			self::addAlias('gossip', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

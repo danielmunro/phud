@@ -36,7 +36,7 @@
 		
 		protected function __construct()
 		{
-			new Alias('attset', $this);
+			self::addAlias('attset', $this);
 		}
 		
 		public function perform(lUser $user, $args = array())

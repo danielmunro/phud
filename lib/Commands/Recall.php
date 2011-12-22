@@ -37,7 +37,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('recall', $this);
+			self::addAlias('recall', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

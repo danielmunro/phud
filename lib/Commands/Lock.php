@@ -36,7 +36,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('lock', $this);
+			self::addAlias('lock', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

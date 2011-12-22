@@ -41,7 +41,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('mob', $this);
+			self::addAlias('mob', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

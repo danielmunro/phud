@@ -42,7 +42,7 @@
 		
 		protected function __construct()
 		{
-			new Alias('look', $this);
+			self::addAlias('look', $this);
 		}
 		
 		public function perform(lUser $user, $args = array())

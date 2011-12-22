@@ -34,7 +34,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('wake', $this);
+			self::addAlias('wake', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

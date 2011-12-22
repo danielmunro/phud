@@ -42,7 +42,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('quest', $this);
+			self::addAlias('quest', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

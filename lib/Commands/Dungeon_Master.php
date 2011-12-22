@@ -36,7 +36,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('dungeon master', $this);
+			self::addAlias('dungeon master', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

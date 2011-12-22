@@ -33,7 +33,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('west', $this, Alias::PRIORITY_HIGH);
+			self::addAlias('west', $this, 11);
 		}
 	
 		public function perform(Actor $actor, $args = array())

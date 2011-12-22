@@ -37,7 +37,7 @@
 	{
 		use Alias;
 
-		protected $dispositions = array();
+		protected $dispositions = [];
 		
 		protected function __construct() {}
 		

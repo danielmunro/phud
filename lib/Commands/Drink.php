@@ -40,7 +40,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('drink', $this);
+			self::addAlias('drink', $this);
 		}
 		
 		public function perform(Actor $actor, $args = array())

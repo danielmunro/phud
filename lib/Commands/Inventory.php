@@ -34,7 +34,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('inventory', $this);
+			self::addAlias('inventory', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

@@ -37,7 +37,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('kill', $this);
+			self::addAlias('kill', $this);
 		}
 	
 		public function perform(mFighter $fighter, $args = array())

@@ -89,7 +89,7 @@
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
 
-		protected function getSubscriberClientInput()
+		protected function getSubscriberCommands()
 		{
 			return new Subscriber(
 				Event::EVENT_INPUT,
@@ -161,10 +161,10 @@
 					$this->user = $this->unverified_user;
 					$this->user->getRoom()->actorAdd($this->user);
 					$this->unverified_user = null;
-					$look = Alias::lookup('look');
+					$look = Command::lookup('look');
 					$look->perform($this->user);
 
-					$this->user->addSubscriber($this->getSubscriberClientInput());
+					$this->user->addSubscriber($this->getSubscriberCommands());
 					return true;
 				}
 				else
@@ -454,7 +454,7 @@
 				$this->user->setClient($this);
 				$this->user->save();
 
-				$this->user->addSubscriber($this->getSubscriberClientInput());
+				$this->user->addSubscriber($this->getSubscriberCommands());
 				
 				$look = Alias::lookup('look');
 				$look->perform($this->user);

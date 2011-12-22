@@ -39,7 +39,7 @@
 		
 		protected function __construct()
 		{
-			new Alias('cast', $this, Alias::PRIORITY_HIGH);
+			self::addAlias('cast', $this, 11);
 		}
 		
 		public function perform(Actor $actor, $args = array())

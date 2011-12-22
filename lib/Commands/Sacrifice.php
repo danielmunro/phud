@@ -38,7 +38,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('sacrifice', $this);
+			self::addAlias('sacrifice', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

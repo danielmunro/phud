@@ -38,7 +38,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('list', $this);
+			self::addAlias('list', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

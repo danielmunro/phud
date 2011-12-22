@@ -34,7 +34,7 @@
 	{
 		protected function __construct()
 		{
-			new Alias('skill', $this);
+			self::addAlias('skill', $this);
 		}
 	
 		public function perform(lUser $user, $args = array())

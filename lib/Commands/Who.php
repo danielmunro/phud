@@ -32,7 +32,6 @@
 	
 	class Who extends cUser
 	{
-	
 		protected function __construct()
 		{
 			self::addAlias('who', $this);
