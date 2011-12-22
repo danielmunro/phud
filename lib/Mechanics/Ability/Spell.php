@@ -27,34 +27,11 @@
 	namespace Mechanics\Ability;
 	abstract class Spell extends Ability
 	{
-		protected static $min_mana = 15;
-		protected static $spell_type = self::TYPE_PASSIVE;
+		protected $mana_cost = 50;
 	
-		public static function getManaCost($actor_level)
+		public function getManaCost()
 		{
-			return ceil(max(self::$min_mana, 100 / (2 + $actor_level - self::$level)));
+			return $this->mana_cost;
 		}
-		
-		public static function getAlias()
-		{
-			return static::$alias;
-		}
-
-		protected static function calculateStandardDamage($level, $min, $exponent)
-		{
-			$base = $min + ($level ^ $exponent);
-			return ceil(rand($base / 2, $base * 2));
-		}
-
-		public static function getSpellType()
-		{
-			return static::$spell_type;
-		}
-		
-		public function __toString()
-		{
-			return static::$alias;
-		}	
 	}
-
 ?>

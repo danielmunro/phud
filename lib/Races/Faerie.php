@@ -80,6 +80,18 @@
 				\Disciplines\Crusader::instance(),
 				\Disciplines\Wizard::instance()
 			);
+
+			$this->proficiencies = [
+				'healing' => 25,
+				'alchemy' => 20,
+				'elemental' => 25,
+				'illusion' => 25,
+				'transportation' => 25,
+				'sorcery' => 25,
+				'maladictions' => 20,
+				'benedictions' => 20,
+				'curative' => 20
+			];
 			
 			parent::__construct();
 		

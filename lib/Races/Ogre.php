@@ -82,6 +82,16 @@
 				\Disciplines\Barbarian::instance(),
 				\Disciplines\Crusader::instance()
 			);
+
+			$this->proficiencies = [
+				'one handed weapons' => 25,
+				'two handed weapons' => 25,
+				'chain armor' => 20,
+				'plate armor' => 20,
+				'melee combat' => 25,
+				'alchemy' => 20,
+				'curative' => 20
+			];
 			
 			parent::__construct();
 		

@@ -29,9 +29,6 @@
 	use \Mechanics\Attributes;
 	class Undead extends \Mechanics\Race
 	{
-	
-		protected $creation_points = 20;
-	
 		protected function __construct()
 		{
 			$this->alias = new Alias('undead', $this);
@@ -73,6 +70,15 @@
 			
 			$this->move_verb = 'limps';
 			$this->playable = true;
+
+			$this->proficiencies = [
+				'one handed weapons' => 20,
+				'two handed weapons' => 20,
+				'melee combat' => 25,
+				'sorcery' => 25,
+				'maladictions' => 20,
+				'transportation' => 20
+			];
 			
 			parent::__construct();
 		

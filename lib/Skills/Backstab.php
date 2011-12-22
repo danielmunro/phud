@@ -37,22 +37,19 @@
 
 		protected function __construct()
 		{
-			$this->discipline = Alias::lookup('stealth');
 			new Alias('backstab', $this);
 		}
 	
 		public function perform(Actor $actor, $args = [])
 		{
 			$target = $actor->reconcileTarget($args);
-			if(!$target)
+			if(!$target) {
 				return;
-			
+			}
+
+			$stealth = $actor->getProficiencyIn('stealth');
 			$roll = Server::chance();
-			
-			$d = $actor->getDisciplineFocus()->getOtherDiscipline($actor);
-			if($d instanceof Thief)
-				$roll -= 10;
-			
+			$roll -= $stealth->getPercent();
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			
 			if($roll < $this->percent)
@@ -63,7 +60,7 @@
 			else
 			{
 				$delay = 2;
-				if($actor->getDisciplinePrimary() === Thief::instance())
+				if($stealth->getMastery() > Discipline::NOVICE)
 					$delay = 1;
 				$actor->incrementDelay($delay);
 				Server::out($actor, "You fumble your backstab.");

@@ -76,11 +76,14 @@
 			$this->size = self::SIZE_NORMAL;
 			$this->playable = true;
 			
-			$this->available_disciplines = array(
-				\Disciplines\Crusader::instance(),
-				\Disciplines\Rogue::instance(),
-				\Disciplines\Wizard::instance()
-			);
+			$this->proficiencies = [
+				'stealth' => 25,
+				'one handed weapons' => 20,
+				'leather armor' => 20,
+				'archery' => 20,
+				'elemental' => 20,
+				'illusion' => 20
+			];
 			
 			parent::__construct();
 		

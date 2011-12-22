@@ -30,7 +30,6 @@
 
 	class Human extends \Mechanics\Race
 	{
-	
 		protected function __construct()
 		{
 			$this->alias = new Alias('human', $this);
@@ -74,13 +73,6 @@
 			
 			$this->playable = true;
 			
-			$this->available_disciplines = array(
-				\Disciplines\Barbarian::instance(),
-				\Disciplines\Crusader::instance(),
-				\Disciplines\Rogue::instance(),
-				\Disciplines\Wizard::instance()
-			);
-	
 			parent::__construct();
 		}
 	}

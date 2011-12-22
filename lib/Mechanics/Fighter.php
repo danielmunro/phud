@@ -39,7 +39,7 @@
 		protected $max_attributes = null;
 		protected $battle = null;
 		protected $target = null;
-		protected $fighting = array();
+		protected $proficiencies = null;
 	
 		public function __construct()
 		{
@@ -52,7 +52,27 @@
 			$this->max_attributes->setHp(20);
 			$this->max_attributes->setMana(20);
 			$this->max_attributes->setMovement(100);
-			
+
+			$this->proficiencies = [
+				'stealth' => 15,
+				'healing' => 15,
+				'one handed weapons' => 15,
+				'two handed weapons' => 15,
+				'leather armor' => 15,
+				'chain armor' => 15,
+				'plate armor' => 15,
+				'melee combat' => 15,
+				'archery' => 15,
+				'alchemy' => 15,
+				'elemental' => 15,
+				'illusion' => 15,
+				'transportation' => 15,
+				'sorcery' => 15,
+				'maladictions' => 15,
+				'benedictions' => 15,
+				'curative' => 15
+			];
+
 			parent::__construct();
 		}
 		
@@ -373,6 +393,11 @@
 			$this->max_attributes->setDex($max_atts->getDex());
 			$this->max_attributes->setCon($max_atts->getCon());
 			$this->max_attributes->setCha($max_atts->getCha());
+
+			$profs = $this->getRace()->getProficiencies();
+			foreach($profs as $name => $value) {
+				$this->proficiencies[$name] = $value;
+			}
 		}
 		
 		public function getConcentration()

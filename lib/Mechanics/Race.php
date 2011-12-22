@@ -66,11 +66,10 @@
 		protected $effects_vuln = array();
 		protected $materials_vuln = array();
 		protected $damages_vuln = array();
-		protected $available_disciplines = array();
 		protected $playable = false;
 		protected $creation_points = 0;
 		protected $alias = null;
-		protected $images = array();
+		protected $proficiencies = [];
 		
 		protected function __construct()
 		{
@@ -97,13 +96,12 @@
 					new $called_class();
 				}
 		}
-
-		public function getImages($sex)
-		{
-			// ignore sex
-			return $this->images;
-		}
 		
+		public function getProficiencies()
+		{
+			return $this->proficiencies;
+		}
+
 		public static function getParts(\Mechanics\Actor $actor)
 		{
 			// @todo finish parts... this can wait for other more important things
