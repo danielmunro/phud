@@ -72,8 +72,8 @@
 				// Break down client input into separate arguments and evaluate
 				$args = explode(' ', trim($input));
 				if($this->user) {
-					$fired = $this->user->fire(Event::EVENT_INPUT);
-					if($fired !== Subscriber::BROADCAST_RECEIVED) {
+					$satisfied = $this->user->fire(Event::EVENT_INPUT);
+					if(!$satisfied) {
 						Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 					}
 					Server::out($this, "\n".$this->user->prompt(), false);
@@ -100,7 +100,7 @@
 					$command = Command::lookup($args[0]);
 					if($command) {
 						$command->tryPerform($client->getUser(), $args);
-						return Subscriber::BROADCAST_RECEIVED;
+						$subscriber->satisfyBroadcast();
 					}
 				}
 			);

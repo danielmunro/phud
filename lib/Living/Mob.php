@@ -229,7 +229,7 @@
 					function($subscriber, $mob) {
 						$mob->evaluateRespawn();
 						if($mob->isAlive()) {
-							return Subscriber::BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER;
+							$subscriber->kill();
 						}
 					}
 				)

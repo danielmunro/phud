@@ -30,12 +30,12 @@
 	class Subscriber
 	{
 		const BROADCAST_RECEIVED = 1;
-		const BROADCAST_RECEIVED_TERMINATE_SUBSCRIBER = 2;
 
 		protected $type = 0;
 		protected $subscriber = null;
 		protected $callback = null;
 		protected $killed = false;
+		protected $broadcast_satisfied = false;
 
 		public function __construct($type, $subscriber, $callback = null)
 		{
@@ -73,6 +73,16 @@
 		public function isKilled()
 		{
 			return $this->killed;
+		}
+
+		public function satisfyBroadcast($satisfied = true)
+		{
+			$this->broadcast_satisfied = $satisfied;
+		}
+
+		public function isBroadcastSatisfied()
+		{
+			return $this->broadcast_satisfied;
 		}
 	}
 ?>

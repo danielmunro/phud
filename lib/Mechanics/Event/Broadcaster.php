@@ -55,15 +55,15 @@
 				$callback = $subscriber->getCallback();
 				$args = [$subscriber, $this, $subscriber->getSubscriber(), $event_data];
 				$args = array_filter($args);
-				$result = call_user_func_array($callback, $args);
+				call_user_func_array($callback, $args);
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$event_type][$i]);
 				}
-				if(!$is_received) {
-					$is_received = $result;
+				$is_satisfied = $subscriber->isBroadcastSatisfied();
+				if($is_satisfied) {
+					return $is_satisfied;
 				}
 			}
-			return $is_received;
 		}
 	}
 ?>
