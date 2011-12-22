@@ -37,11 +37,17 @@
 		protected $callback = null;
 		protected $killed = false;
 
-		public function __construct($type, $subscriber, $callback)
+		public function __construct($type, $subscriber, $callback = null)
 		{
+			// method overloading would be nice
 			$this->type = $type;
-			$this->subscriber = $subscriber;
-			$this->callback = $callback;
+			if($callback === null) {
+				$this->subscriber = null;
+				$this->callback = $subscriber;
+			} else {
+				$this->subscriber = $subscriber;
+				$this->callback = $callback;
+			}
 		}
 
 		public function getType()

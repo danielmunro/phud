@@ -33,5 +33,7 @@
 		const EVENT_INPUT = 'input';
 		const EVENT_PULSE = 'pulse';
 		const EVENT_TICK = 'tick';
+		const EVENT_CONNECTED = 'connected';
+		const EVENT_GAME_CYCLE = 'cycle';
 	}
 ?>

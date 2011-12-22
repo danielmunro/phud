@@ -1,83 +1,44 @@
 <?php
 
 	namespace Mechanics;
-	class Alias
+	trait Alias
 	{
-		protected $alias_name = '';
-		protected $lookup_object = null;
-		protected $priority = 0;
-		protected static $instances = array();
+		protected static $aliases = [];
 		
-		const PRIORITY_HIGH = 6;
-		const PRIORITY_NORMAL = 5;
-		const PRIORITY_SECONDARY = 4;
-		
-		public function __construct($alias_name, $lookup_object, $priority = self::PRIORITY_NORMAL)
+		public static function addAlias($alias, $lookup, $priority = 10)
 		{
-			$this->alias_name = $alias_name;
-			$this->lookup_object = $lookup_object;
-			$this->priority = $priority;
-			
-			if(isset(self::$instances[$this->alias_name]))
-				Debug::addDebugLine('Alias "'.$this->alias_name.'" already set. '.print_r(self::$instances[$this->alias_name], true), \Exceptions\Alias::ALIAS_ALREADY_EXISTS);
-			
-			if($lookup_object instanceof Spell)
-				$this->priority = self::PRIORITY_SECONDARY;
-			
-			if($lookup_object instanceof Move_Direction)
-				$this->priority = self::PRIORITY_HIGH;
-			
-			self::$instances[$this->alias_name] = $this;
+			self::$aliases[$alias] = [$lookup, $priority];
 		}
 		
-		public static function lookup($alias_name)
+		public static function lookup($alias)
 		{
 			// Direct match
-			if(isset(self::$instances[$alias_name]))
-				return self::$instances[$alias_name]->getLookupObject();
+			if(isset(self::$aliases[$alias])) {
+				return self::$aliases[$alias][0];
+			}
 			
-			$possibilities = array();
-			foreach(self::$instances as $key => $instance)
-				if(strpos($key, $alias_name) === 0) {
+			$possibilities = [];
+			foreach(self::$aliases as $key => $instance) {
+				if(strpos($key, $alias) === 0) {
 					$possibilities[] = $instance;
-					if(empty($key) || empty($alias_name)) {
+					if(empty($key) || empty($instance)) {
 						var_dump(self::$instances);die;
 					}
 				}
+			}
 			
-			usort($possibilities, function($a, $b)
-				{
-					return $a->getPriority() < $b->getPriority();
-				});
 			// Return the highest priority match
-			if($possibilities)
-				return $possibilities[0]->getLookupObject();
+			if($possibilities) {
+				usort($possibilities, function($a, $b) {
+					return $a[1] < $b[1];
+				});
+				return $possibilities[0][0];
+			}
 		}
 		
-		public static function getInstances()
+		public static function getAliases()
 		{
-			// For testing
-			return self::$instances;
-		}
-		
-		public function getAliasName()
-		{
-			return $this->alias_name;
-		}
-		
-		public function getLookupObject()
-		{
-			return $this->lookup_object;
-		}
-		
-		public function getPriority()
-		{
-			return $this->priority;
-		}
-		
-		public function __toString()
-		{
-			return $this->alias_name;
+			return self::$aliases;
 		}
 	}
 

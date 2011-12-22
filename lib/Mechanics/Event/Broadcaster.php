@@ -45,17 +45,17 @@
 			$this->subscribers[$t] = array_values($this->subscribers[$t]);
 		}
 
-		public function fire($event_type)
+		public function fire($event_type, $event_data = null)
 		{
-			$debug = $this.' firing event for '.$event_type;
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
 			}
-			Debug::addDebugLine($debug.', '.sizeof($this->subscribers[$event_type]).' subscribers found');
 			$is_received = false;
 			foreach($this->subscribers[$event_type] as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
-				$result = $callback($subscriber, $this, $subscriber->getSubscriber());
+				$args = [$subscriber, $this, $subscriber->getSubscriber(), $event_data];
+				$args = array_filter($args);
+				$result = call_user_func_array($callback, $args);
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$event_type][$i]);
 				}

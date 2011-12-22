@@ -38,7 +38,7 @@
 	
 		protected function __construct()
 		{
-			new Alias('remove', $this);
+			self::addAlias('remove', $this);
 		}
 	
 		public function perform(Actor $actor, $args = array())

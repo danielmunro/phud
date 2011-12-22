@@ -75,6 +75,14 @@
 
 			parent::__construct();
 		}
+
+		public function getProficiencyIn($proficiency)
+		{
+			if(!isset($this->proficiencies[$proficiency])) {
+				throw new \Exception($proficiency.' not defined');
+			}
+			return $this->proficiencies[$proficiency];
+		}
 		
 		///////////////////////////////////////////////////////////////////////////////
 		// Attributes

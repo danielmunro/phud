@@ -73,13 +73,10 @@
 				$args = explode(' ', trim($input));
 				if($this->user) {
 					$fired = $this->user->fire(Event::EVENT_INPUT);
-					if($fired === Subscriber::BROADCAST_RECEIVED) {
-						Server::out($this, "\n".$this->user->prompt(), false);
-					} else {
-						// Not sure what the user was trying to do
-						Server::out($this, "\nHuh?");
-						Server::out($this, "\n" . $this->user->prompt(), false);
+					if($fired !== Subscriber::BROADCAST_RECEIVED) {
+						Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 					}
+					Server::out($this, "\n".$this->user->prompt(), false);
 				} else {
 					$this->userLogin($args);
 				}
@@ -100,15 +97,15 @@
 				function($subscriber, $broadcaster, $client) {
 					$input = $client->getLastInput();
 					$args = explode(' ', $input);
-					$performable = Alias::lookup($args[0]);
-					if($performable instanceof Performable) {
-						$performable->tryPerform($client->getUser(), $args);
+					$command = Command::lookup($args[0]);
+					if($command) {
+						$command->tryPerform($client->getUser(), $args);
 						return Subscriber::BROADCAST_RECEIVED;
 					}
 				}
 			);
 		}
-	
+
 		///////////////////////////////////////////////////////////
 		// Login
 		///////////////////////////////////////////////////////////

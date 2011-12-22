@@ -28,6 +28,7 @@
 	use \Living\Mob,
 		\Mechanics\Event\Event,
 		\Mechanics\Event\Broadcaster,
+		\Mechanics\Event\Subscriber,
 		\Living\User;
 	
 	class Server
@@ -49,10 +50,9 @@
 			foreach(
 				array(
 					'\Mechanics\Command\Command',
-					'\Mechanics\Race',
-					'\Mechanics\Discipline',
-					'\Living\Mob',
-					'\Mechanics\Ability\Ability'
+					//'\Mechanics\Race',
+					//'\Living\Mob',
+					//'\Mechanics\Ability\Ability'
 				) as $required) {
 				Debug::addDebugLine("initializing ".$required);
 				$required::runInstantiation();
@@ -79,13 +79,25 @@
 		
 		public function run()
 		{
+			$this->addSubscriber(
+				new Subscriber(
+					Event::EVENT_CONNECTED,
+					function($subscriber, $server, $client) {
+						$server->addClient($client);
+					}
+				)
+			);
+			$this->addSubscriber(
+				new Subscriber(
+					Event::EVENT_GAME_CYCLE,
+					function($subscriber, $server) {
+						$server->scanNewConnections();
+					}
+				)
+			);
 			$pulse = intval(date('U'));
 			$next_tick = $pulse + intval(round(rand(30, 40)));
 			while(1) {
-				$this->scanNewConnections();
-				foreach($this->clients as $c) {
-					$c->checkCommandBuffer();
-				}
 				$new_pulse = intval(date('U'));
 				if($pulse + 1 === $new_pulse) {
 					$this->fire(Event::EVENT_PULSE);
@@ -95,10 +107,11 @@
 					$this->fire(Event::EVENT_TICK);
 					$next_tick = $pulse + intval(round(rand(30, 40)));
 				}
+				$this->fire(Event::EVENT_GAME_CYCLE);
 			}
 		}
 
-		private function scanNewConnections()
+		public function scanNewConnections()
 		{
 			$n = null;
 
@@ -106,7 +119,7 @@
 			$s = [$this->socket];
 			$new_connection = socket_select($s, $n, $n, 0, 0);
 			if($new_connection) {
-				$this->clients[] = new Client(socket_accept($this->socket));
+				$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
 			}
 		}
 		
@@ -131,6 +144,24 @@
 				}
 			}
 		}
+
+		public function addClient(Client $client)
+		{
+			$this->clients[] = $client;
+			$this->addSubscriber(
+				new Subscriber(
+					Event::EVENT_GAME_CYCLE,
+					$client,
+					function($subscriber, $server, $client) {
+						$client->checkCommandBuffer();
+						if(!is_resource($client->getSocket())) {
+							$server->disconnectClient($client);
+							$subscriber->kill();
+						}
+					}
+				)
+			);
+		}
 		
 		public function disconnectClient(Client $client)
 		{
@@ -141,7 +172,6 @@
 			}
 			
 			// clean out the client
-			//$client->clearUser();
 			socket_close($client->getSocket());
 			$key = array_search($client, $this->clients);
 			unset($this->clients[$key]);

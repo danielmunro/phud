@@ -76,11 +76,6 @@
 			$this->size = self::SIZE_TINY;
 			$this->playable = true;
 			
-			$this->available_disciplines = array(
-				\Disciplines\Crusader::instance(),
-				\Disciplines\Wizard::instance()
-			);
-
 			$this->proficiencies = [
 				'healing' => 25,
 				'alchemy' => 20,

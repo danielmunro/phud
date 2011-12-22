@@ -26,6 +26,7 @@
 	 */
 	namespace Mechanics\Ability;
 	use \Living\User,
+		\Mechanics\Server,
 		\Mechanics\Performable;
 
 	abstract class Skill extends Ability implements Performable
@@ -34,8 +35,12 @@
 	
 		public function tryPerform(User $user, $args = [])
 		{
+			$proficiency = $user->getProficiencyIn($this->proficiency);
+			if($this->required_proficiency < $proficiency) {
+				return Server::out($user, "You do not have the skill necessary to do that.");
+			}
 			if($this->is_performable) {
-				$ability->perform($user, $args);
+				$ability->perform($user, $percent, $args);
 			}
 		}
 	}

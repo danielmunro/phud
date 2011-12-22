@@ -30,21 +30,23 @@
 		\Mechanics\Server,
 		\Mechanics\Performable,
 		\ReflectionClass,
+		\Mechanics\Alias,
 		\Mechanics\Actor;
 
-	abstract class Command implements Performable
+	abstract class Command
 	{
+		use Alias;
+
 		protected $dispositions = array();
 		
 		protected function __construct() {}
 		
-		public function runInstantiation()
+		public static function runInstantiation()
 		{
 			$namespace = 'Commands';
 			$d = dir(dirname(__FILE__) . '/../../'.$namespace);
-			while($command = $d->read())
-				if(substr($command, -4) === ".php")
-				{
+			while($command = $d->read()) {
+				if(substr($command, -4) === ".php") {
 					Debug::addDebugLine("init command: ".$command);
 					$class = substr($command, 0, strpos($command, '.'));
 					$called_class = $namespace.'\\'.$class;
@@ -53,6 +55,7 @@
 						new $called_class();
 					}
 				}
+			}
 		}
 	
 		public function getDispositions()

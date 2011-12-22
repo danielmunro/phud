@@ -25,19 +25,17 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Actor;
-    use \Mechanics\Server;
-    use \Mechanics\Affect;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Actor,
+    	\Mechanics\Server,
+    	\Mechanics\Affect;
 
 	class Bash extends Skill
 	{
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 20;
 	
-        protected static $alias = 'bash';
-        protected static $level = 1;
-		protected static $creation_points = 5;
-	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $percent, $args = [])
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)

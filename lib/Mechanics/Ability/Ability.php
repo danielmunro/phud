@@ -25,25 +25,16 @@
 	 *
 	 */
 	namespace Mechanics\Ability;
-	use Mechanics\Debug;
-	use Mechanics\Actor;
+	use Mechanics\Debug,
+		Mechanics\Actor,
+		\ReflectionClass;
 
 	abstract class Ability
 	{
-		protected $discipline = null;
-		protected $required_skill = 0;
+		protected $proficiency = '';
+		protected $required_proficiency = 0;
 		
 		protected function __construct() {}
-
-		public function getDiscipline()
-		{
-			return $this->discipline;
-		}
-
-		public function getRequiredSkill()
-		{
-			return $this->required_skill;
-		}
 
 		public static function runInstantiation()
 		{

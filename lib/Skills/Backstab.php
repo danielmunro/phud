@@ -33,23 +33,22 @@
 
 	class Backstab extends Skill
 	{
-		protected $required_skill = 20;
+		protected $proficiency = 'stealth';
+		protected $required_proficiency = 20;
 
 		protected function __construct()
 		{
 			new Alias('backstab', $this);
 		}
 	
-		public function perform(Actor $actor, $args = [])
+		public function perform(Actor $actor, $percent, $args = [])
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target) {
 				return;
 			}
 
-			$stealth = $actor->getProficiencyIn('stealth');
-			$roll = Server::chance();
-			$roll -= $stealth->getPercent();
+			$roll = Server::chance() - $percent;
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			
 			if($roll < $this->percent)

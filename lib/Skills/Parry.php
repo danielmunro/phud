@@ -25,24 +25,18 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Actor;
-    use \Mechanics\Equipped;
-    use \Mechanics\Ability\Ability;
-    use \Mechanics\Server;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Actor,
+    	\Mechanics\Equipped,
+    	\Mechanics\Ability\Ability,
+    	\Mechanics\Server;
 
 	class Parry extends Skill
 	{
-        
-        protected static $alias = 'parry';
-        protected static $level = 5;
-		protected static $creation_points = 5;
 		protected static $is_performable = false;
-		protected static $ability_hook = Ability::HOOK_HIT_EVADE;
 	
 		public function perform(Actor $actor, $args = null)
 		{
-		
 			$weapon = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD);
 			if(!$weapon)
 				return false;

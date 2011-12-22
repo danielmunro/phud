@@ -78,11 +78,6 @@
 			
 			$this->effects_resist = array(\Mechanics\Effect::FIRE, \Mechanics\Effect::COLD);
 			
-			$this->available_disciplines = array(
-				\Disciplines\Barbarian::instance(),
-				\Disciplines\Crusader::instance()
-			);
-
 			$this->proficiencies = [
 				'one handed weapons' => 25,
 				'two handed weapons' => 25,
