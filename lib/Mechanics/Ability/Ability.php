@@ -46,12 +46,11 @@
 		{
 			return new Subscriber(
 				Event::EVENT_INPUT,
-				function($subscriber, $ability, $client, $input) use ($alias) {
-					if(strpos($alias, $input) === 0) {
+				$this,
+				function($subscriber, $user, $ability, $args) use ($alias) {
+					if(strpos($alias, $args[0]) === 0) {
 						// @TODO check if user can do this
-						$args = explode(' ', $input);
-						$user = $client->getUser();
-						$backstab->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
+						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
 					}
 				}
 			);

@@ -33,16 +33,7 @@
 
 		public function addSubscriber(Subscriber $subscriber)
 		{
-			$this->subscribers[$subscriber->getType()][] = $subscriber;
-		}
-
-		public function removeSubscriber(Subscriber $subscriber)
-		{
-			Debug::addDebugLine('removing subscription for '.$subscriber->getSubscriber());
-			$t = $subscriber->getType();
-			$key = array_search($subscriber, $this->subscribers[$t]);
-			unset($this->subscribers[$t][$key]);
-			$this->subscribers[$t] = array_values($this->subscribers[$t]);
+			$this->subscribers[$subscriber->getEventType()][] = $subscriber;
 		}
 
 		public function fire($event_type)

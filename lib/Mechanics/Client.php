@@ -73,7 +73,7 @@
 				// Break down client input into separate arguments and evaluate
 				$args = explode(' ', trim($input));
 				if($this->user) {
-					$satisfied = $this->user->fire(Event::EVENT_INPUT, $this);
+					$satisfied = $this->user->fire(Event::EVENT_INPUT, $args);
 					if(!$satisfied) {
 						Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 					}
@@ -96,12 +96,10 @@
 			$this->user->addSubscriber(
 				new Subscriber(
 					Event::EVENT_INPUT,
-					function($subscriber, $broadcaster, $client) {
-						$input = $client->getLastInput();
-						$args = explode(' ', $input);
+					function($subscriber, $user, $args) {
 						$command = Command::lookup($args[0]);
 						if($command) {
-							$command->tryPerform($client->getUser(), $args);
+							$command->tryPerform($user, $args);
 							$subscriber->satisfyBroadcast();
 						}
 					}

@@ -190,9 +190,9 @@
 						if($user->getClient()->getLastInput() === 'path') {
 							$mob->isRecordingPath(false);
 							Server::out($user, "Path completed.");
-							$user->removeSubscriber($movement_subscriber);
+							$movement_subscriber->kill();
 							$input_subscriber->kill();
-							return Subscriber::BROADCAST_RECEIVED;
+							$input_subscriber->satisfyBroadcast();
 						}
 					}
 				)

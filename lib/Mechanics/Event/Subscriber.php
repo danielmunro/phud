@@ -29,18 +29,16 @@
 
 	class Subscriber
 	{
-		const BROADCAST_RECEIVED = 1;
-
-		protected $type = 0;
+		protected $event_type = '';
 		protected $subscriber = null;
 		protected $callback = null;
 		protected $killed = false;
 		protected $broadcast_satisfied = false;
 
-		public function __construct($type, $subscriber, $callback = null)
+		public function __construct($event_type, $subscriber, $callback = null)
 		{
 			// method overloading would be nice
-			$this->type = $type;
+			$this->event_type = $event_type;
 			if($callback === null) {
 				$this->subscriber = null;
 				$this->callback = $subscriber;
@@ -50,9 +48,9 @@
 			}
 		}
 
-		public function getType()
+		public function getEventType()
 		{
-			return $this->type;
+			return $this->event_type;
 		}
 
 		public function getSubscriber()

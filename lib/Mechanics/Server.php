@@ -155,7 +155,6 @@
 					function($subscriber, $server, $client) {
 						$client->checkCommandBuffer();
 						if(!is_resource($client->getSocket())) {
-							$server->disconnectClient($client);
 							$subscriber->kill();
 						}
 					}
