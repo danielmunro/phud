@@ -25,10 +25,11 @@
 	 *
 	 */
 	namespace Mechanics\Command;
-	use \Mechanics\Fighter as mFighter;
+	use \Mechanics\Fighter as mFighter,
+		\Mechanics\Event\Subscriber;
 
 	abstract class Fighter extends Command
 	{
-		abstract public function perform(mFighter $fighter, $args = array());
+		abstract public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber);
 	}
 ?>

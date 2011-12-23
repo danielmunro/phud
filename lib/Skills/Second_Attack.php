@@ -45,9 +45,12 @@
 		public function getSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_ATTACK,
-				function($subscriber, $attack, $fighter) {
-					$fighter->attack('2nd');
+				Event::EVENT_MELEE_ATTACK,
+				function($attack_subscriber, $attack, $fighter) {
+					$fighter->getTarget()->fire(Event::EVENT_MELEE_ATTACKED, $attack_subscriber);
+					if(!$attack_subscriber->isSuppressed()) {
+						$fighter->attack('2nd');
+					}
 				}
 			);
 		}

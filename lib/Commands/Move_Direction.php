@@ -36,12 +36,10 @@
 
 	abstract class Move_Direction extends Command
 	{
-
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 
 		public function perform(Actor $actor, $args = array())
 		{
-		
 			if($actor->getDisposition() === Actor::DISPOSITION_SITTING)
 				return Server::out($actor, "You need to stand up to do that.");
 			if($actor->getDisposition() === Actor::DISPOSITION_SLEEPING)
@@ -69,7 +67,7 @@
 					$actor->setRoom($room);
 					if($actor instanceof \Living\User)
 					{
-						$look = Alias::lookup('look');
+						$look = Command::lookup('look');
 						$look->perform($actor);
 						$actor->fire(Event::EVENT_MOVED);
 					}

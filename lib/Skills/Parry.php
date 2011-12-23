@@ -44,10 +44,10 @@
 		public function getSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_ATTACKED,
-				function($subscriber, $parry, $client, $attack_event) {
-					$user = $client->getUser();
-					if($parry->perform($user, $user->getProficiencyIn($parry->getProficiency()))) {
+				Event::EVENT_MELEE_ATTACKED,
+				$this,
+				function($subscriber, $fighter, $ability, $attack_event) {
+					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
 						$attack_event->suppress();
 						$subscriber->satisfyBroadcast();
 					}

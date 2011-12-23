@@ -37,8 +37,6 @@
 
 	class User extends Fighter
 	{
-		use Broadcaster;
-
 		protected $nourishment = 5;
 		protected $thirst = 5;
 		protected $trains = 0;
@@ -68,13 +66,16 @@
 			
 			$this->quest_log = new QuestLog($this);
 			//$this->quest_log->add(Quest::findByHook(Quest::HOOK_CREATE, $this));
-			
-			self::$instances[] = $this;
 		}
 		
 		public static function getInstances()
 		{
 			return self::$instances;
+		}
+
+		public static function addInstance(self $user)
+		{
+			self::$instances[] = $user;
 		}
 		
 		public function getClient()

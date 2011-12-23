@@ -25,7 +25,8 @@
 	 *
 	 */
 	namespace Mechanics\Event;
-	use \Mechanics\Debug;
+	use \Mechanics\Debug,
+		\Closure;
 
 	class Subscriber
 	{
@@ -33,18 +34,21 @@
 		protected $subscriber = null;
 		protected $callback = null;
 		protected $killed = false;
+		protected $suppressed = false;
 		protected $broadcast_satisfied = false;
 
-		public function __construct($event_type, $subscriber, $callback = null)
+		public function __construct($event_type, $subscriber, $callback = null, $deferred = false)
 		{
 			// method overloading would be nice
 			$this->event_type = $event_type;
-			if($callback === null) {
-				$this->subscriber = null;
-				$this->callback = $subscriber;
-			} else {
+			if($callback instanceof Closure) {
 				$this->subscriber = $subscriber;
 				$this->callback = $callback;
+				$this->deferred = $deferred;
+			} else {
+				$this->subscriber = null;
+				$this->callback = $subscriber;
+				$this->deferred = $callback;
 			}
 		}
 
@@ -61,6 +65,11 @@
 		public function getCallback()
 		{
 			return $this->callback;
+		}
+
+		public function isDeferred()
+		{
+			return $this->deferred;
 		}
 
 		public function kill()
@@ -81,6 +90,16 @@
 		public function isBroadcastSatisfied()
 		{
 			return $this->broadcast_satisfied;
+		}
+
+		public function suppress()
+		{
+			$this->suppressed = true;
+		}
+
+		public function isSuppressed()
+		{
+			return $this->suppressed;
 		}
 	}
 ?>

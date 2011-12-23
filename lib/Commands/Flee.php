@@ -26,14 +26,14 @@
 	 */
 	namespace Commands;
 	use \Mechanics\Actor,
-		\Mechanics\Alias,
 		\Mechanics\Server,
 		\Mechanics\Command\Fighter,
+		\Mechanics\Command\Command,
+		\Mechanics\Event\Subscriber,
 		\Mechanics\Fighter as mFighter;
 
 	class Flee extends Fighter
 	{
-	
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
 		protected function __construct()
@@ -41,20 +41,22 @@
 			self::addAlias('flee', $this);
 		}
 	
-		public function perform(mFighter $fighter, $args = array())
+		public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber)
 		{
-			if(!$actor->reconcileTarget())
-				return Server::out($actor, "Flee from who?");
-			
-			$actor->getBattle()->removeActor($actor);
+			$target = $fighter->getTarget();
+			if(!$target) {
+				return Server::out($fighter, "Flee from who?");
+			}
+			$target->setTarget(null);
+			$fighter->setTarget(null);
 			
 			$directions = array(
-							'north' => $actor->getRoom()->getNorth(),
-							'south' => $actor->getRoom()->getSouth(),
-							'east' => $actor->getRoom()->getEast(),
-							'west' => $actor->getRoom()->getWest(),
-							'up' => $actor->getRoom()->getUp(),
-							'down' => $actor->getRoom()->getDown());
+							'north' => $fighter->getRoom()->getNorth(),
+							'south' => $fighter->getRoom()->getSouth(),
+							'east' => $fighter->getRoom()->getEast(),
+							'west' => $fighter->getRoom()->getWest(),
+							'up' => $fighter->getRoom()->getUp(),
+							'down' => $fighter->getRoom()->getDown());
 			$direction = rand(0, sizeof($directions)-1);
 			$directions = array_filter(
 									$directions,
@@ -72,9 +74,9 @@
 			);
 			foreach($directions as $dir => $id)
 			{
-				$command = Alias::lookup($dir);
-				$command->perform($actor);
-				Server::out($actor, "You run scared!");
+				$command = Command::lookup($dir);
+				$command->perform($fighter);
+				Server::out($fighter, "You run scared!");
 				return;
 			}
 		}

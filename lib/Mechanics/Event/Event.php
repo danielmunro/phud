@@ -35,5 +35,8 @@
 		const EVENT_TICK = 'tick';
 		const EVENT_CONNECTED = 'connected';
 		const EVENT_GAME_CYCLE = 'cycle';
+		const EVENT_ATTACKED = 'attacked';
+		const EVENT_MELEE_ATTACK = 'melee attack';
+		const EVENT_MELEE_ATTACKED = 'melee attacked';
 	}
 ?>

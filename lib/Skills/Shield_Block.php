@@ -42,10 +42,11 @@
 		public function getSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_ATTACKED,
-				function($subscriber, $block, $fighter, $attack_event) {
-					if($block->perform($fighter, $fighter->getProficiencyIn($block->getProficiency()))) {
-						$attack_event->suppress();
+				Event::EVENT_MELEE_ATTACKED,
+				$this,
+				function($subscriber, $fighter, $ability, $attack_subscriber) {
+					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
+						$attack_subscriber->suppress();
 						Server::out($fighter, "You block ".$fighter->getTarget()."'s attack with your shield!");
 						$subscriber->satisfyBroadcast();
 					}

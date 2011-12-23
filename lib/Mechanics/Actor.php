@@ -27,12 +27,13 @@
 	namespace Mechanics;
 	use \Mechanics\Ability\Ability,
 		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Event,
 		\Living\User;
 
 	abstract class Actor
 	{
-		use Affectable, Persistable;
+		use Affectable, Persistable, Broadcaster;
 	
 		const MAX_LEVEL = 51;
 		
@@ -231,7 +232,7 @@
 		
 		public function getRace()
 		{
-			return Alias::lookup($this->race);
+			return Race::lookup($this->race);
 		}
 		
 		public function setRace($race)

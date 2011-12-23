@@ -44,9 +44,10 @@
 		public function getSubscription()
 		{
 			return new Subscription(
-				Event::EVENT_ATTACKED,
-				function($subscriber, $dodge, $fighter, $attack_event) {
-					if($dodge->perform($fighter, $fighter->getProficiencyIn($dodge->getProficiency()))) {
+				Event::EVENT_MELEE_ATTACKED,
+				$this,
+				function($subscriber, $fighter, $ability, $attack_event) {
+					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
 						$attack_event->suppress();
 						Server::out($fighter, "You dodge ".$fighter->getTarget()."'s attack!");
 						$subscriber->satisfyBroadcast();

@@ -28,6 +28,8 @@
 	use \Mechanics\Actor,
 		\Mechanics\Alias,
 		\Mechanics\Server,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\Mechanics\Command\Fighter as cFighter,
 		\Mechanics\Fighter as mFighter;
 
@@ -40,11 +42,16 @@
 			self::addAlias('kill', $this);
 		}
 	
-		public function perform(mFighter $fighter, $args = array())
+		public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber)
 		{
 			if(!$fighter->reconcileTarget($args))
 				return;
-			Server::out($fighter, "You scream and attack!");
+
+			$fighter->getTarget()->fire(Event::EVENT_ATTACKED, $fighter, $command_subscriber);
+			if(!$command_subscriber->isSuppressed()) {
+				Server::out($fighter, "You scream and attack!");
+				Server::instance()->addSubscriber($fighter->getAttackSubscriber());
+			}
 		}
 	}
 ?>

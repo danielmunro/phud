@@ -30,10 +30,15 @@
 	trait Broadcaster
 	{
 		protected $subscribers = [];
+		protected $deferred_subscribers = [];
 
 		public function addSubscriber(Subscriber $subscriber)
 		{
-			$this->subscribers[$subscriber->getEventType()][] = $subscriber;
+			if($subscriber->isDeferred()) {
+				$this->deferred_subscribers[$subscriber->getEventType()][] = $subscriber;
+			} else {
+				$this->subscribers[$subscriber->getEventType()][] = $subscriber;
+			}
 		}
 
 		public function fire($event_type)
@@ -41,19 +46,29 @@
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
 			}
+			if(!isset($this->deferred_subscribers[$event_type])) {
+				$this->deferred_subscribers[$event_type] = [];
+			}
 			$is_received = false;
 			$arg_count = func_num_args();
 			$args = [];
 			if($arg_count > 1) {
 				$args = array_slice(func_get_args(), 1);
 			}
-			foreach($this->subscribers[$event_type] as $i => $subscriber) {
+			$is_satisfied = $this->_fire($this->subscribers[$event_type], $args);
+			$this->_fire($this->deferred_subscribers[$event_type], $args);
+			return $is_satisfied;
+		}
+
+		private function _fire($subscribers, $args)
+		{
+			foreach($subscribers as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
 				$args = array_merge([$subscriber, $this, $subscriber->getSubscriber()], $args);
 				$args = array_filter($args);
 				call_user_func_array($callback, $args);
 				if($subscriber->isKilled()) {
-					unset($this->subscribers[$event_type][$i]);
+					unset($this->subscribers[$subscriber->getEventType()][$i]);
 					continue;
 				}
 				$is_satisfied = $subscriber->isBroadcastSatisfied();

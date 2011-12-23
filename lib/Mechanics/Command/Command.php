@@ -28,7 +28,6 @@
 	use \Living\User,
 		\Mechanics\Debug,
 		\Mechanics\Server,
-		\Mechanics\Performable,
 		\ReflectionClass,
 		\Mechanics\Alias,
 		\Mechanics\Actor;
@@ -73,7 +72,7 @@
 			return true;
 		}
 	
-		public function tryPerform(User $user, $args = [])
+		public function tryPerform(User $user, $args = [], $command_subscriber)
 		{
 			if($this instanceof DM && !$user->isDM())
 				return Server::out($user, "You cannot do that.");
@@ -82,7 +81,7 @@
 			else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING)
 				return Server::out($user, "You are asleep!");
 			
-			$this->perform($user, $args);
+			$this->perform($user, $args, $command_subscriber);
 		}
 	}
 ?>

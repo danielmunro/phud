@@ -44,31 +44,15 @@
 		public function getSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_ATTACK,
-				function($subscriber, $attack, $fighter) {
-					$fighter->attack('3rd');
+				Event::EVENT_MELEE_ATTACK,
+				$this,
+				function($attack_subscriber, $attack, $fighter) {
+					$fighter->getTarget()->fire(Event::EVENT_MELEE_ATTACKED, $attack_subscriber);
+					if(!$attack_subscriber->isSuppressed()) {
+						$fighter->attack('3rd');
+					}
 				}
 			);
-		}
-	
-		public function perform($args = array())
-		{
-			$roll = Server::chance() + 50;
-			
-			$mod = $this->getEasyAttributeModifier($actor->getDex());
-			$mod += $this->getEasyAttributeModifier($actor->getStr());
-			
-			$roll += $mod / 2;
-			
-			if($actor->getDisciplinePrimary() === Warrior::instance())
-				$roll -= 15;
-			else if($actor->getDisciplinePrimary() === Thief::instance())
-				$roll -= 5;
-			
-			if($roll < $this->percent)
-			{
-				$actor->attack('3rd');
-			}
 		}
 	}
 

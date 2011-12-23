@@ -99,7 +99,7 @@
 					function($subscriber, $user, $args) {
 						$command = Command::lookup($args[0]);
 						if($command) {
-							$command->tryPerform($user, $args);
+							$command->tryPerform($user, $args, $subscriber);
 							$subscriber->satisfyBroadcast();
 						}
 					}
@@ -109,6 +109,7 @@
 				$ability = Ability::lookup($user_ab['alias']);
 				$this->user->addSubscriber($ability->getSubscriber());
 			}
+			User::addInstance($this->user);
 		}
 
 		///////////////////////////////////////////////////////////
