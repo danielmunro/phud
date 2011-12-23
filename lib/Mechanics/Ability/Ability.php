@@ -40,6 +40,23 @@
 		
 		protected function __construct() {}
 
+		abstract public function getSubscriber();
+
+		protected function getInputSubscriber($alias)
+		{
+			return new Subscriber(
+				Event::EVENT_INPUT,
+				function($subscriber, $ability, $client, $input) use ($alias) {
+					if(strpos($alias, $input) === 0) {
+						// @TODO check if user can do this
+						$args = explode(' ', $input);
+						$user = $client->getUser();
+						$backstab->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
+					}
+				}
+			);
+		}
+
 		public static function runInstantiation()
 		{
 			$namespaces = ['Skills', 'Spells'];

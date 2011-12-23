@@ -33,12 +33,29 @@
 
 	class Dodge extends Skill
 	{
+		protected $proficiency = 'evasive';
+		protected $proficiency_required = 25;
+
 		protected function __construct()
 		{
 			self::addAlias('dodge', $this);
 		}
+
+		public function getSubscription()
+		{
+			return new Subscription(
+				Event::EVENT_ATTACKED,
+				function($subscriber, $dodge, $fighter, $attack_event) {
+					if($dodge->perform($fighter, $fighter->getProficiencyIn($dodge->getProficiency()))) {
+						$attack_event->suppress();
+						Server::out($fighter, "You dodge ".$fighter->getTarget()."'s attack!");
+						$subscriber->satisfyBroadcast();
+					}
+				}
+			);
+		}
 	
-		public function perform(Actor $actor, $args = null)
+		public function perform(Actor $actor, $percent, $args = null)
 		{
 			$roll = Server::chance();
 			switch($actor->getSize())

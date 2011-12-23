@@ -34,29 +34,22 @@
 
 	class Second_Attack extends Skill
 	{
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 30;
+
 		protected function __construct()
 		{
 			self::addAlias('second attack', $this);
 		}
-	
-		public function perform(Actor $actor, $args = array())
+
+		public function getSubscriber()
 		{
-			$roll = Server::chance() + 25;
-			
-			$mod = $this->getEasyAttributeModifier($actor->getDex());
-			$mod += $this->getEasyAttributeModifier($actor->getStr());
-			
-			$roll += $mod / 2;
-			
-			if($actor->getDisciplinePrimary() === Warrior::instance())
-				$roll -= 15;
-			else if($actor->getDisciplinePrimary() === Thief::instance())
-				$roll -= 5;
-			
-			if($roll < $this->percent)
-			{
-				$actor->attack('2nd');
-			}
+			return new Subscriber(
+				Event::EVENT_ATTACK,
+				function($subscriber, $attack, $fighter) {
+					$fighter->attack('2nd');
+				}
+			);
 		}
 	}
 

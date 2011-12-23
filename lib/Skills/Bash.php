@@ -39,6 +39,11 @@
 		{
 			self::addAlias('bash', $this);
 		}
+
+		public function getSubscriber()
+		{
+			return parent::getInputSubscriber('bash');
+		}
 	
 		public function perform(Actor $actor, $percent, $args = [])
 		{

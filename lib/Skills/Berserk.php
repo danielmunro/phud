@@ -33,13 +33,17 @@
 
 	class Berserk extends Skill
 	{
-	
-        protected static $alias = 'berserk';
-        protected static $level = 15;
+		protected $proficiency = 'melee';
+		protected $proficiency_required = 25;
 
 		protected function __construct()
 		{
 			self::addAlias('berserk', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return parent::getInputSubscriber('berserk');
 		}
 		
 		public function perform(Actor $actor, $chance = 0, $args = null)

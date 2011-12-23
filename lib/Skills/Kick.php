@@ -32,19 +32,27 @@
 
 	class Kick extends Skill
 	{
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('kick', $this);
 		}
+
+		public function getSubscriber()
+		{
+			return parent::getInputSubscriber('kick');
+		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $percent, $args = array())
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target)
 				return;
 			
 			$actor->incrementDelay(1);
-			$roll = Server::chance();
+			$roll = Server::chance() - $percent;
 			$roll += $this->getEasyAttributeModifier($actor->getDex());
 			$roll -= $this->getEasyAttributeModifier($target->getDex());
 			

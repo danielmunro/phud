@@ -32,9 +32,22 @@
 
 	class Haggle extends Skill
 	{
+		protected $proficiency = 'speech';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('haggle', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_BUY,
+				function($subscriber, $haggle, $buy_event) {
+					//aw fuck I'm at a loss
+				}
+			);
 		}
 	
 		public function perform(Actor $actor, $args = null)

@@ -2,6 +2,7 @@
 
 	namespace Mechanics;
 	use \Mechanics\Command\Command,
+		\Living\User,
 		\Mechanics\Event\Event,
 		\Mechanics\Event\Subscriber;
 
@@ -72,7 +73,7 @@
 				// Break down client input into separate arguments and evaluate
 				$args = explode(' ', trim($input));
 				if($this->user) {
-					$satisfied = $this->user->fire(Event::EVENT_INPUT);
+					$satisfied = $this->user->fire(Event::EVENT_INPUT, $this);
 					if(!$satisfied) {
 						Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 					}
@@ -89,21 +90,27 @@
 			return $this->unverified_user->getPassword() == $pw_hash;
 		}
 
-		protected function getSubscriberCommands()
+		protected function initUser(User $user)
 		{
-			return new Subscriber(
-				Event::EVENT_INPUT,
-				$this,
-				function($subscriber, $broadcaster, $client) {
-					$input = $client->getLastInput();
-					$args = explode(' ', $input);
-					$command = Command::lookup($args[0]);
-					if($command) {
-						$command->tryPerform($client->getUser(), $args);
-						$subscriber->satisfyBroadcast();
+			$this->user = $user;
+			$this->user->addSubscriber(
+				new Subscriber(
+					Event::EVENT_INPUT,
+					function($subscriber, $broadcaster, $client) {
+						$input = $client->getLastInput();
+						$args = explode(' ', $input);
+						$command = Command::lookup($args[0]);
+						if($command) {
+							$command->tryPerform($client->getUser(), $args);
+							$subscriber->satisfyBroadcast();
+						}
 					}
-				}
+				)
 			);
+			foreach($this->user->getAbilities() as $user_ab) {
+				$ability = Ability::lookup($user_ab['alias']);
+				$this->user->addSubscriber($ability->getSubscriber());
+			}
 		}
 
 		///////////////////////////////////////////////////////////
@@ -158,13 +165,11 @@
 			
 				if($this->isValidated($input))
 				{
-					$this->user = $this->unverified_user;
+					$this->initUser($this->unverified_user);
 					$this->user->getRoom()->actorAdd($this->user);
 					$this->unverified_user = null;
 					$look = Command::lookup('look');
 					$look->perform($this->user);
-
-					$this->user->addSubscriber($this->getSubscriberCommands());
 					return true;
 				}
 				else
@@ -446,15 +451,13 @@
 			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)
 			{
-				$this->user = $this->unverified_user;
+				$this->initUser($this->unverified_user);
 				$this->user->setAlias($this->login['alias']);
 				$this->user->addCopper(20);
 				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
 				$this->user->setRoom(Room::find(Room::START_ROOM));
 				$this->user->setClient($this);
 				$this->user->save();
-
-				$this->user->addSubscriber($this->getSubscriberCommands());
 				
 				$look = Alias::lookup('look');
 				$look->perform($this->user);

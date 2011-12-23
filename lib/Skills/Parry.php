@@ -33,6 +33,9 @@
 
 	class Parry extends Skill
 	{
+		protected $proficiency = 'evasive';
+		protected $required_proficiency = 25;
+
 		protected function __construct()
 		{
 			self::addAlias('parry', $this);
@@ -46,6 +49,7 @@
 					$user = $client->getUser();
 					if($parry->perform($user, $user->getProficiencyIn($parry->getProficiency()))) {
 						$attack_event->suppress();
+						$subscriber->satisfyBroadcast();
 					}
 				}
 			);

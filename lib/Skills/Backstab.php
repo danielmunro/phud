@@ -28,8 +28,7 @@
     use \Mechanics\Ability\Skill,
 		\Mechanics\Alias,
     	\Mechanics\Actor,
-    	\Mechanics\Server,
-    	\Disciplines\Thief;
+    	\Mechanics\Server;
 
 	class Backstab extends Skill
 	{
@@ -43,17 +42,7 @@
 
 		public function getSubscriber()
 		{
-			return new Subscriber(
-				Event::EVENT_INPUT,
-				function($subscriber, $backstab, $client, $input) {
-					if(strpos('backstab', $input) === 0) {
-						// @TODO check if user can do this
-						$args = explode(' ', $input);
-						$user = $client->getUser();
-						$backstab->perform($user, $user->getProficiencyIn($backstab->getProficiency()), $args);
-					}
-				}
-			);
+			return parent::getInputSubscriber('backstab');
 		}
 	
 		public function perform(Actor $actor, $percent, $args = [])

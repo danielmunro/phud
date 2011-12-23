@@ -36,49 +36,39 @@
 
 	class Meditation extends Skill
 	{
+		protected $proficiency = 'healing';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('meditation', $this);
 		}
-	
-		public function perform(Actor $actor, $args = null)
+
+		public function getSubscription()
 		{
-			if($actor->getDisposition() === Actor::DISPOSITION_STANDING)
-				return;
-		
-			$roll = Server::chance();
-			
-			$p = $actor->getDisciplineFocus();
-			if($p instanceof Cleric)
-				$roll -= 0.25;
-			
-			$roll += $this->getEasyAttributeModifier($actor->getWis());
-			
-			if($roll < $chance)
-			{
-				$f = $actor->getDisciplineFocus();
-				switch($f)
-				{
-					case ($f instanceof Warrior):
-						$hp_mod = rand(12, 18) / 100;
-						$mv_mod = rand(8, 12) / 100;
-						$ma_mod = 0;
-					case ($f instanceof Thief):
-						$mv_mod = rand(12, 18) / 100;
-						$hp_mod = rand(8, 12) / 100;
-						$ma_mod = 0;
-					case ($f instanceof Mage):
-					case ($f instanceof Cleric):
-						$ma_mod = rand(15, 20) / 100;
-						$hp_mod = 0;
-						$mv_mod = 0;
+			return new Subscription(
+				Event::EVENT_TICK,
+				function($subscription, $meditation, $actor) {
+					$meditation->perform($actor, $actor->getProficiencyIn($meditation->getProficiency()));
 				}
-				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * $hp_mod));
-				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * $ma_mod));
-				$actor->setMovement($actor->getMovement() + ($actor->getMovement() * $mv_mod));
-			}
+			);
 		}
 	
+		public function perform(Actor $actor, $percent, $args = null)
+		{
+			if($actor->getDisposition() === Actor::DISPOSITION_STANDING) {
+				return;
+			}
+		
+			$roll = Server::chance() - $percent;
+			$roll += $this->getEasyAttributeModifier($actor->getWis());
+			
+			if($roll < $chance) {
+				$amount = rand(0.01, 0.05);
+				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * $amount));
+				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * $amount));
+				$actor->setMovement($actor->getMovement() + ($actor->getMovement() * $amount));
+			}
+		}
 	}
-
 ?>

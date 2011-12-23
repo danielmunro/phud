@@ -33,9 +33,22 @@
 
 	class Third_Attack extends Skill
 	{
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 40;
+
 		protected function __construct()
 		{
 			self::addAlias('third attack', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_ATTACK,
+				function($subscriber, $attack, $fighter) {
+					$fighter->attack('3rd');
+				}
+			);
 		}
 	
 		public function perform($args = array())

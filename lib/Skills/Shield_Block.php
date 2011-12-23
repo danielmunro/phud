@@ -31,12 +31,29 @@
 
 	class Shield_Block extends Skill
 	{
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 25;
+
 		protected function __construct()
 		{
 			self::addAlias('shield block', $this);
 		}
 		
-		public function perform(Actor $actor, $args = null)
+		public function getSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_ATTACKED,
+				function($subscriber, $block, $fighter, $attack_event) {
+					if($block->perform($fighter, $fighter->getProficiencyIn($block->getProficiency()))) {
+						$attack_event->suppress();
+						Server::out($fighter, "You block ".$fighter->getTarget()."'s attack with your shield!");
+						$subscriber->satisfyBroadcast();
+					}
+				}
+			);
+		}
+		
+		public function perform(Actor $actor, $percent, $args = null)
 		{
 			$roll = Server::chance();
 			

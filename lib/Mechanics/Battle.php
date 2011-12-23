@@ -38,11 +38,7 @@
 						$victim->setTarget($aggressor);
 						$this->addActor($victim);
 					}
-					// (Reg)
-					$aggressor->attack();
-					// (2nd, 3rd, Hst)
-					$aggressor->getAbilitySet()->applySkillsByHook(Ability::HOOK_HIT_ATTACK_ROUND, $victim);
-					$aggressor->decrementDelay();
+					$aggressor->fire(Event::EVENT_ATTACK);
 				}
 				else {
 					unset($this->actors[$i]);

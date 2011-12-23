@@ -45,19 +45,25 @@
 			$this->subscribers[$t] = array_values($this->subscribers[$t]);
 		}
 
-		public function fire($event_type, $event_data = null)
+		public function fire($event_type)
 		{
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
 			}
 			$is_received = false;
+			$arg_count = func_num_args();
+			$args = [];
+			if($arg_count > 1) {
+				$args = array_slice(func_get_args(), 1);
+			}
 			foreach($this->subscribers[$event_type] as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
-				$args = [$subscriber, $this, $subscriber->getSubscriber(), $event_data];
+				$args = array_merge([$subscriber, $this, $subscriber->getSubscriber()], $args);
 				$args = array_filter($args);
 				call_user_func_array($callback, $args);
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$event_type][$i]);
+					continue;
 				}
 				$is_satisfied = $subscriber->isBroadcastSatisfied();
 				if($is_satisfied) {

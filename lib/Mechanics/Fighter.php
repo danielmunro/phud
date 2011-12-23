@@ -40,6 +40,7 @@
 		protected $battle = null;
 		protected $target = null;
 		protected $proficiencies = null;
+		protected $abilities = [];
 	
 		public function __construct()
 		{
@@ -61,7 +62,8 @@
 				'leather armor' => 15,
 				'chain armor' => 15,
 				'plate armor' => 15,
-				'melee combat' => 15,
+				'melee' => 15,
+				'evasive' => 15,
 				'archery' => 15,
 				'alchemy' => 15,
 				'elemental' => 15,
@@ -70,10 +72,35 @@
 				'sorcery' => 15,
 				'maladictions' => 15,
 				'benedictions' => 15,
-				'curative' => 15
+				'curative' => 15,
+				'speech' => 15
 			];
 
 			parent::__construct();
+		}
+
+		public function getAbilities()
+		{
+			return $this->abilities;
+		}
+
+		public function addAbility($alias)
+		{
+			$this->abilities[] = ['alias' => $alias];
+		}
+
+		public function getAttackSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_ATTACK,
+				function($subscriber, $fighter) {
+					$target = $fighter->getTarget();
+					$target->fire(Event::EVENT_ATTACKED, $subscriber);
+					if(!$subscriber->isSuppressed()) {
+						$fighter->attack();
+					}
+				}
+			);
 		}
 
 		public function getProficiencyIn($proficiency)
