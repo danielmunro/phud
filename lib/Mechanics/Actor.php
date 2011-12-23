@@ -25,8 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	use \Mechanics\Ability\Set as Ability_Set,
-		\Mechanics\Ability\Ability,
+	use \Mechanics\Ability\Ability,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\Living\User;
@@ -64,7 +63,6 @@
 		{
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
-			$this->ability_set = new Ability_Set($this);
 			Server::instance()->addSubscriber(
 				new Subscriber(
 					Event::EVENT_TICK,
@@ -100,20 +98,6 @@
 		
 		public function tick()
 		{
-            $this->ability_set->applySkillsByHook(Ability::HOOK_TICK, $this);
-		}
-		
-		public function getAbilitySet()
-		{
-			return $this->ability_set;
-		}
-		
-		public function tryPerform(Ability $ability, $args = array())
-		{
-			$learned_ability = $this->ability_set->getLearnedAbility($ability);
-			if($learned_ability)
-				return $learned_ability->perform($args);
-			return $ability->getFailMessage();
 		}
 		
 		public function getAlias($upper = null)

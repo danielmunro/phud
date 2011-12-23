@@ -29,11 +29,10 @@
 	use \Mechanics\Attributes;
 	class Rat extends \Mechanics\Race
 	{
-	
+		protected $alias = 'rat';
+
 		protected function __construct()
 		{
-			$this->alias = new Alias('rat', $this);
-		
 			$this->attributes = new Attributes();
 			$this->max_attributes = $this->attributes;
 			

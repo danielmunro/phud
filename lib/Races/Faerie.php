@@ -25,16 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
-	class Faerie extends \Mechanics\Race
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
+
+	class Faerie extends Race
 	{
-	
+		protected $alias = 'faerie';
 		protected $creation_points = 18;
 	
 		protected function __construct()
 		{
-			$this->alias = new Alias('faerie', $this);
+			self::addAlias('faerie', $this);
 		
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();

@@ -25,16 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
-	class Elf extends \Mechanics\Race
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
+
+	class Elf extends Race
 	{
-	
+		protected $alias = 'elf';
 		protected $creation_points = 14;
 	
 		protected function __construct()
 		{
-			$this->alias = new Alias('elf', $this);
+			self::addAlias('elf', $this);
 		
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();

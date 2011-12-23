@@ -25,9 +25,12 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Mechanics\Alias;
+
 	abstract class Race
 	{
-	
+		use Alias;
+
 		const SIZE_TINY = 2;
 		const SIZE_SMALL = 3;
 		const SIZE_NORMAL = 4;
@@ -51,7 +54,6 @@
 		const PART_WINGS = 14;
 		const PART_TAIL = 15;
 
-		private static $instances = array();
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $affects = array();
@@ -67,20 +69,11 @@
 		protected $materials_vuln = array();
 		protected $damages_vuln = array();
 		protected $playable = false;
-		protected $creation_points = 0;
 		protected $alias = null;
 		protected $proficiencies = [];
 		
 		protected function __construct()
 		{
-		}
-		
-		public static function instance()
-		{
-			$class = get_called_class();
-			if(!isset(self::$instances[$class]))
-				self::$instances[$class] = new $class();
-			return self::$instances[$class];
 		}
 		
 		public function runInstantiation()
@@ -112,11 +105,6 @@
 				self::PART_LEG => 'leg',
 				self::PART_HEART => 'heart'
 			);
-		}
-		
-		public function getCreationPoints()
-		{
-			return $this->creation_points;
 		}
 		
 		public function getAttributes()

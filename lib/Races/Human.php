@@ -25,14 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
 
-	class Human extends \Mechanics\Race
+	class Human extends Race
 	{
+		protected $alias = 'human';
+		protected $creation_points = 10;
+
 		protected function __construct()
 		{
-			$this->alias = new Alias('human', $this);
+			self::addAlias('human', $this);
 		
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();

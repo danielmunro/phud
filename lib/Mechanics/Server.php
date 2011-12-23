@@ -50,7 +50,7 @@
 			foreach(
 				array(
 					'\Mechanics\Command\Command',
-					//'\Mechanics\Race',
+					'\Mechanics\Race',
 					//'\Living\Mob',
 					//'\Mechanics\Ability\Ability'
 				) as $required) {

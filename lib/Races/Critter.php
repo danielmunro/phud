@@ -25,17 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
-	class Critter extends \Mechanics\Race
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
+
+	class Critter extends Race
 	{
-	
+		protected $alias = 'critter';
 		protected $creation_points = 10;
 	
 		protected function __construct()
 		{
-		
-			$this->alias = new Alias('critter', $this);
+			self::addAlias('critter', $this);
 		
 			$this->attributes = new Attributes();
 			$this->attributes->setStr(5);

@@ -25,13 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
-	class Undead extends \Mechanics\Race
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
+
+	class Undead extends Race
 	{
+		protected $alias = 'undead';
+		protected $creation_points = 30;
+
 		protected function __construct()
 		{
-			$this->alias = new Alias('undead', $this);
+			self::addAlias('undead', $this);
 		
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();

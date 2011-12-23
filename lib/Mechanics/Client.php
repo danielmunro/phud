@@ -261,41 +261,9 @@
 				if($this->login['sex'])
 				{
 					$this->unverified_user->setSex($this->login['sex']);
-					Server::out($this, "Select a primary discipline [warrior cleric thief mage]: ", false);
-					$this->login['disciplinep'] = false;
+					$this->login['align'] = false;
 					return;
 				}
-			}
-			
-			if(isset($this->login['disciplinep']) && $this->login['disciplinep'] === false)
-			{
-				$discipline = Alias::lookup($input);
-				if($discipline instanceof DisciplinePrimary)
-				{
-					$this->unverified_user->setDisciplinePrimary($discipline);
-					$focuses = $discipline->getDisciplineFocuses();
-					$this->login['disciplinep'] = true;
-					$this->login['disciplinef'] = false;
-					Server::out($this, "Ok.\nSelect a discipline focus [".implode(" ", $focuses)."]: ", false);
-				}
-				else
-					Server::out($this, "That's not a primary discipline. What IS your primary discipline? ", false);
-				return;
-			}
-			
-			if(isset($this->login['disciplinef']) && $this->login['disciplinef'] === false)
-			{
-				$discipline = Alias::lookup($input);
-				if(in_array($discipline, $this->unverified_user->getDisciplinePrimary()->getDisciplineFocuses()))
-				{
-					$this->unverified_user->setDisciplineFocus($discipline);
-					$this->login['disciplinef'] = true;
-					$this->login['align'] = false;
-					Server::out($this, "\nYou may be good, neutral, or evil.\nWhich alignment (g/n/e)? ", false);
-				}
-				else
-					Server::out($this, "That's not a discipline focus. What IS your discipline focus? ", false);
-				return;
 			}
 			
 			if(isset($this->login['align']) && $this->login['align'] === false)
@@ -310,145 +278,9 @@
 					return Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
 				
 				$this->unverified_user->setAlignment($this->login['align']);
-				$this->login['custom'] = 0;
-				Server::out($this, "Skill and spell customization. Choose from the list below of skills and spells:");
+				$this->login['finish'] = false;
 			}
-			if(isset($this->login['custom']) && ($this->login['custom'] === 0 || $this->login['custom'] === 1))
-			{
-				if($input == 'list' || $this->login['custom'] === 0)
-				{
-					$this->login['custom'] = 1;
-					$this->abilityList();
-				}
-				else if($input == 'add')
-				{
-					// Set up some temp variables
-					$dp = $this->unverified_user->getDisciplinePrimary()->getAbilitySet();
-					$df = $this->unverified_user->getDisciplineFocus()->getAbilitySet();
-					$input_ability = implode(' ', $args);
 
-					// Check if the skill or spell group is already learned
-					if($this->unverified_user->getAbilitySet()->getSkillByInput($input_ability) ||
-						$this->unverified_user->getAbilitySet()->getSpellGroupByInput($input_ability))
-						return Server::out($this, "You already know that.");
-
-					// Try to add it from the pool of available abilities
-					$skill = $dp->getSkillByInput($input_ability);
-                    $spell_group = null;
-                    if(!$skill)
-                        $skill = $df->getSkillByInput($input_ability);
-                    if($skill)
-					{
-						$this->unverified_user->getAbilitySet()->addSkill($skill);
-                        Server::out($this, "You added ".$skill::getAlias().".");
-					}
-                    else
-                    {
-                        $spell_group = $dp->getSpellGroupByInput($input_ability);
-                        if(!$spell_group)
-                            $spell_group = $df->getSpellGroupByInput($input_ability);
-                        if($spell_group)
-                        {
-						    $this->unverified_user->getAbilitySet()->addSpellGroup($spell_group);
-                            Server::out($this, "You added ".$spell_group::getAlias().".");
-                        }
-					}
-                    if(!$skill && !$spell_group)
-						Server::out($this, "You can't add that.");
-				}
-				else if($input == 'drop')
-				{
-					// Set up some temp variables
-					$set = $this->unverified_user->getAbilitySet();
-					$input_ability = implode(' ', $args);
-
-					// Try to remove it
-					$ability = null;
-					if($ability = $set->getSkillByInput($input_ability))
-						$set->removeSkill($ability);
-					else if($ability = $set->getSpellGroupByInput($input_ability))
-						$set->removeSpellGroup($ability);
-
-					if($ability)
-						Server::out($this, "You remove ".$ability::getAlias().".");
-					else
-						Server::out($this, "You don't know that.");
-				}
-				else if($input == 'learned')
-				{
-					$this->abilityList();
-				}
-				else if($input == 'done')
-				{
-					$this->login['custom'] = 3;
-					$this->unverified_user->setExperiencePerLevel();
-					Server::out($this, "Now let's figure out your attributes...");
-					$this->login['attr'] = 0;
-					$this->login['attr_mod'] = array('str' => 0, 'int' => 0, 'wis' => 0, 'dex' => 0, 'con' => 0, 'cha' => 0);
-					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-					Server::out($this,
-						'Str ' . $this->unverified_user->getStr() . ' Int ' . $this->unverified_user->getInt() . ' Wis ' . $this->unverified_user->getWis() . 
-						' Dex ' . $this->unverified_user->getDex() . ' Con ' . $this->unverified_user->getCon() . ' Cha ' . $this->unverified_user->getCha());
-					Server::out($this, "Add a point to: ", false);
-				}
-				
-				if($this->login['custom'] !== 3)
-				{
-					$cp = $this->unverified_user->getCreationPoints();
-					Server::out($this, "\nYou have ".$cp." creation points, and ".$this->unverified_user->getExperiencePerLevelFromCP()." experience per level.");
-					return Server::out($this, "What would you like to do (add, list, drop, done)?");
-				}
-			}
-			if(isset($this->login['attr']) && is_numeric($this->login['attr']))
-			{
-				
-				$method_get = 'get'.ucfirst($input);
-				$method_set = 'set'.ucfirst($input);
-				$method_get_max = 'getMax'.ucfirst($input);
-				
-				if(!method_exists($this->unverified_user, $method_get) || !method_exists($this->unverified_user, $method_set))
-					return Server::out($this, 'Which attribute is that? ', false);
-				
-				if($this->login['attr'] + $this->login['attr_mod'][$input] + 1 > 10)
-				{
-					Server::out($this, "You don't have enough points to do that.");
-				}
-				else if($this->unverified_user->$method_get() < $this->unverified_user->$method_get_max())
-				{
-					$this->unverified_user->$method_set($this->unverified_user->$method_get() + 1);
-					$this->login['attr'] += $this->login['attr_mod'][$input] + 1;
-					$this->login['attr_mod'][$input]++;
-				}
-				else
-					Server::out($this, 'This attribute is maxed!');
-				
-				$modifiable = false;
-				foreach($this->login['attr_mod'] as $attr)
-				{
-					if(10 - $this->login['attr'] >= $attr + 1)
-					{
-						$modifiable = true;
-						break;
-					}
-				}
-				
-				if($this->login['attr'] < 10 && $modifiable)
-				{
-					Server::out($this, "You have " . (10 - $this->login['attr']) . " points left to distribute to your attributes.");
-					Server::out($this,
-						'Str ' . $this->unverified_user->getStr() . ' Int ' . $this->unverified_user->getInt() . ' Wis ' . $this->unverified_user->getWis() . 
-						' Dex ' . $this->unverified_user->getDex() . ' Con ' . $this->unverified_user->getCon() . ' Cha ' . $this->unverified_user->getCha());
-					Server::out($this, "Add a point to: ", false);
-				}
-				else
-				{
-					$this->unverified_user->addTrains(10 - $this->login['attr']);
-					$this->login['attr'] = true;
-					$this->login['finish'] = false;
-					echo 1;
-				}
-			}
-			
 			if(isset($this->login['finish']) && $this->login['finish'] === false)
 			{
 				$this->initUser($this->unverified_user);
@@ -465,40 +297,18 @@
 			}
 		}
 		
-		private function abilityList()
-		{
-			Server::out($this, "\nspell groups:");
-			$spell_groups = array_merge(
-						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSpellGroups(),
-						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSpellGroups()
-					);
-			foreach($spell_groups as $spell_group)
-			{
-				if(!$this->unverified_user->getAbilitySet()->getSpellGroupByAlias($spell_group::getAlias()))
-				{
-					$padding = substr("                          ", strlen($spell_group::getAlias()));
-					Server::out($this, $spell_group::getAlias().$padding.$spell_group::getCreationPoints()."cp");
-				}
-			}
-			Server::out($this, "\nskills:");
-			$skills = array_merge(
-						$this->unverified_user->getDisciplinePrimary()->getAbilitySet()->getSkills(),
-						$this->unverified_user->getDisciplineFocus()->getAbilitySet()->getSkills()
-					);
-			foreach($skills as $skill)
-			{
-				if(!$this->unverified_user->getAbilitySet()->getSkillByAlias($skill::getAlias()))
-				{
-					$padding = substr("                          ", strlen($skill::getAlias()));
-					Server::out($this, $skill::getAlias().$padding.$skill::getCreationPoints()."cp");
-				}
-			}
-		}
-		
 		private function racesAvailable()
 		{
+			$races = Race::getAliases();
 			Server::out($this, 'The following races are available: ');
-			Server::out($this, '[human undead faerie elf ogre] ');
+			$race_list = '[';
+			array_walk(
+				$races,
+				function($r, $k) use (&$race_list) {
+					$race_list .= $k.' ';
+				}
+			);
+			Server::out($this, trim($race_list).']');
 			Server::out($this, 'What is your race (help for more information)? ', false);
 		}
 		

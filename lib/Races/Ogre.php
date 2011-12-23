@@ -25,16 +25,18 @@
 	 *
 	 */
 	namespace Races;
-	use \Mechanics\Alias;
-	use \Mechanics\Attributes;
-	class Ogre extends \Mechanics\Race
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Attributes;
+
+	class Ogre extends Race
 	{
-	
+		protected $alias = 'ogre';
 		protected $creation_points = 4;
 	
 		protected function __construct()
 		{
-			$this->alias = new Alias('ogre', $this);
+			self::addAlias('ogre', $this);
 		
 			$this->attributes = new Attributes();
 			$this->max_attributes = new Attributes();
