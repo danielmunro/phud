@@ -44,7 +44,7 @@
 			self::addAlias('meditation', $this);
 		}
 
-		public function getSubscription()
+		public function getSubscriber()
 		{
 			return new Subscription(
 				Event::EVENT_TICK,

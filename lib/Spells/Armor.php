@@ -33,7 +33,11 @@
 	{
 		protected function __construct()
 		{
-			self::addAlias('armor');
+			self::addAlias('armor', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = array())

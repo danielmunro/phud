@@ -27,6 +27,7 @@
 	namespace Mechanics\Ability;
 	use \Mechanics\Debug,
 		\Mechanics\Actor,
+		\Mechanics\Alias,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\ReflectionClass;
@@ -39,6 +40,11 @@
 		protected $required_proficiency = 0;
 		
 		protected function __construct() {}
+
+		public function getProficiency()
+		{
+			return $this->proficiency;
+		}
 
 		abstract public function getSubscriber();
 

@@ -25,17 +25,21 @@
 	 *
 	 */
 	namespace Spells;
-    use \Mechanics\Ability\Spell;
-    use \Mechanics\Alias;
-    use \Mechanics\Actor;
-    use \Mechanics\Affect;
-    use \Mechanics\Server;
+    use \Mechanics\Ability\Spell,
+		\Mechanics\Alias,
+    	\Mechanics\Actor,
+    	\Mechanics\Affect,
+    	\Mechanics\Server;
 
 	class Shield extends Spell
 	{
 		protected function __construct()
 		{
 			self::addAlias('shield', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = array())

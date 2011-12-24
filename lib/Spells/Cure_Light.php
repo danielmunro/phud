@@ -25,15 +25,19 @@
 	 *
 	 */
 	namespace Spells;
-    use \Mechanics\Ability\Spell;
-    use \Mechanics\Alias;
-    use \Mechanics\Server;
+    use \Mechanics\Ability\Spell,
+		\Mechanics\Alias,
+    	\Mechanics\Server;
 
 	class Cure_Light extends Spell
 	{
 		protected function __construct()
 		{
 			self::addAlias('cure light', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = array())

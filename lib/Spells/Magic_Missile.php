@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Spells;
-	use \Mechanics\Spell,
+	use \Mechanics\Ability\Spell,
 		\Mechanics\Actor,
 		\Mechanics\Server;
 
@@ -34,6 +34,10 @@
 		protected function __construct()
 		{
 			self::addAlias('magic missile', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = array())

@@ -25,15 +25,19 @@
 	 *
 	 */
 	namespace Spells;
-    use \Mechanics\Ability\Spell;
-    use \Mechanics\Alias;
-    use \Mechanics\Actor;
+    use \Mechanics\Ability\Spell,
+		\Mechanics\Alias,
+    	\Mechanics\Actor;
 
 	class Cure_Critical extends Spell
 	{
 		protected function __construct()
 		{
 			self::addAlias('cure critical', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = null)

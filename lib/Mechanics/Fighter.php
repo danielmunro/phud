@@ -27,6 +27,7 @@
 	namespace Mechanics;
 	use \Items\Food,
 		\Mechanics\Event\Subscriber,
+		\Mechanics\Ability\Ability,
 		\Mechanics\Event\Event;
 
 	abstract class Fighter extends Actor
@@ -86,9 +87,13 @@
 			return $this->abilities;
 		}
 
-		public function addAbility($alias)
+		public function addAbility($ability)
 		{
-			$this->abilities[] = ['alias' => $alias];
+			// Remember what abilities the fighter has
+			$this->abilities[] = $ability['alias'];
+
+			// Apply the subscriber to trigger the ability at the right time
+			$this->addSubscriber($ability['lookup']->getSubscriber());
 		}
 
 		public function getAttackSubscriber()

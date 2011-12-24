@@ -46,15 +46,11 @@
 				$user->setDM(true);
 				return;
 			}
-			$ability = Alias::lookup($args[1]);
-			$percent = $args[2];
-			if(!is_numeric($percent) || $percent < 1 || $percent > 100)
-				$percent = 1;
-			if($ability)
-			{
-				$target->getAbilitySet()->addAbility($ability, $percent);
-				Server::out($target, $user->getAlias(true)." has bestowed the knowledge of ".$ability->getName()." on you.");
-				return Server::out($user, "You've granted ".$ability->getName()." to ".$target->getAlias().".");
+			$ability = Ability::lookup($args[1]);
+			if($ability) {
+				$target->addAbility($ability);
+				Server::out($target, ucfirst($user)." has bestowed the knowledge of ".$ability['alias']." on you.");
+				return Server::out($user, "You've granted ".$ability['alias']." to ".$target.".");
 			}
 			Server::out($user, "Ability not found.");
 		}

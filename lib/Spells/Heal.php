@@ -35,6 +35,10 @@
 		{
 			self::addAlias('heal', $this);
 		}
+
+		public function getSubscriber()
+		{
+		}
 		
 		public function perform(Actor $actor, $args = array())
 		{

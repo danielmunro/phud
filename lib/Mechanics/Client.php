@@ -3,6 +3,7 @@
 	namespace Mechanics;
 	use \Mechanics\Command\Command,
 		\Living\User,
+		\Mechanics\Ability\Ability,
 		\Mechanics\Event\Event,
 		\Mechanics\Event\Subscriber;
 
@@ -99,15 +100,15 @@
 					function($subscriber, $user, $args) {
 						$command = Command::lookup($args[0]);
 						if($command) {
-							$command->tryPerform($user, $args, $subscriber);
+							$command['lookup']->tryPerform($user, $args, $subscriber);
 							$subscriber->satisfyBroadcast();
 						}
 					}
 				)
 			);
 			foreach($this->user->getAbilities() as $user_ab) {
-				$ability = Ability::lookup($user_ab['alias']);
-				$this->user->addSubscriber($ability->getSubscriber());
+				$ability = Ability::lookup($user_ab);
+				$this->user->addSubscriber($ability['lookup']->getSubscriber());
 			}
 			User::addInstance($this->user);
 		}
@@ -167,8 +168,8 @@
 					$this->initUser($this->unverified_user);
 					$this->user->getRoom()->actorAdd($this->user);
 					$this->unverified_user = null;
-					$look = Command::lookup('look');
-					$look->perform($this->user);
+					$command = Command::lookup('look');
+					$command['lookup']->perform($this->user);
 					return true;
 				}
 				else

@@ -25,11 +25,11 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Ability;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Actor;
-    use \Mechanics\Server;
-    use \Mechanics\Race;
+    use \Mechanics\Ability\Ability,
+		\Mechanics\Ability\Skill,
+    	\Mechanics\Actor,
+    	\Mechanics\Server,
+    	\Mechanics\Race;
 
 	class Dodge extends Skill
 	{
@@ -41,7 +41,7 @@
 			self::addAlias('dodge', $this);
 		}
 
-		public function getSubscription()
+		public function getSubscriber()
 		{
 			return new Subscription(
 				Event::EVENT_MELEE_ATTACKED,

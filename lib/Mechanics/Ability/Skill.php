@@ -26,13 +26,10 @@
 	 */
 	namespace Mechanics\Ability;
 	use \Living\User,
-		\Mechanics\Server,
-		\Mechanics\Performable;
+		\Mechanics\Server;
 
-	abstract class Skill extends Ability implements Performable
+	abstract class Skill extends Ability
 	{
-		protected $is_performable = true;
-	
 		public function tryPerform(User $user, $args = [])
 		{
 			$proficiency = $user->getProficiencyIn($this->proficiency);

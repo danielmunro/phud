@@ -7,32 +7,29 @@
 		
 		public static function addAlias($alias, $lookup, $priority = 10)
 		{
-			self::$aliases[$alias] = [$lookup, $priority];
+			self::$aliases[$alias] = ['alias' => $alias, 'lookup' => $lookup, 'priority' => $priority];
 		}
 		
 		public static function lookup($alias)
 		{
 			// Direct match
 			if(isset(self::$aliases[$alias])) {
-				return self::$aliases[$alias][0];
+				return self::$aliases[$alias];
 			}
 			
-			$possibilities = [];
-			foreach(self::$aliases as $key => $instance) {
-				if(strpos($key, $alias) === 0) {
-					$possibilities[] = $instance;
-					if(empty($key) || empty($instance)) {
-						var_dump(self::$instances);die;
-					}
+			$possibilities = array_filter(
+				self::$aliases,
+				function($lookup) use ($alias) {
+					return strpos($lookup['alias'], $alias) === 0;
 				}
-			}
+			);
 			
 			// Return the highest priority match
 			if($possibilities) {
 				usort($possibilities, function($a, $b) {
 					return $a[1] < $b[1];
 				});
-				return $possibilities[0][0];
+				return $possibilities[0];
 			}
 		}
 		

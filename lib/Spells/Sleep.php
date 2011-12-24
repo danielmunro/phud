@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Spells;
-	use \Mechanics\Spell,
+	use \Mechanics\Ability\Spell,
 		\Mechanics\Actor,
 		\Mechanics\Affect,
 		\Mechanics\Server;
@@ -35,6 +35,10 @@
 		protected function __construct()
 		{
 			self::addAlias('sleep', $this);
+		}
+
+		public function getSubscriber()
+		{
 		}
 		
 		public function perform(Actor $actor, $args = array())
