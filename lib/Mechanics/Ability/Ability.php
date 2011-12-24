@@ -57,6 +57,7 @@
 					if(strpos($alias, $args[0]) === 0) {
 						// @TODO check if user can do this
 						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
+						$subscriber->satisfyBroadcast();
 					}
 				}
 			);

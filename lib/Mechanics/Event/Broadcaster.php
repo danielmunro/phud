@@ -49,7 +49,6 @@
 			if(!isset($this->deferred_subscribers[$event_type])) {
 				$this->deferred_subscribers[$event_type] = [];
 			}
-			$is_received = false;
 			$arg_count = func_num_args();
 			$args = [];
 			if($arg_count > 1) {
@@ -64,15 +63,16 @@
 		{
 			foreach($subscribers as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
-				$args = array_merge([$subscriber, $this, $subscriber->getSubscriber()], $args);
-				$args = array_filter($args);
-				call_user_func_array($callback, $args);
+				$sending_args = array_merge([$subscriber, $this, $subscriber->getSubscriber()], $args);
+				$sending_args = array_filter($sending_args);
+				call_user_func_array($callback, $sending_args);
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$subscriber->getEventType()][$i]);
 					continue;
 				}
 				$is_satisfied = $subscriber->isBroadcastSatisfied();
 				if($is_satisfied) {
+					$subscriber->satisfyBroadcast(false);
 					return $is_satisfied;
 				}
 			}

@@ -27,11 +27,6 @@
 			return $this->user;
 		}
 
-		public function clearUser()
-		{
-			$this->user = null;
-		}
-		
 		public function getSocket()
 		{
 			return $this->socket;

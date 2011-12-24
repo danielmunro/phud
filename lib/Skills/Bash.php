@@ -52,23 +52,23 @@
 				return;
 			
 			$roll = Server::chance();
-			$roll -= $actor->getRace()->getSize() * 1.25;
-			$roll += $target->getRace()->getSize();
+			$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
+			$roll += $target->getRace()['lookup']->getSize();
 			$roll += $this->getNormalAttributeModifier($actor->getStr());
 			
 			$actor->incrementDelay(2);
 			
-			if($roll < $chance)
+			if($roll < $percent)
 			{
 				$a = new Affect();
 				$a->setAffect('stun');
 				$a->setTimeout(1);
 				$a->apply($target);
 				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-				return "You slam into " . $target->getAlias() . " and send " . $target->getSex($sexes) . " flying!";
+				return Server::out($actor, "You slam into " . $target->getAlias() . " and send " . $target->getSex($sexes) . " flying!");
 			}
 			
-			return "You fall flat on your face!";
+			return Server::out($actor, "You fall flat on your face!");
 		}
 	}
 ?>

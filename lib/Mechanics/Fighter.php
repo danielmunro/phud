@@ -119,7 +119,8 @@
 		public function getProficiencyIn($proficiency)
 		{
 			if(!isset($this->proficiencies[$proficiency])) {
-				throw new \Exception($proficiency.' not defined');
+				//throw new \Exception($proficiency.' not defined');
+				$this->proficiencies[$proficiency] = 15; // default
 			}
 			return $this->proficiencies[$proficiency];
 		}
