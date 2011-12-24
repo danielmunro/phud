@@ -274,8 +274,9 @@
 			}
 			else
 			{
-				if(!$verb)
-					$verb = $this->getRace()->getUnarmedVerb();
+				if(!$verb) {
+					$verb = $this->getRace()['lookup']->getUnarmedVerb();
+				}
 				$dam_type = Damage::TYPE_BASH;
 			}
 		
@@ -289,7 +290,7 @@
 			$def_roll = ($victim->getDex() / self::MAX_ATTRIBUTE) * 4;
 			
 			// Size modifier
-			$def_roll += 5 - $victim->getRace()->getSize();
+			$def_roll += 5 - $victim->getRace()['lookup']->getSize();
 			
 			if($dam_type == Damage::TYPE_BASH)
 				$ac = $victim->getAcBash();

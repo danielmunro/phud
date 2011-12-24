@@ -30,12 +30,15 @@
 
 	class Subscriber
 	{
+		const DEFERRED = true;
+
 		protected $event_type = '';
 		protected $subscriber = null;
 		protected $callback = null;
 		protected $killed = false;
 		protected $suppressed = false;
 		protected $broadcast_satisfied = false;
+		protected $deferred = false;
 
 		public function __construct($event_type, $subscriber, $callback = null, $deferred = false)
 		{

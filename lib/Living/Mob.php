@@ -224,7 +224,7 @@
 			$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - 2, $this->respawn_ticks + 2));
 			Server::instance()->addSubscriber(
 				new Subscriber(
-					Event::EVENT_TICKS,
+					Event::EVENT_TICK,
 					$this,
 					function($subscriber, $mob) {
 						$mob->evaluateRespawn();

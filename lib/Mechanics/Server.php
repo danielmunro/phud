@@ -111,7 +111,7 @@
 							}
 						);
 					},
-					true
+					Subscriber::DEFERRED
 				)
 			);
 			$pulse = intval(date('U'));
