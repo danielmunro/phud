@@ -95,6 +95,11 @@
 		{
 			return $this->movement_cost;
 		}
+
+		public function setMovementCost($movement_cost)
+		{
+			$this->movement_cost = $movement_cost;
+		}
 		
 		private function getDirection($direction_str, $direction_id)
 		{
@@ -280,13 +285,16 @@
 		protected function beforeSave()
 		{
 			$actors = $this->actors;
+			$movement_subscriber = $this->movement_subscriber;
 			$this->actors = [];
-			return $actors;
+			$this->movement_subscriber = null;
+			return [$actors, $movement_subscriber];
 		}
 
-		protected function afterSave($actors)
+		protected function afterSave($after)
 		{
-			$this->actors = $actors;
+			$this->actors = $after[0];
+			$this->movement_subscriber = $after[1];
 		}
 
 		public function __toString()

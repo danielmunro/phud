@@ -65,7 +65,11 @@
 			$property = $this->isValidProperty($args[1]);
 			if($property)
 			{
-				$fn = 'set' . ucfirst($property);
+				if(is_numeric($property[0])) {
+					$fn = 'set' . ucfirst($property);
+				} else {
+					$fn = $property[0];
+				}
 				array_shift($args);
 				array_shift($args);
 				$value = implode(' ', $args);
@@ -100,6 +104,7 @@
 								"Information on room (#".$user->getRoom()->getId()."):\n".
 								"title:                  ".$user->getRoom()->getTitle()."\n".
 								"area:                   ".$user->getRoom()->getArea()."\n".
+								"movement cost:          ".$user->getRoom()->getMovementCost()."\n".
 								"description:\n".$user->getRoom()->getDescription());
 			}
 			
@@ -109,11 +114,11 @@
 		
 		private function isValidProperty($property)
 		{
-			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down');
+			$dirs = array('title', 'description', 'area', 'north', 'south', 'east', 'west', 'up', 'down', 'setMovementCost' => 'movement_cost');
 		
-			foreach($dirs as $p)
+			foreach($dirs as $k => $p)
 				if(strpos($p, $property) === 0)
-					return $p;
+					return [$k, $p];
 			
 			return false;
 		
