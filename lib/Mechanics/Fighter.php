@@ -83,6 +83,15 @@
 			parent::__construct();
 		}
 
+		public function initActor()
+		{
+			foreach($this->abilities as $user_ab) {
+				$ability = Ability::lookup($user_ab);
+				$this->addSubscriber($ability['lookup']->getSubscriber());
+			}
+			parent::initActor();
+		}
+
 		public function getAbilities()
 		{
 			return $this->abilities;

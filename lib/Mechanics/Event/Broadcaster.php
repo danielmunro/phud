@@ -41,6 +41,19 @@
 			}
 		}
 
+		public function removeSubscriber(Subscriber $subscriber)
+		{
+			$t = $subscriber->getEventType();
+			$key = array_search($subscriber, $this->subscribers[$t]);
+			if($key !== false) {
+				unset($this->subscribers[$t][$key]);
+			}
+			$key = array_search($subscriber, $this->deferred_subscribers[$t]);
+			if($key !== false) {
+				unset($this->deferred_subscribers[$t][$key]);
+			}
+		}
+
 		public function fire($event_type)
 		{
 			if(!isset($this->subscribers[$event_type])) {

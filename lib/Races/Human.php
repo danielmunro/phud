@@ -27,6 +27,8 @@
 	namespace Races;
 	use \Mechanics\Alias,
 		\Mechanics\Race,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\Mechanics\Attributes;
 
 	class Human extends Race
@@ -78,6 +80,18 @@
 			$this->playable = true;
 			
 			parent::__construct();
+		}
+
+		public function getSubscribers()
+		{
+			return [
+				new Subscriber(
+					Event::EVENT_MOVED,
+					function($subscriber, $actor, $increase_movement) {
+						$increase_movement(1);
+					}
+				)
+			];
 		}
 	}
 ?>

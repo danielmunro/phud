@@ -74,6 +74,7 @@
 			foreach($mob_ids as $mob_id)
 			{
 				$mob = unserialize($db->get($mob_id));
+				$mob->initActor();
 				$mob->getRoom()->actorAdd($mob);
 				$server->addSubscriber($mob->getMovementSubscriber());
 			}

@@ -57,7 +57,6 @@
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $affects = array();
-		protected $movement_cost;
 		protected $move_verb;
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
@@ -75,6 +74,8 @@
 		protected function __construct()
 		{
 		}
+		
+		abstract public function getSubscribers();
 		
 		public function runInstantiation()
 		{

@@ -59,19 +59,22 @@
 					if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
 						return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 				}
-				if($actor->getMovement() >= $actor->getRace()->getMovementCost() || $actor->getLevel() > Actor::MAX_LEVEL)
-				{
-					if($actor->getLevel() < Actor::MAX_LEVEL)
-						$actor->setMovement($actor->getMovement() - $actor->getRace()->getMovementCost());
-					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' ' . $actor->getRace()->getMoveVerb() . ' ' . $args[1] . '.');
-					$actor->setRoom($room);
-					if($actor instanceof \Living\User)
-					{
-						$look = Command::lookup('look');
-						$look->perform($actor);
-						$actor->fire(Event::EVENT_MOVED);
+				$movement_cost = 1;
+				$actor->fire(
+					Event::EVENT_MOVED,
+					function($add_movement) use (&$movement_cost) {
+						$movement_cost += $add_movement;
 					}
-					$actor->getRoom()->announce($actor, $actor->getAlias(true) . ' has arrived.');
+				);
+				if($actor->getMovement() >= $movement_cost || $actor->getLevel() > Actor::MAX_LEVEL) {
+					$actor->setMovement($actor->getMovement() - $movement_cost);
+					$actor->getRoom()->announce($actor, ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb() . ' ' . $args[1] . '.');
+					$actor->setRoom($room);
+					if($actor instanceof \Living\User) {
+						$look = Command::lookup('look');
+						$look['lookup']->perform($actor);
+					}
+					$actor->getRoom()->announce($actor, ucfirst($actor).' has arrived.');
 					
 					return;
 				}

@@ -101,11 +101,8 @@
 					}
 				)
 			);
-			foreach($this->user->getAbilities() as $user_ab) {
-				$ability = Ability::lookup($user_ab);
-				$this->user->addSubscriber($ability['lookup']->getSubscriber());
-			}
 			User::addInstance($this->user);
+			$this->user->initActor();
 		}
 
 		///////////////////////////////////////////////////////////

@@ -25,6 +25,8 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event;
 
 	class Room
 	{
@@ -32,7 +34,7 @@
 	
 		const START_ROOM = 1;
 	
-		static $instances = array();
+		static $instances = [];
 		
 		private $title = 'Generic room';
 		private $description = 'A nondescript room.';
@@ -42,37 +44,28 @@
 		private $west = -1;
 		private $up = -1;
 		private $down = -1;
-		private $doors = array();
+		private $doors = [];
 		private $inventory = null;
 		private $area = '';
 		private $visibility = 1;
-		private $actors = array();
-		private $map = null;
+		private $movement_cost = 0;
+		private $actors = [];
 	
 		const PURGATORY_ROOM_ID = 5;
 	
 		public function __construct()
 		{
 			$this->inventory = new Inventory();
-			$this->doors = array(
-								'north' => null,
-								'south' => null,
-								'east' => null,
-								'west' => null,
-								'up' => null,
-								'down' => null
-							);
+			$this->doors = [
+				'north' => null,
+				'south' => null,
+				'east' => null,
+				'west' => null,
+				'up' => null,
+				'down' => null
+			];
 		}
 
-		public function setMap(Map $map)
-		{
-			$this->map = $map;
-		}
-
-		public function getMap()
-		{
-			return $this->map;
-		}
 		public function getVisibility()
 		{
 			return $this->visibility;
@@ -96,6 +89,11 @@
 		public function getDescription()
 		{
 			return $this->description;
+		}
+
+		public function getMovementCost()
+		{
+			return $this->movement_cost;
 		}
 		
 		private function getDirection($direction_str, $direction_id)
@@ -168,6 +166,7 @@
 		{
 			Debug::addDebugLine($actor.' ('.$actor->getID().') is arriving to '.$this.' ('.$this->getID().')');
 			$this->actors[] = $actor;
+			$actor->addSubscriber($this->movement_subscriber);
 		}
 		public function actorRemove(Actor $actor)
 		{
@@ -177,6 +176,7 @@
 				Debug::addDebugLine($actor.' is not here');
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
 			}
+			$actor->removeSubscriber($this->movement_subscriber);
 			unset($this->actors[$key]);
 		}
 		public function getActors()
@@ -227,7 +227,24 @@
 				$r->save();
 				self::$instances[$id] = $r;
 			}
+			self::$instances[$id]->initRoom();
 			return self::$instances[$id];
+		}
+
+		public function initRoom()
+		{
+			$this->movement_subscriber = $this->getMovementSubscriber();
+		}
+
+		private function getMovementSubscriber()
+		{
+			return new Subscriber(
+				Event::EVENT_MOVED,
+				$this,
+				function($subscriber, $broadcaster, $room, $increase_movement_cost) {
+					$increase_movement_cost($room->getMovementCost());
+				}
+			);
 		}
 		
 		public static function getDirectionStr($dir)

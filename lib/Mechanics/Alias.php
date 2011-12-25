@@ -27,7 +27,7 @@
 			// Return the highest priority match
 			if($possibilities) {
 				usort($possibilities, function($a, $b) {
-					return $a[1] < $b[1];
+					return $a['priority'] < $b['priority'];
 				});
 				return $possibilities[0];
 			}

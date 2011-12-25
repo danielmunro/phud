@@ -68,7 +68,11 @@
 			parent::__construct();
 		
 		}
-	
-	}
 
+		public function getSubscribers()
+		{
+			return [
+			];
+		}
+	}
 ?>

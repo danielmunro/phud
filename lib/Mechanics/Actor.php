@@ -57,13 +57,17 @@
 		protected $room_id = -1;
 		protected $inventory = null;
 		protected $equipped = null;
-		protected $ability_set = null;
 		protected $alignment = 0;
 		
 		public function __construct()
 		{
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
+			$this->initActor();
+		}
+
+		public function initActor()
+		{
 			Server::instance()->addSubscriber(
 				new Subscriber(
 					Event::EVENT_TICK,
@@ -73,6 +77,13 @@
 					}
 				)
 			);
+			$race = $this->getRace();
+			if($race) {
+				$subscribers = $race['lookup']->getSubscribers();
+				foreach($subscribers as $subscriber) {
+					$this->addSubscriber($subscriber);
+				}
+			}
 		}
 
 		public function getAlignment()
