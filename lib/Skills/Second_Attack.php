@@ -25,12 +25,10 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Ability\Ability;
-    use \Mechanics\Server;
-    use \Mechanics\Actor;
-    use \Disciplines\Warrior;
-    use \Disciplines\Thief;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Ability\Ability,
+    	\Mechanics\Server,
+    	\Mechanics\Actor;
 
 	class Second_Attack extends Skill
 	{

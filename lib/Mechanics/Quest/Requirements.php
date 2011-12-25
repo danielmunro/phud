@@ -25,25 +25,24 @@
 	 *
 	 */
 	namespace Mechanics\Quest;
-	use \Living\User;
-	use \Mechanics\Alias;
-	use \Mechanics\Server;
-	use \Mechanics\Item;
-	use \Mechanics\Inventory;
+	use \Living\User,
+		\Mechanics\Alias,
+		\Mechanics\Server,
+		\Mechanics\Item,
+		\Mechanics\Inventory;
+
 	class Requirements
 	{
-		protected $races = array();
-		protected $disciplines = array();
+		protected $races = [];
 		protected $level = 0;
 		protected $inventory = null;
-		protected $previous_quests = array();
+		protected $previous_quests = [];
 		
 		public function __construct(Requirements $requirements = null)
 		{
 			if($requirements)
 			{
 				$this->races = $requirements->getRaces();
-				$this->disciplines = $requirements->getDisciplines();
 				$this->level = $requirements->getLevel();
 				$this->inventory = $requirements->getInventory();
 				$this->previous_quests = $requirements->getPreviousQuests();
@@ -55,11 +54,6 @@
 		public function getRaces()
 		{
 			return $this->races;
-		}
-		
-		public function getDisciplines()
-		{
-			return $this->disciplines;
 		}
 		
 		public function getLevel()
@@ -87,9 +81,7 @@
 					$say->perform($questmaster, "You're too inexperienced for this quest");
 				return false;
 			}
-			if((empty($this->races) || in_array($user->getRace(), $this->races)) &&
-				(empty($this->disciplines) || (in_array($user->getDisciplineFocus(), $this->disciplines) ||
-				 in_array($user->getDisciplinePrimary(), $this->disciplines))))
+			if((empty($this->races) || in_array($user->getRace(), $this->races)))
 			{
 				if(sizeof($this->getInventory()->getItems()))
 				{

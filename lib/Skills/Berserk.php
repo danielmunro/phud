@@ -25,11 +25,10 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Actor;
-    use \Mechanics\Server;
-    use \Mechanics\Affect;
-    use \Disciplines\Warrior;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Actor,
+    	\Mechanics\Server,
+    	\Mechanics\Affect;
 
 	class Berserk extends Skill
 	{
@@ -53,9 +52,6 @@
 			
 			$roll += $this->getHardAttributeModifier($actor->getDex());
 			$roll += $this->getNormalAttributeModifier($actor->getStr());
-			
-			if($actor->getDisciplinePrimary() === Warrior::instance())
-				$roll -= 10;
 			
 			$actor->setMovement($actor->getMovement() / 2);
 			$actor->setMana($actor->getMana() / 2);

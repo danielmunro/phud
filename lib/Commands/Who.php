@@ -42,7 +42,7 @@
 			Server::out($user, 'Who list:');
 			$users = lUser::getInstances();
 			foreach($users as $u) {
-				Server::out($user, '[' . $u->getLevel() . ' ' . $u->getRace() . ' ' . $u->getDiscipline() . '] ' . $u->getAlias());
+				Server::out($user, '[' . $u->getLevel() . ' ' . $u->getRace() . '] ' . $u);
 			}
 			$size = sizeof($users);
 			Server::out($user, $size . ' player' . ($size != 1 ? 's' : '') . ' found.');

@@ -43,8 +43,6 @@
 		protected $practices = 0;
 		protected $password = '';
 		private $client = null;
-		protected $discipline_primary = null;
-		protected $discipline_focus = null;
 		protected $date_created = null;
 		protected $is_dm = false;
 		protected $quest_log = null;
@@ -192,32 +190,6 @@
 		{
 			parent::handleDeath();
 			\Commands\Look::perform($this);
-		}
-		
-		public function getDisciplinePrimary()
-		{
-			return Alias::lookup($this->discipline_primary);
-		}
-		
-		public function setDisciplinePrimary(\Mechanics\DisciplinePrimary $discipline)
-		{
-			$this->discipline_primary = $discipline->getAlias()->getAliasName();
-		}
-		
-		public function getDisciplineFocus()
-		{
-			return Alias::lookup($this->discipline_focus);
-		}
-		
-		public function setDisciplineFocus(\Mechanics\DisciplineFocus $discipline)
-		{
-			if(!$this->discipline_primary)
-				throw new \Exceptions\User(
-										'Primary discipline must be set before focus can be set.',
-										\Exceptions\User::BAD_CONFIG
-									);
-			
-			$this->discipline_focus = $discipline->getAlias()->getAliasName();
 		}
 		
 		public function addTrains($trains)

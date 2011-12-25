@@ -25,14 +25,10 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Ability\Ability;
-    use \Mechanics\Server;
-    use \Mechanics\Actor;
-    use \Disciplines\Cleric;
-    use \Disciplines\Warrior;
-    use \Disciplines\Thief;
-    use \Disciplines\Mage;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Ability\Ability,
+    	\Mechanics\Server,
+    	\Mechanics\Actor;
 
 	class Meditation extends Skill
 	{
