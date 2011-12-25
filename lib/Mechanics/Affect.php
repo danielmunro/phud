@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Mechanics;
-	use \Living\User;
+	use \Living\User,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event;
 	
 	class Affect
 	{
@@ -109,7 +111,7 @@
 				return $this->args;
 		}
 		
-		public function apply(Affectable $affectable)
+		public function apply($affectable)
 		{
 			$affectable->addAffect($this);
 			if($this->timeout > 0) {

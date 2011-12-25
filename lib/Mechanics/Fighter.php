@@ -38,6 +38,7 @@
 		protected $experience_per_level = 0;
 		protected $concentration = 0;
 		protected $delay = 0;
+		protected $delay_subscriber = null;
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $battle = null;
@@ -127,17 +128,19 @@
 
 		public function tick()
 		{
-			$this->setHp($this->getHp() + floor(rand($this->getMaxHp() * 0.05, $this->getMaxHp() * 0.1)));
-			if($this->getHp() > $this->getMaxHp())
-				$this->setHp($this->getMaxHp());
-			
-			$this->setMana($this->getMana() + floor(rand($this->getMaxMana() * 0.05, $this->getMaxMana() * 0.1)));
-			if($this->getMana() > $this->getMaxMana())
-				$this->setMana($this->getMaxMana());
-			
-			$this->setMovement($this->getMovement() + floor(rand($this->getMaxMovement() * 0.05, $this->getMaxMovement() * 0.1)));
-			if($this->getMovement() > $this->getMaxMovement())
-				$this->setMovement($this->getMaxMovement());
+			if($this->isAlive()) {
+				$this->setHp($this->getHp() + floor(rand($this->getMaxHp() * 0.05, $this->getMaxHp() * 0.1)));
+				if($this->getHp() > $this->getMaxHp())
+					$this->setHp($this->getMaxHp());
+				
+				$this->setMana($this->getMana() + floor(rand($this->getMaxMana() * 0.05, $this->getMaxMana() * 0.1)));
+				if($this->getMana() > $this->getMaxMana())
+					$this->setMana($this->getMaxMana());
+				
+				$this->setMovement($this->getMovement() + floor(rand($this->getMaxMovement() * 0.05, $this->getMaxMovement() * 0.1)));
+				if($this->getMovement() > $this->getMaxMovement())
+					$this->setMovement($this->getMaxMovement());
+			}
 			parent::tick();
 		}
 		
@@ -225,11 +228,28 @@
 		public function incrementDelay($delay)
 		{
 			$this->delay += $delay;
+			if(!$this->delay_subscriber) {
+				$this->delay_subscriber = new Subscriber(
+					Event::EVENT_PULSE,
+					$this,
+					function($subscriber, $server, $fighter) {
+						if(!$fighter->decrementDelay()) {
+							$subscriber->kill();
+						}
+					}
+				);
+				Server::instance()->addSubscriber($this->delay_subscriber);
+			}
+
 		}
 		public function decrementDelay()
 		{
-			if($this->delay > 0)
+			if($this->delay > 0) {
 				$this->delay--;
+				return true;
+			} 
+			unset($this->delay_subscriber);
+			return false;
 		}
 		public function getDelay()
 		{

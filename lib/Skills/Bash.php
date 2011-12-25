@@ -65,7 +65,7 @@
 				$a->setTimeout(1);
 				$a->apply($target);
 				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-				return Server::out($actor, "You slam into " . $target->getAlias() . " and send " . $target->getSex($sexes) . " flying!");
+				return Server::out($actor, "You slam into ".$target->getAlias()." and send ".$target->getDisplaySex($sexes)." flying!");
 			}
 			
 			return Server::out($actor, "You fall flat on your face!");

@@ -39,6 +39,9 @@
 
 		public function getUsableNounByInput($usables, $input)
 		{
+			if(is_array($input)) {
+				$input = $input[0];
+			}
 			foreach($usables as $u) {
 				$nouns = explode(' ', $u->getNouns());
 				foreach($nouns as $n) {

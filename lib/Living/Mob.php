@@ -211,7 +211,7 @@
 				if($intersection)
 				{
 					$command = Alias::lookup($dir);
-					$command->perform($this);
+					$command['lookup']->perform($this);
 					return;
 				}
 			}
@@ -220,13 +220,14 @@
 		public function handleDeath()
 		{
 			parent::handleDeath(false);
+			$this->attributes->setHp(-1);
 			$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
 			$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - 2, $this->respawn_ticks + 2));
 			Server::instance()->addSubscriber(
 				new Subscriber(
 					Event::EVENT_TICK,
 					$this,
-					function($subscriber, $mob) {
+					function($subscriber, $server, $mob) {
 						$mob->evaluateRespawn();
 						if($mob->isAlive()) {
 							$subscriber->kill();
