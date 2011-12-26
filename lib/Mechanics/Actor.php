@@ -248,10 +248,16 @@
 		
 		public function setRace($race)
 		{
-			if($race instanceof Race)
-				$this->race = $race->getAlias()->getAliasName();
-			else if(is_string($race))
-				$this->race = $race;
+			if($this->race) {
+				$lookup = Race::lookup($this->race);
+				foreach($lookup['lookup']->getSubscribers() as $subscriber) {
+					$this->removeSubscriber($subscriber);
+				}
+			}
+			$this->race = $race['alias'];
+			foreach($race['lookup']->getSubscribers() as $subscriber) {
+				$this->addSubscriber($subscriber);
+			}
 		}
 		
 		///////////////////////////////////////////////////////////////////////////

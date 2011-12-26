@@ -79,12 +79,7 @@
 			
 			$this->playable = true;
 			
-			parent::__construct();
-		}
-
-		public function getSubscribers()
-		{
-			return [
+			$this->subscribers = [
 				new Subscriber(
 					Event::EVENT_MOVED,
 					function($subscriber, $actor, $increase_movement) {
@@ -92,6 +87,13 @@
 					}
 				)
 			];
+
+			parent::__construct();
+		}
+
+		public function getSubscribers()
+		{
+			return $this->subscribers;
 		}
 	}
 ?>

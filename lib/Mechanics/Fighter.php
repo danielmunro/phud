@@ -156,7 +156,8 @@
 		public function setRace($race)
 		{
 			parent::setRace($race);
-			$max_atts = $this->getRace()->getMaxAttributes();
+
+			$max_atts = $this->getRace()['lookup']->getMaxAttributes();
 			$this->max_attributes->setStr($max_atts->getStr());
 			$this->max_attributes->setInt($max_atts->getInt());
 			$this->max_attributes->setWis($max_atts->getWis());
@@ -164,7 +165,15 @@
 			$this->max_attributes->setCon($max_atts->getCon());
 			$this->max_attributes->setCha($max_atts->getCha());
 
-			$profs = $this->getRace()->getProficiencies();
+			$atts = $this->getRace()['lookup']->getAttributes();
+			$this->attributes->setStr($atts->getStr());
+			$this->attributes->setInt($atts->getInt());
+			$this->attributes->setWis($atts->getWis());
+			$this->attributes->setDex($atts->getDex());
+			$this->attributes->setCon($atts->getCon());
+			$this->attributes->setCha($atts->getCha());
+
+			$profs = $this->getRace()['lookup']->getProficiencies();
 			foreach($profs as $name => $value) {
 				$this->proficiencies[$name] = $value;
 			}

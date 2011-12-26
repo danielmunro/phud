@@ -70,6 +70,7 @@
 		protected $playable = false;
 		protected $alias = null;
 		protected $proficiencies = [];
+		protected $subscribers = [];
 		
 		protected function __construct()
 		{

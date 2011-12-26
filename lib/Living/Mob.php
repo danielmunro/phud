@@ -33,6 +33,7 @@
 		\Mechanics\Server,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
+		\Mechanics\Command\Command,
 		\Mechanics\Persistable;
 
 	class Mob extends Fighter
@@ -43,7 +44,6 @@
 		protected $respawn_ticks_timeout = 5;
 		protected $auto_flee = false;
 		protected $unique = false;
-		protected $respawn_time;
 		protected $default_respawn_ticks = 1;
 		protected $dead = false;
 		protected $start_room_id = 0;
@@ -82,7 +82,10 @@
 		
 		public function save()
 		{
+			$subscribers = $this->subscribers;
+			$this->subscribers = null;
 			parent::save();
+			$this->subscribers = $subscribers;
 			$dbr = Dbr::instance();
 			$dbr->sAdd('mobs', $this->id);
 		}
@@ -211,7 +214,7 @@
 				$intersection = array_intersect($areas, $other_areas);
 				if($intersection)
 				{
-					$command = Alias::lookup($dir);
+					$command = Command::lookup($dir);
 					$command['lookup']->perform($this);
 					return;
 				}
@@ -248,18 +251,6 @@
 				$this->setRoom($this->getStartRoom());
 				$this->getRoom()->announce($this, ucfirst($this).' arrives in a puff of smoke.');
 			}
-		}
-		
-		public function setRace($race)
-		{
-			parent::setRace($race);
-			$atts = $this->getRace()->getAttributes();
-			$this->attributes->setStr($atts->getStr());
-			$this->attributes->setInt($atts->getInt());
-			$this->attributes->setWis($atts->getWis());
-			$this->attributes->setDex($atts->getDex());
-			$this->attributes->setCon($atts->getCon());
-			$this->attributes->setCha($atts->getCha());
 		}
 		
 		public function getExperiencePerLevel()

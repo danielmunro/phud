@@ -140,8 +140,8 @@
 		
 		public function decreaseRacialNourishmentAndThirst()
 		{
-			$this->nourishment -= $this->getRace()->getDecreaseNourishment();
-			$this->thirst -= $this->getRace()->getDecreaseThirst();
+			$this->nourishment -= $this->getRace()['lookup']->getDecreaseNourishment();
+			$this->thirst -= $this->getRace()['lookup']->getDecreaseThirst();
 		}
 		
 		public function getNourishment()

@@ -65,13 +65,14 @@
 		
 		private function doRace(lUser $user, lMob $mob, $race, $args)
 		{
-			$race = Alias::lookup($arg_race);
-			if(!($race instanceof Race))
+			$race = Race::lookup(array_pop($args));
+			if(!$race) {
 				return Server::out($user, "That is not a valid race.");
+			}
 			
 			$mob->setRace($race);
 			$mob->save();
-			$mob->getRoom()->announce($mob, $mob->getAlias(true)." shapeshifts into a ".$race->getAlias().".");
+			$mob->getRoom()->announce($mob, ucfirst($mob)." shapeshifts into a ".$race['alias'].".");
 		}
 		
 		private function doLong(lUser $user, lMob $mob, $long, $args)
@@ -98,16 +99,16 @@
 			$sexes = [Actor::SEX_MALE=>'male',Actor::SEX_FEMALE=>'female',Actor::SEX_NEUTRAL=>'it'];
 			Server::out($user,
 					"info page on mob:\n".
-					"alias:                    ".$mob->getAlias()."\n".
-					"race:                     ".$mob->getRace()."\n".
+					"alias:                    ".$mob."\n".
+					"race:                     ".$mob->getRace()['alias']."\n".
 					"level:                    ".$mob->getLevel()."\n".
 					"nouns:                    ".$mob->getNouns()."\n".
 					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."v\n".
 					"max worth:                ".$mob->getGold().'g '.$mob->getSilver().'s '.$mob->getCopper()."c\n".
-					"movement ticks:           ".$mob->getMovementTicks()."\n".
+					"movement pulses:          ".$mob->getMovementPulses()."\n".
 					"auto flee:                ".$mob->getAutoFlee()."\n".
 					"unique:                   ".($mob->isUnique()?'yes':'no')."\n".
-					"respawn time:             ".$mob->getDefaultRespawnTicks()."\n".
+					"respawn time:             ".$mob->getRespawnTicks()."\n".
 					"sex:                      ".$mob->getDisplaySex($sexes)."\n".
 					"start room:               ".$mob->getStartRoom()->getTitle()." (#".$mob->getStartRoom()->getId().")\n".
 					"area:                     ".$mob->getArea()."\n".

@@ -40,7 +40,7 @@
 	
 		public function perform(lUser $user, $args = array())
 		{
-			Server::out($user, 'You are ' . $user . ', a ' . $user->getRace());
+			Server::out($user, 'You are ' . $user . ', a ' . $user->getRace()['alias']);
 			Server::out($user, 'Attributes: Str ' . $user->getStr() . '(' . $user->getBaseStr() . ') ' .
 			'Int ' . $user->getInt() . '(' . $user->getBaseInt() . ') ' . 
 			'Wis ' . $user->getWis() . '(' . $user->getBaseWis() . ') ' .
