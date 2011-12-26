@@ -32,6 +32,7 @@
 		
 	class Sleep extends Command
 	{
+		protected $dispositions = [Actor::DISPOSITION_SLEEPING];
 		protected function __construct()
 		{
 			self::addAlias('sleep', $this);

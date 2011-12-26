@@ -32,25 +32,25 @@
 
 	class Sleep extends Spell
 	{
+		protected $proficiency = 'beguiling';
+		protected $required_proficiency = 40;
+		protected $affect = null;
+
 		protected function __construct()
 		{
 			self::addAlias('sleep', $this);
-		}
-
-		public function getSubscriber()
-		{
+			$this->affect = new Affect();
+			$this->affect->setAffect('sleep');
+			$this->affect->setMessageAffect('Spell: sleep');
 		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-			$timeout = 1 + ceil($actor->getLevel() * 0.9);
+			$timeout = round(1 + ($proficiency / 10));
 			$target->setDisposition(Actor::DISPOSITION_SLEEPING);
-			$a = new Affect();
-			$a->setAffect(self::$name_familiar);
-			$a->setMessageAffect('Spell: sleep');
-			$a->setTimeout($timeout);
-			$a->apply($target);
-			$target->getRoom()->announce($target, $target->getAlias(true)." goes to sleep.");
+			$this->affect->setTimeout($timeout);
+			$this->affect->apply($target);
+			$target->getRoom()->announce($target, ucfirst($target)." goes to sleep.");
 			Server::out($target, "You go to sleep.");
 		}
 	}

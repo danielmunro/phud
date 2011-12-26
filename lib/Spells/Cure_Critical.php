@@ -31,22 +31,20 @@
 
 	class Cure_Critical extends Spell
 	{
+		protected $proficiency = 'healing';
+		protected $required_proficiency = 45;
+
 		protected function __construct()
 		{
 			self::addAlias('cure critical', $this);
 		}
-
-		public function getSubscriber()
-		{
-		}
 		
-		public function perform(Actor $actor, $args = null)
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-		
-			$amount = 10 + $actor->getLevel() / 1.8;
-			$actor->setHp($actor->getHp() + $amount);
-			
-			Server::out($actor, "You feel better!");
+			$prof_rand = rand(9, 11);
+			$amount = round(rand(10, ($proficiency / $prof_rand) + 8));
+			$target->setHp($target->getHp() + $amount);
+			Server::out($target, "You feel better!");
 		}
 	}
 ?>

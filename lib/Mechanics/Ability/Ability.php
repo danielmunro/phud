@@ -30,7 +30,8 @@
 		\Mechanics\Alias,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
-		\ReflectionClass;
+		\ReflectionClass,
+		\Exception;
 
 	abstract class Ability
 	{
@@ -39,28 +40,16 @@
 		protected $proficiency = '';
 		protected $required_proficiency = 0;
 		
-		protected function __construct() {}
+		protected function __construct()
+		{
+			if(empty($this->proficiency) || empty($this->required_proficiency)) {
+				throw new Exception(get_class($this)." is not configured with both a proficiency and a required level for that proficiency");
+			}
+		}
 
 		public function getProficiency()
 		{
 			return $this->proficiency;
-		}
-
-		abstract public function getSubscriber();
-
-		protected function getInputSubscriber($alias)
-		{
-			return new Subscriber(
-				Event::EVENT_INPUT,
-				$this,
-				function($subscriber, $user, $ability, $args) use ($alias) {
-					if(strpos($alias, $args[0]) === 0) {
-						// @TODO check if user can do this
-						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
-						$subscriber->satisfyBroadcast();
-					}
-				}
-			);
 		}
 
 		public static function runInstantiation()
@@ -70,7 +59,7 @@
 				$d = dir(dirname(__FILE__) . '/../../'.$namespace);
 				while($ability = $d->read()) {
 					if(substr($ability, -4) === ".php") {
-						Debug::addDebugLine("init : ".$ability);
+						Debug::addDebugLine("init ability: ".$ability);
 						$class = substr($ability, 0, strpos($ability, '.'));
 						$called_class = $namespace.'\\'.$class;
 						$reflection = new ReflectionClass($called_class);

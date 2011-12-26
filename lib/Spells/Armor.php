@@ -25,32 +25,28 @@
 	 *
 	 */
 	namespace Spells;
-    use \Mechanics\Ability\Spell;
-    use \Mechanics\Affect;
-    use \Mechanics\Server;
+    use \Mechanics\Ability\Spell,
+		\Mechanics\Affect,
+		\Mechanics\Actor,
+    	\Mechanics\Server;
 
 	class Armor extends Spell
 	{
+		protected $proficiency = 'benedictions';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('armor', $this);
 		}
-
-		public function getSubscriber()
-		{
-		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-			$timeout = 1 + ceil($actor->getLevel() * 0.9);
-			
-			$modifier = max(floor($actor->getLevel() / 10), 1);
-			$mod_ac = -15 * $modifier;
-			
-			$target = $actor; //HACK
+			$timeout = min(30, ceil($proficiency / 2));
+			$mod_ac = min(-(round($proficiency / 2)), -15);
 			
 			$a = new Affect();
-			$a->setAffect(self::$name_familiar);
+			$a->setAffect('armor');
 			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
 			$a->setMessageEnd('You feel less protected.');
 			$a->setTimeout($timeout);
@@ -61,7 +57,6 @@
 			$atts->setAcMagic($mod_ac);
 			$a->apply($target);
 			Server::out($target, "You feel more protected!");
-			return false;
 		}
 	}
 ?>

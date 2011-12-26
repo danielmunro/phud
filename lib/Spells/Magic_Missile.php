@@ -31,19 +31,19 @@
 
 	class Magic_Missile extends Spell
 	{
+		protected $is_offensive = true;
+		protected $proficiency = 'sorcery';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('magic missile', $this);
 		}
-
-		public function getSubscriber()
-		{
-		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-			
-			$target->setHp($target->getHp() - self::calculateStandardDamage($actor->getLevel(), 3, 0.7));
+			$damage = round(rand($proficiency / 10, $proficiency / 5)); 
+			$target->setHp($target->getHp() - $damage);
 			Server::out($actor, "You smite " . $target->getAlias() . '!');
 		}
 	}

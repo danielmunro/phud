@@ -27,6 +27,8 @@
 	namespace Commands;
 	use \Mechanics\Alias,
 		\Mechanics\Server,
+		\Mechanics\Ability\Ability,
+		\Mechanics\Ability\Spell as mSpell,
 		\Mechanics\Command\User,
 		\Living\User as lUser;
 
@@ -40,17 +42,18 @@
 		public function perform(lUser $user, $args = array())
 		{
 			Server::out($user, "Spells: ");
-			$spells = $user->getAbilitySet()->getSpells();
-			foreach($spells as $s)
-			{
-				// @TODO fix this crap
-				$pad = 20 - strlen($s);
-				$label = $s->__toString();
-				for($i = 0; $i < $pad; $i++)
-					$label .= ' ';
-				Server::out($user, $label.': '.$s->getPercent().'%');
+			$abilities = $user->getAbilities();
+			foreach($abilities as $a) {
+				$ability = Ability::lookup($a);
+				if($ability && $ability['lookup'] instanceof mSpell) {
+					$pad = 20 - strlen($a);
+					$label = $a;
+					for($i = 0; $i < $pad; $i++) {
+						$label .= ' ';
+					}
+					Server::out($user, $label.': '.$ability['lookup']->getProficiency());
+				}
 			}
 		}
-	
 	}
 ?>

@@ -33,23 +33,18 @@
 
 	class Shield extends Spell
 	{
+		protected $proficiency = 'benedictions';
+		protected $required_proficiency = 25;
+
 		protected function __construct()
 		{
 			self::addAlias('shield', $this);
 		}
 
-		public function getSubscriber()
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-		}
-		
-		public function perform(Actor $actor, $args = array())
-		{
-			$timeout = 1 + ceil($actor->getLevel() * 0.9);
-			
-			$modifier = max(floor($actor->getLevel() / 10), 1);
-			$mod_ac = -30 * $modifier;
-			
-			$target = $actor; //HACK
+			$timeout = min(30, ceil($proficiency / 2));
+			$mod_ac = min(-(round($proficiency / 1.5)), -30);
 			
 			$a = new Affect();
 			$a->setAffect(self::$name_familiar);

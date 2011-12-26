@@ -44,8 +44,9 @@
 	
 		public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber)
 		{
-			if(!$fighter->reconcileTarget($args))
+			if(!$fighter->reconcileTarget($args)) {
 				return;
+			}
 
 			$fighter->getTarget()->fire(Event::EVENT_ATTACKED, $fighter, $command_subscriber);
 			if(!$command_subscriber->isSuppressed()) {

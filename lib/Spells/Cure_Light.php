@@ -27,25 +27,25 @@
 	namespace Spells;
     use \Mechanics\Ability\Spell,
 		\Mechanics\Alias,
+		\Mechanics\Actor,
     	\Mechanics\Server;
 
 	class Cure_Light extends Spell
 	{
+		protected $proficiency = 'healing';
+		protected $required_proficiency = 20;
+
 		protected function __construct()
 		{
 			self::addAlias('cure light', $this);
 		}
 
-		public function getSubscriber()
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-		}
-		
-		public function perform(Actor $actor, $args = array())
-		{
-			$amount = 1 + $actor->getLevel() / 2;
-			$target->setHp($target->getHp() + (int) $amount);
+			$prof_rand = rand(9, 11);
+			$amount = round(rand(1, ($proficiency / $prof_rand) + 1));
+			$target->setHp($target->getHp() + $amount);
 			Server::out($target, "You feel better!");
-			return false;
 		}
 	}
 

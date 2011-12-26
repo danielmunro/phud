@@ -28,6 +28,7 @@
 	use \Items\Food,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Ability\Ability,
+		\Mechanics\Ability\Skill,
 		\Mechanics\Event\Event;
 
 	abstract class Fighter extends Actor
@@ -77,6 +78,7 @@
 				'maladictions' => 15,
 				'benedictions' => 15,
 				'curative' => 15,
+				'beguiling' => 15,
 				'speech' => 15
 			];
 
@@ -87,7 +89,9 @@
 		{
 			foreach($this->abilities as $user_ab) {
 				$ability = Ability::lookup($user_ab);
-				$this->addSubscriber($ability['lookup']->getSubscriber());
+				if($ability['lookup'] instanceof Skill) {
+					$this->addSubscriber($ability['lookup']->getSubscriber());
+				}
 			}
 			parent::initActor();
 		}
@@ -102,8 +106,10 @@
 			// Remember what abilities the fighter has
 			$this->abilities[] = $ability['alias'];
 
-			// Apply the subscriber to trigger the ability at the right time
-			$this->addSubscriber($ability['lookup']->getSubscriber());
+			if($ability['lookup'] instanceof Skill) {
+				// Apply the subscriber to trigger the ability at the right time
+				$this->addSubscriber($ability['lookup']->getSubscriber());
+			}
 		}
 
 		public function getAttackSubscriber()

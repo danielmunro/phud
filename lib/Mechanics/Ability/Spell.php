@@ -25,13 +25,26 @@
 	 *
 	 */
 	namespace Mechanics\Ability;
+	use \Mechanics\Actor;
+
 	abstract class Spell extends Ability
 	{
-		protected $mana_cost = 50;
+		const INITIAL_MANA_COST = 50;
+
+		protected $mana_cost = 15;
+		protected $is_offensive = false;
 	
-		public function getManaCost()
+		public function getManaCost($proficiency)
 		{
-			return $this->mana_cost;
+			$min = round(min(self::INITIAL_MANA_COST - $proficiency, 10) / 10) * 10;
+			return max($min + 5, $this->mana_cost);
 		}
+
+		public function isOffensive()
+		{
+			return $this->is_offensive;
+		}
+
+		abstract public function perform(Actor $caster, Actor $target, $proficiency, $args = []);
 	}
 ?>

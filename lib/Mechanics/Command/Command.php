@@ -76,10 +76,12 @@
 		{
 			if($this instanceof DM && !$user->isDM())
 				return Server::out($user, "You cannot do that.");
-			else if($user->getDisposition() === Actor::DISPOSITION_SITTING)
-				return Server::out($user, "You need to stand up.");
-			else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING)
-				return Server::out($user, "You are asleep!");
+			else if(!in_array($user->getDisposition(), $this->dispositions)) {
+				if($user->getDisposition() === Actor::DISPOSITION_SITTING)
+					return Server::out($user, "You need to stand up.");
+				else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING)
+					return Server::out($user, "You are asleep!");
+			}
 			
 			$this->perform($user, $args, $command_subscriber);
 		}

@@ -31,6 +31,9 @@
 
 	class Cure_Serious extends Spell
 	{
+		protected $proficiency = 'healing';
+		protected $required_proficiency = 35;
+
 		protected function __construct()
 		{
 			self::addAlias('cure serious', $this);
@@ -40,13 +43,12 @@
 		{
 		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-		
-			$amount = 5 + $actor->getLevel() / 2;
-			$actor->setHp($actor->getHp() + (int) $amount);
-			
-			Server::out($actor, "You feel better!");
+			$prof_rand = rand(9, 11);
+			$amount = round(rand(5, ($proficiency / $prof_rand) + 4));
+			$target->setHp($target->getHp() + $amount);
+			Server::out($target, "You feel better!");
 		}
 	}
 ?>

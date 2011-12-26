@@ -26,6 +26,8 @@
 	 */
 	namespace Mechanics\Ability;
 	use \Living\User,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
 		\Mechanics\Server;
 
 	abstract class Skill extends Ability
@@ -40,5 +42,23 @@
 				$ability->perform($user, $percent, $args);
 			}
 		}
+
+		protected function getInputSubscriber($alias)
+		{
+			return new Subscriber(
+				Event::EVENT_INPUT,
+				$this,
+				function($subscriber, $user, $ability, $args) use ($alias) {
+					if(strpos($alias, $args[0]) === 0) {
+						// @TODO check if user can do this
+						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
+						$subscriber->satisfyBroadcast();
+					}
+				}
+			);
+		}
+
+		//abstract public function perform(Actor $actor, $proficiency, $args = []);
+		abstract public function getSubscriber();
 	}
 ?>

@@ -28,80 +28,67 @@
 	use \Mechanics\Alias,
 		\Mechanics\Actor,
 		\Mechanics\Server,
+		\Mechanics\Event\Subscriber,
 		\Mechanics\Command\Command,
+		\Mechanics\Ability\Ability,
 		\Mechanics\Ability\Spell as mSpell,
 		\Mechanics\Fighter as mFighter,
 		\Living\User as lUser;
 
 	class Cast extends Command
 	{
-		protected $dispositions = array(Actor::DISPOSITION_STANDING);
+		protected $dispositions = [Actor::DISPOSITION_STANDING];
 		
 		protected function __construct()
 		{
 			self::addAlias('cast', $this, 11);
 		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
 		{
-			
-			// DETERMINE THE SPELL
-			// Get rid of 'cast'
-			array_shift($args);
-			$input = implode(' ', $args);
-			
-			$spell = $actor->getAbilitySet()->getSpellByInput($input);
-			if(!$spell)
-			{
-				$last = array_pop($args);
-				$input = implode(' ', $args);
-				if($input)
-					$spell = $actor->getAbilitySet()->getSpellByInput($input);
-			}
-			
-			if(!$spell)
-				return Server::out($actor, "You don't know that spell.");
-			
-			// DETERMINE THE TARGET
+			array_shift($args); // get rid of the command part of the args
+			$s = sizeof($args);
+			$arg_spell_casting = null;
 			$target = null;
-			
-			if(isset($last))
-				$target = $actor->getRoom()->getActorByInput($args);
-			
-			if(isset($last) && !$target)
-				return Server::out($actor, "You don't see them."); // Specified target not found
-			
-			if(!$target)
-				$target = $actor->getTarget();
-			
-			// Target the caster
-			if(!$target && $spell::getSpellType() == mSpell::TYPE_PASSIVE)
+
+			if($s === 1) {
+				$arg_spell_casting = Ability::lookup(trim($args[0], "'"));
 				$target = $actor;
-			
-			if(!$target)
-				return Server::out($actor, "Who do you want to cast that on?"); // No target specified and no default
-			
-			if(!($target instanceof mFighter) && $spell::getSpellType() == Spell::TYPE_OFFENSIVE) // Can't cast an offensive spell on a non fighter
-				return Server::out($actor, "They wouldn't like that very much.");
-			
-			// CONCENTRATION
-			if(rand(0, 100) > $spell->getPercent())
-			{
-				$actor->setMana($actor->getMana() - ceil($spell->getManaCost($actor->getLevel()) / 2));
-				return Server::out($actor, "You lost your concentration.");
+			} else {
+				$arg_target = $args[$s-1];
+				$arg_target_lookup = $actor->getRoom()->getActorByInput($arg_target);
+				if($arg_target_lookup) {
+					$target = $arg_target_lookup;
+					array_pop($args); // remove the target from the casting string
+				} else {
+					$target = $actor;
+				}
+				$arg_spell_casting = Ability::lookup(trim(implode(' ', $args), "'"));
 			}
-			
-			$actors = $actor->getRoom()->getActors();
-			foreach($actors as $rm_actor)
-				if($rm_actor instanceof lUser)
-					Server::out($rm_actor, ($rm_actor == $actor ? 'You' : $actor->getAlias(true)) . ' utter' . ($rm_actor == $actor ? '' : 's') . ' the words, "' . $spell->getName($actor, $rm_actor) . '"');
-			
-			$actor->setMana($actor->getMana() - $spell->getManaCost($actor->getLevel()));
-			
-			$spell::perform($actor, $target);
-			
-			if($spell::getSpellType() == mSpell::TYPE_OFFENSIVE && $actor != $target)
-				$actor->reconcileTarget($target);
+
+			if(empty($arg_spell_casting) || !($arg_spell_casting['lookup'] instanceof mSpell)) {
+				return Server::out($actor, "That spell does not exist in this realm.");
+			}
+
+			if(empty($target)) {
+				return Server::out($actor, "Cast ".$arg_spell_casting['alias']." on who?");
+			}
+
+			if(!in_array($arg_spell_casting['alias'], $actor->getAbilities())) {
+				return Server::out($actor, "You do not know that spell.");
+			}
+
+
+			if($arg_spell_casting['lookup']->isOffensive()) {
+				if($actor->reconcileTarget($target)) {
+					$actor->getTarget()->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
+					if($command_subscriber->isSuppressed()) {
+						return;
+					}
+				}
+			}
+			$arg_spell_casting['lookup']->perform($actor, $target, $actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()));
+			return;
 		}
 	}
 ?>

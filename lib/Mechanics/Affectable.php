@@ -32,7 +32,7 @@
 
 		public function addAffect(Affect $affect)
 		{
-			$this->affects[] = $affect;
+			$this->affects[$affect->getAffect()] = $affect;
 		}
 
 		public function removeAffect(Affect $affect)

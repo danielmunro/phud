@@ -25,28 +25,26 @@
 	 *
 	 */
 	namespace Spells;
-    use \Mechanics\Ability\Spell;
-    use \Mechanics\Alias;
-    use \Mechanics\Actor;
+    use \Mechanics\Ability\Spell,
+		\Mechanics\Alias,
+    	\Mechanics\Actor;
 
 	class Heal extends Spell
 	{
+		protected $proficiency = 'healing';
+		protected $required_proficiency = 55;
+
 		protected function __construct()
 		{
 			self::addAlias('heal', $this);
 		}
-
-		public function getSubscriber()
-		{
-		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-		
-			$amount = 50;
-			$actor->setHp($actor->getHp() + $amount);
-			
-			Server::out($actor, "You feel better!");
+			$prof_rand = rand(9, 11);
+			$amount = round(rand(45, ($proficiency / $prof_rand) + 45));
+			$target->setHp($target->getHp() + $amount);
+			Server::out($target, "You feel better!");
 		}
 	}
 ?>
