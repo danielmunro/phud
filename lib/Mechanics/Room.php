@@ -291,6 +291,13 @@
 			return [$actors, $movement_subscriber];
 		}
 
+		protected function save()
+		{
+			parent::save();
+			$dbr = Dbr::instance();
+			$dbr->sAdd('rooms', $this->id);
+		}
+
 		protected function afterSave($after)
 		{
 			$this->actors = $after[0];
