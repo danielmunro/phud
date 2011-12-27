@@ -34,22 +34,21 @@
 	{
 		protected $proficiency = 'beguiling';
 		protected $required_proficiency = 40;
-		protected $affect = null;
 
 		protected function __construct()
 		{
 			self::addAlias('sleep', $this);
-			$this->affect = new Affect();
-			$this->affect->setAffect('sleep');
-			$this->affect->setMessageAffect('Spell: sleep');
 		}
 		
 		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
 			$timeout = round(1 + ($proficiency / 10));
 			$target->setDisposition(Actor::DISPOSITION_SLEEPING);
-			$this->affect->setTimeout($timeout);
-			$this->affect->apply($target);
+			$a = new Affect();
+			$a->setAffect('sleep');
+			$a->setMessageAffect('Spell: sleep');
+			$a->setTimeout($timeout);
+			$a->apply($target);
 			$target->getRoom()->announce($target, ucfirst($target)." goes to sleep.");
 			Server::out($target, "You go to sleep.");
 		}

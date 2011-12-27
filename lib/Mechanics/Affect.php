@@ -114,6 +114,11 @@
 		public function apply($affectable)
 		{
 			$affectable->addAffect($this);
+			$this->applyTimeoutSubscriber($affectable);
+		}
+
+		public function applyTimeoutSubscriber($affectable)
+		{
 			if($this->timeout > 0) {
 				Server::instance()->addSubscriber(
 					new Subscriber(

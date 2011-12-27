@@ -84,6 +84,9 @@
 					$this->addSubscriber($subscriber);
 				}
 			}
+			foreach($this->affects as $affect) {
+				$affect->applyTimeoutSubscriber($this);
+			}
 		}
 
 		public function getAlignment()

@@ -70,6 +70,12 @@
 				return Server::out($actor, "That spell does not exist in this realm.");
 			}
 
+			$cost = $arg_spell_casting['lookup']->getManaCost($actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()));
+			if($cost > $actor->getMana()) {
+				return Server::out($actor, "You lack the mana to cast ".$arg_spell_casting['alias']." right now.");
+			}
+			$actor->setMana($actor->getMana()-$cost);
+
 			if(empty($target)) {
 				return Server::out($actor, "Cast ".$arg_spell_casting['alias']." on who?");
 			}

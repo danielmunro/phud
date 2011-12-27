@@ -36,7 +36,7 @@
 	
 		public function getManaCost($proficiency)
 		{
-			$min = round(min(self::INITIAL_MANA_COST - $proficiency, 10) / 10) * 10;
+			$min = round((self::INITIAL_MANA_COST - $proficiency) / 10) * 10;
 			return max($min + 5, $this->mana_cost);
 		}
 
