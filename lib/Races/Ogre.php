@@ -27,12 +27,30 @@
 	namespace Races;
 	use \Mechanics\Alias,
 		\Mechanics\Race,
+		\Mechanics\Effect;
 		\Mechanics\Attributes;
 
 	class Ogre extends Race
 	{
 		protected $alias = 'ogre';
 		protected $creation_points = 4;
+		protected $movement_cost = 2;
+		protected $full = 2;
+		protected $hunger = 4;
+		protected $thirst = 2;
+		protected $unarmed_verb = 'pummel';
+		protected $size = self::SIZE_LARGE;
+		protected $playable = true;
+		protected $proficiencies = [
+			'one handed weapons' => 10,
+			'two handed weapons' => 10,
+			'chain armor' => 5,
+			'plate armor' => 5,
+			'melee' => 10,
+			'alchemy' => 5,
+			'curative' => 5,
+			'evasive' => 5
+		];
 	
 		protected function __construct()
 		{
@@ -61,35 +79,7 @@
 			$this->max_attributes->setCon(21);
 			$this->max_attributes->setCha(14);
 			
-			$this->movement_cost = 2;
-			
-			$this->full = 60;
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->unarmed_verb = 'pummel';
-			
-			$this->move_verb = 'walks';
-			
-			$this->size = self::SIZE_LARGE;
-			$this->playable = true;
-			
-			$this->effects_resist = array(\Mechanics\Effect::FIRE, \Mechanics\Effect::COLD);
-			
-			$this->proficiencies = [
-				'one handed weapons' => 25,
-				'two handed weapons' => 25,
-				'chain armor' => 20,
-				'plate armor' => 20,
-				'melee combat' => 25,
-				'alchemy' => 20,
-				'curative' => 20
-			];
-			
 			parent::__construct();
-		
 		}
 
 		public function getSubscribers()

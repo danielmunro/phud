@@ -33,6 +33,20 @@
 	{
 		protected $alias = 'faerie';
 		protected $creation_points = 18;
+		protected $unarmed_verb = 'slap';
+		protected $size = self::SIZE_TINY;
+		protected $playable = true;
+		protected $proficiencies = [
+			'healing' => 5,
+			'alchemy' => 5,
+			'elemental' => 10,
+			'illusion' => 5,
+			'transportation' => 5,
+			'sorcery' => 10,
+			'maladictions' => 5,
+			'benedictions' => 5,
+			'curative' => 5
+		];
 	
 		protected function __construct()
 		{
@@ -61,35 +75,7 @@
 			$this->max_attributes->setCon(13);
 			$this->max_attributes->setCha(22);
 			
-			$this->movement_cost = 0;
-			
-			$this->full = 40;
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->unarmed_verb = 'slap';
-			
-			$this->move_verb = 'flies';
-			
-			$this->size = self::SIZE_TINY;
-			$this->playable = true;
-			
-			$this->proficiencies = [
-				'healing' => 25,
-				'alchemy' => 20,
-				'elemental' => 25,
-				'illusion' => 25,
-				'transportation' => 25,
-				'sorcery' => 25,
-				'maladictions' => 20,
-				'benedictions' => 20,
-				'curative' => 20
-			];
-			
 			parent::__construct();
-		
 		}
 		
 		public function getSubscribers()

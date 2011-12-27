@@ -33,6 +33,22 @@
 	{
 		protected $alias = 'undead';
 		protected $creation_points = 30;
+		protected $full = 5;
+		protected $hunger = 3;
+		protected $movement_cost = 2;
+		protected $unarmed_verb = 'swipe';
+		protected $move_verb = 'limps';
+		protected $playable = true;
+		protected $proficiencies = [
+			'one handed weapons' => 5,
+			'two handed weapons' => 5,
+			'melee' => 10,
+			'sorcery' => 10,
+			'maladictions' => 10,
+			'transportation' => 5,
+			'illusion' => 5,
+			'elemental' => 5
+		];
 
 		protected function __construct()
 		{
@@ -61,30 +77,7 @@
 			$this->max_attributes->setCon(17);
 			$this->max_attributes->setCha(13);
 			
-			$this->movement_cost = 2;
-			
-			$this->full = 40;
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->unarmed_verb = 'swipe';
-			
-			$this->move_verb = 'limps';
-			$this->playable = true;
-
-			$this->proficiencies = [
-				'one handed weapons' => 20,
-				'two handed weapons' => 20,
-				'melee combat' => 25,
-				'sorcery' => 25,
-				'maladictions' => 20,
-				'transportation' => 20
-			];
-			
 			parent::__construct();
-		
 		}
 
 		public function getSubscribers()

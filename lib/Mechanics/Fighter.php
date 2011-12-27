@@ -42,10 +42,30 @@
 		protected $delay_subscriber = null;
 		protected $attributes = null;
 		protected $max_attributes = null;
-		protected $battle = null;
 		protected $target = null;
-		protected $proficiencies = null;
 		protected $abilities = [];
+		protected $proficiencies = [
+			'stealth' => 15,
+			'healing' => 15,
+			'one handed weapons' => 15,
+			'two handed weapons' => 15,
+			'leather armor' => 15,
+			'chain armor' => 15,
+			'plate armor' => 15,
+			'melee' => 15,
+			'evasive' => 15,
+			'archery' => 15,
+			'alchemy' => 15,
+			'elemental' => 15,
+			'illusion' => 15,
+			'transportation' => 15,
+			'sorcery' => 15,
+			'maladictions' => 15,
+			'benedictions' => 15,
+			'curative' => 15,
+			'beguiling' => 15,
+			'speech' => 15
+		];
 	
 		public function __construct()
 		{
@@ -58,29 +78,6 @@
 			$this->max_attributes->setHp(20);
 			$this->max_attributes->setMana(20);
 			$this->max_attributes->setMovement(100);
-
-			$this->proficiencies = [
-				'stealth' => 15,
-				'healing' => 15,
-				'one handed weapons' => 15,
-				'two handed weapons' => 15,
-				'leather armor' => 15,
-				'chain armor' => 15,
-				'plate armor' => 15,
-				'melee' => 15,
-				'evasive' => 15,
-				'archery' => 15,
-				'alchemy' => 15,
-				'elemental' => 15,
-				'illusion' => 15,
-				'transportation' => 15,
-				'sorcery' => 15,
-				'maladictions' => 15,
-				'benedictions' => 15,
-				'curative' => 15,
-				'beguiling' => 15,
-				'speech' => 15
-			];
 
 			parent::__construct();
 		}
@@ -161,9 +158,16 @@
 		
 		public function setRace($race)
 		{
+			if($this->race) {
+				$lookup = Race::lookup($this->race);
+				$cur_race = $lookup['lookup'];
+				foreach($cur_race->getProficiencies() as $proficiency => $amount) {
+					$this->proficiencies[$proficiency] -= $amount;
+				}
+			}
 			parent::setRace($race);
 
-			$max_atts = $this->getRace()['lookup']->getMaxAttributes();
+			$max_atts = $race['lookup']->getMaxAttributes();
 			$this->max_attributes->setStr($max_atts->getStr());
 			$this->max_attributes->setInt($max_atts->getInt());
 			$this->max_attributes->setWis($max_atts->getWis());
@@ -171,7 +175,7 @@
 			$this->max_attributes->setCon($max_atts->getCon());
 			$this->max_attributes->setCha($max_atts->getCha());
 
-			$atts = $this->getRace()['lookup']->getAttributes();
+			$atts = $race['lookup']->getAttributes();
 			$this->attributes->setStr($atts->getStr());
 			$this->attributes->setInt($atts->getInt());
 			$this->attributes->setWis($atts->getWis());
@@ -179,9 +183,9 @@
 			$this->attributes->setCon($atts->getCon());
 			$this->attributes->setCha($atts->getCha());
 
-			$profs = $this->getRace()['lookup']->getProficiencies();
+			$profs = $race['lookup']->getProficiencies();
 			foreach($profs as $name => $value) {
-				$this->proficiencies[$name] = $value;
+				$this->proficiencies[$name] += $value;
 			}
 		}
 		

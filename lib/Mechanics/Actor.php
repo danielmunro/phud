@@ -58,6 +58,7 @@
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $alignment = 0;
+		protected $race_subscribers = [];
 		
 		public function __construct()
 		{
@@ -252,13 +253,13 @@
 		public function setRace($race)
 		{
 			if($this->race) {
-				$lookup = Race::lookup($this->race);
-				foreach($lookup['lookup']->getSubscribers() as $subscriber) {
+				foreach($this->race_subscribers as $subscriber) {
 					$this->removeSubscriber($subscriber);
 				}
 			}
 			$this->race = $race['alias'];
-			foreach($race['lookup']->getSubscribers() as $subscriber) {
+			$this->race_subscribers = $race['lookup']->getSubscribers();
+			foreach($this->race_subscribers as $subscriber) {
 				$this->addSubscriber($subscriber);
 			}
 		}

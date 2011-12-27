@@ -33,6 +33,9 @@
 	{
 		protected $alias = 'critter';
 		protected $creation_points = 10;
+		protected $movement_cost = 1;
+		protected $move_verb = 'leaves';
+		protected $unarmed_verb = 'punch';
 	
 		protected function __construct()
 		{
@@ -53,18 +56,7 @@
 			
 			$this->max_attributes = $this->attributes;
 			
-			$this->movement_cost = 1;
-			
-			$this->full = 40;
-			
-			$this->move_verb = 'leaves';
-			
-			$this->unarmed_verb = 'punch';
-			
-			$this->weapons = array();
-			
 			parent::__construct();
-		
 		}
 
 		public function getSubscribers()

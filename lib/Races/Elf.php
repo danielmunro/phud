@@ -33,6 +33,18 @@
 	{
 		protected $alias = 'elf';
 		protected $creation_points = 14;
+		protected $playable = true;
+		protected $proficiencies = [
+			'stealth' => 10,
+			'one handed weapons' => 5,
+			'leather armor' => 5,
+			'archery' => 10,
+			'elemental' => 5,
+			'illusion' => 5,
+			'evasive' => 5
+			'speech' => 5,
+			'beguiling' => 5
+		];
 	
 		protected function __construct()
 		{
@@ -61,32 +73,7 @@
 			$this->max_attributes->setCon(17);
 			$this->max_attributes->setCha(21);
 			
-			$this->movement_cost = 1;
-			
-			$this->full = 40;
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->unarmed_verb = 'punch';
-			
-			$this->move_verb = 'walks';
-			
-			$this->size = self::SIZE_NORMAL;
-			$this->playable = true;
-			
-			$this->proficiencies = [
-				'stealth' => 25,
-				'one handed weapons' => 20,
-				'leather armor' => 20,
-				'archery' => 20,
-				'elemental' => 20,
-				'illusion' => 20
-			];
-			
 			parent::__construct();
-		
 		}
 		
 		public function getSubscribers()

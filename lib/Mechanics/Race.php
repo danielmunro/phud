@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	use \Mechanics\Alias;
+	use Alias;
 
 	abstract class Race
 	{
@@ -61,7 +61,7 @@
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
 		protected $unarmed_verb = 'punch';
-		protected $size = 2;
+		protected $size = self::SIZE_NORMAL;
 		protected $effects_resist = array();
 		protected $effects_vuln = array();
 		protected $materials_vuln = array();
@@ -73,6 +73,7 @@
 		protected $thirst = 2;
 		protected $hunger = 2;
 		protected $full = 4;
+		protected $movement_cost = 1;
 		
 		protected function __construct()
 		{
@@ -109,7 +110,7 @@
 			return $this->proficiencies;
 		}
 
-		public static function getParts(\Mechanics\Actor $actor)
+		public static function getParts(Actor $actor)
 		{
 			// @todo finish parts... this can wait for other more important things
 			$parts = array
@@ -131,15 +132,35 @@
 			return $this->max_attributes;
 		}
 		
-		public function getSize() { return $this->size; }
-		public function getRaceStr() { return get_class($this); }
-		public function getMovementCost() { return $this->movement_cost; }
-		public function getUnarmedVerb() { return $this->unarmed_verb; }
-		public function getMoveVerb() { return $this->move_verb; }
-		public function getDecreaseNourishment() { return $this->decrease_nourishment; }
-		public function getDecreaseThirst() { return $this->decrease_thirst; }
-		public function getFull() { return $this->full; }
-		public function isPlayable() { return $this->playable; }
+		public function getSize()
+		{
+			return $this->size;
+		}
+
+		public function getMovementCost()
+		{
+			return $this->movement_cost;
+		}
+
+		public function getUnarmedVerb()
+		{
+			return $this->unarmed_verb;
+		}
+
+		public function getMoveVerb()
+		{
+			return $this->move_verb;
+		}
+
+		public function getFull()
+		{
+			return $this->full;
+		}
+
+		public function isPlayable()
+		{
+			return $this->playable;
+		}
 		
 		public function getAlias()
 		{

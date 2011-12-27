@@ -35,6 +35,19 @@
 	{
 		protected $alias = 'human';
 		protected $creation_points = 10;
+		protected $playable = true;
+		protected $proficiencies = [
+			'alchemy' => 10,
+			'one handed weapons' => 5,
+			'melee' => 5,
+			'evasive' => 5,
+			'speech' => 5,
+			'leather armor' => 5,
+			'elemental' => 5,
+			'benedictions' => 5,
+			'healing' => 5,
+			'beguiling' => 5
+		];
 
 		protected function __construct()
 		{
@@ -62,18 +75,6 @@
 			$this->max_attributes->setDex(18);
 			$this->max_attributes->setCon(18);
 			$this->max_attributes->setCha(18);
-			
-			$this->movement_cost = 2;
-
-			$this->move_verb = 'walks';
-			
-			$this->unarmed_verb = 'punch';
-			
-			$this->weapons = array
-			(
-			);
-			
-			$this->playable = true;
 			
 			$this->subscribers = [
 				new Subscriber(
