@@ -29,50 +29,43 @@
 		\Mechanics\Server,
 		\Mechanics\Debug,
 		\Mechanics\Alias,
-		\Items\Item as iItem,
+		\Mechanics\Item as mItem,
 		\Items\Drink as iDrink,
 		\Mechanics\Command\Command;
 
 	class Drink extends Command
 	{
 	
-		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
+		protected $dispositions = [
+			Actor::DISPOSITION_STANDING,
+			Actor::DISPOSITION_SITTING
+		];
 	
 		protected function __construct()
 		{
 			self::addAlias('drink', $this);
 		}
 		
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
-			
-			$item = null;
-			/**
-			@TODO redo this crap
-			if(sizeof($args) > 1)
-				$item = $actor->getInventory()->getItemByInput($args);
-			
-			if(!($item instanceof iItem))
-			{
-				$items = $actor->getRoom()->getInventory()->getItems();
-				foreach($items as $i)
-					if($i instanceof iDrink)
-						$item = $i;
+			$drinkable = implode(' ', array_slice($args, 1));
+			$item = $actor->getInventory()->getItemByInput($drinkable);
+			if(!$item) {
+				$item = $actor->getRoom()->getInventory()->getItemByInput($drinkable);
 			}
-			*/
 			
-			if(!($item instanceof iItem))
+			if(!($item instanceof mItem))
 				return Server::out($actor, "Nothing like that is here.");
 			
 			if(!($item instanceof iDrink))
 				return Server::out($actor, "You can't drink that!");
 			
-			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()->getFull())
+			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()['lookup']->getFull())
 				return Server::out($actor, "You are too full.");
 			
 			$actor->increaseThirst($item->getThirst());
 			
-			Server::out($actor, "You drink water from ".$item.".");
+			Server::out($actor, "You drink ".$item->getContents()." from ".$item.".");
 		}
 	}
 ?>

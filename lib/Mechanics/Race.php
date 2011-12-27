@@ -71,6 +71,8 @@
 		protected $alias = null;
 		protected $proficiencies = [];
 		protected $subscribers = [];
+		protected $thirst = 2;
+		protected $nourishment = 2;
 		
 		protected function __construct()
 		{

@@ -28,6 +28,7 @@
 	use \Mechanics\Alias,
 		\Mechanics\Server,
 		\Mechanics\Command\DM,
+		\Mechanics\Command\Command,
 		\Living\User as lUser;
 
 	class Make extends DM
@@ -41,10 +42,10 @@
 		public function perform(lUser $user, $args = array())
 		{
 			$target = $user->getRoom()->getActorByInput($args[1]);
-			$command = Alias::lookup($args[2]);
+			$command = Command::lookup($args[2]);
 			if($target && $command)
 			{
-				$command->perform($target, $args);
+				$command['lookup']->perform($target, $args);
 				Server::out($user, "Done.");
 			}
 			else

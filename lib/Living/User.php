@@ -172,8 +172,8 @@
 			else
 				$this->thirst += $thirst;
 			
-			if($this->thirst > $this->getRace()->getThirst())
-				$this->thirst = $this->getRace()->getThirst();
+			if($this->thirst > $this->getRace()['lookup']->getThirst())
+				$this->thirst = $this->getRace()['lookup']->getThirst();
 		}
 		
 		public function isNourishmentFull()

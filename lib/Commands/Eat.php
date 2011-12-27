@@ -45,7 +45,7 @@
 		public function perform(Actor $actor, $args = array())
 		{
 			
-			$item = $actor->getInventory()->getItemByInput($args);
+			$item = $actor->getInventory()->getItemByInput(array_slice($args, 1));
 			
 			if(!($item instanceof iItem))
 				return Server::out($actor, "Nothing like that is here.");

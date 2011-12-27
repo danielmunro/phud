@@ -43,10 +43,12 @@
 	
 		public function perform(Actor $actor, $args = array())
 		{
-			$item = $actor->getInventory()->getItemByInput($args);
+			$item = implode(' ', array_slice($args, 1, sizeof($args)-1));
+			$item = $actor->getInventory()->getItemByInput($item);
 			
-			if(!($item instanceof mItem))
+			if(!($item instanceof mItem)) {
 				return Server::out($actor, "You do not have anything like that.");
+			}
 			
 			$item->transferOwnership($actor->getInventory(), $actor->getRoom()->getInventory());
 

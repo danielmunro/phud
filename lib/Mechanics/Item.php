@@ -61,6 +61,7 @@
 		const MATERIAL_SILVER = 'silver';
 		const MATERIAL_STAINLESS = 'stainless';
 		const MATERIAL_STEEL = 'steel';
+		const MATERIAL_STONE = 'stone';
 		const MATERIAL_TIN = 'tin';
 		const MATERIAL_TINFOIL = 'tinfoil';
 		const MATERIAL_TITANIUM = 'titanium';
@@ -193,6 +194,7 @@
 						self::MATERIAL_SILVER,
 						self::MATERIAL_STAINLESS,
 						self::MATERIAL_STEEL,
+						self::MATERIAL_STONE,
 						self::MATERIAL_TIN,
 						self::MATERIAL_TINFOIL,
 						self::MATERIAL_TITANIUM,

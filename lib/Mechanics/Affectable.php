@@ -38,8 +38,9 @@
 		public function removeAffect(Affect $affect)
 		{
 			$key = array_search($affect, $this->affects);
-			if($key !== false)
+			if($key !== false) {
 				unset($this->affects[$key]);
+			}
 		}
 
 		public function getAffects()

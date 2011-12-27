@@ -25,9 +25,10 @@
 	 *
 	 */
 	namespace Items;
-	use \Mechanics\Item;
-	use \Mechanics\Server;
-	use \Mechanics\Actor;
+	use \Mechanics\Item,
+		\Mechanics\Server,
+		\Mechanics\Actor;
+
 	class Drink extends Item
 	{
 		protected $short = 'a generic drink container';
@@ -38,16 +39,6 @@
 		protected $thirst = 0;
 		protected $uses = 0;
 		
-		public function getUses()
-		{
-			return $this->uses;
-		}
-		
-		public function setUses($uses)
-		{
-			$this->uses = $uses;
-		}
-		
 		public function getAmount()
 		{
 			return $this->amount;
@@ -56,11 +47,12 @@
 		public function setAmount($amount)
 		{
 			$this->amount = $amount;
+			$this->uses = $amount;
 		}
 		
-		public function use(Actor $actor)
+		public function drink(Actor $actor)
 		{
-			if(!$this->amount)
+			if($this->uses === 0)
 			{
 				Server::out($actor, "There's no ".$contents." left.");
 				return false;
@@ -72,7 +64,7 @@
 				return false;
 			}
 			
-			$this->amount--;
+			$this->uses--;
 			$actor->increaseThirst($this->thirst);
 			return true;
 		}
@@ -87,11 +79,20 @@
 			return $this->contents;
 		}
 		
-		public function setContents($contents, $thirst)
+		public function setContents($contents)
 		{
 			$this->contents = $contents;
-			$this->thirst = $thirst;
 			$this->fill();
+		}
+
+		public function setThirst($thirst)
+		{
+			$this->thirst = $thirst;
+		}
+
+		public function getThirst()
+		{
+			return $this->thirst;
 		}
 		
 		public function getInformation()

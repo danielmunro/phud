@@ -89,18 +89,19 @@
 				$people = $user->getRoom()->getActors();
 				foreach($people as $a)
 					if($a != $user)
-						Server::out($user, $a->getAlias(true) . ' is here.');
+						Server::out($user, ucfirst($a).' is here.');
 				return;
 			}
 			
 			// Actor is looking at something... find out what it is
-			$target = $user->getRoom()->getActorByInput($args);
+			$looking = implode(' ', array_slice($args, 1, sizeof($args)-1));
+			$target = $user->getRoom()->getActorByInput($looking);
 			
 			if(empty($target))
-				$target = $user->getRoom()->getInventory()->getItemByInput($args);
+				$target = $user->getRoom()->getInventory()->getItemByInput($looking);
 			
 			if(empty($target))
-				$target = $user->getInventory()->getItemByInput($args);
+				$target = $user->getInventory()->getItemByInput($looking);
 			
 			if(!empty($target))
 				return Server::out($user, $target->lookDescribe());

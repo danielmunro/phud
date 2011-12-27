@@ -27,6 +27,8 @@
 	namespace Commands;
 	use \Mechanics\Alias,
 		\Mechanics\Server,
+		\Items\Drink as iDrink,
+		\Items\Food as iFood,
 		\Living\User as lUser,
 		\Mechanics\Item as mItem,
 		\Mechanics\Equipment as mEquipment,
@@ -48,6 +50,9 @@
 				return Server::out($user, "What were you trying to do?");
 		
 			$item = $user->getInventory()->getItemByInput($args[1]);
+			if(!$item) {
+				$item = $user->getRoom()->getInventory()->getItemByInput($args[1]);
+			}
 			$value = implode(' ', array_slice($args, 3));
 			
 			$command = '';
@@ -55,9 +60,13 @@
 				$command = $this->getWeaponCommand($args[2]);
 			else if($item instanceof mEquipment)
 				$command = $this->getEquipmentCommand($args[2]);
+			else if($item instanceof iDrink)
+				$command = $this->getDrinkCommand($args[2]);
+			else if($item instanceof iFood)
+				$command = $this->getFoodCommand($args[2]);
 			else if($item instanceof mItem)
 				$command = $this->getItemCommand($args[2]);
-			
+
 			if(!$item)
 				return Server::out($user, "You can't find it.");
 			
@@ -166,6 +175,24 @@
 			}
 			Server::out($user, "That's an invalid position.");
 		}
+
+		private function doThirst(lUser $user, mItem $item, $thirst, $args)
+		{
+			$item->setThirst($thirst);
+			Server::out($user, ucfirst($item)." will quench thirst for ".$thirst.".");
+		}
+
+		private function doAmount(lUser $user, mItem $item, $amount, $args)
+		{
+			$item->setAmount($amount);
+			Server::out($user, ucfirst($item)." can be used up to ".$amount." times.");
+		}
+
+		private function doContents(lUser $user, mItem $item, $contents, $args)
+		{
+			$item->setContents($contents);
+			Server::out($user, ucfirst($item)." contents are now: ".$contents.".");
+		}
 		
 		private function getItemCommand($arg)
 		{
@@ -186,6 +213,22 @@
 			if($command)
 				return $command;
 			return $this->getCommand($arg, array('type', 'damage', 'verb'));
+		}
+
+		private function getDrinkCommand($arg)
+		{
+			$command = $this->getItemCommand($arg);
+			if($command)
+				return $command;
+			return $this->getCommand($arg, ['thirst', 'amount', 'contents']);
+		}
+		
+		private function getFoodCommand($arg)
+		{
+			$command = $this->getItemCommand($arg);
+			if($command)
+				return $command;
+			return $this->getCommand($arg, ['nourishment']);
 		}
 		
 		private function getCommand($arg, $commands)

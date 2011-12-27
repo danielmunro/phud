@@ -59,6 +59,11 @@
 				return Server::out($user, "You've created a new room to the " . $direction . ".");
 			}
 			
+			if($args[1] == 'save') {
+				$user->getRoom()->save();
+				return Server::out($user, "Room saved.");
+			}
+			
 			if($args[1] == 'id')
 				return Server::out($user, "ID: " . $user->getRoom()->getId());
 			
@@ -66,7 +71,7 @@
 			if($property)
 			{
 				if(is_numeric($property[0])) {
-					$fn = 'set' . ucfirst($property);
+					$fn = 'set' . ucfirst($property[1]);
 				} else {
 					$fn = $property[0];
 				}

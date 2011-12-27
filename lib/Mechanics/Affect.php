@@ -98,19 +98,6 @@
 			return $this->timeout < 0;
 		}
 		
-		public function setArgs($args)
-		{
-			$this->args = $args;
-		}
-		
-		public function getArgs($i = '')
-		{
-			if($i)
-				return $this->args[$i];
-			else
-				return $this->args;
-		}
-		
 		public function apply($affectable)
 		{
 			$affectable->addAffect($this);
