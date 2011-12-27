@@ -60,7 +60,6 @@
 		protected $move_verb;
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
-		protected $full = 0;
 		protected $unarmed_verb = 'punch';
 		protected $size = 2;
 		protected $effects_resist = array();
@@ -72,10 +71,21 @@
 		protected $proficiencies = [];
 		protected $subscribers = [];
 		protected $thirst = 2;
-		protected $nourishment = 2;
+		protected $hunger = 2;
+		protected $full = 4;
 		
 		protected function __construct()
 		{
+		}
+
+		public function getThirst()
+		{
+			return $this->thirst;
+		}
+
+		public function getHunger()
+		{
+			return $this->hunger;
 		}
 		
 		abstract public function getSubscribers();

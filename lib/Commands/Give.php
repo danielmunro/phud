@@ -35,16 +35,18 @@
 	class Give extends Command
 	{
 	
-		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
+		protected $dispositions = [
+			Actor::DISPOSITION_STANDING,
+			Actor::DISPOSITION_SITTING
+		];
 	
 		protected function __construct()
 		{
 			self::addAlias('give', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
-		
 			if(
 				is_string($args[0]) &&
 				strcmp(((int) $args[1]), $args[1]) === 0 &&

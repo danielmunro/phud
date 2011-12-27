@@ -49,9 +49,21 @@
 		public function perform(Actor $actor, $args = [])
 		{
 			$drinkable = implode(' ', array_slice($args, 1));
-			$item = $actor->getInventory()->getItemByInput($drinkable);
+			$item = null;
+			if($drinkable) {
+				$item = $actor->getInventory()->getItemByInput($drinkable);
+				if(!$item) {
+					$item = $actor->getRoom()->getInventory()->getItemByInput($drinkable);
+				}
+			}
 			if(!$item) {
-				$item = $actor->getRoom()->getInventory()->getItemByInput($drinkable);
+				$items = array_merge($actor->getInventory()->getItems(), $actor->getRoom()->getInventory()->getItems());
+				foreach($items as $i) {
+					if($i instanceof iDrink) {
+						$item = $i;
+						break;
+					}
+				}
 			}
 			
 			if(!($item instanceof mItem))
@@ -60,12 +72,9 @@
 			if(!($item instanceof iDrink))
 				return Server::out($actor, "You can't drink that!");
 			
-			if($actor->getNourishment() + $actor->getThirst() > $actor->getRace()['lookup']->getFull())
-				return Server::out($actor, "You are too full.");
-			
-			$actor->increaseThirst($item->getThirst());
-			
-			Server::out($actor, "You drink ".$item->getContents()." from ".$item.".");
+			if($item->drink($actor)) {
+				Server::out($actor, "You drink ".$item->getContents()." from ".$item.".");
+			}
 		}
 	}
 ?>

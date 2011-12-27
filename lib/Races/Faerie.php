@@ -63,8 +63,6 @@
 			
 			$this->movement_cost = 0;
 			
-			$this->decrease_thirst = 0.5;
-			$this->decrease_nourishment = 0.5;
 			$this->full = 40;
 			
 			$this->weapons = array

@@ -58,15 +58,10 @@
 				return false;
 			}
 			
-			if($this->thirst && $actor->isThirstFull())
-			{
-				Server::out($actor, "Your thirst has been quenched.");
-				return false;
+			if($actor->increaseThirst($this->thirst)) {
+				$this->uses--;
+				return true;
 			}
-			
-			$this->uses--;
-			$actor->increaseThirst($this->thirst);
-			return true;
 		}
 		
 		private function fill()

@@ -55,8 +55,6 @@
 			
 			$this->movement_cost = 1;
 			
-			$this->decrease_thirst = 1;
-			$this->decrease_nourishment = 1;
 			$this->full = 40;
 			
 			$this->move_verb = 'leaves';

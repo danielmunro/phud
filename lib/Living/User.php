@@ -37,8 +37,9 @@
 
 	class User extends Fighter
 	{
-		protected $nourishment = 5;
-		protected $thirst = 5;
+		protected $hunger = 2;
+		protected $thirst = 2;
+		protected $full = 4;
 		protected $trains = 0;
 		protected $practices = 0;
 		protected $password = '';
@@ -126,11 +127,18 @@
 			parent::tick();
 			if(!$init)
 			{
-				$this->decreaseRacialNourishmentAndThirst();
-				if($this->nourishment < 0)
+				$this->hunger > 0 ? $this->hunger-- : null;
+				$this->thirst > 0 ? $this->thirst-- : null;
+				$this->full -= 2;
+				if($this->full < 0) {
+					$this->full = 0;
+				}
+				if($this->hunger === 0) {
 					Server::out($this, "You are hungry.");
-				if($this->thirst < 0)
+				}
+				if($this->thirst === 0) {
 					Server::out($this, "You are thirsty.");
+				}
 				$this->save();
 			}
 			Server::out($this, "\n" . $this->prompt(), false);
@@ -138,15 +146,9 @@
 		
 		// Food and nourishment
 		
-		public function decreaseRacialNourishmentAndThirst()
+		public function getHunger()
 		{
-			$this->nourishment -= $this->getRace()['lookup']->getDecreaseNourishment();
-			$this->thirst -= $this->getRace()['lookup']->getDecreaseThirst();
-		}
-		
-		public function getNourishment()
-		{
-			return $this->nourishment;
+			return $this->hunger;
 		}
 		
 		public function getThirst()
@@ -154,36 +156,34 @@
 			return $this->thirst;
 		}
 		
-		public function increaseNourishment($nourishment)
+		public function increaseHunger($hunger)
 		{
-			if($this->nourishment < 0)
-				$this->nourishment = $nourishment;
-			else
-				$this->nourishment += $nourishment;
-			
-			if($this->nourishment > $this->getRace()->getNourishment())
-				$this->nourishment = $this->getRace()->getNourishment();
+			if($this->full + 1 > $this->getRace()['lookup']->getFull()) {
+				return Server::out($this, "You are too full.");
+			}
+			$this->full++;
+			$this->hunger += $hunger;
+			$max = $this->getRace()['lookup']->getHunger();
+			if($this->hunger > $max) {
+				$this->hunger = $max;
+			}
+			return true;
 		}
 		
 		public function increaseThirst($thirst)
 		{
-			if($this->thirst < 0)
-				$this->thirst = $thirst;
-			else
-				$this->thirst += $thirst;
-			
-			if($this->thirst > $this->getRace()['lookup']->getThirst())
-				$this->thirst = $this->getRace()['lookup']->getThirst();
-		}
-		
-		public function isNourishmentFull()
-		{
-			return $this->nourishment == $this->getRace()->getNourishment();
-		}
-		
-		public function isThirstFull()
-		{
-			return $this->nourishment == $this->getRace()->getThirst();
+			if($this->full + 1 > $this->getRace()['lookup']->getFull() || $this->thirst > $this->getRace()['lookup']->getThirst()) {
+				return Server::out($this, "You are too full.");
+			}
+			if($this->thirst < 0) {
+				$this->thirst = 0;
+			}
+			if($this->full < 0) {
+				$this->full = 0;
+			}
+			$this->full++;
+			$this->thirst += $thirst;
+			return true;
 		}
 		
 		public function handleDeath()

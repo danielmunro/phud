@@ -193,6 +193,12 @@
 			$item->setContents($contents);
 			Server::out($user, ucfirst($item)." contents are now: ".$contents.".");
 		}
+
+		private function doNourishment(lUser $user, mItem $item, $nourishment, $args)
+		{
+			$item->setNourishment($nourishment);
+			Server::out($user, ucfirst($item)."'s nourishment is ".$nourishment.".");
+		}
 		
 		private function getItemCommand($arg)
 		{
