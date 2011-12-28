@@ -27,6 +27,9 @@
 	namespace Races;
 	use \Mechanics\Alias,
 		\Mechanics\Race,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
+		\Mechanics\Item,
 		\Mechanics\Attributes;
 
 	class Elf extends Race
@@ -41,7 +44,7 @@
 			'archery' => 10,
 			'elemental' => 5,
 			'illusion' => 5,
-			'evasive' => 5
+			'evasive' => 5,
 			'speech' => 5,
 			'beguiling' => 5
 		];
@@ -79,6 +82,14 @@
 		public function getSubscribers()
 		{
 			return [
+				new Subscriber(
+					Event::EVENT_DAMAGE_MODIFIER,
+					function($subscriber, $broadcaster, $victim, &$dam_roll, $attacking_weapon) {
+						if($attacking_weapon->getMaterial() === Item::MATERIAL_IRON) {
+							$dam_roll *= 1.15;
+						}
+					}
+				)
 			];
 		}
 	}

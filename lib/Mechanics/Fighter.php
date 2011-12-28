@@ -371,8 +371,11 @@
 			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 			
-			if(!$attack_name)
+			if(!$attack_name) {
 				$attack_name = 'Reg';
+			}
+
+			$this->fire(Event::EVENT_DAMAGE_MODIFIER, $victim, $dam_roll, $attacking_weapon);
 			
 			$victim->setHp($victim->getHp() - $dam_roll);
 			$this->announce($victim, $attack_name, $dam_roll, $descriptor, $verb);

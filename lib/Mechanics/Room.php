@@ -246,8 +246,8 @@
 			return new Subscriber(
 				Event::EVENT_MOVED,
 				$this,
-				function($subscriber, $broadcaster, $room, $increase_movement_cost) {
-					$increase_movement_cost($room->getMovementCost());
+				function($subscriber, $broadcaster, $room, &$movement_cost) {
+					$movement_cost += $room->getMovementCost();
 				}
 			);
 		}

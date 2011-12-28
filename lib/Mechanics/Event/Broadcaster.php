@@ -54,7 +54,7 @@
 			}
 		}
 
-		public function fire($event_type)
+		public function fire($event_type, &$a1 = null, &$a2 = null, &$a3 = null)
 		{
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
@@ -62,23 +62,20 @@
 			if(!isset($this->deferred_subscribers[$event_type])) {
 				$this->deferred_subscribers[$event_type] = [];
 			}
-			$arg_count = func_num_args();
-			$args = [];
-			if($arg_count > 1) {
-				$args = array_slice(func_get_args(), 1);
-			}
-			$is_satisfied = $this->_fire($this->subscribers[$event_type], $args);
-			$this->_fire($this->deferred_subscribers[$event_type], $args);
+			$is_satisfied = $this->_fire($this->subscribers[$event_type], $a1, $a2, $a3);
+			$this->_fire($this->deferred_subscribers[$event_type], $a1, $a2, $a3);
 			return $is_satisfied;
 		}
 
-		private function _fire($subscribers, $args)
+		private function _fire($subscribers, &$a1, &$a2, &$a3)
 		{
 			foreach($subscribers as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
-				$sending_args = array_merge([$subscriber, $this, $subscriber->getSubscriber()], $args);
-				$sending_args = array_filter($sending_args);
-				call_user_func_array($callback, $sending_args);
+				if($subscriber->getSubscriber()) {
+					$callback($subscriber, $this, $subscriber->getSubscriber(), $a1, $a2, $a3);
+				} else {
+					$callback($subscriber, $this, $a1, $a2, $a3);
+				}
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$subscriber->getEventType()][$i]);
 					continue;

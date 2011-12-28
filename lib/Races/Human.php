@@ -76,21 +76,19 @@
 			$this->max_attributes->setCon(18);
 			$this->max_attributes->setCha(18);
 			
-			$this->subscribers = [
-				new Subscriber(
-					Event::EVENT_MOVED,
-					function($subscriber, $actor, $increase_movement) {
-						$increase_movement(1);
-					}
-				)
-			];
-
 			parent::__construct();
 		}
 
 		public function getSubscribers()
 		{
-			return $this->subscribers;
+			return [
+				new Subscriber(
+					Event::EVENT_MOVED,
+					function($subscriber, $actor, &$movement_cost) {
+						$movement_cost++;
+					}
+				)
+			];
 		}
 	}
 ?>

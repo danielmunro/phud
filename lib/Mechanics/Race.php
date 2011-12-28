@@ -25,7 +25,6 @@
 	 *
 	 */
 	namespace Mechanics;
-	use Alias;
 
 	abstract class Race
 	{

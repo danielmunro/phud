@@ -27,7 +27,7 @@
 	namespace Races;
 	use \Mechanics\Alias,
 		\Mechanics\Race,
-		\Mechanics\Effect;
+		\Mechanics\Effect,
 		\Mechanics\Attributes;
 
 	class Ogre extends Race
