@@ -51,8 +51,8 @@
 		protected $gold = 0;
 		protected $silver = 0;
 		protected $copper = 0;
-		protected $sex = 0;
-		protected $disposition = 0;
+		protected $sex = self::SEX_NEUTRAL;
+		protected $disposition = self::DISPOSITION_STANDING;
 		protected $race = 'critter';
 		protected $room_id = -1;
 		protected $inventory = null;

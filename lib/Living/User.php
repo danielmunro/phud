@@ -189,7 +189,9 @@
 		public function handleDeath()
 		{
 			parent::handleDeath();
-			\Commands\Look::perform($this);
+			$this->setHp(1);
+			$command = Command::lookup('look');
+			$command['lookup']->perform($this);
 		}
 		
 		public function addTrains($trains)

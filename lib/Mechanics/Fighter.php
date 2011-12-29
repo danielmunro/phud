@@ -37,7 +37,6 @@
 		
 		protected $experience = 0;
 		protected $experience_per_level = 0;
-		protected $concentration = 0;
 		protected $delay = 0;
 		protected $delay_subscriber = null;
 		protected $attributes = null;
@@ -123,7 +122,7 @@
 					$fighter->fire(Event::EVENT_MELEE_ATTACK);
 					$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
 					if(!$subscriber->isSuppressed()) {
-						$fighter->attack();
+						$fighter->attack('Reg');
 					}
 				}
 			);
@@ -132,8 +131,8 @@
 		public function getProficiencyIn($proficiency)
 		{
 			if(!isset($this->proficiencies[$proficiency])) {
-				//throw new \Exception($proficiency.' not defined');
-				$this->proficiencies[$proficiency] = 15; // default
+				Debug::addDebugLine("Error, proficiency not defined: ".$proficiency);
+				$this->proficiencies[$proficiency] = 15;
 			}
 			return $this->proficiencies[$proficiency];
 		}
@@ -189,11 +188,6 @@
 			}
 		}
 		
-		public function getConcentration()
-		{
-			return $this->concentration;
-		}
-		
 		public function getTarget()
 		{
 			return $this->target;
@@ -204,13 +198,8 @@
 			$this->target = $target;
 		}
 		
-		public function getHpPercent()
-		{
-			return ($this->attributes->getHp() / $this->max_attributes->getHp()) * 100;
-		}
 		public function getStatus()
 		{
-			
 			$statuses = array
 			(
 				'100' => 'is in excellent condition',
@@ -222,7 +211,7 @@
 				'0' => 'is in awful condition'
 			);
 			
-			$hp_percent = $this->getHpPercent();
+			$hp_percent = ($this->attributes->getHp() / $this->max_attributes->getHp()) * 100;
 			$descriptor = '';
 			foreach($statuses as $index => $status)
 				if($hp_percent <= $index)
@@ -231,9 +220,9 @@
 			return $descriptor;
 		
 		}
+
 		public function lookDescribe()
 		{
-		
 			if($this->sex === 'm')
 				$sex = 'him';
 			else if($this->sex === 'f')
@@ -246,13 +235,15 @@
 				$this->long = 'You see nothing special about ' . $sex . '.';
 			
 			return  $this->long . "\r\n" . 
-					$this->getAlias(true) . ' ' . $this->getStatus() . '.';
+					ucfirst($this).' '.$this->getStatus().'.';
 		
 		}
+
 		public function isAlive()
 		{
 			return $this->attributes->getHp() > 0;
 		}
+
 		public function incrementDelay($delay)
 		{
 			$this->delay += $delay;
@@ -270,6 +261,7 @@
 			}
 
 		}
+
 		public function decrementDelay()
 		{
 			if($this->delay > 0) {
@@ -279,31 +271,21 @@
 			unset($this->delay_subscriber);
 			return false;
 		}
+
 		public function getDelay()
 		{
 			return $this->delay;
 		}
 		
-		public function decreaseConcentration()
-		{
-			$this->concentration--;
-			if($this->concentration < 0)
-				$this->concentration = 0;
-		}
-		
-		public function increaseConcentration()
-		{
-			$this->concentration++;
-			if($this->concentration > 10)
-				$this->concentration = 10;
-		}
-		
 		public function attack($attack_name = '', $verb = '')
 		{
-		
 			$victim = $this->getTarget();
 			if(!$victim) {
 				return;
+			}
+
+			if(!$attack_name) {
+				$attack_name = 'Reg';
 			}
 
 			$victim_target = $victim->getTarget();
@@ -313,16 +295,14 @@
 				}
 			}
 		
-			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(\Mechanics\Equipment::POSITION_WIELD);
+			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
 			
-			if($attacking_weapon['equipped'])
-			{
-				if(!$verb)
+			if($attacking_weapon['equipped']) {
+				if(!$verb) {
 					$verb = $attacking_weapon['equipped']->getVerb();
+				}
 				$dam_type = $attacking_weapon['equipped']->getDamageType();
-			}
-			else
-			{
+			} else {
 				if(!$verb) {
 					$verb = $this->getRace()['lookup']->getUnarmedVerb();
 				}
@@ -354,10 +334,18 @@
 			
 			$roll['attack'] = rand(0, $hit_roll);
 			$roll['defense'] = rand(0, $def_roll) - $ac;
-			
+
 			// Lost the hit roll -- miss
-			if($roll['attack'] <= $roll['defense'])
+			if($roll['attack'] <= $roll['defense']) {
 				$dam_roll = 0;
+			} else {
+				//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
+				//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
+				
+
+				$this->fire(Event::EVENT_DAMAGE_MODIFIER, $victim, $dam_roll, $attacking_weapon);
+				$victim->setHp($victim->getHp() - $dam_roll);
+			}
 			
 			if($dam_roll < 5)
 				$descriptor = 'clumsy';
@@ -368,27 +356,14 @@
 			else
 				$descriptor = 'skillful';
 			
-			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
-			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
-			
-			if(!$attack_name) {
-				$attack_name = 'Reg';
+			$actors = $this->getRoom()->getActors();
+			foreach($actors as $a) {
+				Server::out($a, ($a === $this ? 'Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
 			}
 
-			$this->fire(Event::EVENT_DAMAGE_MODIFIER, $victim, $dam_roll, $attacking_weapon);
-			
-			$victim->setHp($victim->getHp() - $dam_roll);
-			$this->announce($victim, $attack_name, $dam_roll, $descriptor, $verb);
-			
-			$victim->checkAlive($this);
-			Debug::addDebugLine(' Round done computing.');
-		}
-		
-		private function announce($actor, $attack_name, $dam_roll, $descriptor, $verb)
-		{
-			$actors = $this->getRoom()->getActors();
-			foreach($actors as $actor_sub)
-						Server::out($actor_sub, ($actor_sub->getAlias() == $this->getAlias() ? 'Your' : $this->getAlias(true) . "'s") . ' ' . $descriptor . ' ' . $verb . ' ' . ($dam_roll > 0 ? 'hits ' : 'misses ') . ($actor->getAlias() == $actor_sub->getAlias() ? 'you' : $actor->getAlias()) . '.');
+			if(!$victim->isAlive()) {
+				$victim->afterDeath($this);
+			}
 		}
 		
 		public function reconcileTarget($args = array())
@@ -424,63 +399,46 @@
 			Server::out($this, "Whoa there sparky, don't you think one is enough?");
 		}
 		
-		public function checkAlive($killer = null)
-		{
-			if(!$this->isAlive())
-			{
-				$this->setTarget(null);
-				$killer->setTarget(null);
-			
-				Debug::addDebugLine(ucfirst($killer).' killed '.$this.".");
-				Server::out($killer, 'You have KILLED '.$this.'.');
-				$killer->applyExperienceFrom($this);
-				
-				if($this instanceof \Living\User)
-					$nouns = $this->getAlias();
-				elseif($this instanceof \Living\Mob)
-					$nouns = $this->getNouns();
-
-				$gold = round($this->gold / 3);
-				$silver = round($this->silver / 3);
-				$copper = round($this->copper / 3);
-
-				$corpse = new \Items\Corpse();
-				$corpse->setLong('A corpse of '.$this.' lies here.');
-				$corpse->setShort('a corpse of '.$this);
-				$corpse->setNouns('corpse '.$nouns);
-				$corpse->setWeight(100);
-				$corpse->getInventory()->transferItemsFrom($this->inventory);
-				
-				$killer->addGold($gold);
-				$killer->addSilver($silver);
-				$killer->addCopper($copper);
-
-				$this->gold = $gold;
-				$this->silver = $silver;
-				$this->copper = $copper;
-
-				$corpse->addGold($gold);
-				$corpse->addSilver($silver);
-				$corpse->addCopper($copper);
-				
-				$this->afterDeath($killer);
-				$this->getRoom()->getInventory()->add($corpse);
-								
-				if($killer instanceof \Living\User)
-					Server::out($killer, "\n".$killer->prompt(), false);
-				
-				$this->handleDeath();
-				return false;
-			}
-			return true;
-		}
-		
 		protected function afterDeath($killer)
 		{
+			$this->setTarget(null);
+			$killer->setTarget(null);
+		
+			Debug::addDebugLine(ucfirst($killer).' killed '.$this.".");
+			Server::out($killer, 'You have KILLED '.$this.'.');
+			$killer->applyExperienceFrom($this);
+			
+			if($this instanceof \Living\User)
+				$nouns = $this->getAlias();
+			elseif($this instanceof \Living\Mob)
+				$nouns = $this->getNouns();
+
+			$gold = round($this->gold / 3);
+			$silver = round($this->silver / 3);
+			$copper = round($this->copper / 3);
+
+			$corpse = new \Items\Corpse();
+			$corpse->setLong('A corpse of '.$this.' lies here.');
+			$corpse->setShort('a corpse of '.$this);
+			$corpse->setNouns('corpse '.$nouns);
+			$corpse->setWeight(100);
+			$corpse->getInventory()->transferItemsFrom($this->inventory);
+			
+			$killer->addGold($gold);
+			$killer->addSilver($silver);
+			$killer->addCopper($copper);
+
+			$this->gold = $gold;
+			$this->silver = $silver;
+			$this->copper = $copper;
+
+			$corpse->addGold($gold);
+			$corpse->addSilver($silver);
+			$corpse->addCopper($copper);
+			
 			$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
 			$r = round(rand(0, 3));
-			if($r > 1)
-			{
+			if($r > 1) {
 				$parts = [
 					['brains', "'s brains splash all over you!"],
 					['guts', ' spills '.$this->getDisplaySex().' guts all over the floor.'],
@@ -494,27 +452,33 @@
 				$this->getRoom()->getInventory()->add($meat);
 				Server::out($killer, ucfirst($this).$parts[$r][1]);
 			}
+			$this->getRoom()->getInventory()->add($corpse);
+							
+			if($killer instanceof \Living\User) {
+				Server::out($killer, "\n".$killer->prompt(), false);
+			}
+			
+			$this->handleDeath();
 		}
 		
-		protected function handleDeath($move_soul = true)
+		protected function handleDeath()
 		{
-			$this->setHp(1);
-			Debug::addDebugLine($this->getAlias(true) . ' died.');
+			Debug::addDebugLine(ucfirst($this).' died.');
 			Server::out($this, 'You have been KILLED!');
 		}
 		
 		public function applyExperienceFrom(Actor $victim)
 		{
-			if(!$this->experience_per_level) // Mobs have 0 exp per level
+			if(!$this->experience_per_level) {
+				// Mobs have 0 exp per level
 				return 0;
+			}
 			
-			Debug::addDebugLine("Applying experience from " . $victim->getAlias() . ' to ' . $this->getAlias() . '.');
-			
-			if($this->experience < $this->experience_per_level)
-			{
+			Debug::addDebugLine("Applying experience from ".$victim." to ".$this.".");
+			if($this->experience < $this->experience_per_level) {
 				$experience = $victim->getKillExperience($this);
 				$this->experience += $experience;
-				Server::out($this, "You get " . $experience . " experience for your kill.");
+				Server::out($this, "You get ".$experience." experience for your kill.");
 			}
 		}
 		
@@ -587,19 +551,12 @@
 		
 		protected function levelUp($display = true)
 		{
-			Debug::addDebugLine($this->getAlias(true) . ' levels up.');
-			$hp_gain = ceil($this->getCon() * 0.5);
-			$movement_gain = ceil(($this->getCon() * 0.6) + ($this->getCon() * 0.9) / 1.5);
-			$mana_gain = ceil(($this->getWis() + $this->getInt() / 2) * 0.8);
+			Debug::addDebugLine(ucfirst($this).' levels up.');
+			$this->level++;
+			$this->trains++;
+			$this->practices += ceil($this->getWis() / 5);
 			
-			$this->attributes->setMaxHp($this->attributes->getMaxHp() + (int) $hp_gain);
-			$this->attributes->setMaxMana($this->attributes->getMaxMana() + (int) $mana_gain);
-			$this->attributes->getMaxMovement($this->attributes->getMaxMovement() + (int) $movement_gain);
-			
-			$this->level = (int) ($this->experience / $this->getExperiencePerLevel());
-			
-			if($display)
-			{
+			if($display) {
 				Server::out($this, 'You LEVELED UP!');
 				Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
 			}
@@ -608,15 +565,17 @@
 		public function setExperience($experience)
 		{
 			$this->experience = $experience;
-			if($this->experience <= 0)
+			if($this->experience <= 0) {
 				$this->levelUp();
+			}
 		}
 		
 		public function awardExperience($experience)
 		{
 			$this->experience -= $experience;
-			if($this->experience <= 0)
+			if($this->experience <= 0) {
 				$this->levelUp();
+			}
 		}
 		
 		public function getExperience()
