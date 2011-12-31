@@ -34,6 +34,7 @@
 		protected $is_offensive = true;
 		protected $proficiency = 'sorcery';
 		protected $required_proficiency = 20;
+		protected $saving_attribute = 'int';
 
 		protected function __construct()
 		{

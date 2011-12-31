@@ -34,6 +34,7 @@
 	{
 		protected $proficiency = 'stealth';
 		protected $required_proficiency = 20;
+		protected $saving_attribute = 'dex';
 
 		protected function __construct()
 		{

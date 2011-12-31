@@ -34,6 +34,7 @@
 	{
 		protected $proficiency = 'melee';
 		protected $proficiency_required = 25;
+		protected $saving_attribute = 'con';
 
 		protected function __construct()
 		{

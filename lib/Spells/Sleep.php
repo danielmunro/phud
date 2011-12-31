@@ -34,6 +34,7 @@
 	{
 		protected $proficiency = 'beguiling';
 		protected $required_proficiency = 40;
+		protected $saving_attribute = 'int';
 
 		protected function __construct()
 		{

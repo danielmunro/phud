@@ -28,8 +28,10 @@
 	use \Mechanics\Debug,
 		\Mechanics\Actor,
 		\Mechanics\Alias,
+		\Mechanics\Fighter,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
+		\Mechanics\Server,
 		\ReflectionClass,
 		\Exception;
 
@@ -39,17 +41,41 @@
 
 		protected $proficiency = '';
 		protected $required_proficiency = 0;
+		protected $saving_attribute = '';
 		
 		protected function __construct()
 		{
-			if(empty($this->proficiency) || empty($this->required_proficiency)) {
-				throw new Exception(get_class($this)." is not configured with both a proficiency and a required level for that proficiency");
+			if(empty($this->proficiency) || empty($this->required_proficiency) || empty($this->saving_attribute)) {
+				throw new Exception(get_class($this)." is not fully configured");
 			}
+		}
+
+		public function calculateSaves(Fighter $initiator, Fighter $target = null)
+		{
+			if(is_null($target)) {
+				$target = $initiator->getTarget();
+			}
+			$saves = ($initiator->getAttribute($this->saving_attribute) - $target->getAttribute($this->saving_attribute)) * 10;
+			$saves += ($initiator->getLevel() - $target->getLevel()) * 5;
+			$saves += ($initiator->getProficiencyIn($this->proficiency) - $target->getProficiencyIn($this->proficiency)) * 2;
+			return Actor::saveRange(5, 95, $saves);
+		}
+
+		public function getSavingAttribute()
+		{
+			return $this->saving_attribute;
 		}
 
 		public function getProficiency()
 		{
 			return $this->proficiency;
+		}
+		
+		public function checkProficiencyRoll(Fighter $fighter)
+		{
+			$prof = $fighter->getProficiencyIn($this->proficiency);
+			$roll = min(75, $prof);
+			return $roll < Server::chance();
 		}
 
 		public static function runInstantiation()

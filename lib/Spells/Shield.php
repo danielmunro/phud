@@ -35,6 +35,7 @@
 	{
 		protected $proficiency = 'benedictions';
 		protected $required_proficiency = 25;
+		protected $saving_attribute = 'wis';
 
 		protected function __construct()
 		{

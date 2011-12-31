@@ -89,6 +89,17 @@
 							$dam_roll *= 1.15;
 						}
 					}
+				),
+				new Subscriber(
+					Event::EVENT_CAST_TARGET,
+					function($subscriber, $broadcaster, $spell, &$chance) {
+						if($spell['lookup']->getProficiency() === 'beguiling') {
+							$chance -= 0.25;
+							if($spell['alias'] === 'sleep') {
+								$chance -= 0.25;
+							}
+						}
+					}
 				)
 			];
 		}

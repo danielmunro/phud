@@ -34,6 +34,7 @@
 	{
 		protected $proficiency = 'speech';
 		protected $required_proficiency = 20;
+		protected $saving_attribute = 'cha';
 
 		protected function __construct()
 		{

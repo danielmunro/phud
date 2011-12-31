@@ -35,6 +35,7 @@
 	{
 		protected $proficiency = 'evasive';
 		protected $required_proficiency = 25;
+		protected $saving_attribute = 'dex';
 
 		protected function __construct()
 		{

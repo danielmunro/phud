@@ -34,6 +34,7 @@
 	{
 		protected $proficiency = 'healing';
 		protected $required_proficiency = 20;
+		protected $saving_attribute = 'wis';
 
 		protected function __construct()
 		{

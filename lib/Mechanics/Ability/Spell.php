@@ -29,15 +29,20 @@
 
 	abstract class Spell extends Ability
 	{
-		const INITIAL_MANA_COST = 50;
-
-		protected $mana_cost = 15;
+		protected $initial_mana_cost = 50;
+		protected $min_mana_cost = 15;
 		protected $is_offensive = false;
+		protected $delay = 1;
 	
 		public function getManaCost($proficiency)
 		{
-			$min = round((self::INITIAL_MANA_COST - $proficiency) / 10) * 10;
-			return max($min + 5, $this->mana_cost);
+			$min = round(($this->initial_mana_cost - $proficiency) / 10) * 10;
+			return max($min, $this->min_mana_cost);
+		}
+
+		public function getDelay()
+		{
+			return $this->delay;
 		}
 
 		public function isOffensive()

@@ -39,5 +39,7 @@
 		const EVENT_MELEE_ATTACK = 'melee attack';
 		const EVENT_MELEE_ATTACKED = 'melee attacked';
 		const EVENT_DAMAGE_MODIFIER = 'melee damage modifier';
+		const EVENT_CAST_TARGET = 'cast target';
+		const EVENT_CAST = 'cast';
 	}
 ?>

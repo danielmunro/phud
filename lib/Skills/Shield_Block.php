@@ -33,6 +33,7 @@
 	{
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 25;
+		protected $saving_attribute = 'str';
 
 		protected function __construct()
 		{

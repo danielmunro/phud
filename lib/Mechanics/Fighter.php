@@ -778,14 +778,34 @@
 		{
 			return $this->getAggregateStat('getDam', $this->attributes->getDam());
 		}
+
+		public function getAttribute($attribute)
+		{
+			switch($attribute) {
+				case strpos('str', $attribute) === 0:
+					return $this->getStr();
+				case strpos('int', $attribute) === 0:
+					return $this->getInt();
+				case strpos('wis', $attribute) === 0:
+					return $this->getWis();
+				case strpos('dex', $attribute) === 0:
+					return $this->getDex();
+				case strpos('con', $attribute) === 0:
+					return $this->getCon();
+				case strpos('cha', $attribute) === 0:
+					return $this->getCha();
+				default:
+					throw new Exception('Requesting attribute that does not exist: '.$attribute);
+			}
+		}
 		
 		private function getAggregateStat($fn, $amount)
 		{
-			foreach($this->affects as $affect)
+			foreach($this->affects as $affect) {
 				$amount += $affect->getAttributes()->$fn();
+			}
 			$equipment = $this->equipped->getInventory()->getItems();
-			foreach($equipment as $eq)
-			{
+			foreach($equipment as $eq) {
 				$amount += $eq->getAttributes()->$fn();
 				$affs = $eq->getAffects();
 				foreach($affs as $aff)
