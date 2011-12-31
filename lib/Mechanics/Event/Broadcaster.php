@@ -54,7 +54,7 @@
 			}
 		}
 
-		public function fire($event_type, &$a1 = null, &$a2 = null, &$a3 = null)
+		public function fire($event_type, &$a1 = null, &$a2 = null, &$a3 = null, &$a4 = null)
 		{
 			if(!isset($this->subscribers[$event_type])) {
 				$this->subscribers[$event_type] = [];
@@ -62,19 +62,19 @@
 			if(!isset($this->deferred_subscribers[$event_type])) {
 				$this->deferred_subscribers[$event_type] = [];
 			}
-			$is_satisfied = $this->_fire($this->subscribers[$event_type], $a1, $a2, $a3);
-			$this->_fire($this->deferred_subscribers[$event_type], $a1, $a2, $a3);
+			$is_satisfied = $this->_fire($this->subscribers[$event_type], $a1, $a2, $a3, $a4);
+			$this->_fire($this->deferred_subscribers[$event_type], $a1, $a2, $a3, $a4);
 			return $is_satisfied;
 		}
 
-		private function _fire($subscribers, &$a1, &$a2, &$a3)
+		private function _fire($subscribers, &$a1, &$a2, &$a3, &$a4)
 		{
 			foreach($subscribers as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
 				if($subscriber->getSubscriber()) {
-					$callback($subscriber, $this, $subscriber->getSubscriber(), $a1, $a2, $a3);
+					$callback($subscriber, $this, $subscriber->getSubscriber(), $a1, $a2, $a3, $a4);
 				} else {
-					$callback($subscriber, $this, $a1, $a2, $a3);
+					$callback($subscriber, $this, $a1, $a2, $a3, $a4);
 				}
 				if($subscriber->isKilled()) {
 					unset($this->subscribers[$subscriber->getEventType()][$i]);

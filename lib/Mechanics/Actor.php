@@ -310,10 +310,5 @@
 		{
 			return $this->getAlias();
 		}
-
-		public static function saveRange($min, $max, $saves)
-		{
-			return $min > $saves ? $min : ($max < $saves ? $max : $saves);
-		}
 	}
 ?>

@@ -91,12 +91,12 @@
 					}
 				),
 				new Subscriber(
-					Event::EVENT_CAST_TARGET,
-					function($subscriber, $broadcaster, $spell, &$chance) {
+					Event::EVENT_CAST,
+					function($subscriber, $broadcaster, $target, $spell, &$modifier, &$saves) {
 						if($spell['lookup']->getProficiency() === 'beguiling') {
-							$chance -= 0.25;
+							$modifier -= 0.25;
 							if($spell['alias'] === 'sleep') {
-								$chance -= 0.25;
+								$modifier -= 0.25;
 							}
 						}
 					}

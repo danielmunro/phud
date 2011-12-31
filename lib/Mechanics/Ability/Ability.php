@@ -58,7 +58,7 @@
 			$saves = ($initiator->getAttribute($this->saving_attribute) - $target->getAttribute($this->saving_attribute)) * 10;
 			$saves += ($initiator->getLevel() - $target->getLevel()) * 5;
 			$saves += ($initiator->getProficiencyIn($this->proficiency) - $target->getProficiencyIn($this->proficiency)) * 2;
-			return Actor::saveRange(5, 95, $saves);
+			return $saves;
 		}
 
 		public function getSavingAttribute()

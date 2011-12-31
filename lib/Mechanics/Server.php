@@ -204,6 +204,11 @@
 			return rand(0, 10000) / 100;
 		}
 
+		public static function _range($min, $max, $n)
+		{
+			return $min > $n ? $min : ($max < $n ? $max : $n);
+		}
+
 		public function __toString()
 		{
 			return self::ADDRESS.':'.self::PORT;

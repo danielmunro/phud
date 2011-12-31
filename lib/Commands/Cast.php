@@ -126,8 +126,12 @@
 			}
 
 			// Determine saving throws on this cast and perform
+			$modifier = 1;
 			$saves = $arg_spell_casting['lookup']->calculateSaves($actor, $target);
-			$actor->fire(Event::EVENT_CAST, $actor, $arg_spell_casting, $saves);
+			$actor->fire(Event::EVENT_CAST, $target, $arg_spell_casting, $modifier, $saves);
+			$modifier = Server::_range(0.1, 2, $modifier);
+			$saves *= $modifier;
+			$saves = Server::_range(5, 95, $saves);
 			$arg_spell_casting['lookup']->perform($actor, $target, $actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()), $saves);
 		}
 	}
