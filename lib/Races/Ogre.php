@@ -28,6 +28,7 @@
 	use \Mechanics\Alias,
 		\Mechanics\Race,
 		\Mechanics\Effect,
+		\Mechanics\Damage,
 		\Mechanics\Attributes;
 
 	class Ogre extends Race
@@ -85,6 +86,25 @@
 		public function getSubscribers()
 		{
 			return [
+				new Subscriber(
+					Event::EVENT_MELEE_ATTACK,
+					function($subscriber, $attacker) {
+						if(Server::chance() < 5) {
+							$attacker->attack('Ogr');
+						}
+					}
+				),
+				new Subscriber(
+					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
+					function($subscriber, $attacker, $victim, &$modifier, &$dam_roll, $attacking) {
+						$d = $attacking->getDamageType();
+						if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
+							$modifier -= 0.15;
+						}
+						if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
+							$modifier += 0.10;
+						}
+					}
 			];
 		}
 	}

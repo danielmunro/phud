@@ -74,7 +74,7 @@
 		public function checkProficiencyRoll(Fighter $fighter)
 		{
 			$prof = $fighter->getProficiencyIn($this->proficiency);
-			$roll = min(75, $prof);
+			$roll = max(75, $prof * 2);
 			return $roll < Server::chance();
 		}
 

@@ -342,8 +342,11 @@
 				//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 				//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 				
-
-				$this->fire(Event::EVENT_DAMAGE_MODIFIER, $victim, $dam_roll, $attacking_weapon);
+				$modifier = 1;
+				$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
+				$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
+				$dam_roll *= $modifier;
+				$dam_roll = Server::_range(0, 200, $dam_roll);
 				$victim->setHp($victim->getHp() - $dam_roll);
 			}
 			

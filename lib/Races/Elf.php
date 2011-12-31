@@ -83,10 +83,10 @@
 		{
 			return [
 				new Subscriber(
-					Event::EVENT_DAMAGE_MODIFIER,
-					function($subscriber, $broadcaster, $victim, &$dam_roll, $attacking_weapon) {
+					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
+					function($subscriber, $broadcaster, $victim, &$modifier, &$dam_roll, $attacking_weapon) {
 						if($attacking_weapon->getMaterial() === Item::MATERIAL_IRON) {
-							$dam_roll *= 1.15;
+							$modifier += 0.15;
 						}
 					}
 				),
@@ -94,10 +94,21 @@
 					Event::EVENT_CAST,
 					function($subscriber, $broadcaster, $target, $spell, &$modifier, &$saves) {
 						if($spell['lookup']->getProficiency() === 'beguiling') {
-							$modifier -= 0.25;
+							$modifier += 0.25;
 							if($spell['alias'] === 'sleep') {
-								$modifier -= 0.25;
+								$modifier += 0.25;
 							}
+						}
+					}
+				),
+				new Subscriber(
+					Event::EVENT_MELEE_ATTACKED,
+					function($subscriber, $target, $attack_subscriber) {
+						if(Server::chance() < 5) {
+							$attack_subscriber->suppress();
+							Server::out($target, "Your quick reflexes evade ".$target->getTarget()."'s attack!");
+							$target->getRoom()->announce($target, ucfirst($target)." evades ".$target->getTarget()."'s attack!");
+							$subscriber->satisfyBroadcast();
 						}
 					}
 				)

@@ -118,7 +118,7 @@
 			// This event announces the beginning of battle, allowing for the target to have an observer that cancels the fight
 			if($arg_spell_casting['lookup']->isOffensive()) {
 				if($actor->reconcileTarget($target)) {
-					$actor->getTarget()->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
+					$target->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
 					if($command_subscriber->isSuppressed()) {
 						return;
 					}

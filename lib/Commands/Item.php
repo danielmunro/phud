@@ -156,7 +156,7 @@
 		private function doDamage(lUser $user, mItem $item, $value, $args)
 		{
 			$item->setDamageType($value);
-			Server::out($user, ucfirst($item)." now does ".Damage::getDamageTypeLabel($item->getDamageType())." damage.");
+			Server::out($user, ucfirst($item)." now does ".$item->getDamageType()." damage.");
 		}
 		
 		private function doVerb(lUser $user, mItem $item, $value, $args)

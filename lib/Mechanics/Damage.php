@@ -27,56 +27,15 @@
 	namespace Mechanics;
 	class Damage
 	{
-		const TYPE_HIT = 0;
-		const TYPE_BASH = 1;
-		const TYPE_SLASH = 2;
-		const TYPE_PIERCE = 3;
-		const TYPE_MAGIC = 4;
-		const TYPE_BACKSTAB = 5;
-		const TYPE_POUND = 6;
-		
-		public static function getDamageTypeLabel($damage_type)
-		{
-			switch($damage_type)
-			{
-				case self::TYPE_HIT:
-					return 'hit';
-				case self::TYPE_BASH:
-					return 'bash';
-				case self::TYPE_SLASH:
-					return 'slash';
-				case self::TYPE_PIERCE:
-					return 'pierce';
-				case self::TYPE_MAGIC:
-					return 'magic';
-				case self::TYPE_BACKSTAB:
-					return 'backstab';
-				case self::TYPE_POUND:
-					return 'pound';
-			}
-			return false;
-		}
-		
-		public static function getDamageTypeFromLabel($label)
-		{
-			switch($label)
-			{
-				case strpos('hit', $label) === 0:
-					return self::TYPE_HIT;
-				case strpos('bash', $label) === 0:
-					return self::TYPE_BASH;
-				case strpos('slash', $label) === 0:
-					return self::TYPE_SLASH;
-				case strpos('pierce', $label) === 0:
-					return self::TYPE_PIERCE;
-				case strpos('magic', $label) === 0:
-					return self::TYPE_MAGIC;
-				case strpos('backstab', $label) === 0:
-					return self::TYPE_BACKSTAB;
-				case strpos('pound', $label) === 0:
-					return self::TYPE_POUND;
-			}
-			return false;
-		}
+		const TYPE_HIT = 'hit';
+		const TYPE_BASH = 'bash';
+		const TYPE_SLASH = 'slash';
+		const TYPE_PIERCE = 'pierce';
+		const TYPE_MAGIC = 'magic';
+		const TYPE_MENTAL = 'mental';
+		const TYPE_BACKSTAB = 'backstab';
+		const TYPE_POUND = 'pound';
+		const TYPE_FIRE = 'fire';
+		const TYPE_FROST = 'frost';
 	}
 ?>

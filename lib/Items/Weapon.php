@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Items;
-	use \Mechanics\Equipment;
+	use \Mechanics\Equipment,
+		\Mechanics\Damage;
+
 	class Weapon extends Equipment
 	{
 		const TYPE_SWORD = 1;
@@ -127,7 +129,7 @@
 		
 		public function setDamageType($input)
 		{
-			$damage_type = \Mechanics\Damage::getDamageTypeFromLabel($input);
+			$damage_type = Damage::getDamageTypeFromLabel($input);
 			if($damage_type !== false)
 				$this->damage_type = $damage_type;
 		}
@@ -150,7 +152,7 @@
 				"=====================\n".
 				"weapon type:         ".$this->getWeaponTypeLabel()."\n".
 				"verb:                ".$this->getVerb()."\n".
-				"damage type:         ".\Mechanics\Damage::getDamageTypeLabel($this->damage_type)."\n".
+				"damage type:         ".$this->damage_type."\n".
 				parent::getInformation();
 		}
 	}
