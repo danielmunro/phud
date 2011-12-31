@@ -56,7 +56,7 @@
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $affects = array();
-		protected $move_verb;
+		protected $move_verb = 'leaves';
 		protected $decrease_thirst = 0;
 		protected $decrease_nourishment = 0;
 		protected $unarmed_verb = 'punch';
