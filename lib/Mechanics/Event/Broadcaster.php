@@ -71,6 +71,9 @@
 		{
 			foreach($subscribers as $i => $subscriber) {
 				$callback = $subscriber->getCallback();
+
+				// Hacky but it's the only way to pass the parameters by reference. Calling
+				// call_user_func_array() will pass all parameters by value, breaking all modifiers
 				if($subscriber->getSubscriber()) {
 					$callback($subscriber, $this, $subscriber->getSubscriber(), $a1, $a2, $a3, $a4);
 				} else {
