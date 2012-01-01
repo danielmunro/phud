@@ -81,6 +81,24 @@
 		public function getSubscribers()
 		{
 			return [
+				new Subscriber(
+					Event::EVENT_CASTING,
+					function($subscriber, $caster, $target, $spell, &$modifier, &$saves) {
+						$plus_mod = rand(0.01, 0.08);
+						$plus_saves = rand(1, 8);
+						$modifier += $plus_mod;
+						$saves += $plus_saves;
+					}
+				),
+				new Subscriber(
+					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
+					function($subscriber, $victim, $attacker, &$modifier, &$dam_roll, $attacking) {
+						$modifier += 0.05;
+						if($attacking->getDamageType() === Damage::TYPE_POUND) {
+							$modifier += 0.10;
+						}
+					}
+				)
 			];
 		}
 	}

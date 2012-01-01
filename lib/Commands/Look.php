@@ -38,7 +38,10 @@
 	class Look extends User
 	{
 		
-		protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
+		protected $dispositions = [
+			Actor::DISPOSITION_STANDING,
+			Actor::DISPOSITION_SITTING
+		];
 		
 		protected function __construct()
 		{
@@ -87,9 +90,11 @@
 				
 				
 				$people = $user->getRoom()->getActors();
-				foreach($people as $a)
-					if($a != $user)
-						Server::out($user, ucfirst($a).' is here.');
+				foreach($people as $a) {
+					if($a !== $user) {
+						Server::out($user, ucfirst($a).' is '.$a->getDisposition().' here.');
+					}
+				}
 				return;
 			}
 			

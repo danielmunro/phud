@@ -91,7 +91,7 @@
 					}
 				),
 				new Subscriber(
-					Event::EVENT_CAST,
+					Event::EVENT_CASTED_AT,
 					function($subscriber, $broadcaster, $target, $spell, &$modifier, &$saves) {
 						if($spell['lookup']->getProficiency() === 'beguiling') {
 							$modifier += 0.25;

@@ -40,6 +40,7 @@
 		const EVENT_MELEE_ATTACKED = 'melee attacked';
 		const EVENT_DAMAGE_MODIFIER_ATTACKING = 'single round attack modifier';
 		const EVENT_DAMAGE_MODIFIER_DEFENDING = 'single round defense modifier';
-		const EVENT_CAST = 'cast';
+		const EVENT_CASTING = 'casting';
+		const EVENT_CASTED_AT = 'casted at';
 	}
 ?>

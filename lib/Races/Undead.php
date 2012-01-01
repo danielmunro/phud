@@ -47,7 +47,7 @@
 			'maladictions' => 10,
 			'transportation' => 5,
 			'illusion' => 5,
-			'elemental' => 5
+			'sneak' => 5
 		];
 
 		protected function __construct()
@@ -83,6 +83,24 @@
 		public function getSubscribers()
 		{
 			return [
+				new Subscriber(
+					Event::EVENT_CASTING,
+					function($subscriber, $caster, $target, $spell, &$modifier, &$saves) {
+						$p = $spell->getProficiency();
+						if($p === 'sorcery' || $p === 'maladictions') {
+							$modifier += 0.10;
+						}
+					}
+				),
+				new Subscriber(
+					Event::EVENT_CASTED_AT,
+					function($subscriber, $target, $caster, $spell, &$modifier, &$saves) {
+						$p = $spell->getProficiency();
+						if($p === 'sorcery' || $p === 'maladictions') {
+							$modifier -= 0.10;
+						}
+					}
+				)
 			];
 		}
 	}

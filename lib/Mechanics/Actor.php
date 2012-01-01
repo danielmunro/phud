@@ -37,9 +37,9 @@
 	
 		const MAX_LEVEL = 51;
 		
-		const DISPOSITION_STANDING = 0;
-		const DISPOSITION_SITTING = 1;
-		const DISPOSITION_SLEEPING = 2;
+		const DISPOSITION_STANDING = 'standing';
+		const DISPOSITION_SITTING = 'sitting';
+		const DISPOSITION_SLEEPING = 'sleeping';
 		
 		const SEX_NEUTRAL = 1;
 		const SEX_FEMALE = 2;
