@@ -56,5 +56,11 @@
 			return [
 			];
 		}
+
+		public function getAbilities()
+		{
+			return [
+			];
+		}
 	}
 ?>

@@ -82,12 +82,13 @@
 		public function getSubscribers()
 		{
 			return [
-				new Subscriber(
-					Event::EVENT_MOVED,
-					function($subscriber, $actor, &$movement_cost) {
-						$movement_cost++;
-					}
-				)
+			];
+		}
+
+		public function getAbilities()
+		{
+			return [
+				'haggle'
 			];
 		}
 	}

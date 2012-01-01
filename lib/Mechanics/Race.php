@@ -89,6 +89,8 @@
 		}
 		
 		abstract public function getSubscribers();
+
+		abstract public function getAbilities();
 		
 		public function runInstantiation()
 		{

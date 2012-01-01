@@ -101,5 +101,12 @@
 				)
 			];
 		}
+
+		public function getAbilities()
+		{
+			return [
+				'fly'
+			];
+		}
 	}
 ?>

@@ -94,9 +94,9 @@
 					Event::EVENT_CASTED_AT,
 					function($subscriber, $broadcaster, $target, $spell, &$modifier, &$saves) {
 						if($spell['lookup']->getProficiency() === 'beguiling') {
-							$modifier += 0.25;
+							$modifier -= 0.25;
 							if($spell['alias'] === 'sleep') {
-								$modifier += 0.25;
+								$modifier -= 0.25;
 							}
 						}
 					}
@@ -112,6 +112,13 @@
 						}
 					}
 				)
+			];
+		}
+
+		public function getAbilities()
+		{
+			return [
+				'sneak'
 			];
 		}
 	}

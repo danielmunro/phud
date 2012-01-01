@@ -108,5 +108,12 @@
 				)
 			];
 		}
+
+		public function getAbilities()
+		{
+			return [
+				'enhanced damage'
+			];
+		}
 	}
 ?>

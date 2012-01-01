@@ -47,7 +47,7 @@
 			'maladictions' => 10,
 			'transportation' => 5,
 			'illusion' => 5,
-			'sneak' => 5
+			'stealth' => 5
 		];
 
 		protected function __construct()
@@ -101,6 +101,13 @@
 						}
 					}
 				)
+			];
+		}
+
+		public function getAbilities()
+		{
+			return [
+				'fear'
 			];
 		}
 	}

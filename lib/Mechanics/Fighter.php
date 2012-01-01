@@ -164,6 +164,10 @@
 					$this->proficiencies[$proficiency] -= $amount;
 				}
 			}
+			foreach($race['lookup']->getAbilities() as $ability_alias) {
+				$ability = Ability::lookup($ability_alias);
+				$this->addAbility($ability);
+			}
 			parent::setRace($race);
 
 			$max_atts = $race['lookup']->getMaxAttributes();
