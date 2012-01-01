@@ -27,7 +27,9 @@
 	namespace Races;
 	use \Mechanics\Alias,
 		\Mechanics\Race,
-		\Mechanics\Attributes;
+		\Mechanics\Attributes,
+		\Mechanics\Event\Event,
+		\Mechanics\Event\Subscriber;
 
 	class Undead extends Race
 	{

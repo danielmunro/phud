@@ -67,6 +67,18 @@
 			$this->initActor();
 		}
 
+		public function beforeSave($subscribers)
+		{
+			$collection = [$subscribers, $this->race_subscribers];
+			$this->race_subscribers = null;
+			return $collection;
+		}
+
+		public function afterSave($race_subscribers)
+		{
+			$this->race_subscribers = $race_subscribers;
+		}
+
 		public function initActor()
 		{
 			Server::instance()->addSubscriber(

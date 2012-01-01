@@ -75,7 +75,7 @@
 			foreach($directions as $dir => $id)
 			{
 				$command = Command::lookup($dir);
-				$command->perform($fighter);
+				$command['lookup']->perform($fighter);
 				Server::out($fighter, "You run scared!");
 				return;
 			}

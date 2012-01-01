@@ -222,11 +222,10 @@
 			{
 				$this->login['race'] = $input;
 				
-				$race = Alias::lookup($this->login['race']);
-				if($race instanceof Race)
+				$race = Race::lookup($this->login['race']);
+				if($race)
 				{
-					$this->unverified_user->setRace($this->login['race']);
-					$this->unverified_user->setAttributesFromRace();
+					$this->unverified_user->setRace($race);
 				}
 				else
 				{
@@ -254,7 +253,7 @@
 				{
 					$this->unverified_user->setSex($this->login['sex']);
 					$this->login['align'] = false;
-					return;
+					return Server::out($this, "What is your alignment (good/neutral/evil)?", false);
 				}
 			}
 			
@@ -283,8 +282,8 @@
 				$this->user->setClient($this);
 				$this->user->save();
 				
-				$look = Alias::lookup('look');
-				$look->perform($this->user);
+				$command = Command::lookup('look');
+				$command['lookup']->perform($this->user);
 				Server::out($this, $this->user->prompt(), false);
 			}
 		}

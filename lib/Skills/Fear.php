@@ -29,13 +29,14 @@
 		\Mechanics\Ability\Skill,
     	\Mechanics\Actor,
     	\Mechanics\Server,
+		\Mechanics\Affect,
     	\Mechanics\Race;
 
 	class Fear extends Skill
 	{
 		protected $proficiency = 'maladictions';
 		protected $proficiency_required = 25;
-		protected $saving_attribute = 'int';
+		protected $saving_attribute = 'cha';
 
 		protected function __construct()
 		{
@@ -49,13 +50,16 @@
 	
 		public function perform(Actor $actor, $proficiency, $args = [])
 		{
-			$target = $this->reconcileTarget($args);
+			$target = $actor->reconcileTarget($args);
 			if(!$target) {
 				return Server::out($actor, "Who are you trying to scare?");
 			}
 			$saves = $this->calculateSaves($actor, $target);
+			echo "Raw saves: ".$saves.", ";
 			$saves = Server::_range(5, 95, $saves);
-			$this->incrementDelay(2);
+			$actor->incrementDelay(2);
+			$actor->setMovement($actor->getMovement() - 2);
+			echo "Saves: ".$saves."\n";
 			if($saves > Server::chance()) {
 				$a = new Affect();
 				$a->setAffect('fear');
@@ -73,7 +77,7 @@
 					} else if($room_actor === $target) {
 						Server::out($target, "You become frightened!");
 					} else {
-						Server::out($room_actor, ucfirst($actor." scares ".$target."!");
+						Server::out($room_actor, ucfirst($actor)." scares ".$target."!");
 					}
 
 				}

@@ -218,12 +218,13 @@
 		{
 			$subscribers = $this->subscribers;
 			unset($this->subscribers);
-			return $subscribers;
+			return parent::beforeSave($subscribers);
 		}
 
 		public function afterSave($subscribers)
 		{
-			$this->subscribers = $subscribers;
+			$this->subscribers = $subscribers[0];
+			parent::afterSave($subscribers[1]);
 		}
 
 		public function save()
