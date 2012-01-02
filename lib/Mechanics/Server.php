@@ -188,6 +188,8 @@
 			if($user && $user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
 			}
+
+			$this->removeSubscriber($user->getSubscriberTick());
 			
 			// clean out the client
 			socket_close($client->getSocket());

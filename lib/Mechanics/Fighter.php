@@ -43,6 +43,7 @@
 		protected $max_attributes = null;
 		protected $target = null;
 		protected $abilities = [];
+		protected $_subscriber_tick = null;
 		protected $proficiencies = [
 			'stealth' => 15,
 			'healing' => 15,
@@ -89,9 +90,10 @@
 					$this->addSubscriber($ability['lookup']->getSubscriber());
 				}
 			}
+			Server::instance()->addSubscriber($this->getSubscriberTick());
 			parent::initActor();
 		}
-
+		
 		public function getAbilities()
 		{
 			return $this->abilities;
@@ -106,6 +108,20 @@
 				// Apply the subscriber to trigger the ability at the right time
 				$this->addSubscriber($ability['lookup']->getSubscriber());
 			}
+		}
+
+		public function getSubscriberTick()
+		{
+			if(!$this->_subscriber_tick) {
+				$this->_subscriber_tick = new Subscriber(
+					Event::EVENT_TICK,
+					$this,
+					function($subscriber, $broadcaster, $actor) {
+						$actor->tick();
+					}
+				);
+			}
+			return $this->_subscriber_tick;
 		}
 
 		public function getAttackSubscriber()
@@ -152,7 +168,6 @@
 				if($this->getMovement() > $this->getMaxMovement())
 					$this->setMovement($this->getMaxMovement());
 			}
-			parent::tick();
 		}
 		
 		public function setRace($race)

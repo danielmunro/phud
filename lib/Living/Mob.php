@@ -93,6 +93,7 @@
 			$db->del($this->id);
 			$db->sRem('mobs', $this->id);
 			$this->getRoom()->actorRemove($this);
+			Server::instance()->removeSubscriber($this->getSubscriberTick());
 		}
 
 		public function getPath()

@@ -69,15 +69,6 @@
 
 		public function initActor()
 		{
-			Server::instance()->addSubscriber(
-				new Subscriber(
-					Event::EVENT_TICK,
-					$this,
-					function($subscriber, $server, $actor) {
-						$actor->tick();
-					}
-				)
-			);
 			$race = $this->getRace();
 			if($race) {
 				$subscribers = $race['lookup']->getSubscribers();
@@ -110,10 +101,6 @@
 			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
 				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
 			$this->disposition = $disposition;
-		}
-		
-		public function tick()
-		{
 		}
 		
 		public function getAlias($upper = null)
