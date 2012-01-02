@@ -61,7 +61,7 @@
 				return Server::out($user, "They are not selling anything.");
 			
 			Say::perform($target, $target->getListItemMessage());
-			Server::out($user, $target->getInventory()->displayContents(true));
+			Server::out($user, $target->displayContents(true));
 		}
 	}
 ?>

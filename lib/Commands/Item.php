@@ -49,9 +49,9 @@
 			if(sizeof($args) < 3)
 				return Server::out($user, "What were you trying to do?");
 		
-			$item = $user->getInventory()->getItemByInput($args[1]);
+			$item = $user->getItemByInput($args[1]);
 			if(!$item) {
-				$item = $user->getRoom()->getInventory()->getItemByInput($args[1]);
+				$item = $user->getRoom()->getItemByInput($args[1]);
 			}
 			$value = implode(' ', array_slice($args, 3));
 			

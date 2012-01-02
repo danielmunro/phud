@@ -44,13 +44,13 @@
 		public function perform(Actor $actor, $args = array())
 		{
 			$item = implode(' ', array_slice($args, 1, sizeof($args)-1));
-			$item = $actor->getInventory()->getItemByInput($item);
+			$item = $actor->getItemByInput($item);
 			
 			if(!($item instanceof mItem)) {
 				return Server::out($actor, "You do not have anything like that.");
 			}
 			
-			$item->transferOwnership($actor->getInventory(), $actor->getRoom()->getInventory());
+			$item->transferOwnership($actor, $actor->getRoom());
 
 			Server::out($actor, "You drop ".$item.".");
 		}

@@ -57,7 +57,7 @@
 			if(!($door instanceof Door))
 				return Server::out($actor, 'Unlock what?');
 			
-			foreach($actor->getInventory()->getItems() as $item)
+			foreach($actor->getItems() as $item)
 				if($item->getDoorUnlockId() == $door->getId())
 				{
 					$door->setDisposition('closed');

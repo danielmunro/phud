@@ -47,7 +47,7 @@
 		public function perform(Actor $actor, $args = array())
 		{
 			
-			$item = $actor->getInventory()->getItemByInput(implode(' ', array_slice($args, 1)));
+			$item = $actor->getItemByInput(implode(' ', array_slice($args, 1)));
 			
 			if(!($item instanceof mItem))
 				return Server::out($actor, "Nothing like that is here.");
@@ -56,7 +56,7 @@
 				return Server::out($actor, "You can't eat that!");
 			
 			if($actor->increaseHunger($item->getNourishment())) {
-				$actor->getInventory()->remove($item);
+				$actor->removeItem($item);
 				Server::out($actor, "You eat " . $item->getShort() . ".");
 			}
 		}

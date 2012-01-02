@@ -47,7 +47,7 @@
 		
 			if(sizeof($args) === 2)
 			{
-				$item = $actor->getRoom()->getInventory()->getItemByInput($args);
+				$item = $actor->getRoom()->getItemByInput($args);
 				$container = $actor->getRoom();
 			}
 			else
@@ -56,17 +56,17 @@
 				array_shift($args);
 				
 				// getting something from somewhere
-				$container = $actor->getRoom()->getInventory()->getContainerByInput($args);
+				$container = $actor->getRoom()->getContainerByInput($args);
 				if(!($container instanceof Container))
-					$container = $actor->getInventory()->getContainerByInput($args);
+					$container = $actor->getContainerByInput($args);
 				if(!($container instanceof Container))
 					return Server::out($actor, "Nothing is there.");
 				
 				if($args[0] == 'all')
 				{
-					foreach($container->getInventory()->getItems() as $item)
+					foreach($container->getItems() as $item)
 					{
-						$item->transferOwnership($container->getInventory(), $actor->getInventory());
+						$item->transferOwnership($container, $actor);
 						Server::out($actor, 'You get '.$item.' from '.$container.'.');
 					}
 					return;
@@ -74,7 +74,7 @@
 				else
 				{
 				
-					$item = $container->getInventory()->getItemByInput(array('', $args[0]));
+					$item = $container->getItemByInput(array('', $args[0]));
 				
 					if($item instanceof iItem)
 						$from = ' from ' . $container;
@@ -88,8 +88,8 @@
 				if(!$item->getCanOwn())
 					return Server::out($actor, "You cannot pick that up.");
 				
-				$container->getInventory()->remove($item);
-				$actor->getInventory()->add($item);
+				$container->removeItem($item);
+				$actor->addItem($item);
 				Server::out($actor, 'You get '.$item.(isset($from) ? $from : '') . '.');
 			}
 			else

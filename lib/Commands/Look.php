@@ -81,7 +81,7 @@
 					($user->getRoom()->getWest()  >= 0 ? ' W ' : '') .
 					($user->getRoom()->getUp()    >= 0 ? ' U ' : '') .
 					($user->getRoom()->getDown()  >= 0 ? ' D ' : '') . ']');
-				$items = $user->getRoom()->getInventory()->getItems();
+				$items = $user->getRoom()->getItems();
 				
 				if(is_array($items) && sizeof($items) > 0)
 					foreach($items as $key => $item)
@@ -103,10 +103,10 @@
 			$target = $user->getRoom()->getActorByInput($looking);
 			
 			if(empty($target))
-				$target = $user->getRoom()->getInventory()->getItemByInput($looking);
+				$target = $user->getRoom()->getItemByInput($looking);
 			
 			if(empty($target))
-				$target = $user->getInventory()->getItemByInput($looking);
+				$target = $user->getItemByInput($looking);
 			
 			if(!empty($target))
 				return Server::out($user, $target->lookDescribe());

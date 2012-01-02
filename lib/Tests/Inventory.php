@@ -54,25 +54,8 @@
 			));
 		}
 	
-		public function testInventoryExists()
-		{
-			$i = $this->mob1->getInventory();
-			$this->assertTrue($i instanceof \Mechanics\Inventory);
-			$this->assertTrue(sizeof($i->getItems()) === 0);
-			
-			$i = $this->mob2->getInventory();
-			$this->assertTrue($i instanceof \Mechanics\Inventory);
-			$this->assertTrue(sizeof($i->getItems()) === 0);
-		}
-		
 		public function testAddItem()
 		{
-			$item = \Items\Item::getInstance(1);
-			$item->copyTo($this->mob1);
-			
-			$i = $this->mob1->getInventory();
-			$this->assertTrue(sizeof($i->getItems()) == 1);
-			$this->assertTrue(array_shift($i->getItems())->getShort() == $item->getShort());
 		}
 	}
 ?>

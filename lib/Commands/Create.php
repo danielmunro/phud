@@ -90,7 +90,7 @@
 				$short = implode(' ', array_slice($args, 2));
 				$item->setShort($short);
 			}
-			$user->getInventory()->add($item);
+			$user->addItem($item);
 			return Server::out($user, ucfirst($item->getShort())." poofs into existence.");
 		}
 		

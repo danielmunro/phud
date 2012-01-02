@@ -30,9 +30,9 @@
 
 	class Room
 	{
-		use Usable, Persistable;
+		use Usable, Persistable, Inventory;
 	
-		const START_ROOM = 1;
+		const START_ROOM = 5933293242;
 	
 		static $instances = [];
 		
@@ -45,17 +45,16 @@
 		private $up = -1;
 		private $down = -1;
 		private $doors = [];
-		private $inventory = null;
 		private $area = '';
 		private $visibility = 1;
 		private $movement_cost = 0;
+		private $_subscriber_movement = null;
 		private $actors = [];
 	
 		const PURGATORY_ROOM_ID = 5;
 	
 		public function __construct()
 		{
-			$this->inventory = new Inventory();
 			$this->doors = [
 				'north' => null,
 				'south' => null,
@@ -150,12 +149,6 @@
 		public function getWest() { return $this->getDirection('west', $this->west); }
 		public function getUp() { return $this->getDirection('up', $this->up); }
 		public function getDown() { return $this->getDirection('down', $this->down); }
-		
-		public function getInventory()
-		{
-			return $this->inventory;
-		}
-		
 		public function getArea() { return $this->area; }
 		public function setArea($area) { $this->area = $area; }
 		public function setTitle($title) { $this->title = $title; }
@@ -171,7 +164,8 @@
 		{
 			Debug::addDebugLine($actor.' ('.$actor->getID().') is arriving to '.$this.' ('.$this->getID().')');
 			$this->actors[] = $actor;
-			$actor->addSubscriber($this->movement_subscriber);
+			echo $this->_subscriber_movement." with ".$actor."\n";
+			$actor->addSubscriber($this->_subscriber_movement);
 		}
 		public function actorRemove(Actor $actor)
 		{
@@ -181,7 +175,8 @@
 				Debug::addDebugLine($actor.' is not here');
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
 			}
-			$actor->removeSubscriber($this->movement_subscriber);
+			echo $this->_subscriber_movement." no longer with ".$actor."\n";
+			$actor->removeSubscriber($this->_subscriber_movement);
 			unset($this->actors[$key]);
 		}
 		public function getActors()
@@ -217,13 +212,15 @@
 		
 		public static function find($id)
 		{
-			if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self)
+			if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self) {
 				return self::$instances[$id];
-			$db = \Mechanics\Dbr::instance();
+			}
+			$db = Dbr::instance();
 			$room_serialized = $db->get($id);
 			if($room_serialized)
 			{
 				self::$instances[$id] = unserialize($room_serialized);
+				self::$instances[$id]->initRoom();
 			}
 			else
 			{
@@ -231,14 +228,14 @@
 				$r->setId($id);
 				$r->save();
 				self::$instances[$id] = $r;
+				self::$instances[$id]->initRoom();
 			}
-			self::$instances[$id]->initRoom();
 			return self::$instances[$id];
 		}
 
 		public function initRoom()
 		{
-			$this->movement_subscriber = $this->getMovementSubscriber();
+			$this->_subscriber_movement = $this->getMovementSubscriber();
 		}
 
 		private function getMovementSubscriber()
@@ -289,16 +286,11 @@
 			return [$actors];
 		}
 
-		protected function save()
-		{
-			parent::save();
-			$dbr = Dbr::instance();
-			$dbr->sAdd('rooms', $this->id);
-		}
-
 		protected function afterSave($after)
 		{
 			$this->actors = $after[0];
+			$dbr = Dbr::instance();
+			$dbr->sAdd('rooms', $this->id);
 		}
 
 		public function __toString()

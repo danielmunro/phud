@@ -45,11 +45,11 @@
 		{
 			$t = $subscriber->getEventType();
 			$key = array_search($subscriber, $this->_subscribers[$t]);
-			if($key !== false) {
+			if(is_numeric($key)) {
 				unset($this->_subscribers[$t][$key]);
 			}
 			$key = array_search($subscriber, $this->_subscribers_deferred[$t]);
-			if($key !== false) {
+			if(is_numeric($key)) {
 				unset($this->_subscribers_deferred[$t][$key]);
 			}
 		}

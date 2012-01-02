@@ -51,13 +51,13 @@
 			$drinkable = implode(' ', array_slice($args, 1));
 			$item = null;
 			if($drinkable) {
-				$item = $actor->getInventory()->getItemByInput($drinkable);
+				$item = $actor->getItemByInput($drinkable);
 				if(!$item) {
-					$item = $actor->getRoom()->getInventory()->getItemByInput($drinkable);
+					$item = $actor->getRoom()->getItemByInput($drinkable);
 				}
 			}
 			if(!$item) {
-				$items = array_merge($actor->getInventory()->getItems(), $actor->getRoom()->getInventory()->getItems());
+				$items = array_merge($actor->getItems(), $actor->getRoom()->getItems());
 				foreach($items as $i) {
 					if($i instanceof iDrink) {
 						$item = $i;

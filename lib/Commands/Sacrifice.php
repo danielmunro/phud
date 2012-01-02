@@ -43,11 +43,11 @@
 	
 		public function perform(Actor $actor, $args = array())
 		{
-			$item = $actor->getRoom()->getInventory()->getItemByInput($args[1]);
+			$item = $actor->getRoom()->getItemByInput($args[1]);
 			
 			if($item instanceof mItem)
 			{
-				$actor->getRoom()->getInventory()->remove($item);
+				$actor->getRoom()->removeItem($item);
 				$copper = max(1, $item->getLevel()*3);
 				if(!($item instanceof Corpse))
 					$copper = min($copper, $item->getValue());

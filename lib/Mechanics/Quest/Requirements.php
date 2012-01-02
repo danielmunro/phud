@@ -29,13 +29,15 @@
 		\Mechanics\Alias,
 		\Mechanics\Server,
 		\Mechanics\Item,
+		\Mechanics\Usable,
 		\Mechanics\Inventory;
 
 	class Requirements
 	{
+		use Inventory, Usable;
+
 		protected $races = [];
 		protected $level = 0;
-		protected $inventory = null;
 		protected $previous_quests = [];
 		
 		public function __construct(Requirements $requirements = null)
@@ -44,11 +46,10 @@
 			{
 				$this->races = $requirements->getRaces();
 				$this->level = $requirements->getLevel();
-				$this->inventory = $requirements->getInventory();
+				$this->items = $requirements->getItems();
 				$this->previous_quests = $requirements->getPreviousQuests();
 				return;
 			}
-			$this->inventory = new Inventory();
 		}
 		
 		public function getRaces()
@@ -59,11 +60,6 @@
 		public function getLevel()
 		{
 			return $this->level;
-		}
-		
-		public function getInventory()
-		{
-			return $this->inventory;
 		}
 		
 		public function getPreviousQuests()
@@ -83,9 +79,9 @@
 			}
 			if((empty($this->races) || in_array($user->getRace(), $this->races)))
 			{
-				if(sizeof($this->getInventory()->getItems()))
+				if(sizeof($this->getItems()))
 				{
-					$missing = array_diff($this->getInventory()->getItems(), $user->getInventory()->getItems());
+					$missing = array_diff($this->getItems(), $user->getItems());
 					if($missing)
 					{
 						if($questmaster)

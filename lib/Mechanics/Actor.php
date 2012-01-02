@@ -33,7 +33,7 @@
 
 	abstract class Actor
 	{
-		use Affectable, Persistable, Broadcaster;
+		use Affectable, Persistable, Broadcaster, Inventory;
 	
 		const MAX_LEVEL = 51;
 		
@@ -55,14 +55,12 @@
 		protected $disposition = self::DISPOSITION_STANDING;
 		protected $race = 'critter';
 		protected $room_id = -1;
-		protected $inventory = null;
 		protected $equipped = null;
 		protected $alignment = 0;
 		protected $_subscribers_race = [];
 		
 		public function __construct()
 		{
-			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
 			$this->initActor();
 		}
@@ -119,11 +117,6 @@
 		public function setLong($long)
 		{
 			$this->long = $long;
-		}
-		
-		public function getInventory()
-		{
-			return $this->inventory;
 		}
 		
 		public function getEquipped()

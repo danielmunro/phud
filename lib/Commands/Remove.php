@@ -44,7 +44,7 @@
 		public function perform(Actor $actor, $args = array())
 		{
 		
-			$equipment = $actor->getEquipped()->getInventory()->getItemByInput($args);
+			$equipment = $actor->getEquipped()->getItemByInput($args);
 			
 			if($equipment instanceof Equipment)
 			{

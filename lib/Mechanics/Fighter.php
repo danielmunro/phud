@@ -26,6 +26,8 @@
 	 */
 	namespace Mechanics;
 	use \Items\Food,
+		\Living\User,
+		\Living\Mob,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Ability\Ability,
 		\Mechanics\Ability\Skill,
@@ -73,10 +75,10 @@
 			$this->max_attributes = new Attributes();
 			
 			$this->attributes->setHp(20);
-			$this->attributes->setMana(20);
+			$this->attributes->setMana(100);
 			$this->attributes->setMovement(100);
 			$this->max_attributes->setHp(20);
-			$this->max_attributes->setMana(20);
+			$this->max_attributes->setMana(100);
 			$this->max_attributes->setMovement(100);
 
 			parent::__construct();
@@ -430,9 +432,9 @@
 			Server::out($killer, 'You have KILLED '.$this.'.');
 			$killer->applyExperienceFrom($this);
 			
-			if($this instanceof \Living\User)
+			if($this instanceof User)
 				$nouns = $this->getAlias();
-			elseif($this instanceof \Living\Mob)
+			elseif($this instanceof Mob)
 				$nouns = $this->getNouns();
 
 			$gold = round($this->gold / 3);
@@ -444,7 +446,7 @@
 			$corpse->setShort('a corpse of '.$this);
 			$corpse->setNouns('corpse '.$nouns);
 			$corpse->setWeight(100);
-			$corpse->getInventory()->transferItemsFrom($this->inventory);
+			$corpse->transferItemsFrom($this);
 			
 			$killer->addGold($gold);
 			$killer->addSilver($silver);
@@ -471,12 +473,12 @@
 				$meat->setShort('the '.$parts[$r][0].' of '.$this);
 				$meat->setLong('The '.$parts[$r][0].' of '.$this.' is here.');
 				$meat->setNourishment(1);
-				$this->getRoom()->getInventory()->add($meat);
+				$this->getRoom()->addItem($meat);
 				Server::out($killer, ucfirst($this).$parts[$r][1]);
 			}
-			$this->getRoom()->getInventory()->add($corpse);
+			$this->getRoom()->addItem($corpse);
 							
-			if($killer instanceof \Living\User) {
+			if($killer instanceof User) {
 				Server::out($killer, "\n".$killer->prompt(), false);
 			}
 			
@@ -821,7 +823,7 @@
 			foreach($this->affects as $affect) {
 				$amount += $affect->getAttributes()->$fn();
 			}
-			$equipment = $this->equipped->getInventory()->getItems();
+			$equipment = $this->equipped->getItems();
 			foreach($equipment as $eq) {
 				$amount += $eq->getAttributes()->$fn();
 				$affs = $eq->getAffects();

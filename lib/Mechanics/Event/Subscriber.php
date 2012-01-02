@@ -104,5 +104,10 @@
 		{
 			return $this->suppressed;
 		}
+		
+		public function __toString()
+		{
+			return $this->subscriber." is observing for [".$this->event_type."]";
+		}
 	}
 ?>

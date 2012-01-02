@@ -60,7 +60,7 @@
 			if($door->getDisposition() == Door::DISPOSITION_OPEN)
 				return Server::out($actor, "You must close the door first.");
 			
-			foreach($actor->getInventory()->getItems() as $item)
+			foreach($actor->getItems() as $item)
 				if($item->getDoorUnlockId() == $door->getId())
 				{
 					$door->setDisposition('locked');

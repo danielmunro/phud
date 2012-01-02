@@ -27,36 +27,28 @@
 	namespace Mechanics;
 	use \Items\Container;
 
-	class Inventory
+	trait Inventory
 	{
-		use Usable;
-	
-		protected $items = array();
-		private static $instances = array();
+		protected $items = [];
 		
-		public function __construct()
-		{
-		}
-		
-		public function add(Item $item)
+		public function addItem(Item $item)
 		{
 			$this->items[] = $item;
 		}
 		
-		public function addMany($items)
+		public function addManyItems($items)
 		{
-			if(is_array($items))
-				foreach($items as $i)
-					$this->add($i);
+			foreach($items as $item) {
+				$this->addItem($item);
+			}
 		}
 		
-		public function remove(Item $item)
+		public function removeItem(Item $item)
 		{
 			$i = array_search($item, $this->items);
-			
-			if($i !== false)
+			if($i !== false) {
 				unset($this->items[$i]);
-			
+			}
 			return $i;
 		}
 		
@@ -108,10 +100,9 @@
 		public function transferItemsFrom(Inventory $inventory)
 		{
 			$items = $inventory->getItems();
-			foreach($items as $item)
-			{
-				$inventory->remove($item);
-				$this->add($item);
+			foreach($items as $item) {
+				$inventory->removeItem($item);
+				$this->addItem($item);
 			}
 		}
 	}

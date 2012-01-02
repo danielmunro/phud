@@ -43,9 +43,9 @@
 		{
 			$object = $user->getRoom()->getActorByInput($args[1]);
 			if(!$object)
-				$object = $user->getRoom()->getInventory()->getItemByInput($args[1]);
+				$object = $user->getRoom()->getItemByInput($args[1]);
 			if(!$object)
-				$object = $user->getInventory()->getItemByInput($args[1]);
+				$object = $user->getItemByInput($args[1]);
 			if(!$object)
 				return Server::out($user, "That doesn't seem to exist.");
 		

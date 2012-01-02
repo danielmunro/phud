@@ -61,7 +61,7 @@
 			if(!($target instanceof lShopkeeper))
 				return Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
 			
-			$item = $target->getInventory()->getItemByInput($args[1]);
+			$item = $target->getItemByInput($args[1]);
 			
 			if(!($item instanceof mItem))
 				return Say::perform($target, $target->getNoItemMessage());
@@ -72,7 +72,7 @@
 				return Say::perform($target, $target->getNotEnoughMoneyMessage());
 			
 			$new_item = clone $item;
-			$actor->getInventory()->add($new_item);
+			$actor->addItem($new_item);
 			return Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 		}
 	}

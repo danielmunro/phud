@@ -25,29 +25,22 @@
 	 *
 	 */
 	namespace Items;
-	use \Mechanics\Item;
-	use \Mechanics\Inventory;
+	use \Mechanics\Item,
+		\Mechanics\Inventory,
+		\Mechanics\Usable;
+
 	class Container extends Item
 	{
+		use Inventory, Usable;
 	
 		protected $short = 'a generic container';
 		protected $long = 'A generic container lays here';
 		protected $nouns = 'generic container';
 		private $inventory = null;
 	
-		public function __construct()
-		{
-			$this->inventory = new Inventory();
-		}
-		
-		public function getInventory()
-		{
-			return $this->inventory;
-		}
-		
 		public function lookDescribe()
 		{
-			return $this->long . "\n" . $this->inventory->displayContents();
+			return $this->long . "\n" . $this->displayContents();
 		
 		}
 	}

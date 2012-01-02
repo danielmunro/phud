@@ -27,8 +27,9 @@
 	namespace Mechanics;
 	class Equipped
 	{
+		use Inventory, Usable;
+
 		private $equipment = array();
-		private $inventory = null;
 		private $actor = null;
 		private static $labels = array
 		(
@@ -74,12 +75,6 @@
 			{
 				$this->actor = $actor;
 			}
-			$this->inventory = new Inventory();
-		}
-		
-		public function getInventory()
-		{
-			return $this->inventory;
 		}
 		
 		public static function getLabelByPosition($position)
@@ -111,8 +106,9 @@
 				$e = $position['equipped'];
 				if($e === null)
 				{
-					if($this->actor->getInventory()->remove($item) !== false)
-						$this->inventory->add($item);
+					if($this->actor->removeItem($item) !== false) {
+						$this->addItem($item);
+					}
 					$equipped = $item;
 					$equipped_position = $p;
 					break;
@@ -120,10 +116,10 @@
 				if($e !== null && $i == sizeof($positions))
 				{
 					$item_remove = $e;
-					$this->inventory->remove($item_remove);
-					$this->inventory->add($item);
-					$this->actor->getInventory()->add($item_remove);
-					$this->actor->getInventory()->remove($item);
+					$this->removeItem($item_remove);
+					$this->addItem($item);
+					$this->actor->addItem($item_remove);
+					$this->actor->removeItem($item);
 					$equipped = $item;
 					$dequipped = $item_remove;
 					$equipped_position = $position;
@@ -148,13 +144,13 @@
 			
 			if($dequipped)
 			{
-				$msg_you = "You remove " . $dequipped->getShort() . " and "; // . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position, true) . '.';
-				$msg_others = $this->actor->getAlias(true) . " removes " . $dequipped->getShort() . " and "; //wears " . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position) . '.';
+				$msg_you = "You remove ".$dequipped." and "; // . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position, true) . '.';
+				$msg_others = ucfirst($this->actor)." removes ".$dequipped." and "; //wears " . $equipped->getShort() . ' ' . $this->equipPositionLabel($actor, $equipped_position) . '.';
 			}
 			else
 			{
 				$msg_you = "You ";
-				$msg_others = $this->actor->getAlias(true) . " ";
+				$msg_others = ucfirst($this->actor)." ";
 			}
 			
 			if($equipped->getPosition() === \Mechanics\Equipment::POSITION_WIELD)
@@ -248,10 +244,10 @@
 			
 			if($this->equipment[$position] instanceof \Mechanics\Equipment)
 			{
-				$this->getInventory()->remove($item);
+				$this->removeItem($item);
 				$this->actor->removeAffects($item->getAffects());
 				$item = $this->equipment[$position];
-				$this->actor->getInventory()->add($item);
+				$this->actor->addItem($item);
 				$this->equipment[$position] = null;
 			}
 			else
@@ -265,8 +261,8 @@
 			{
 				if($e['equipped'] === $item)
 				{
-					$this->getInventory()->remove($item);
-					$this->actor->getInventory()->add($item);
+					$this->removeItem($item);
+					$this->addItem($item);
 					$e['equipped'] = null;
 				}
 			}
@@ -312,7 +308,5 @@
 
 			return $buffer;
 		}
-	
 	}
-
 ?>

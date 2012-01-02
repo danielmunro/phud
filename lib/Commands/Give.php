@@ -84,7 +84,7 @@
 			}
 			else
 			{
-				$item = $actor->getInventory()->getItemByInput($args);
+				$item = $actor->getItemByInput($args);
 				$target = $actor->getRoom()->getActorByInput($args);
 			
 				if(empty($item))
@@ -96,8 +96,8 @@
 				if(!($target instanceof Actor))
 					return Server::out($actor, "You don't see them here.");
 				
-				$actor->getInventory()->remove($item);
-				$target->getInventory()->add($item);
+				$actor->removeItem($item);
+				$target->addItem($item);
 				Server::out($actor, "You give ".$item." to ".$target.".");
 				Server::out($target, ucfirst($actor)." gives you ".$item.".");
 			}

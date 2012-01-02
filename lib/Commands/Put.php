@@ -43,20 +43,20 @@
 		public function perform(Actor $actor, $args = array())
 		{
 			
-			$item = $actor->getInventory()->getItemByInput($args);
+			$item = $actor->getItemByInput($args);
 			
 			if(!($item instanceof iItem))
 				return Server::out($actor, "You don't appear to have that.");
 			
 			array_shift($args);
 			
-			$target = $actor->getInventory()->getContainerByInput($args);
+			$target = $actor->getContainerByInput($args);
 			if(!($target instanceof Container))
-				$target = $actor->getRoom()->getInventory()->getContainerByInput($args);
+				$target = $actor->getRoom()->getContainerByInput($args);
 			if(!($target instanceof Container))
 				return Server::out($actor, "You don't have anything to put that in.");
 			
-			$item->transferOwnership($actor->getInventory(), $target->getInventory());
+			$item->transferOwnership($actor, $target);
 			
 			Server::out($actor, "You put ".$item." in ".$target.".");
 		}

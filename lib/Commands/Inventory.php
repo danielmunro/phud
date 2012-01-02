@@ -40,7 +40,7 @@
 		public function perform(lUser $user, $args = array())
 		{
 			Server::out($user, 'Your inventory:');
-			Server::out($user, $user->getInventory()->displayContents());
+			Server::out($user, $user->displayContents());
 		}
 	}
 ?>

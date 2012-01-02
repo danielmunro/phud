@@ -44,7 +44,7 @@
 		public function perform(Actor $actor, $args = array())
 		{
 		
-			$item = $actor->getInventory()->getItemByInput($args);
+			$item = $actor->getItemByInput($args);
 			
 			if(!$item)
 				return Server::out($actor, 'You have nothing like that in your inventory.');

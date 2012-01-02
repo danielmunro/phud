@@ -55,14 +55,6 @@
 			
 			parent::__construct();
 			
-			$this->attributes->setHp(20);
-			$this->attributes->setMana(100);
-			$this->attributes->setMovement(100);
-			
-			$this->max_attributes->setHp(20);
-			$this->max_attributes->setMana(100);
-			$this->max_attributes->setMovement(100);
-			
 			$this->quest_log = new QuestLog($this);
 			//$this->quest_log->add(Quest::findByHook(Quest::HOOK_CREATE, $this));
 		}
