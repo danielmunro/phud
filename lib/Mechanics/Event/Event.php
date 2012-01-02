@@ -42,5 +42,6 @@
 		const EVENT_DAMAGE_MODIFIER_DEFENDING = 'single round defense modifier';
 		const EVENT_CASTING = 'casting';
 		const EVENT_CASTED_AT = 'casted at';
+		const EVENT_BUY = 'buy';
 	}
 ?>

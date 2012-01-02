@@ -58,25 +58,13 @@
 		protected $inventory = null;
 		protected $equipped = null;
 		protected $alignment = 0;
-		protected $race_subscribers = [];
+		protected $_subscribers_race = [];
 		
 		public function __construct()
 		{
 			$this->inventory = new Inventory();
 			$this->equipped = new Equipped($this);
 			$this->initActor();
-		}
-
-		public function beforeSave($subscribers)
-		{
-			$collection = [$subscribers, $this->race_subscribers];
-			$this->race_subscribers = null;
-			return $collection;
-		}
-
-		public function afterSave($race_subscribers)
-		{
-			$this->race_subscribers = $race_subscribers;
 		}
 
 		public function initActor()
@@ -265,13 +253,13 @@
 		public function setRace($race)
 		{
 			if($this->race) {
-				foreach($this->race_subscribers as $subscriber) {
+				foreach($this->_subscribers_race as $subscriber) {
 					$this->removeSubscriber($subscriber);
 				}
 			}
 			$this->race = $race['alias'];
-			$this->race_subscribers = $race['lookup']->getSubscribers();
-			foreach($this->race_subscribers as $subscriber) {
+			$this->_subscribers_race = $race['lookup']->getSubscribers();
+			foreach($this->_subscribers_race as $subscriber) {
 				$this->addSubscriber($subscriber);
 			}
 		}

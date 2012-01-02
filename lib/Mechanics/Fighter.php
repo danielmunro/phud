@@ -38,7 +38,7 @@
 		protected $experience = 0;
 		protected $experience_per_level = 0;
 		protected $delay = 0;
-		protected $delay_subscriber = null;
+		protected $_subscriber_delay = null;
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $target = null;
@@ -251,8 +251,8 @@
 		public function incrementDelay($delay)
 		{
 			$this->delay += $delay;
-			if(!$this->delay_subscriber) {
-				$this->delay_subscriber = new Subscriber(
+			if(empty($this->_subscriber_delay)) {
+				$this->_subscriber_delay = new Subscriber(
 					Event::EVENT_PULSE,
 					$this,
 					function($subscriber, $server, $fighter) {
@@ -261,7 +261,7 @@
 						}
 					}
 				);
-				Server::instance()->addSubscriber($this->delay_subscriber);
+				Server::instance()->addSubscriber($this->_subscriber_delay);
 			}
 
 		}
@@ -272,7 +272,7 @@
 				$this->delay--;
 				return true;
 			} 
-			unset($this->delay_subscriber);
+			unset($this->_subscriber_delay);
 			return false;
 		}
 
@@ -615,11 +615,6 @@
 			
 			$upper_mod = 200;
 			return (100 * $base_mod) + ($cp - 100 * $upper_mod);
-		}
-		
-		public function getCreationPoints()
-		{
-			return $this->getAbilitySet()->getCreationPoints() + $this->getRace()->getCreationPoints();
 		}
 		
 		///////////////////////////////////////////////////////////////////////////////

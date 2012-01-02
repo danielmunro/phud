@@ -25,6 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \ReflectionClass;
 
 	trait Persistable
 	{
@@ -42,7 +43,9 @@
 				$key = $this->id;
 			}
 			$dbr = Dbr::instance();
+			$properties = $this->prepare();
 			$dbr->set($key, serialize($this));
+			$this->finish($properties);
 			if(method_exists($this, 'afterSave')) {
 				$this->afterSave($tmp);
 			}
@@ -51,6 +54,31 @@
 		public function getID()
 		{
 			return $this->id;
+		}
+
+		protected function prepare()
+		{
+			$properties = [];
+			$ref = new ReflectionClass($this);
+			foreach($ref->getProperties() as $prop) {
+				$p = $prop->getName();
+				if(strpos($p, '_subscriber') === 0) {
+					$properties[$p] = $this->$p;
+					$this->$p = null;
+				}
+			}
+			if(property_exists($this, 'target')) {
+				$properties['target'] = $this->target;
+				$this->target = null;
+			}
+			return $properties;
+		}
+
+		protected function finish($properties)
+		{
+			foreach($properties as $prop => $value) {
+				$this->$prop = $value;
+			}
 		}
 	}
 ?>

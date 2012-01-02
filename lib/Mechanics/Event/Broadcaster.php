@@ -29,41 +29,41 @@
 
 	trait Broadcaster
 	{
-		protected $subscribers = [];
-		protected $deferred_subscribers = [];
+		protected $_subscribers = [];
+		protected $_subscribers_deferred = [];
 
 		public function addSubscriber(Subscriber $subscriber)
 		{
 			if($subscriber->isDeferred()) {
-				$this->deferred_subscribers[$subscriber->getEventType()][] = $subscriber;
+				$this->_subscribers_deferred[$subscriber->getEventType()][] = $subscriber;
 			} else {
-				$this->subscribers[$subscriber->getEventType()][] = $subscriber;
+				$this->_subscribers[$subscriber->getEventType()][] = $subscriber;
 			}
 		}
 
 		public function removeSubscriber(Subscriber $subscriber)
 		{
 			$t = $subscriber->getEventType();
-			$key = array_search($subscriber, $this->subscribers[$t]);
+			$key = array_search($subscriber, $this->_subscribers[$t]);
 			if($key !== false) {
-				unset($this->subscribers[$t][$key]);
+				unset($this->_subscribers[$t][$key]);
 			}
-			$key = array_search($subscriber, $this->deferred_subscribers[$t]);
+			$key = array_search($subscriber, $this->_subscribers_deferred[$t]);
 			if($key !== false) {
-				unset($this->deferred_subscribers[$t][$key]);
+				unset($this->_subscribers_deferred[$t][$key]);
 			}
 		}
 
 		public function fire($event_type, &$a1 = null, &$a2 = null, &$a3 = null, &$a4 = null)
 		{
-			if(!isset($this->subscribers[$event_type])) {
-				$this->subscribers[$event_type] = [];
+			if(!isset($this->_subscribers[$event_type])) {
+				$this->_subscribers[$event_type] = [];
 			}
-			if(!isset($this->deferred_subscribers[$event_type])) {
-				$this->deferred_subscribers[$event_type] = [];
+			if(!isset($this->_subscribers_deferred[$event_type])) {
+				$this->_subscribers_deferred[$event_type] = [];
 			}
-			$is_satisfied = $this->_fire($this->subscribers[$event_type], $a1, $a2, $a3, $a4);
-			$this->_fire($this->deferred_subscribers[$event_type], $a1, $a2, $a3, $a4);
+			$is_satisfied = $this->_fire($this->_subscribers[$event_type], $a1, $a2, $a3, $a4);
+			$this->_fire($this->_subscribers_deferred[$event_type], $a1, $a2, $a3, $a4);
 			return $is_satisfied;
 		}
 
@@ -80,7 +80,7 @@
 					$callback($subscriber, $this, $a1, $a2, $a3, $a4);
 				}
 				if($subscriber->isKilled()) {
-					unset($this->subscribers[$subscriber->getEventType()][$i]);
+					unset($this->_subscribers[$subscriber->getEventType()][$i]);
 					continue;
 				}
 				$is_satisfied = $subscriber->isBroadcastSatisfied();

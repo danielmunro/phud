@@ -25,10 +25,12 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Ability\Ability;
-    use \Mechanics\Server;
-    use \Mechanics\Actor;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Ability\Ability,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
+    	\Mechanics\Server,
+    	\Mechanics\Actor;
 
 	class Haggle extends Skill
 	{

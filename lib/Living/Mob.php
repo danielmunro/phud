@@ -82,10 +82,7 @@
 		
 		public function save()
 		{
-			$subscribers = $this->subscribers;
-			$this->subscribers = null;
 			parent::save();
-			$this->subscribers = $subscribers;
 			$dbr = Dbr::instance();
 			$dbr->sAdd('mobs', $this->id);
 		}

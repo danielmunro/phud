@@ -66,8 +66,7 @@
 			if(!($item instanceof mItem))
 				return Say::perform($target, $target->getNoItemMessage());
 			
-            $value = $actor->getAbilitySet()->applySkillHooks(Ability::HOOK_BUY_ITEM, $item->getValue());
-            $value = $target->getAbilitySet()->applySkillHooks(Ability::HOOK_BUY_ITEM, $value);
+            $value = 1;
 
 			if($actor->decreaseFunds($value) === false)
 				return Say::perform($target, $target->getNotEnoughMoneyMessage());

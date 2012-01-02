@@ -253,7 +253,7 @@
 				{
 					$this->unverified_user->setSex($this->login['sex']);
 					$this->login['align'] = false;
-					return Server::out($this, "What is your alignment (good/neutral/evil)?", false);
+					return Server::out($this, "What is your alignment (good/neutral/evil)? ", false);
 				}
 			}
 			
