@@ -57,10 +57,68 @@
 		protected $room_id = -1;
 		protected $equipped = null;
 		protected $alignment = 0;
+		protected $attributes = null;
+		protected $max_attributes = null;
+		protected $abilities = [];
+		protected $delay = 0;
+		protected $target = null;
+		protected $_subscriber_delay = null;
 		protected $_subscribers_race = [];
+		protected $_subscriber_tick = null;
+		protected $proficiencies = [
+			'stealth' => 15,
+			'healing' => 15,
+			'one handed weapons' => 15,
+			'two handed weapons' => 15,
+			'leather armor' => 15,
+			'chain armor' => 15,
+			'plate armor' => 15,
+			'melee' => 15,
+			'evasive' => 15,
+			'archery' => 15,
+			'alchemy' => 15,
+			'elemental' => 15,
+			'illusion' => 15,
+			'transportation' => 15,
+			'sorcery' => 15,
+			'maladictions' => 15,
+			'benedictions' => 15,
+			'curative' => 15,
+			'beguiling' => 15,
+			'speech' => 15
+		];
 		
 		public function __construct()
 		{
+			$this->attributes = new Attributes([
+				'str' => 15,
+				'int' => 15,
+				'wis' => 15,
+				'dex' => 15,
+				'con' => 15,
+				'cha' => 15,
+				'hp' => 20,
+				'mana' => 100,
+				'movement' => 100,
+				'ac_bash' => 100,
+				'ac_slash' => 100,
+				'ac_pierce' => 100,
+				'ac_magic' => 100,
+				'hit' => 1,
+				'dam' => 1,
+				'saves' => 100
+			]);
+			$this->max_attributes = new Attributes([
+				'str' => 19,
+				'int' => 19,
+				'wis' => 19,
+				'dex' => 19,
+				'con' => 19,
+				'cha' => 19,
+				'hp' => 20,
+				'mana' => 100,
+				'movement' => 100
+			]);
 			$this->equipped = new Equipped($this);
 			$this->initActor();
 		}
@@ -77,55 +135,170 @@
 			foreach($this->affects as $affect) {
 				$affect->applyTimeoutSubscriber($this);
 			}
+			foreach($this->abilities as $user_ab) {
+				$ability = Ability::lookup($user_ab);
+				if($ability['lookup'] instanceof Skill) {
+					$this->addSubscriber($ability['lookup']->getSubscriber());
+				}
+			}
+			Server::instance()->addSubscriber($this->getSubscriberTick());
 		}
 
-		public function getAlignment()
+		///////////////////////////////////////////////////////////////////
+		// Ability functions
+		///////////////////////////////////////////////////////////////////
+
+		public function getAbilities()
 		{
-			return $this->alignment;
+			return $this->abilities;
 		}
-		
-		public function setAlignment($alignment)
+
+		public function addAbility($ability)
 		{
-			$this->alignment = $alignment;
+			// Remember what abilities the fighter has
+			$this->abilities[] = $ability['alias'];
+			if($ability['lookup'] instanceof Skill) {
+				// Apply the subscriber to trigger the ability at the right time
+				$this->addSubscriber($ability['lookup']->getSubscriber());
+			}
 		}
-		
-		public function getDisposition()
+
+		public function removeAbility($ability)
 		{
-			return $this->disposition;
+			$alias = $ability['alias'];
+			if(isset($this->ability[$alias])) {
+				unset($this->ability[$alias]);
+				if($ability['lookup'] instanceof Skill) {
+					$this->removeSubscriber($ability['lookup']->getSubscriber());
+				}
+			}
 		}
+
+		///////////////////////////////////////////////////////////////////
+		// Delay functions
+		///////////////////////////////////////////////////////////////////
 		
-		public function setDisposition($disposition)
+		public function incrementDelay($delay) {
+			$this->delay += $delay;
+			if(empty($this->_subscriber_delay)) {
+				$this->_subscriber_delay = new Subscriber(
+					Event::EVENT_PULSE,
+					$this,
+					function($subscriber, $server, $fighter) {
+						if(!$fighter->decrementDelay()) {
+							$subscriber->kill();
+						}
+					}
+				);
+				Server::instance()->addSubscriber($this->_subscriber_delay);
+			}
+
+		}
+
+		public function decrementDelay()
 		{
-			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
-				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
-			$this->disposition = $disposition;
+			if($this->delay > 0) {
+				$this->delay--;
+				return true;
+			} 
+			unset($this->_subscriber_delay);
+			return false;
 		}
-		
-		public function getAlias($upper = null)
+
+		public function getDelay()
 		{
-			if($upper === null)
-				return $this instanceof User ? ucfirst($this->alias) : $this->alias;
-			else
-				return $upper ? ucfirst($this->alias) : $this->alias;
+			return $this->delay;
 		}
+
+		///////////////////////////////////////////////////////////////////
+		// Attributes functions
+		///////////////////////////////////////////////////////////////////
 		
-		public function getLong()
+		public function getMaxAttribute($key)
 		{
-			return $this->long;
+			return $this->max_attributes->getAttribute($key);
 		}
-		
-		public function setLong($long)
+
+		public function getUnmodifiedAttribute($key)
 		{
-			$this->long = $long;
+			return $this->attributes->getAttribute($key);
 		}
-		
-		public function getEquipped()
+
+		public function getAttribute($key)
 		{
-			return $this->equipped;
+			$n = $this->attributes->getAttribute($key);
+			foreach($this->affects as $affect) {
+				$n += $affect->getAttribute($key);
+			}
+			foreach($this->equipped->getItems() as $eq) {
+				$n += $eq->getAttribute($key);
+				$affs = $eq->getAffects();
+				foreach($affs as $aff) {
+					$n += $aff->getAttribute($key);
+				}
+			}
+			$max = $this->max_attributes->getAttribute($key);
+			$n = round($n);
+			return $max > 0 ? min($n, $this->max_attributes->getAttribute($key)) : $n;
 		}
-		
+
+		public function modifyAttribute($key, $amount)
+		{
+			$this->attributes->modifyAttribute($key, $amount);
+			$this->normalizeAttribute($key);
+		}
+
+		public function setAttribute($key, $amount)
+		{
+			$this->attributes->setAttribute($key, $amount);
+			$this->normalizeAttribute($key);
+		}
+
+		protected function normalizeAttribute($key)
+		{
+			$max = $this->max_attributes->getAttribute($key);
+			if($max > 0 && $this->attributes->getAttribute($key) > $max) {
+				$this->attributes->setAttribute($key, $max);
+			}
+		}
+
+		///////////////////////////////////////////////////////////////////
+		// Tick functions
+		///////////////////////////////////////////////////////////////////
+
+		public function getSubscriberTick()
+		{
+			if(!$this->_subscriber_tick) {
+				$this->_subscriber_tick = new Subscriber(
+					Event::EVENT_TICK,
+					$this,
+					function($subscriber, $broadcaster, $actor) {
+						$actor->tick();
+					}
+				);
+			}
+			return $this->_subscriber_tick;
+		}
+
+		public function tick()
+		{
+			if($this->isAlive()) {
+				$max = $this->getMaxAttribute('hp');
+				$amount = round(rand($max * 0.05, $max * 0.1));
+				$this->modifyAttribute('hp', $amount);
+
+				$max = $this->getMaxAttribute('mana');
+				$amount = round(rand($max * 0.05, $max * 0.1));
+				$this->modifyAttribute('mana', $amount);
+
+				$max = $this->getMaxAttribute('movement');
+				$amount = round(rand($max * 0.05, $max * 0.1));
+				$this->modifyAttribute('movement', $amount);
+			}
+		}
+
 		///////////////////////////////////////////////////////////////////////////
-		// Money stuff
+		// Money functions
 		///////////////////////////////////////////////////////////////////////////
 		
 		public function getCopper()
@@ -185,7 +358,70 @@
 				}
 			}
 		}
-		// End money
+
+		public function getTarget()
+		{
+			return $this->target;
+		}
+		
+		public function setTarget(Actor $target = null)
+		{
+			$this->target = $target;
+		}
+
+		public function getProficiencyIn($proficiency)
+		{
+			if(!isset($this->proficiencies[$proficiency])) {
+				Debug::addDebugLine("Error, proficiency not defined: ".$proficiency);
+				$this->proficiencies[$proficiency] = 15;
+			}
+			return $this->proficiencies[$proficiency];
+		}
+
+		public function getAlignment()
+		{
+			return $this->alignment;
+		}
+		
+		public function setAlignment($alignment)
+		{
+			$this->alignment = $alignment;
+		}
+		
+		public function getDisposition()
+		{
+			return $this->disposition;
+		}
+		
+		public function setDisposition($disposition)
+		{
+			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
+				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
+			$this->disposition = $disposition;
+		}
+		
+		public function getAlias($upper = null)
+		{
+			if($upper === null)
+				return $this instanceof User ? ucfirst($this->alias) : $this->alias;
+			else
+				return $upper ? ucfirst($this->alias) : $this->alias;
+		}
+		
+		public function getLong()
+		{
+			return $this->long;
+		}
+		
+		public function setLong($long)
+		{
+			$this->long = $long;
+		}
+		
+		public function getEquipped()
+		{
+			return $this->equipped;
+		}
 		
 		public function getSex()
 		{
@@ -233,20 +469,50 @@
 		public function setRace($race)
 		{
 			if($this->race) {
+				// Undo all previous racial subscribers/abilities/stats/proficiencies
 				foreach($this->_subscribers_race as $subscriber) {
 					$this->removeSubscriber($subscriber);
 				}
+				$lookup = Race::lookup($this->race);
+				$cur_race = $lookup['lookup'];
+				foreach($cur_race->getProficiencies() as $proficiency => $amount) {
+					$this->proficiencies[$proficiency] -= $amount;
+				}
+				foreach($race['lookup']->getAbilities() as $ability_alias) {
+					$ability = Ability::lookup($ability_alias);
+					$this->removeAbility($ability);
+				}
+				$r = $race['lookup']->getAttributes();
+				$this->max_attributes->modifyAttribute('str', -($r->getAttribute('str')));
+				$this->max_attributes->modifyAttribute('int', -($r->getAttribute('int')));
+				$this->max_attributes->modifyAttribute('wis', -($r->getAttribute('wis')));
+				$this->max_attributes->modifyAttribute('dex', -($r->getAttribute('dex')));
+				$this->max_attributes->modifyAttribute('con', -($r->getAttribute('con')));
+				$this->max_attributes->modifyAttribute('cha', -($r->getAttribute('cha')));
 			}
+
+			// Assign all racial subscribers/abilities/stats/proficiencies
 			$this->race = $race['alias'];
 			$this->_subscribers_race = $race['lookup']->getSubscribers();
 			foreach($this->_subscribers_race as $subscriber) {
 				$this->addSubscriber($subscriber);
 			}
+			$profs = $race['lookup']->getProficiencies();
+			foreach($profs as $name => $value) {
+				$this->proficiencies[$name] += $value;
+			}
+			foreach($race['lookup']->getAbilities() as $ability_alias) {
+				$ability = Ability::lookup($ability_alias);
+				$this->addAbility($ability);
+			}
+			$r = $race['lookup']->getAttributes();
+			$this->max_attributes->modifyAttribute('str', $r->getAttribute('str'));
+			$this->max_attributes->modifyAttribute('int', $r->getAttribute('int'));
+			$this->max_attributes->modifyAttribute('wis', $r->getAttribute('wis'));
+			$this->max_attributes->modifyAttribute('dex', $r->getAttribute('dex'));
+			$this->max_attributes->modifyAttribute('con', $r->getAttribute('con'));
+			$this->max_attributes->modifyAttribute('cha', $r->getAttribute('cha'));
 		}
-		
-		///////////////////////////////////////////////////////////////////////////
-		// Leveling
-		///////////////////////////////////////////////////////////////////////////
 		
 		public function setLevel($level)
 		{
@@ -267,12 +533,6 @@
 		public function setAlias($alias)
 		{
 			$this->alias = $alias;
-		}
-		
-		public function isSafe()
-		{
-			// Checks for safe rooms, imms, non-mobs, etc
-			return false;
 		}
 		
 		public function lookDescribe()

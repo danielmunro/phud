@@ -51,11 +51,11 @@
 			$this->incrementDelay(2);
 			$roll = Server::chance();
 			
-			$roll += $this->getHardAttributeModifier($actor->getDex());
-			$roll += $this->getNormalAttributeModifier($actor->getStr());
+			$roll += $this->getHardAttributeModifier($actor->getAttribute('dex'));
+			$roll += $this->getNormalAttributeModifier($actor->getAttribute('str'));
 			
-			$actor->setMovement($actor->getMovement() / 2);
-			$actor->setMana($actor->getMana() / 2);
+			$actor->modifyAttribute('movement', -($actor->getAttribute('movement') / 2));
+			$actor->modifyAttribute('mana', -($actor->getAttribute('mana') / 2));
 			
 			if($roll > $chance)
 				return $this->fail_message;
@@ -70,8 +70,8 @@
 			$a->setMessageEnd('You cool down.');
 			$a->setTimeout($timeout);
 			$att = $a->getAttributes();
-			$att->setStr($str);
-			$att->setDex($dex);
+			$att->setAttribute('str', $str);
+			$att->setAttribute('dex', $dex);
 			$a->apply($actor);
 			return "You fly into a rage!";
 		}

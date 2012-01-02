@@ -52,28 +52,16 @@
 		{
 			self::addAlias('faerie', $this);
 		
-			$this->attributes = new Attributes();
-			$this->max_attributes = new Attributes();
-			
-			$this->attributes->setStr(9);
-			$this->attributes->setInt(16);
-			$this->attributes->setWis(16);
-			$this->attributes->setDex(15);
-			$this->attributes->setCon(9);
-			$this->attributes->setCha(14);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(1);
-			
-			$this->max_attributes->setStr(13);
-			$this->max_attributes->setInt(25);
-			$this->max_attributes->setWis(25);
-			$this->max_attributes->setDex(25);
-			$this->max_attributes->setCon(13);
-			$this->max_attributes->setCha(22);
+			$this->attributes = new Attributes([
+				'str' => -7,
+				'int' => 5,
+				'wis' => 5,
+				'dex' => 5,
+				'con' => -7,
+				'cha' => 3,
+				'hit' => -1,
+				'dam' => -1
+			]);
 			
 			parent::__construct();
 		}

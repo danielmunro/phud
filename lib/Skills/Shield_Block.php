@@ -59,15 +59,15 @@
 		{
 			$roll = Server::chance();
 			
-			$roll += $this->getEasyAttributeModifier($actor->getDex());
-			$roll += $this->getHardAttributeModifier($actor->getStr());
+			$roll += $this->getEasyAttributeModifier($actor->getAttribute('dex'));
+			$roll += $this->getHardAttributeModifier($actor->getAttribute('str'));
 			
 			$roll *= 1.25;
 			
 			if($roll < $this->percent)
 			{
-				Server::out($actor, $args->getAlias(true) . " blocks your attack with " . $args->getDisplaySex() . " shield!");
-				Server::out($args, "You block " . $actor->getAlias() . "'s attack with your shield!");
+				Server::out($actor, ucfirst($args)." blocks your attack with " . $args->getDisplaySex() . " shield!");
+				Server::out($args, "You block ".$actor."'s attack with your shield!");
 				return true;
 			}
 			return false;

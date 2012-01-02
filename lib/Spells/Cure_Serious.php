@@ -48,7 +48,7 @@
 		{
 			$prof_rand = rand(9, 11);
 			$amount = round(rand(5, ($proficiency / $prof_rand) + 4));
-			$target->setHp($target->getHp() + $amount);
+			$target->modifyAttribute('hp', $amount);
 			Server::out($target, "You feel better!");
 		}
 	}

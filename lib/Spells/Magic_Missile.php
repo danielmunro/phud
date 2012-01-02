@@ -43,9 +43,9 @@
 		
 		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
 		{
-			$damage = round(rand($proficiency / 10, $proficiency / 5)); 
-			$target->setHp($target->getHp() - $damage);
-			Server::out($actor, "You smite " . $target->getAlias() . '!');
+			$damage = -(round(rand($proficiency / 10, $proficiency / 5))); 
+			$target->modifyAttribute('hp', $damage);
+			Server::out($actor, "Your magic missile hits ".$target.'!');
 		}
 	}
 

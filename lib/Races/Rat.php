@@ -34,19 +34,6 @@
 		protected function __construct()
 		{
 			$this->attributes = new Attributes();
-			$this->max_attributes = $this->attributes;
-			
-			$this->attributes->setStr(10);
-			$this->attributes->setInt(15);
-			$this->attributes->setWis(14);
-			$this->attributes->setDex(14);
-			$this->attributes->setCon(12);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(1);
 			
 			parent::__construct();
 		}

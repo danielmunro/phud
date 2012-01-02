@@ -96,7 +96,7 @@
 
 			// Does the caster have sufficient mana?
 			$cost = $arg_spell_casting['lookup']->getManaCost($actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()));
-			if($cost > $actor->getMana()) {
+			if($cost > $actor->getAttribute('mana')) {
 				return Server::out($actor, "You lack the mana to cast ".$arg_spell_casting['alias']." right now.");
 			}
 
@@ -109,11 +109,11 @@
 
 			// Caster will roll to see if they lose concentration
 			if(!$arg_spell_casting['lookup']->checkProficiencyRoll($actor)) {
-				$actor->setMana($actor->getMana()-(round($cost/2)));
+				$actor->modifyAttribute('mana', -(round($cost/2)));
 				return Server::out($actor, "You lost your concentration.");
 			}
 
-			$actor->setMana($actor->getMana()-$cost);
+			$actor->modifyAttribute('mana', -($cost));
 
 			// This event announces the beginning of battle, allowing for the target to have an observer that cancels the fight
 			if($arg_spell_casting['lookup']->isOffensive()) {

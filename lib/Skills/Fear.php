@@ -57,7 +57,7 @@
 			$saves = $this->calculateSaves($actor, $target);
 			$saves = Server::_range(5, 95, $saves);
 			$actor->incrementDelay(2);
-			$actor->setMovement($actor->getMovement() - 2);
+			$actor->setMovement($actor->getAttribute('movement') - 2);
 			if($saves > Server::chance()) {
 				$a = new Affect();
 				$a->setAffect('fear');
@@ -66,8 +66,8 @@
 				$a->setMessageAffect('Affect: fear. Decrease strength and constitution by '.$mod);
 				$a->setMessageEnd('You are no longer afraid.');
 				$atts = $a->getAttributes();
-				$atts->setStr($mod);
-				$atts->setCon($mod);
+				$atts->modifyAttribute('str', $mod);
+				$atts->modifyAttribute('con', $mod);
 				$a->apply($target);
 				foreach($target->getRoom()->getActors() as $room_actor) {
 					if($room_actor === $actor) {

@@ -53,29 +53,15 @@
 		{
 			self::addAlias('elf', $this);
 		
-			$this->attributes = new Attributes();
-			$this->max_attributes = new Attributes();
-			
-			$this->attributes->setStr(10);
-			$this->attributes->setInt(15);
-			$this->attributes->setWis(14);
-			$this->attributes->setDex(14);
-			$this->attributes->setCon(12);
-			$this->attributes->setCha(13);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(1);
-			
-			$this->max_attributes->setStr(17);
-			$this->max_attributes->setInt(21);
-			$this->max_attributes->setWis(19);
-			$this->max_attributes->setDex(21);
-			$this->max_attributes->setCon(17);
-			$this->max_attributes->setCha(21);
-			
+			$this->attributes = new Attributes([
+				'str' => -5,
+				'int' => 2,
+				'wis' => 1,
+				'dex' => 3,
+				'con' => -1,
+				'cha' => 1
+			]);
+
 			parent::__construct();
 		}
 		

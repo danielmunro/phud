@@ -40,22 +40,7 @@
 		protected function __construct()
 		{
 			self::addAlias('critter', $this);
-		
 			$this->attributes = new Attributes();
-			$this->attributes->setStr(5);
-			$this->attributes->setInt(5);
-			$this->attributes->setWis(5);
-			$this->attributes->setDex(5);
-			$this->attributes->setCon(5);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(1);
-			
-			$this->max_attributes = $this->attributes;
-			
 			parent::__construct();
 		}
 

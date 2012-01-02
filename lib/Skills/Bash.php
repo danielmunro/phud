@@ -55,7 +55,7 @@
 			$roll = Server::chance();
 			$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
 			$roll += $target->getRace()['lookup']->getSize();
-			$roll += $this->getNormalAttributeModifier($actor->getStr());
+			$roll += $this->getNormalAttributeModifier($actor->getAttribute('str'));
 			
 			$actor->incrementDelay(2);
 			
@@ -66,7 +66,7 @@
 				$a->setTimeout(1);
 				$a->apply($target);
 				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-				return Server::out($actor, "You slam into ".$target->getAlias()." and send ".$target->getDisplaySex($sexes)." flying!");
+				return Server::out($actor, "You slam into ".$target." and send ".$target->getDisplaySex($sexes)." flying!");
 			}
 			
 			return Server::out($actor, "You fall flat on your face!");

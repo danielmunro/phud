@@ -60,29 +60,17 @@
 		{
 			self::addAlias('ogre', $this);
 		
-			$this->attributes = new Attributes();
-			$this->max_attributes = new Attributes();
-			
-			$this->attributes->setStr(16);
-			$this->attributes->setInt(10);
-			$this->attributes->setWis(12);
-			$this->attributes->setDex(12);
-			$this->attributes->setCon(15);
-			$this->attributes->setCha(9);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(3);
-			
-			$this->max_attributes->setStr(21);
-			$this->max_attributes->setInt(16);
-			$this->max_attributes->setWis(17);
-			$this->max_attributes->setDex(18);
-			$this->max_attributes->setCon(21);
-			$this->max_attributes->setCha(14);
-			
+			$this->attributes = new Attributes([
+				'str' => 5,
+				'int' => -5,
+				'wis' => -2,
+				'dex' => -1,
+				'con' => 3,
+				'cha' => -3,
+				'dam' => 2,
+				'saves' => 10
+			]);
+
 			parent::__construct();
 		}
 

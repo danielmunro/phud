@@ -54,27 +54,6 @@
 			self::addAlias('human', $this);
 		
 			$this->attributes = new Attributes();
-			$this->max_attributes = new Attributes();
-			
-			$this->attributes->setStr(13);
-			$this->attributes->setInt(13);
-			$this->attributes->setWis(13);
-			$this->attributes->setDex(13);
-			$this->attributes->setCon(13);
-			$this->attributes->setCha(13);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(2);
-		
-			$this->max_attributes->setStr(18);
-			$this->max_attributes->setInt(18);
-			$this->max_attributes->setWis(18);
-			$this->max_attributes->setDex(18);
-			$this->max_attributes->setCon(18);
-			$this->max_attributes->setCha(18);
 			
 			parent::__construct();
 		}

@@ -41,28 +41,30 @@
 		public function perform(lUser $user, $args = array())
 		{
 			Server::out($user, 'You are ' . $user . ', a ' . $user->getRace()['alias']);
-			Server::out($user, 'Attributes: Str ' . $user->getStr() . '(' . $user->getBaseStr() . ') ' .
-			'Int ' . $user->getInt() . '(' . $user->getBaseInt() . ') ' . 
-			'Wis ' . $user->getWis() . '(' . $user->getBaseWis() . ') ' .
-			'Dex ' . $user->getDex() . '(' . $user->getBaseDex() . ') ' .
-			'Con ' . $user->getCon() . '(' . $user->getBaseCon() . ') ' .
-			'Cha ' . $user->getCha() . '(' . $user->getBaseCha() . ')');
+			Server::out($user, 'Attributes: '.
+				'Str '.$user->getAttribute('str').'('.$user->getUnmodifiedAttribute('str').') ' .
+				'Int '.$user->getAttribute('int').'('.$user->getUnmodifiedAttribute('int').') ' . 
+				'Wis '.$user->getAttribute('wis').'('.$user->getUnmodifiedAttribute('wis').') ' .
+				'Dex '.$user->getAttribute('dex').'('.$user->getUnmodifiedAttribute('dex').') ' .
+				'Con '.$user->getAttribute('con').'('.$user->getUnmodifiedAttribute('con').') ' .
+				'Cha '.$user->getAttribute('cha').'('.$user->getUnmodifiedAttribute('cha').')');
 			
 			Server::out(
-				$user, 'Hp: ' . $user->getHp() . '/' . $user->getMaxHp() .
-				' Mana: ' . $user->getMana() . '/' . $user->getMaxMana() .
-				' Movement: ' . $user->getMovement() . '/' . $user->getMaxMovement());
+				$user, 'Hp: ' . $user->getAttribute('hp') . '/' . $user->getMaxAttribute('hp') .
+				' Mana: ' . $user->getAttribute('mana') . '/' . $user->getMaxAttribute('mana') .
+				' Movement: ' . $user->getAttribute('movement') . '/' . $user->getMaxAttribute('movement'));
 			
-			$experience = (int) ($user->getExperiencePerLevel() - ($user->getExperience() % $user->getExperiencePerLevel()));
+			//$experience = round($user->getExperiencePerLevel() - ($user->getExperience() % $user->getExperiencePerLevel()));
+			$experience = 1;
 			Server::out($user,
 				'Level ' . $user->getLevel() . ', ' . $experience . ' experience to next level');
 			Server::out($user,
 				$user->getGold() . ' gold, ' . $user->getSilver() . ' silver, ' . $user->getCopper() . ' copper.');
 		
-			Server::out($user, 'You are' . self::getAcString($user->getAcBash()) . 'against bashing.');
-			Server::out($user, 'You are' . self::getAcString($user->getAcSlash()) . 'against slashing.');
-			Server::out($user, 'You are' . self::getAcString($user->getAcPierce()) . 'against piercing.');
-			Server::out($user, 'You are' . self::getAcString($user->getAcMagic()) . 'against magic.');
+			Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_bash')) . 'against bashing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_slash')) . 'against slashing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_pierce')) . 'against piercing.');
+			Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_magic')) . 'against magic.');
 		
 		}
 		
@@ -92,7 +94,5 @@
 				return " almost invulnerable to ";
 			return " divinely armored against ";
 		}
-	
 	}
-
 ?>

@@ -243,9 +243,9 @@
 		{
 			$this->respawn_ticks_timeout--;
 			if($this->respawn_ticks_timeout < 0) {
-				$this->setHp($this->getMaxHp());
-				$this->setMana($this->getMaxMana());
-				$this->setMovement($this->getMaxMovement());
+				$this->setAttribute('hp', $this->getMaxAttribute('hp'));
+				$this->setAttribute('mana', $this->getMaxAttribute('mana'));
+				$this->setAttribute('movement', $this->getMaxAttribute('movement'));
 				$this->setRoom($this->getStartRoom());
 				$this->getRoom()->announce($this, ucfirst($this).' arrives in a puff of smoke.');
 			}

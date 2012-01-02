@@ -58,13 +58,13 @@
 			}
 		
 			$roll = Server::chance() - $percent;
-			$roll += $this->getEasyAttributeModifier($actor->getWis());
+			$roll += $this->getEasyAttributeModifier($actor->getAttribute('wis'));
 			
 			if($roll < $chance) {
 				$amount = rand(0.01, 0.05);
-				$actor->setHp($actor->getHp() + ($actor->getMaxHp() * $amount));
-				$actor->setMana($actor->getMana() + ($actor->getMaxMana() * $amount));
-				$actor->setMovement($actor->getMovement() + ($actor->getMovement() * $amount));
+				$actor->modifyAttribute('hp', $actor->getMaxAttribute('hp') * $amount);
+				$actor->modifyAttribute('mana', $actor->getMaxAttribute('mana') * $amount);
+				$actor->modifyAttribute('movement', $actor->getMaxAttribute('movement') * $amount);
 			}
 		}
 	}

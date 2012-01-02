@@ -27,188 +27,47 @@
 	namespace Mechanics;
 	class Attributes
 	{
-		private $str = 0;
-		private $int = 0;
-		private $wis = 0;
-		private $dex = 0;
-		private $con = 0;
-		private $cha = 0;
+		protected $str = 0;
+		protected $int = 0;
+		protected $wis = 0;
+		protected $dex = 0;
+		protected $con = 0;
+		protected $cha = 0;
 		
-		private $hp = 0;
-		private $mana = 0;
-		private $movement = 0;
+		protected $hp = 0;
+		protected $mana = 0;
+		protected $movement = 0;
 		
-		private $ac_bash = 0;
-		private $ac_slash = 0;
-		private $ac_pierce = 0;
-		private $ac_magic = 0;
+		protected $ac_bash = 0;
+		protected $ac_slash = 0;
+		protected $ac_pierce = 0;
+		protected $ac_magic = 0;
 		
-		private $hit = 0;
-		private $dam = 0;
+		protected $hit = 0;
+		protected $dam = 0;
 		
-		private $saves = 0;
-		
-		///////////////////////////////////////////////////////////////////////
-		// Attribute getters and setters
-		///////////////////////////////////////////////////////////////////////
-		
-		public function setStr($str)
+		protected $saves = 0;
+
+		public function __construct($attributes = [])
 		{
-			$this->str = $str;
+			foreach($attributes as $key => $value) {
+				$this->modifyAttribute($key, $value);
+			}
+		}
+
+		public function getAttribute($key)
+		{
+			return $this->$key;
+		}
+
+		public function modifyAttribute($key, $amount)
+		{
+			$this->$key += $amount;
 		}
 		
-		public function setInt($int)
+		public function setAttribute($key, $amount)
 		{
-			$this->int = $int;
-		}
-		
-		public function setWis($wis)
-		{
-			$this->wis = $wis;
-		}
-		
-		public function setDex($dex)
-		{
-			$this->dex = $dex;
-		}
-		
-		public function setCon($con)
-		{
-			$this->con = $con;
-		}
-		
-		public function setCha($cha)
-		{
-			$this->cha = $cha;
-		}
-		
-		public function getStr()
-		{
-			return $this->str;
-		}
-		
-		public function getInt()
-		{
-			return $this->int;
-		}
-		
-		public function getWis()
-		{
-			return $this->wis;
-		}
-		
-		public function getDex()
-		{
-			return $this->dex;
-		}
-		
-		public function getCon()
-		{
-			return $this->con;
-		}
-		
-		public function getCha()
-		{
-			return $this->cha;
-		}
-		public function setHp($hp)
-		{
-			$this->hp = $hp;
-		}
-		
-		public function setMana($mana)
-		{
-			$this->mana = $mana;
-		}
-		
-		public function setMovement($movement)
-		{
-			$this->movement = $movement;
-		}
-		
-		public function getHp()
-		{
-			return $this->hp;
-		}
-		
-		public function getMana()
-		{
-			return $this->mana;
-		}
-		
-		public function getMovement()
-		{
-			return $this->movement;
-		}
-		
-		public function setAcBash($ac)
-		{
-			$this->ac_bash = $ac;
-		}
-		
-		public function setAcSlash($ac)
-		{
-			$this->ac_slash = $ac;
-		}
-		
-		public function setAcPierce($ac)
-		{
-			$this->ac_pierce = $ac;
-		}
-		
-		public function setAcMagic($ac)
-		{
-			$this->ac_magic = $ac;
-		}
-		
-		public function getAcBash()
-		{
-			return $this->ac_bash;
-		}
-		
-		public function getAcPierce()
-		{
-			return $this->ac_pierce;
-		}
-		
-		public function getAcMagic()
-		{
-			return $this->ac_magic;
-		}
-		
-		public function getAcSlash()
-		{
-			return $this->ac_slash;
-		}
-		
-		public function setHit($hit)
-		{
-			$this->hit = $hit;
-		}
-		
-		public function setDam($dam)
-		{
-			$this->dam = $dam;
-		}
-		
-		public function getHit()
-		{
-			return $this->hit;
-		}
-		
-		public function getDam()
-		{
-			return $this->dam;
-		}
-		
-		public function setSaves($saves)
-		{
-			$this->saves = $saves;
-		}
-		
-		public function getSaves()
-		{
-			return $this->saves;
+			$this->$key = $amount;
 		}
 		
 		public function getAttributeLabels()

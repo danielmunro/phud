@@ -103,7 +103,7 @@
 					"race:                     ".$mob->getRace()['alias']."\n".
 					"level:                    ".$mob->getLevel()."\n".
 					"nouns:                    ".$mob->getNouns()."\n".
-					"stats:                    ".$mob->getHp().'/'.$mob->getMaxHp().'hp '.$mob->getMana().'/'.$mob->getMaxMana().'m '.$mob->getMovement().'/'.$mob->getMaxMovement()."v\n".
+					"stats:                    ".$mob->getAttribute('hp').'/'.$mob->getMaxAttribute('hp').'hp '.$mob->getAttribute('mana').'/'.$mob->getMaxAttribute('mana').'m '.$mob->getAttribute('movement').'/'.$mob->getMaxAttribute('movement')."v\n".
 					"max worth:                ".$mob->getGold().'g '.$mob->getSilver().'s '.$mob->getCopper()."c\n".
 					"movement pulses:          ".$mob->getMovementPulses()."\n".
 					"auto flee:                ".$mob->getAutoFlee()."\n".

@@ -56,28 +56,16 @@
 		{
 			self::addAlias('undead', $this);
 		
-			$this->attributes = new Attributes();
-			$this->max_attributes = new Attributes();
-			
-			$this->attributes->setStr(15);
-			$this->attributes->setInt(15);
-			$this->attributes->setWis(13);
-			$this->attributes->setDex(12);
-			$this->attributes->setCon(12);
-			$this->attributes->setCha(6);
-			$this->attributes->setAcBash(100);
-			$this->attributes->setAcSlash(100);
-			$this->attributes->setAcPierce(100);
-			$this->attributes->setAcMagic(100);
-			$this->attributes->setHit(1);
-			$this->attributes->setDam(1);
-			
-			$this->max_attributes->setStr(21);
-			$this->max_attributes->setInt(21);
-			$this->max_attributes->setWis(17);
-			$this->max_attributes->setDex(16);
-			$this->max_attributes->setCon(17);
-			$this->max_attributes->setCha(13);
+			$this->attributes = new Attributes([
+				'str' => 3,
+				'int' => 3,
+				'wis' => -2,
+				'dex' => -2,
+				'con' => -1,
+				'cha' => -5,
+				'hit' => 1,
+				'saves' => -10
+			]);
 			
 			parent::__construct();
 		}
