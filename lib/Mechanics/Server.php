@@ -51,7 +51,7 @@
 				array(
 					'\Mechanics\Command\Command',
 					'\Mechanics\Race',
-					//'\Living\Mob',
+					'\Living\Mob',
 					'\Mechanics\Ability\Ability'
 				) as $required) {
 				Debug::addDebugLine("initializing ".$required);

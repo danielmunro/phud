@@ -34,7 +34,6 @@
 	class Human extends Race
 	{
 		protected $alias = 'human';
-		protected $creation_points = 10;
 		protected $playable = true;
 		protected $proficiencies = [
 			'alchemy' => 10,

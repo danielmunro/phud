@@ -30,7 +30,6 @@
 	trait Persistable
 	{
 		protected $id = '';
-		protected $persistable_list = '';
 
 		public function save($key = null)
 		{
@@ -45,7 +44,7 @@
 			}
 			$dbr = Dbr::instance();
 			$dbr->set($key, serialize($this));
-			$dbs->sAdd($this->persistable_list, $this->id);
+			$dbr->sAdd($this->persistable_list, $this->id);
 		}
 		
 		public function getID()

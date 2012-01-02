@@ -57,18 +57,11 @@
 		protected $max_attributes = null;
 		protected $affects = array();
 		protected $move_verb = 'leaves';
-		protected $decrease_thirst = 0;
-		protected $decrease_nourishment = 0;
 		protected $unarmed_verb = 'punch';
 		protected $size = self::SIZE_NORMAL;
-		protected $effects_resist = array();
-		protected $effects_vuln = array();
-		protected $materials_vuln = array();
-		protected $damages_vuln = array();
 		protected $playable = false;
 		protected $alias = null;
 		protected $proficiencies = [];
-		protected $subscribers = [];
 		protected $thirst = 2;
 		protected $hunger = 2;
 		protected $full = 4;
@@ -173,6 +166,13 @@
 			if($this->alias)
 				return $this->alias->getAliasName();
 			return '';
+		}
+
+		public function __sleep()
+		{
+			return [
+				'alias'
+			];
 		}
 	}
 ?>

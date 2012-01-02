@@ -32,7 +32,6 @@
 	class Faerie extends Race
 	{
 		protected $alias = 'faerie';
-		protected $creation_points = 18;
 		protected $unarmed_verb = 'slap';
 		protected $size = self::SIZE_TINY;
 		protected $playable = true;

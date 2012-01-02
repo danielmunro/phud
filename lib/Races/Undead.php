@@ -34,7 +34,6 @@
 	class Undead extends Race
 	{
 		protected $alias = 'undead';
-		protected $creation_points = 30;
 		protected $full = 5;
 		protected $hunger = 3;
 		protected $movement_cost = 2;

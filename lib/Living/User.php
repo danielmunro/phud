@@ -32,7 +32,6 @@
 		\Mechanics\Alias,
 		\Mechanics\Room,
 		\Mechanics\Quest\Quest,
-		\Mechanics\Persistable,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
@@ -244,11 +243,6 @@
 				'delay',
 				'proficiencies'
 			];
-		}
-
-		public function __wakeup()
-		{
-			$this->room = Room::find($this->room->getID());
 		}
 	}
 ?>

@@ -70,13 +70,8 @@
 		{
 			$db = Dbr::instance();
 			$mob_ids = $db->sMembers('mobs');
-			$server = Server::instance();
-			foreach($mob_ids as $mob_id)
-			{
-				$mob = unserialize($db->get($mob_id));
-				$mob->initActor();
-				$mob->getRoom()->actorAdd($mob);
-				$server->addSubscriber($mob->getMovementSubscriber());
+			foreach($mob_ids as $mob_id) {
+				unserialize($db->get($mob_id));
 			}
 		}
 		
@@ -256,7 +251,7 @@
 		
 		public function setStartRoom()
 		{
-			$this->start_room_id = $this->room_id;
+			$this->start_room_id = $this->room->getID();
 		}
 		
 		public function getMovementPulses()
@@ -392,6 +387,13 @@
 				'delay',
 				'proficiencies'
 			];
+		}
+		
+		public function __wakeup()
+		{
+			parent::__wakeup();
+			$this->room->actorAdd($this);
+			Server::instance()->addSubscriber($this->getMovementSubscriber());
 		}
 	}
 

@@ -35,7 +35,6 @@
 	class Elf extends Race
 	{
 		protected $alias = 'elf';
-		protected $creation_points = 14;
 		protected $playable = true;
 		protected $proficiencies = [
 			'stealth' => 10,

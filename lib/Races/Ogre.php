@@ -37,7 +37,6 @@
 	class Ogre extends Race
 	{
 		protected $alias = 'ogre';
-		protected $creation_points = 4;
 		protected $movement_cost = 2;
 		protected $full = 2;
 		protected $hunger = 4;

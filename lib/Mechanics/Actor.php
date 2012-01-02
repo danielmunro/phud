@@ -53,7 +53,7 @@
 		protected $copper = 0;
 		protected $sex = self::SEX_NEUTRAL;
 		protected $disposition = self::DISPOSITION_STANDING;
-		protected $race = 'critter';
+		protected $race = '';
 		protected $room = null;
 		protected $equipped = null;
 		protected $alignment = 0;
@@ -120,28 +120,7 @@
 				'movement' => 100
 			]);
 			$this->equipped = new Equipped($this);
-			$this->initActor();
-		}
-
-		public function initActor()
-		{
-			$race = $this->getRace();
-			if($race) {
-				$subscribers = $race['lookup']->getSubscribers();
-				foreach($subscribers as $subscriber) {
-					$this->addSubscriber($subscriber);
-				}
-			}
-			foreach($this->affects as $affect) {
-				$affect->applyTimeoutSubscriber($this);
-			}
-			foreach($this->abilities as $user_ab) {
-				$ability = Ability::lookup($user_ab);
-				if($ability['lookup'] instanceof Skill) {
-					$this->addSubscriber($ability['lookup']->getSubscriber());
-				}
-			}
-			Server::instance()->addSubscriber($this->getSubscriberTick());
+			$this->setRace(Race::lookup('critter'));
 		}
 
 		///////////////////////////////////////////////////////////////////
@@ -237,6 +216,7 @@
 					$n += $aff->getAttribute($key);
 				}
 			}
+			$n += $this->race['lookup']->getAttributes()->getAttribute($key);
 			$max = $this->max_attributes->getAttribute($key);
 			$n = round($n);
 			return $max > 0 ? min($n, $this->max_attributes->getAttribute($key)) : $n;
@@ -464,7 +444,7 @@
 		
 		public function getRace()
 		{
-			return Race::lookup($this->race);
+			return $this->race;
 		}
 		
 		public function setRace($race)
@@ -474,26 +454,17 @@
 				foreach($this->_subscribers_race as $subscriber) {
 					$this->removeSubscriber($subscriber);
 				}
-				$lookup = Race::lookup($this->race);
-				$cur_race = $lookup['lookup'];
-				foreach($cur_race->getProficiencies() as $proficiency => $amount) {
+				foreach($this->race['lookup']->getProficiencies() as $proficiency => $amount) {
 					$this->proficiencies[$proficiency] -= $amount;
 				}
 				foreach($race['lookup']->getAbilities() as $ability_alias) {
 					$ability = Ability::lookup($ability_alias);
 					$this->removeAbility($ability);
 				}
-				$r = $race['lookup']->getAttributes();
-				$this->max_attributes->modifyAttribute('str', -($r->getAttribute('str')));
-				$this->max_attributes->modifyAttribute('int', -($r->getAttribute('int')));
-				$this->max_attributes->modifyAttribute('wis', -($r->getAttribute('wis')));
-				$this->max_attributes->modifyAttribute('dex', -($r->getAttribute('dex')));
-				$this->max_attributes->modifyAttribute('con', -($r->getAttribute('con')));
-				$this->max_attributes->modifyAttribute('cha', -($r->getAttribute('cha')));
 			}
 
 			// Assign all racial subscribers/abilities/stats/proficiencies
-			$this->race = $race['alias'];
+			$this->race = $race;
 			$this->_subscribers_race = $race['lookup']->getSubscribers();
 			foreach($this->_subscribers_race as $subscriber) {
 				$this->addSubscriber($subscriber);
@@ -506,13 +477,6 @@
 				$ability = Ability::lookup($ability_alias);
 				$this->addAbility($ability);
 			}
-			$r = $race['lookup']->getAttributes();
-			$this->max_attributes->modifyAttribute('str', $r->getAttribute('str'));
-			$this->max_attributes->modifyAttribute('int', $r->getAttribute('int'));
-			$this->max_attributes->modifyAttribute('wis', $r->getAttribute('wis'));
-			$this->max_attributes->modifyAttribute('dex', $r->getAttribute('dex'));
-			$this->max_attributes->modifyAttribute('con', $r->getAttribute('con'));
-			$this->max_attributes->modifyAttribute('cha', $r->getAttribute('cha'));
 		}
 		
 		public function setLevel($level)
@@ -550,6 +514,26 @@
 		public function __toString()
 		{
 			return $this->getAlias();
+		}
+		
+		public function __wakeup()
+		{
+			$this->room = Room::find($this->room->getID());
+			$this->race = Race::lookup($this->race);
+			$this->_subscribers_race = $this->race['lookup']->getSubscribers();
+			foreach($this->_subscribers_race as $subscriber) {
+				$this->addSubscriber($subscriber);
+			}
+			foreach($this->affects as $affect) {
+				$affect->applyTimeoutSubscriber($this);
+			}
+			foreach($this->abilities as $user_ab) {
+				$ability = Ability::lookup($user_ab);
+				if($ability['lookup'] instanceof Skill) {
+					$this->addSubscriber($ability['lookup']->getSubscriber());
+				}
+			}
+			Server::instance()->addSubscriber($this->getSubscriberTick());
 		}
 	}
 ?>
