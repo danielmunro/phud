@@ -164,7 +164,6 @@
 		{
 			Debug::addDebugLine($actor.' ('.$actor->getID().') is arriving to '.$this.' ('.$this->getID().')');
 			$this->actors[] = $actor;
-			echo $this->_subscriber_movement." with ".$actor."\n";
 			$actor->addSubscriber($this->_subscriber_movement);
 		}
 		public function actorRemove(Actor $actor)
@@ -175,7 +174,6 @@
 				Debug::addDebugLine($actor.' is not here');
 				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
 			}
-			echo $this->_subscriber_movement." no longer with ".$actor."\n";
 			$actor->removeSubscriber($this->_subscriber_movement);
 			unset($this->actors[$key]);
 		}

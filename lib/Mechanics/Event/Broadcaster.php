@@ -34,23 +34,28 @@
 
 		public function addSubscriber(Subscriber $subscriber)
 		{
+			$t = $subscriber->getEventType();
 			if($subscriber->isDeferred()) {
-				$this->_subscribers_deferred[$subscriber->getEventType()][] = $subscriber;
+				$this->_subscribers_deferred[$t][] = $subscriber;
 			} else {
-				$this->_subscribers[$subscriber->getEventType()][] = $subscriber;
+				$this->_subscribers[$t][] = $subscriber;
 			}
 		}
 
 		public function removeSubscriber(Subscriber $subscriber)
 		{
 			$t = $subscriber->getEventType();
-			$key = array_search($subscriber, $this->_subscribers[$t]);
-			if(is_numeric($key)) {
-				unset($this->_subscribers[$t][$key]);
+			if(!empty($this->_subscribers[$t])) {
+				$key = array_search($subscriber, $this->_subscribers[$t]);
+				if(is_numeric($key)) {
+					unset($this->_subscribers[$t][$key]);
+				}
 			}
-			$key = array_search($subscriber, $this->_subscribers_deferred[$t]);
-			if(is_numeric($key)) {
-				unset($this->_subscribers_deferred[$t][$key]);
+			if(!empty($this->_subscribers_deferred[$t])) {
+				$key = array_search($subscriber, $this->_subscribers_deferred[$t]);
+				if(is_numeric($key)) {
+					unset($this->_subscribers_deferred[$t][$key]);
+				}
 			}
 		}
 
