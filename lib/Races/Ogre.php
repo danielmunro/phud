@@ -29,7 +29,10 @@
 		\Mechanics\Race,
 		\Mechanics\Effect,
 		\Mechanics\Damage,
-		\Mechanics\Attributes;
+		\Mechanics\Attributes,
+		\Mechanics\Server,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event;
 
 	class Ogre extends Race
 	{
@@ -97,12 +100,14 @@
 				new Subscriber(
 					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
 					function($subscriber, $attacker, $victim, &$modifier, &$dam_roll, $attacking) {
-						$d = $attacking->getDamageType();
-						if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
-							$modifier -= 0.15;
-						}
-						if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
-							$modifier += 0.10;
+						if($attacking && method_exists($attacking, 'getDamageType')) {
+							$d = $attacking->getDamageType();
+							if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
+								$modifier -= 0.15;
+							}
+							if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
+								$modifier += 0.10;
+							}
 						}
 					}
 				)

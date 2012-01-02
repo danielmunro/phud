@@ -52,21 +52,19 @@
 		{
 			$target = $actor->reconcileTarget($args);
 			if(!$target) {
-				return Server::out($actor, "Who are you trying to scare?");
+				return;
 			}
 			$saves = $this->calculateSaves($actor, $target);
-			echo "Raw saves: ".$saves.", ";
 			$saves = Server::_range(5, 95, $saves);
 			$actor->incrementDelay(2);
 			$actor->setMovement($actor->getMovement() - 2);
-			echo "Saves: ".$saves."\n";
 			if($saves > Server::chance()) {
 				$a = new Affect();
 				$a->setAffect('fear');
 				$a->setTimeout(max(2, round($proficiency / 10)));
-				$a->setMessageAffect('Affect: fear. Decrease strength and constitution');
+				$mod = -(max(1, round($proficiency / 20)));
+				$a->setMessageAffect('Affect: fear. Decrease strength and constitution by '.$mod);
 				$a->setMessageEnd('You are no longer afraid.');
-				$mod = -(round($proficiency / 20));
 				$atts = $a->getAttributes();
 				$atts->setStr($mod);
 				$atts->setCon($mod);

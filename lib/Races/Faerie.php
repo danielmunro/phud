@@ -105,7 +105,8 @@
 		public function getAbilities()
 		{
 			return [
-				'fly'
+				'fly',
+				'meditation'
 			];
 		}
 	}
