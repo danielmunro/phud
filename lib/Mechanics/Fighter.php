@@ -137,25 +137,25 @@
 			}
 		
 			// ATTACKING
-			$hit_roll = $this->getHit();
-			$dam_roll = $this->getDam();
+			$hit_roll = $this->getAttribute('hit');
+			$dam_roll = $this->getAttribute('dam');
 			
-			$hit_roll += ($this->getDex() / self::MAX_ATTRIBUTE) * 4;
+			$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
 			
 			// DEFENDING
-			$def_roll = ($victim->getDex() / self::MAX_ATTRIBUTE) * 4;
+			$def_roll = ($victim->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
 			
 			// Size modifier
 			$def_roll += 5 - $victim->getRace()['lookup']->getSize();
 			
-			if($dam_type == Damage::TYPE_BASH)
-				$ac = $victim->getAcBash();
-			elseif($dam_type == Damage::TYPE_PIERCE)
-				$ac = $victim->getAcPierce();
-			elseif($dam_type == Damage::TYPE_SLASH)
-				$ac = $victim->getAcSlash();
-			else
-				$ac = $victim->getAcMagic();
+			if($dam_type === Damage::TYPE_BASH)
+				$ac = $victim->getAttribute('ac_bash');
+			else if($dam_type === Damage::TYPE_PIERCE)
+				$ac = $victim->getAttribute('ac_pierce');
+			else if($dam_type === Damage::TYPE_SLASH)
+				$ac = $victim->getAttribute('ac_slash');
+			else if($dam_type === Damage::TYPE_MAGIC)
+				$ac = $victim->getAttribute('ac_magic');
 			
 			$ac = $ac / 100;	
 			
@@ -188,7 +188,7 @@
 			
 			$actors = $this->getRoom()->getActors();
 			foreach($actors as $a) {
-				Server::out($a, ($a === $this ? 'Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
+				Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
 			}
 
 			if(!$victim->isAlive()) {
