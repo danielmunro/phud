@@ -33,8 +33,7 @@
 		\Mechanics\Server,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
-		\Mechanics\Command\Command,
-		\Mechanics\Persistable;
+		\Mechanics\Command\Command;
 
 	class Mob extends Fighter
 	{
@@ -57,6 +56,7 @@
 		protected $is_recording_path = false;
 		protected $path_index = -1;
 		protected $last_path_index = -2;
+		protected $persistable_list = 'mobs';
 		
 		const FLEE_PERCENT = 10;
 		
@@ -80,13 +80,6 @@
 			}
 		}
 		
-		public function save()
-		{
-			parent::save();
-			$dbr = Dbr::instance();
-			$dbr->sAdd('mobs', $this->id);
-		}
-
 		public function delete()
 		{
 			$db = Dbr::instance();
@@ -361,6 +354,44 @@
 		public function setCopperRepop($copper)
 		{
 			$this->copper_repop = $copper;
+		}
+
+		public function __sleep()
+		{
+			return [
+				'movement_pulses',
+				'movement_pulses_timeout',
+				'respawn_ticks',
+				'respawn_ticks_timeout',
+				'auto_flee',
+				'unique',
+				'default_respawn_ticks',
+				'dead',
+				'start_room_id',
+				'area',
+				'gold_repop',
+				'silver_repop',
+				'copper_repop',
+				'nouns',
+				'path',
+				'alias',
+				'long',
+				'level',
+				'gold',
+				'silver',
+				'copper',
+				'sex',
+				'disposition',
+				'race',
+				'room',
+				'equipped',
+				'alignment',
+				'attributes',
+				'max_attributes',
+				'abilities',
+				'delay',
+				'proficiencies'
+			];
 		}
 	}
 

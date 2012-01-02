@@ -30,6 +30,7 @@
 		\Mechanics\Client,
 		\Mechanics\Fighter,
 		\Mechanics\Alias,
+		\Mechanics\Room,
 		\Mechanics\Quest\Quest,
 		\Mechanics\Persistable,
 		\Mechanics\Event\Broadcaster,
@@ -47,6 +48,7 @@
 		protected $date_created = null;
 		protected $is_dm = false;
 		protected $quest_log = null;
+		protected $persistable_list = 'users';
 		protected static $instances = array();
 		
 		public function __construct()
@@ -56,7 +58,6 @@
 			parent::__construct();
 			
 			$this->quest_log = new QuestLog($this);
-			//$this->quest_log->add(Quest::findByHook(Quest::HOOK_CREATE, $this));
 		}
 		
 		public static function getInstances()
@@ -209,6 +210,45 @@
 		public function save()
 		{
 			return parent::save($this->alias);
+		}
+
+		public function __sleep()
+		{
+			return [
+				'hunger',
+				'thirst',
+				'full',
+				'trains',
+				'practices',
+				'password',
+				'date_created',
+				'is_dm',
+				'quest_log',
+				'experience',
+				'experience_per_level',
+				'alias',
+				'long',
+				'level',
+				'gold',
+				'silver',
+				'copper',
+				'sex',
+				'disposition',
+				'race',
+				'room',
+				'equipped',
+				'alignment',
+				'attributes',
+				'max_attributes',
+				'abilities',
+				'delay',
+				'proficiencies'
+			];
+		}
+
+		public function __wakeup()
+		{
+			$this->room = Room::find($this->room->getID());
 		}
 	}
 ?>

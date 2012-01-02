@@ -30,11 +30,12 @@
 	trait Persistable
 	{
 		protected $id = '';
+		protected $persistable_list = '';
 
 		public function save($key = null)
 		{
-			if(method_exists($this, 'beforeSave')) {
-				$tmp = $this->beforeSave();
+			if(empty($this->persistable_list)) {
+				Debug::addDebugLine("WARNING: Saving persistable without a persistable list. May be hard to reference this object at a later time.");
 			}
 			if(!$this->id) {
 				$this->id = microtime().rand(0, 100000);
@@ -43,42 +44,13 @@
 				$key = $this->id;
 			}
 			$dbr = Dbr::instance();
-			$properties = $this->prepare();
 			$dbr->set($key, serialize($this));
-			$this->finish($properties);
-			if(method_exists($this, 'afterSave')) {
-				$this->afterSave($tmp);
-			}
+			$dbs->sAdd($this->persistable_list, $this->id);
 		}
 		
 		public function getID()
 		{
 			return $this->id;
-		}
-
-		protected function prepare()
-		{
-			$properties = [];
-			$ref = new ReflectionClass($this);
-			foreach($ref->getProperties() as $prop) {
-				$p = $prop->getName();
-				if(strpos($p, '_subscriber') === 0) {
-					$properties[$p] = $this->$p;
-					$this->$p = null;
-				}
-			}
-			if(property_exists($this, 'target')) {
-				$properties['target'] = $this->target;
-				$this->target = null;
-			}
-			return $properties;
-		}
-
-		protected function finish($properties)
-		{
-			foreach($properties as $prop => $value) {
-				$this->$prop = $value;
-			}
 		}
 	}
 ?>

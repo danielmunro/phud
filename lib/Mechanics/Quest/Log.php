@@ -33,7 +33,7 @@
 		use Usable;
 
 		protected $user = null;
-		protected $quests = array();
+		protected $quests = [];
 	
 		public function __construct(User $user)
 		{

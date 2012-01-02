@@ -54,7 +54,7 @@
 		protected $sex = self::SEX_NEUTRAL;
 		protected $disposition = self::DISPOSITION_STANDING;
 		protected $race = 'critter';
-		protected $room_id = -1;
+		protected $room = null;
 		protected $equipped = null;
 		protected $alignment = 0;
 		protected $attributes = null;
@@ -450,15 +450,16 @@
 		
 		public function setRoom(Room $room)
 		{
-			if($this->room_id > -1)
-				$this->getRoom()->actorRemove($this);
+			if($this->room) {
+				$this->room->actorRemove($this);
+			}
 			$room->actorAdd($this);
-			$this->room_id = $room->getId();
+			$this->room = $room;
 		}
 		
 		public function getRoom()
 		{
-			return Room::find($this->room_id);
+			return $this->room;
 		}
 		
 		public function getRace()

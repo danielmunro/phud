@@ -36,20 +36,21 @@
 	
 		static $instances = [];
 		
-		private $title = 'Generic room';
-		private $description = 'A nondescript room.';
-		private $north = -1;
-		private $south = -1;
-		private $east = -1;
-		private $west = -1;
-		private $up = -1;
-		private $down = -1;
-		private $doors = [];
-		private $area = '';
-		private $visibility = 1;
-		private $movement_cost = 0;
-		private $_subscriber_movement = null;
-		private $actors = [];
+		protected $title = 'Generic room';
+		protected $description = 'A nondescript room.';
+		protected $north = -1;
+		protected $south = -1;
+		protected $east = -1;
+		protected $west = -1;
+		protected $up = -1;
+		protected $down = -1;
+		protected $doors = [];
+		protected $area = '';
+		protected $visibility = 1;
+		protected $movement_cost = 0;
+		protected $_subscriber_movement = null;
+		protected $persistable_list = 'rooms';
+		protected $actors = [];
 	
 		const PURGATORY_ROOM_ID = 5;
 	
@@ -277,23 +278,28 @@
 				return 'up';
 		}
 
-		protected function beforeSave()
-		{
-			$actors = $this->actors;
-			$this->actors = [];
-			return [$actors];
-		}
-
-		protected function afterSave($after)
-		{
-			$this->actors = $after[0];
-			$dbr = Dbr::instance();
-			$dbr->sAdd('rooms', $this->id);
-		}
-
 		public function __toString()
 		{
 			return $this->title;
+		}
+
+		public function __sleep()
+		{
+			return [
+				'id',
+				'title',
+				'description',
+				'area',
+				'north',
+				'south',
+				'east',
+				'west',
+				'up',
+				'down',
+				'doors',
+				'visibility',
+				'movement_cost'
+			];
 		}
 	}
 ?>

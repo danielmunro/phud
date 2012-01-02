@@ -28,7 +28,7 @@
 	use \Mechanics\Quest;
 	class Questmaster extends Mob
 	{
-		protected $quests = array();
+		protected $quests = [];
 		protected $list_message = 'Here are my quests:';
 		
 		public function getQuests()
@@ -59,6 +59,46 @@
 		public function setListMessage($list_message)
 		{
 			$this->list_message = $list_message;
+		}
+
+		public function __sleep()
+		{
+			return [
+				'quests',
+				'list_message',
+				'movement_pulses',
+				'movement_pulses_timeout',
+				'respawn_ticks',
+				'respawn_ticks_timeout',
+				'auto_flee',
+				'unique',
+				'default_respawn_ticks',
+				'dead',
+				'start_room_id',
+				'area',
+				'gold_repop',
+				'silver_repop',
+				'copper_repop',
+				'nouns',
+				'path',
+				'alias',
+				'long',
+				'level',
+				'gold',
+				'silver',
+				'copper',
+				'sex',
+				'disposition',
+				'race',
+				'room',
+				'equipped',
+				'alignment',
+				'attributes',
+				'max_attributes',
+				'abilities',
+				'delay',
+				'proficiencies'
+			];
 		}
 	}
 
