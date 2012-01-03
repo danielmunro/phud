@@ -214,6 +214,7 @@
 		public function __sleep()
 		{
 			return [
+				'id',
 				'hunger',
 				'thirst',
 				'full',

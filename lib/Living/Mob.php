@@ -354,6 +354,7 @@
 		public function __sleep()
 		{
 			return [
+				'id',
 				'movement_pulses',
 				'movement_pulses_timeout',
 				'respawn_ticks',

@@ -186,7 +186,7 @@
 		public function announce(Actor $actor, $message)
 		{
 			foreach($this->actors as $a)
-				if($a != $actor && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
+				if($a !== $actor && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
 					Server::out($a, $message);
 		}
 		

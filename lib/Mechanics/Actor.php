@@ -33,7 +33,7 @@
 
 	abstract class Actor
 	{
-		use Affectable, Persistable, Broadcaster, Inventory;
+		use Affectable, Persistable, Broadcaster, Inventory, Usable;
 	
 		const MAX_LEVEL = 51;
 		
@@ -519,7 +519,7 @@
 		public function __wakeup()
 		{
 			$this->room = Room::find($this->room->getID());
-			$this->race = Race::lookup($this->race);
+			$this->race = Race::lookup($this->race['alias']);
 			$this->_subscribers_race = $this->race['lookup']->getSubscribers();
 			foreach($this->_subscribers_race as $subscriber) {
 				$this->addSubscriber($subscriber);
