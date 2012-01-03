@@ -379,19 +379,6 @@
 			return intval($base_exp);
 		}
 		
-		protected function levelUp($display = true)
-		{
-			Debug::addDebugLine(ucfirst($this).' levels up.');
-			$this->level++;
-			$this->trains++;
-			$this->practices += ceil($this->getWis() / 5);
-			
-			if($display) {
-				Server::out($this, 'You LEVELED UP!');
-				Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
-			}
-		}
-		
 		public function setExperience($experience)
 		{
 			$this->experience = $experience;

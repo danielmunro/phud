@@ -375,8 +375,6 @@
 		
 		public function setDisposition($disposition)
 		{
-			if($disposition !== self::DISPOSITION_SITTING && $disposition !== self::DISPOSITION_SLEEPING && $disposition !== self::DISPOSITION_STANDING)
-				throw new \Exceptions\Actor("Invalid disposition.", \Exceptions\Actor::INVALID_ATTRIBUTE);
 			$this->disposition = $disposition;
 		}
 		
@@ -488,7 +486,18 @@
 			}
 		}
 		
-		abstract protected function levelUp();
+		public function levelUp()
+		{
+			Debug::addDebugLine($this.' levels up.');
+			$this->level++;
+			$this->trains++;
+			$this->practices += ceil($this->getWis() / 5);
+			
+			if($display) {
+				Server::out($this, 'You LEVELED UP!');
+				Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
+			}
+		}
 		
 		public function getLevel()
 		{

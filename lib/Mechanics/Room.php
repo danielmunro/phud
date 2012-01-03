@@ -216,15 +216,12 @@
 			}
 			$db = Dbr::instance();
 			$room_serialized = $db->get($id);
-			if($room_serialized)
-			{
+			if($room_serialized) {
 				self::$instances[$id] = unserialize($room_serialized);
 				self::$instances[$id]->initRoom();
-			}
-			else
-			{
-				$r = new Room();
-				$r->setId($id);
+			} else {
+				$r = new self();
+				$r->setID($id);
 				$r->save();
 				self::$instances[$id] = $r;
 				self::$instances[$id]->initRoom();
@@ -232,7 +229,7 @@
 			return self::$instances[$id];
 		}
 
-		public function initRoom()
+		protected function initRoom()
 		{
 			$this->_subscriber_movement = $this->getMovementSubscriber();
 		}
