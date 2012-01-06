@@ -30,6 +30,7 @@
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\Mechanics\Item,
+		\Mechanics\Server,
 		\Mechanics\Attributes;
 
 	class Elf extends Race
@@ -70,7 +71,7 @@
 				new Subscriber(
 					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
 					function($subscriber, $broadcaster, $victim, &$modifier, &$dam_roll, $attacking_weapon) {
-						if($attacking_weapon->getMaterial() === Item::MATERIAL_IRON) {
+						if($attacking_weapon instanceof Item && $attacking_weapon->getMaterial() === Item::MATERIAL_IRON) {
 							$modifier += 0.15;
 						}
 					}
@@ -93,7 +94,7 @@
 							$attack_subscriber->suppress();
 							Server::out($target, "Your quick reflexes evade ".$target->getTarget()."'s attack!");
 							$target->getRoom()->announce($target, ucfirst($target)." evades ".$target->getTarget()."'s attack!");
-							$subscriber->satisfyBroadcast();
+							$attack_subscriber->satisfyBroadcast();
 						}
 					}
 				)

@@ -230,8 +230,9 @@
 
 		public function setAttribute($key, $amount)
 		{
-			$this->attributes->setAttribute($key, $amount);
+			$result = $this->attributes->setAttribute($key, $amount);
 			$this->normalizeAttribute($key);
+			return $result;
 		}
 
 		protected function normalizeAttribute($key)

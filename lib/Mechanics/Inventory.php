@@ -97,7 +97,7 @@
 			return trim($buffer);
 		}
 		
-		public function transferItemsFrom(Inventory $inventory)
+		public function transferItemsFrom($inventory)
 		{
 			$items = $inventory->getItems();
 			foreach($items as $item) {

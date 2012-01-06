@@ -67,7 +67,11 @@
 		
 		public function setAttribute($key, $amount)
 		{
-			$this->$key = $amount;
+			if(property_exists($this, $key)) {
+				$this->$key = $amount;
+				return true;
+			}
+			return false;
 		}
 		
 		public function getAttributeLabels()

@@ -181,7 +181,7 @@
 		public function handleDeath()
 		{
 			parent::handleDeath();
-			$this->setHp(1);
+			$this->setAttribute('hp', 1);
 			$command = Command::lookup('look');
 			$command['lookup']->perform($this);
 		}

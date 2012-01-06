@@ -95,9 +95,9 @@
 			return $this->broadcast_satisfied;
 		}
 
-		public function suppress()
+		public function suppress($suppress = true)
 		{
-			$this->suppressed = true;
+			$this->suppressed = $suppress;
 		}
 
 		public function isSuppressed()

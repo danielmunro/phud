@@ -51,7 +51,9 @@
 					}
 					$fighter->fire(Event::EVENT_MELEE_ATTACK);
 					$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
-					if(!$subscriber->isSuppressed()) {
+					if($subscriber->isSuppressed()) {
+						$subscriber->suppress(false);
+					} else {
 						$fighter->attack('Reg');
 					}
 				}
@@ -196,37 +198,29 @@
 			}
 		}
 		
-		public function reconcileTarget($args = array())
+		public function reconcileTarget($args = [])
 		{
-			$actor_target = $this->getTarget();
-			if(!$args)
-				return $actor_target;
-			
-			if(is_array($args))
-				$specified_target = $this->getRoom()->getActorByInput($args);
-			else if($args instanceof self)
-				$specified_target = $args;
-				
-			if($specified_target === $this)
-			{
-				return Server::out($this, "You can't target yourself!");
+			if(!$args) {
+				return $this->target;
 			}
-			if(!$actor_target)
-			{
-				if(!$specified_target)
-				{
+			
+			$specified_target = is_array($args) ? $this->getRoom()->getActorByInput($args) : $args;
+
+			if(empty($this->target)) {
+				if(empty($specified_target)) {
 					return Server::out($this, "No one is there.");
 				}
+				if(!($specified_target instanceof self)) {
+					return Server::out($this, "I don't think they would like that very much.");
+				}
+				if($this === $specified_target) {
+					return Server::out($this, "You can't target yourself!");
+				}
 				$this->target = $specified_target;
-				return $specified_target;
+			} else if(!empty($specified_target) && $this->target !== $specified_target) {
+				return Server::out($this, "Whoa there sparky, don't you think one is enough?");
 			}
-			else if(!($actor_target instanceof self))
-				return Server::out($this, "I don't think they would like that very much.");
-			else if($actor_target && !$specified_target)
-				return $actor_target;
-			else if($actor_target === $specified_target)
-				return $actor_target;
-			Server::out($this, "Whoa there sparky, don't you think one is enough?");
+			return $this->target;
 		}
 		
 		protected function afterDeath($killer)
