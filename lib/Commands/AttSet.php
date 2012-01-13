@@ -51,17 +51,9 @@
 			if(!$object) {
 				return Server::out($user, "That doesn't seem to exist.");
 			}
-		
-			$label = '';
-			if($object instanceof User) {
-				$label = $object->getAlias();
-			}
-			else if($object instanceof mItem) {
-				$label = $object->getShort();
-			}
 
 			if($object->setAttribute($args[2], $args[3])) {
-				Server::out($user, "You set ".$label."'s ".$args[2]." to ".$args[3].".");
+				Server::out($user, "You set ".$object."'s ".$args[2]." to ".$args[3].".");
 				if(method_exists($object, 'save')) {
 					$object->save();
 				}

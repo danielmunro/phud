@@ -92,7 +92,7 @@
 			Server::out($user,
 					"info page on shopkeeper:\n".
 					"alias:                    ".$shopkeeper->getAlias()."\n".
-					"race:                     ".$shopkeeper->getRace()."\n".
+					"race:                     ".$shopkeeper->getRace()['lookup']."\n".
 					"level:                    ".$shopkeeper->getLevel()."\n".
 					"nouns:                    ".$shopkeeper->getNouns()."\n".
 					"max worth:                ".$shopkeeper->getGold().'g '.$shopkeeper->getSilver().'s '.$shopkeeper->getCopper()."c\n".

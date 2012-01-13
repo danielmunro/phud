@@ -34,7 +34,6 @@
 	
 	class Give extends Command
 	{
-	
 		protected $dispositions = [
 			Actor::DISPOSITION_STANDING,
 			Actor::DISPOSITION_SITTING
@@ -47,62 +46,69 @@
 	
 		public function perform(Actor $actor, $args = [])
 		{
-			if(
-				is_string($args[0]) &&
-				strcmp(((int) $args[1]), $args[1]) === 0 &&
-				is_string($args[2]))
-			{
-				$give_amount = $args[1];
-				$currency = $args[2];
-				$actors = $actor->getRoom()->getActors();
-				$target = $actor->getRoom()->getActorByInput($args);
-				
-				if(!($target instanceof Actor))
-					return Server::out($actor, "They aren't here.");
-				
-				if(strpos('copper', $currency) === 0)
-					$currency_proper = 'copper';
-				else if(strpos('silver', $currency) === 0)
-					$currency_proper = 'silver';
-				else if(strpos('gold', $currency) === 0)
-					$currency_proper = 'gold';
-				
-				if(!isset($currency_proper))
-					return Server::out($actor, "What kind of currency?");
-				
-				$amount = $actor->{'get' . ucfirst($currency_proper)}();
-				
-				if($amount < $give_amount)
-					return Server::out($actor, "You don't have that.");
-				
-				$fn = 'add'.ucfirst($currency_proper);
-				$actor->$fn(-$give_amount);
-				$target->$fn($give_amount);
-				
-				Server::out($actor, "You give " . $give_amount . " " . $currency_proper . " to ".$target.".");
-				Server::out($target, $actor->getAlias(true) . " gives you " . $give_amount . " " . $currency_proper . ".");
+			if(sizeof($args) === 3) {
+				$arg_target = $args[2];
+				$arg_item = $args[1];
+				$amount = 1;
+			} else if(sizeof($args) === 4) {
+				$arg_target = $args[3];
+				$arg_item = $args[2];
+				$amount = abs($args[1]);
+			} else {
+				return Server::out($actor, "What did you want to give?");
 			}
-			else
-			{
-				$item = $actor->getItemByInput($args);
-				$target = $actor->getRoom()->getActorByInput($args);
+
+			// Item quantity not figured out yet
+			$target = $actor->getRoom()->getActorByInput($arg_target);
+			$item = $actor->getItemByInput($arg_item, $amount);
+
+			if(!$target) {
+				return Server::out($actor, "They are not there.");
+			}
 			
-				if(empty($item))
-					return Server::out($actor, "You don't appear to have that.");
-			
-				if($target instanceof lShopkeeper && $actor instanceof lUser && !$actor->isDM())
-					return Server::out($actor, ucfirst($target)." doesn't look interested.");
-			
-				if(!($target instanceof Actor))
-					return Server::out($actor, "You don't see them here.");
-				
+			if($item) {
 				$actor->removeItem($item);
 				$target->addItem($item);
-				Server::out($actor, "You give ".$item." to ".$target.".");
-				Server::out($target, ucfirst($actor)." gives you ".$item.".");
+				$actor->getRoom()->announce2([
+					['actor' => $actor,
+					'message' => "You give ".$item." to ".$target."."],
+					['actor' => $target,
+					'message' => ucfirst($actor)." gives ".$item." to you."],
+					['actor' => '*',
+					'message' => ucfirst($actor)." gives ".$item." to ".$target."."]
+				]);
+				return;
 			}
-		}
-	
-	}
+			
+			$currency = '';
+			if(strpos('gold', $args[2]) === 0) {
+				$currency = 'gold';
+			}
+			else if(strpos('silver', $args[2]) === 0) {
+				$currency = 'silver';
+			}
+			else if(strpos('copper', $args[2]) === 0) {
+				$currency = 'copper';
+			}
 
+			if($currency) {
+				if($amount < $actor->getCurrency($currency)) {
+					return Server::out($actor, "You do not have enough ".$currency.".");
+				}
+				$actor->modifyCurrency(-($currency), $amount);
+				$target->modifyCurrency($currency, $amount);
+				$actor->getRoom()->announce2([
+					['actor' => $actor,
+					'message' => "You give ".$amount." ".$currency." to ".$target."."],
+					['actor' => $target,
+					'message' => ucfirst($actor)." gives ".$amount." ".$currency." to you."],
+					['actor' => '*',
+					'message' => ucfirst($actor)." gives ".$amount." ".$currency." to ".$target."."]
+				]);
+				return;
+			}
+
+			return Server::out($actor, "What are you trying to give?");
+		}
+	}
 ?>

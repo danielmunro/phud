@@ -36,13 +36,6 @@
 			$this->items[] = $item;
 		}
 		
-		public function addManyItems($items)
-		{
-			foreach($items as $item) {
-				$this->addItem($item);
-			}
-		}
-		
 		public function removeItem(Item $item)
 		{
 			$i = array_search($item, $this->items);
@@ -56,7 +49,7 @@
 		{
 			return $this->items;
 		}
-		
+
 		public function getItemByInput($input)
 		{
 			return $this->getUsableNounByInput($this->items, $input);

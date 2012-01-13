@@ -76,6 +76,7 @@
 		public function getSubscribers()
 		{
 			return [
+				// Small chance at an extra attack
 				new Subscriber(
 					Event::EVENT_MELEE_ATTACK,
 					function($subscriber, $attacker) {
@@ -84,6 +85,7 @@
 						}
 					}
 				),
+				// Resist fire/frost, vuln magic/mental
 				new Subscriber(
 					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
 					function($subscriber, $attacker, $victim, &$modifier, &$dam_roll, $attacking) {

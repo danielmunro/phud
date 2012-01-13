@@ -189,6 +189,27 @@
 				if($a !== $actor && $a->getDisposition() !== Actor::DISPOSITION_SLEEPING)
 					Server::out($a, $message);
 		}
+
+		public function announce2($announcements)
+		{
+			$actors_announced = [];
+			$general_announcment = '';
+			foreach($announcements as $announcement) {
+				if($announcement['actor'] === '*') {
+					$general_announcement = $announcement['message'];
+				} else {
+					$actors_announced[] = $announcement['actor'];
+					Server::out($announcement['actor'], $announcement['message']);
+				}
+			}
+			if($general_announcement) {
+				foreach($this->actors as $actor) {
+					if(!in_array($actor, $actors_announced)) {
+						Server::out($actor, $general_announcement);
+					}
+				}
+			}
+		}
 		
 		public function getActorByInput($input)
 		{

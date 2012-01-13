@@ -297,6 +297,16 @@
 			return $this->gold;
 		}
 
+		public function getCurrency($currency)
+		{
+			return $this->$currency;
+		}
+
+		public function modifyCurrency($currency, $amount)
+		{
+			$this->$currency += $amount;
+		}
+
 		public function getWorth()
 		{
 			return $this->copper + ($this->silver * 100) + ($this->gold * 1000);
@@ -315,6 +325,36 @@
 		public function addGold($amount)
 		{
 			$this->gold += abs($amount);
+		}
+
+		public function removeCopper($amount)
+		{
+			$amount = abs($amount);
+			if($amount > $this->copper) {
+				return false;
+			}
+			$this->copper -= abs($amount);
+			return true;
+		}
+
+		public function removeSilver($amount)
+		{
+			$amount = abs($amount);
+			if($amount > $this->silver) {
+				return false;
+			}
+			$this->silver -= abs($amount);
+			return true;
+		}
+		
+		public function removeGold($amount)
+		{
+			$amount = abs($amount);
+			if($amount > $this->gold) {
+				return false;
+			}
+			$this->gold -= abs($amount);
+			return true;
 		}
 
 		public function decreaseFunds($copper)
