@@ -100,17 +100,17 @@
 			switch($attribute)
 			{
 				case ($attribute < 15):
-					return rand(12, 17) / 100;
+					return rand(12, 17);
 				case ($attribute < 17):
-					return rand(8, 12) / 100;
+					return rand(8, 12);
 				case ($attribute < 20):
-					return rand(0, 6) / 100;
+					return rand(0, 6);
 				case ($attribute < 22):
 					return 0;
 				case ($attribute < 25):
-					return -(rand(0, 5) / 100);
+					return -(rand(0, 5));
 				default:
-					return -(rand(0, 10) / 100);
+					return -(rand(0, 10));
 			}
 		}
 		
@@ -119,17 +119,17 @@
 			switch($attribute)
 			{
 				case ($attribute < 15):
-					return rand(18, 25) / 100;
+					return rand(18, 25);
 				case ($attribute < 17):
-					return rand(10, 18) / 100;
+					return rand(10, 18);
 				case ($attribute < 20):
-					return rand(4, 10) / 100;
+					return rand(4, 10);
 				case ($attribute < 22):
-					return rand(0, 4) / 100;
+					return rand(0, 4);
 				case ($attribute < 25):
-					return -(rand(0, 3) / 100);
+					return -(rand(0, 3));
 				default:
-					return -(rand(1, 4) / 100);
+					return -(rand(1, 4));
 			}
 		}
 		
@@ -138,17 +138,17 @@
 			switch($attribute)
 			{
 				case ($attribute < 15):
-					return rand(30, 40) / 100;
+					return rand(30, 40);
 				case ($attribute < 17):
-					return rand(20, 30) / 100;
+					return rand(20, 30);
 				case ($attribute < 20):
-					return rand(10, 20) / 100;
+					return rand(10, 20);
 				case ($attribute < 22):
-					return rand(0, 10) / 100;
+					return rand(0, 10);
 				case ($attribute < 25):
 					return 0;
 				default:
-					return rand(0, 5) / 100;
+					return rand(0, 5);
 			}
 		}
 	}
