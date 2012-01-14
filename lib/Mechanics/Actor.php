@@ -496,7 +496,7 @@
 				foreach($this->race['lookup']->getProficiencies() as $proficiency => $amount) {
 					$this->proficiencies[$proficiency] -= $amount;
 				}
-				foreach($race['lookup']->getAbilities() as $ability_alias) {
+				foreach($this->race['lookup']->getAbilities() as $ability_alias) {
 					$ability = Ability::lookup($ability_alias);
 					$this->removeAbility($ability);
 				}
