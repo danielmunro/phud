@@ -92,7 +92,7 @@
 			}
 
 			if($currency) {
-				if($amount < $actor->getCurrency($currency)) {
+				if($amount > $actor->getCurrency($currency)) {
 					return Server::out($actor, "You do not have enough ".$currency.".");
 				}
 				$actor->modifyCurrency(-($currency), $amount);
