@@ -39,7 +39,6 @@
 	
 		protected function __construct()
 		{
-			self::addAlias('critter', $this);
 			$this->attributes = new Attributes();
 			parent::__construct();
 		}

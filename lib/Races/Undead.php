@@ -53,8 +53,6 @@
 
 		protected function __construct()
 		{
-			self::addAlias('undead', $this);
-		
 			$this->attributes = new Attributes([
 				'str' => 3,
 				'int' => 3,

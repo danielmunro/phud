@@ -50,10 +50,8 @@
 
 		protected function __construct()
 		{
-			self::addAlias('human', $this);
-		
 			$this->attributes = new Attributes();
-			
+
 			parent::__construct();
 		}
 

@@ -51,8 +51,6 @@
 	
 		protected function __construct()
 		{
-			self::addAlias('elf', $this);
-		
 			$this->attributes = new Attributes([
 				'str' => -5,
 				'int' => 2,

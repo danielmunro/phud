@@ -57,8 +57,6 @@
 	
 		protected function __construct()
 		{
-			self::addAlias('ogre', $this);
-		
 			$this->attributes = new Attributes([
 				'str' => 5,
 				'int' => -5,

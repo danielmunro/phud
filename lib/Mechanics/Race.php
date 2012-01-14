@@ -25,6 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
+	use \Exception;
 
 	abstract class Race
 	{
@@ -35,24 +36,10 @@
 		const SIZE_NORMAL = 4;
 		const SIZE_LARGE = 5;
 		const SIZE_GIGANTIC = 6;
-		
-		const PART_HEAD = 0;
-		const PART_ARM = 1;
-		const PART_LEG = 2;
-		const PART_HEART = 3;
-		const PART_BRAIN = 4;
-		const PART_GUTS = 5;
-		const PART_HAND = 6;
-		const PART_FEET = 7;
-		const PART_FINGER = 8;
-		const PART_EAR = 9;
-		const PART_EYE = 10;
-		const PART_LONG_TONGUE = 11;
-		const PART_TENTACLES = 12;
-		const PART_FINS = 13;
-		const PART_WINGS = 14;
-		const PART_TAIL = 15;
 
+		const FORM_HUMANOID = 'humanoid';
+		const FORM_REPTILE = 'reptile';
+		
 		protected $attributes = null;
 		protected $max_attributes = null;
 		protected $affects = array();
@@ -66,9 +53,36 @@
 		protected $hunger = 2;
 		protected $full = 4;
 		protected $movement_cost = 1;
+		protected $form = self::FORM_HUMANOID;
+		protected $parts = ['head', 'arm', 'leg', 'heart', 'brain', 'guts', 'hand', 'foot', 'finger', 'ear', 'eye', 'long tongue', 'tentacles', 'fins', 'wings', 'tail'];
 		
 		protected function __construct()
 		{
+			if(!$this->alias) {
+				throw new Exception("Need to set an alias for racial class: ".get_class($this));
+			}
+			self::addAlias($this->alias, $this);
+			$this->setPartsFromForm();
+		}
+
+		protected function addParts($parts_add)
+		{
+			$this->parts = array_merge($this->parts, array_diff($this->parts, $parts_add));
+		}
+
+		protected function removeParts($parts_remove)
+		{
+			$this->parts = array_diff($this->parts, $parts_remove);
+		}
+
+		protected function setPartsFromForm()
+		{
+			if($this->form === self::FORM_HUMANOID) {
+				$this->removeParts(['long tongue', 'tentacles', 'fins', 'wings', 'tail']);
+			}
+			else if($this->form === self::FORM_REPTILE) {
+				$this->removeParts(['foot', 'finger', 'ear', 'tentacles', 'fins', 'wings']);
+			}
 		}
 
 		public function getThirst()

@@ -49,8 +49,6 @@
 	
 		protected function __construct()
 		{
-			self::addAlias('faerie', $this);
-		
 			$this->attributes = new Attributes([
 				'str' => -7,
 				'int' => 5,
@@ -61,6 +59,7 @@
 				'hit' => -1,
 				'dam' => -1
 			]);
+			$this->addParts(['wings']);
 			
 			parent::__construct();
 		}
