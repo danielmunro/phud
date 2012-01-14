@@ -222,7 +222,7 @@
 				$this->login['race'] = $input;
 				
 				$race = Race::lookup($this->login['race']);
-				if($race)
+				if($race && $race['lookup']->isPlayable())
 				{
 					$this->unverified_user->setRace($race);
 				}
@@ -295,7 +295,9 @@
 			array_walk(
 				$races,
 				function($r, $k) use (&$race_list) {
-					$race_list .= $k.' ';
+					if($r['lookup']->isPlayable()) {
+						$race_list .= $k.' ';
+					}
 				}
 			);
 			Server::out($this, trim($race_list).']');
