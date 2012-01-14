@@ -27,12 +27,10 @@
 	namespace Commands;
 	use \Mechanics\Actor,
 		\Mechanics\Server,
-		\Mechanics\Command\Fighter,
 		\Mechanics\Command\Command,
-		\Mechanics\Event\Subscriber,
-		\Mechanics\Fighter as mFighter;
+		\Mechanics\Event\Subscriber;
 
-	class Flee extends Fighter
+	class Flee extends Command
 	{
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
@@ -41,7 +39,7 @@
 			self::addAlias('flee', $this);
 		}
 	
-		public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber)
+		public function perform(Actor $fighter, $args = [], Subscriber $command_subscriber)
 		{
 			$target = $fighter->getTarget();
 			if(!$target) {

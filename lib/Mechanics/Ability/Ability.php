@@ -28,7 +28,6 @@
 	use \Mechanics\Debug,
 		\Mechanics\Actor,
 		\Mechanics\Alias,
-		\Mechanics\Fighter,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\Mechanics\Server,
@@ -50,7 +49,7 @@
 			}
 		}
 
-		public function calculateSaves(Fighter $initiator, Fighter $target = null)
+		public function calculateSaves(Actor $initiator, Actor $target = null)
 		{
 			if(is_null($target)) {
 				$target = $initiator->getTarget();
@@ -71,9 +70,9 @@
 			return $this->proficiency;
 		}
 		
-		public function checkProficiencyRoll(Fighter $fighter)
+		public function checkProficiencyRoll(Actor $actor)
 		{
-			$prof = $fighter->getProficiencyIn($this->proficiency);
+			$prof = $actor->getProficiencyIn($this->proficiency);
 			$roll = max(75, $prof * 2);
 			return $roll < Server::chance();
 		}

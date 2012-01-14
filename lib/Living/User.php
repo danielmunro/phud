@@ -28,14 +28,14 @@
 	use \Mechanics\Server,
 		\Mechanics\Dbr,
 		\Mechanics\Client,
-		\Mechanics\Fighter,
+		\Mechanics\Actor,
 		\Mechanics\Alias,
 		\Mechanics\Room,
 		\Mechanics\Quest\Quest,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
-	class User extends Fighter
+	class User extends Actor
 	{
 		protected $hunger = 2;
 		protected $thirst = 2;

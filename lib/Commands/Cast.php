@@ -33,7 +33,6 @@
 		\Mechanics\Command\Command,
 		\Mechanics\Ability\Ability,
 		\Mechanics\Ability\Spell as mSpell,
-		\Mechanics\Fighter as mFighter,
 		\Living\User as lUser;
 
 	class Cast extends Command

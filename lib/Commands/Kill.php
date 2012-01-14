@@ -30,10 +30,9 @@
 		\Mechanics\Server,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
-		\Mechanics\Command\Fighter as cFighter,
-		\Mechanics\Fighter as mFighter;
+		\Mechanics\Command\Command;
 
-	class Kill extends cFighter
+	class Kill extends Command
 	{
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 	
@@ -42,16 +41,16 @@
 			self::addAlias('kill', $this);
 		}
 	
-		public function perform(mFighter $fighter, $args = [], Subscriber $command_subscriber)
+		public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
 		{
-			if(!$fighter->reconcileTarget($args)) {
+			if(!$actor->reconcileTarget($args)) {
 				return;
 			}
 
-			$fighter->getTarget()->fire(Event::EVENT_ATTACKED, $fighter, $command_subscriber);
+			$actor->getTarget()->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
 			if(!$command_subscriber->isSuppressed()) {
-				Server::out($fighter, "You scream and attack!");
-				Server::instance()->addSubscriber($fighter->getAttackSubscriber());
+				Server::out($actor, "You scream and attack!");
+				Server::instance()->addSubscriber($actor->getAttackSubscriber());
 			}
 		}
 	}

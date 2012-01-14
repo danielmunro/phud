@@ -29,13 +29,13 @@
 		\Mechanics\Room,
 		\Mechanics\Debug,
 		\Mechanics\Alias,
-		\Mechanics\Fighter,
+		\Mechanics\Actor,
 		\Mechanics\Server,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\Mechanics\Command\Command;
 
-	class Mob extends Fighter
+	class Mob extends Actor
 	{
 		protected $movement_pulses = 100;
 		protected $movement_pulses_timeout = 100;
