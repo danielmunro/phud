@@ -229,22 +229,11 @@
 		public function modifyAttribute($key, $amount)
 		{
 			$this->attributes->modifyAttribute($key, $amount);
-			$this->normalizeAttribute($key);
 		}
 
 		public function setAttribute($key, $amount)
 		{
-			$result = $this->attributes->setAttribute($key, $amount);
-			$this->normalizeAttribute($key);
-			return $result;
-		}
-
-		protected function normalizeAttribute($key)
-		{
-			$max = $this->max_attributes->getAttribute($key);
-			if($max > 0 && $this->attributes->getAttribute($key) > $max) {
-				$this->attributes->setAttribute($key, $max);
-			}
+			return $this->attributes->setAttribute($key, $amount);
 		}
 
 		///////////////////////////////////////////////////////////////////
@@ -268,17 +257,11 @@
 		public function tick()
 		{
 			if($this->isAlive()) {
-				$max = $this->getMaxAttribute('hp');
-				$amount = round(rand($max * 0.05, $max * 0.1));
-				$this->modifyAttribute('hp', $amount);
-
-				$max = $this->getMaxAttribute('mana');
-				$amount = round(rand($max * 0.05, $max * 0.1));
-				$this->modifyAttribute('mana', $amount);
-
-				$max = $this->getMaxAttribute('movement');
-				$amount = round(rand($max * 0.05, $max * 0.1));
-				$this->modifyAttribute('movement', $amount);
+				foreach(['hp', 'mana', 'movement'] as $att) {
+					$max = $this->getMaxAttribute($att);
+					$amount = round(rand($max * 0.05, $max * 0.1));
+					$this->modifyAttribute($att, $amount);
+				}
 			}
 		}
 
@@ -431,6 +414,11 @@
 				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
 		
+		public function setAlias($alias)
+		{
+			$this->alias = $alias;
+		}
+		
 		public function getLong()
 		{
 			return $this->long;
@@ -547,11 +535,6 @@
 		public function getLevel()
 		{
 			return $this->level;
-		}
-		
-		public function setAlias($alias)
-		{
-			$this->alias = $alias;
 		}
 		
 		public function lookDescribe()
@@ -880,22 +863,6 @@
 			
 			$base_exp = rand($base_exp * 0.8, $base_exp * 1.2);
 			return intval($base_exp);
-		}
-		
-		public function setExperience($experience)
-		{
-			$this->experience = $experience;
-			if($this->experience <= 0) {
-				$this->levelUp();
-			}
-		}
-		
-		public function awardExperience($experience)
-		{
-			$this->experience -= $experience;
-			if($this->experience <= 0) {
-				$this->levelUp();
-			}
 		}
 		
 		public function getExperience()
