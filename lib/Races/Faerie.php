@@ -59,9 +59,14 @@
 				'hit' => -1,
 				'dam' => -1
 			]);
-			$this->addParts(['wings']);
 			
 			parent::__construct();
+		}
+
+		protected function setPartsFromForm()
+		{
+			parent::setPartsFromForm();
+			$this->addParts(['wings']);
 		}
 		
 		public function getSubscribers()

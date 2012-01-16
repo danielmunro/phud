@@ -24,38 +24,51 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	use \Mechanics\Alias,
-		\Mechanics\Ability\Ability,
+	namespace Skills;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Affect,
 		\Mechanics\Server,
-		\Mechanics\Command\DM,
-		\Living\User;
+    	\Mechanics\Actor;
 
-	class Grant extends DM
+	class Trip extends Skill
 	{
-	
+		protected $proficiency = 'melee';
+		protected $required_proficiency = 20;
+		protected $saving_attribute = 'dex';
+
 		protected function __construct()
 		{
-			self::addAlias('grant', $this);
+			self::addAlias('trip', $this);
+		}
+
+		public function getSubscriber()
+		{
+			return parent::getInputSubscriber('trip');
 		}
 	
-		public function perform(User $user, $args = array())
+		public function perform(Actor $actor, $percent, $args = [])
 		{
-			$target = $user;//$actor->getRoom()->getActorByInput($args);
-			if($args[1] === 'admin') {
-				$user->setDM(true);
+			$target = $actor->reconcileTarget($args);
+			if(!$target) {
 				return;
 			}
-			$ability = Ability::lookup($args[1]);
-			if($ability) {
-				$target->addAbility($ability);
-				if($target !== $user) {
-					Server::out($target, ucfirst($user)." has bestowed the knowledge of ".$ability['alias']." on you.");
-				}
-				return Server::out($user, "You've granted ".$ability['alias']." to ".$target.".");
+			
+			$actor->incrementDelay(1);
+			$roll = Server::chance() - $percent;
+			$roll -= $this->getEasyAttributeModifier($actor->getAttribute('dex'));
+			$roll += $this->getEasyAttributeModifier($target->getAttribute('dex'));
+			
+			if($roll > $percent) {
+				return Server::out($actor, 'You fall flat on your face!');
 			}
-			Server::out($user, "Ability not found.");
+			
+			$a = new Affect();
+			$a->setAffect('stun');
+			$a->setTimeout(1);
+			$a->apply($target);
+			Server::out($actor, 'You throw a leg out and trip '.$target.'.');
+			Server::out($target, ucfirst($actor).' trips you and you go down!');
 		}
-	
 	}
+
 ?>

@@ -34,38 +34,35 @@
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event;
 
-	class Ogre extends Race
+	class Giant extends Race
 	{
-		protected $alias = 'ogre';
+		protected $alias = 'giant';
 		protected $movement_cost = 2;
 		protected $full = 2;
 		protected $hunger = 4;
-		protected $thirst = 2;
+		protected $thirst = 3;
 		protected $unarmed_verb = 'pummel';
-		protected $size = self::SIZE_LARGE;
+		protected $size = self::SIZE_GIGANTIC;
 		protected $playable = true;
 		protected $proficiencies = [
 			'one handed weapons' => 10,
 			'two handed weapons' => 10,
-			'chain armor' => 5,
-			'plate armor' => 5,
+			'leather armor' => 5,
 			'melee' => 10,
-			'alchemy' => 5,
-			'curative' => 5,
-			'evasive' => 5
+			'alchemy' => 10,
+			'elemental' => 10
 		];
 	
 		protected function __construct()
 		{
 			$this->attributes = new Attributes([
-				'str' => 5,
+				'str' => 7,
 				'int' => -5,
-				'wis' => -2,
-				'dex' => -1,
-				'con' => 3,
+				'wis' => -4,
+				'dex' => 0,
+				'con' => 4,
 				'cha' => -3,
-				'dam' => 2,
-				'saves' => 1
+				'dam' => 2
 			]);
 
 			parent::__construct();
@@ -74,28 +71,27 @@
 		public function getSubscribers()
 		{
 			return [
-				// Small chance at an extra attack
 				new Subscriber(
-					Event::EVENT_MELEE_ATTACK,
-					function($subscriber, $attacker) {
-						if(Server::chance() < 5) {
-							$attacker->attack('Ogr');
+					Event::EVENT_MOVED,
+					function($subscriber, $actor, $movement_cost, $room) {
+						$t = $room->getTerrainType();
+						if($t === Room::TERRAIN_HILLS ||
+							$t === Room::TERRAIN_MOUNTAINS ||
+							$t === Room::TERRAIN_GRASSLANDS) {
+							$movement_cost /= 2;
 						}
 					}
 				),
-				// Resist fire/frost, vuln magic/mental
 				new Subscriber(
 					Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
-					function($subscriber, $attacker, $victim, &$modifier, &$dam_roll, $attacking) {
-						if($attacking && method_exists($attacking, 'getDamageType')) {
-							$d = $attacking->getDamageType();
-							if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
-								$modifier -= 0.15;
-							}
-							if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
-								$modifier += 0.10;
-							}
-						}
+					function($subscriber, $victim, $attacker, $modifier, $dam_roll) {
+						$modifier -= 0.05;
+					}
+				),
+				new Subscriber(
+					Event::EVENT_CASTED_AT,
+					function($subscriber, $target, $caster, $spell, $modifier, $saves) {
+						$modifier += 0.08;
 					}
 				)
 			];
@@ -104,7 +100,8 @@
 		public function getAbilities()
 		{
 			return [
-				'enhanced damage'
+				'bash',
+				'meditation'
 			];
 		}
 	}

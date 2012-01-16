@@ -28,50 +28,54 @@
     use \Mechanics\Ability\Skill,
 		\Mechanics\Actor,
     	\Mechanics\Server,
-		\Mechanics\Event\Event,
     	\Mechanics\Affect;
 
-	class Bash extends Skill
+	class Sneak extends Skill
 	{
-		protected $proficiency = 'melee';
-		protected $required_proficiency = 20;
-		protected $saving_attribute = 'str';
+		protected $proficiency = 'stealth';
+		protected $proficiency_required = 30;
+		protected $saving_attribute = 'dex';
 
 		protected function __construct()
 		{
-			self::addAlias('bash', $this);
+			self::addAlias('sneak', $this);
 		}
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('bash');
+			return parent::getInputSubscriber('sneak');
 		}
-	
-		public function perform(Actor $actor, $percent, $args = [])
+		
+		public function perform(Actor $actor, $chance = 0, $args = null)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target)
-				return;
-			
+			$this->incrementDelay(1);
 			$roll = Server::chance();
-			$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
-			$roll += $target->getRace()['lookup']->getSize();
-			$roll += $this->getNormalAttributeModifier($actor->getAttribute('str'));
-			$target->fire(Event::EVENT_BASHED, $target, $roll);
 			
-			$actor->incrementDelay(2);
+			$roll += $this->getNormalAttributeModifier($actor->getAttribute('dex'));
 			
-			if($roll < $percent)
-			{
-				$a = new Affect();
-				$a->setAffect('stun');
-				$a->setTimeout(1);
-				$a->apply($target);
-				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-				return Server::out($actor, "You slam into ".$target." and send ".$target->getDisplaySex($sexes)." flying!");
+			$m = $actor->getAttribute('movement');
+			$cost = -(round((0.05/min(1, $actor->getLevel()/10))*$m));
+			$actor->modifyAttribute('movement', $cost);
+			
+			if($roll > $chance) {
+				Server::out($actor, "Your attempt to move undetected fails.");
+				return;
 			}
-			
-			return Server::out($actor, "You fall flat on your face!");
+
+			$a = new Affect();
+			$a->setAffect('sneak');
+			$a->setMessageAffect('Affect: sneak');
+			$a->setMessageEnd('You no longer move silently.');
+			$a->setTimeout(min(10, $actor->getAttrbute('dex') * 2));
+			$att = $a->getAttributes();
+			$att->setAttribute('str', $str);
+			$att->setAttribute('dex', $dex);
+			$a->apply($actor);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You begin to move silently.'],
+				['actor' => '*', 'message' => $actor.' fades into the shadows.']
+			]);
 		}
 	}
+
 ?>

@@ -26,6 +26,7 @@
 	 */
 	namespace Mechanics;
 	use \Mechanics\Ability\Ability,
+		\Mechanics\Ability\Skill,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Event,

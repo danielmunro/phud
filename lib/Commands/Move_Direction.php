@@ -60,7 +60,7 @@
 						return Server::out($actor, ucfirst($door->getShort()) . ' is ' . $door->getDisposition() . '.');
 				}
 				$movement_cost = 1;
-				$actor->fire(Event::EVENT_MOVED, $movement_cost);
+				$actor->fire(Event::EVENT_MOVED, $movement_cost, $room);
 				if($actor->getAttribute('movement') >= $movement_cost || $actor->getLevel() > Actor::MAX_LEVEL) {
 					$actor->modifyAttribute('movement', -($movement_cost));
 					$actor->getRoom()->announce($actor, ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb() . ' ' . $args[1] . '.');

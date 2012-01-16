@@ -24,26 +24,63 @@
 	 * @package Phud
 	 *
 	 */
-	
-	namespace Mechanics\Event;
+	namespace Races;
+	use \Mechanics\Alias,
+		\Mechanics\Race,
+		\Mechanics\Event\Subscriber,
+		\Mechanics\Event\Event,
+		\Mechanics\Item,
+		\Mechanics\Server,
+		\Mechanics\Attributes;
 
-	class Event
+	class Gnome extends Race
 	{
-		const EVENT_MOVED = 'moved';
-		const EVENT_INPUT = 'input';
-		const EVENT_PULSE = 'pulse';
-		const EVENT_TICK = 'tick';
-		const EVENT_CONNECTED = 'connected';
-		const EVENT_GAME_CYCLE = 'cycle';
-		const EVENT_ATTACKED = 'attacked';
-		const EVENT_MELEE_ATTACK = 'melee attack';
-		const EVENT_MELEE_ATTACKED = 'melee attacked';
-		const EVENT_DAMAGE_MODIFIER_ATTACKING = 'single round attack modifier';
-		const EVENT_DAMAGE_MODIFIER_DEFENDING = 'single round defense modifier';
-		const EVENT_CASTING = 'casting';
-		const EVENT_CASTED_AT = 'casted at';
-		const EVENT_BUY = 'buy';
-		const EVENT_BASHED = 'bashed';
-		const EVENT_APPLY_AFFECT = 'apply affect';
+		protected $alias = 'gnome';
+		protected $playable = true;
+		protected $proficiencies = [
+			'stealth' => 15,
+			'one handed weapons' => 5,
+			'leather armor' => 5,
+			'alchemy' => 10,
+			'illusion' => 10,
+			'evasive' => 5,
+			'speech' => 10
+		];
+	
+		protected function __construct()
+		{
+			$this->attributes = new Attributes([
+				'str' => -2,
+				'int' => 0,
+				'wis' => 0,
+				'dex' => 5,
+				'con' => -3,
+				'cha' => 1,
+				'saves' => 2,
+				'movement' => 50
+			]);
+
+			parent::__construct();
+		}
+		
+		public function getSubscribers()
+		{
+			return [
+				new Subscriber(
+					Event::EVENT_BASHED,
+					function($subscriber, $target, $roll) {
+						$roll -= 10;
+					}
+				)
+			];
+		}
+
+		public function getAbilities()
+		{
+			return [
+				'sneak',
+				'haggle'
+			];
+		}
 	}
 ?>

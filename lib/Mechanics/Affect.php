@@ -51,6 +51,11 @@
 		{
 			return $this->attributes;
 		}
+
+		public function getAttribute($key)
+		{
+			return $this->attributes->getAttribute($key);
+		}
 		
 		public function setAffect($affect)
 		{
@@ -100,6 +105,7 @@
 		
 		public function apply($affectable)
 		{
+			$affectable->fire(Event::EVENT_APPLY_AFFECT, $this);
 			$affectable->addAffect($this);
 			$this->applyTimeoutSubscriber($affectable);
 		}
