@@ -26,6 +26,7 @@
 	 */
 	namespace Mechanics;
 	use \Living\Mob,
+		\Mechanics\Command\Command,
 		\Mechanics\Event\Event,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Subscriber,
@@ -45,15 +46,18 @@
 		public function __construct()
 		{
 			self::$instance = $this;
-			// initialize important classes/instances like commands and mobs
+
+			// Incorporate classes that will make up the game
+			$this->readDeploy('/');
+
+			// Initialize these environment variables
 			Debug::addDebugLine("Initializing environment");
-			foreach(
-				array(
+			foreach([
 					'\Mechanics\Command\Command',
 					'\Mechanics\Race',
 					'\Living\Mob',
 					'\Mechanics\Ability\Ability'
-				) as $required) {
+				] as $required) {
 				Debug::addDebugLine("initializing ".$required);
 				$required::runInstantiation();
 			}
@@ -70,6 +74,19 @@
 		private function __destruct()
 		{
 			socket_close($this->socket);
+		}
+
+		protected function readDeploy($start)
+		{
+			$d = dir(dirname(__FILE__).'/../../deploy/init'.$start);
+			while($cd = $d->read()) {
+				if(substr($cd, -4) === '.php') {
+					Debug::addDebugLine("init deploy: ".$cd);
+					require_once($d->path.'/'.$cd);
+				} else if(strpos($cd, '.') === false) {
+					$this->readDeploy($start.$cd);
+				}
+			}
 		}
 
 		public static function instance()

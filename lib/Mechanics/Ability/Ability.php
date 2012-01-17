@@ -81,7 +81,7 @@
 		{
 			$namespaces = ['Skills', 'Spells'];
 			foreach($namespaces as $namespace) {
-				$d = dir(dirname(__FILE__) . '/../../'.$namespace);
+				$d = dir(dirname(__FILE__) . '/../../../deploy/init/'.$namespace);
 				while($ability = $d->read()) {
 					if(substr($ability, -4) === ".php") {
 						Debug::addDebugLine("init ability: ".$ability);

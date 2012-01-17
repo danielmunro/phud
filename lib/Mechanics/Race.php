@@ -102,7 +102,7 @@
 		public function runInstantiation()
 		{
 			$namespace = 'Races';
-			$d = dir(dirname(__FILE__) . '/../'.$namespace);
+			$d = dir(dirname(__FILE__) . '/../../deploy/init/'.$namespace);
 			while($race = $d->read())
 				if(substr($race, -4) === ".php")
 				{
