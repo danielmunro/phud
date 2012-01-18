@@ -51,7 +51,6 @@
 
 			// Incorporate classes that will make up the game
 			$this->readDeploy('/init/');
-			$this->readDeploy('/areas/');
 
 			// Initialize these environment variables
 			Debug::addDebugLine("Initializing environment");
@@ -63,6 +62,8 @@
 				Debug::addDebugLine("initializing ".$required);
 				$required::runInstantiation();
 			}
+
+			$this->readDeploy('/areas/');
 
 			$this->checkDeploySuccess();
 

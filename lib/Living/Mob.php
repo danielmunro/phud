@@ -60,19 +60,19 @@
 		
 		const FLEE_PERCENT = 10;
 		
-		public function __construct()
+		public function __construct($properties = [])
 		{
-			parent::__construct();
+			parent::__construct($properties);
 			Server::instance()->addSubscriber($this->getMovementSubscriber());
 		}
 		
-		public function delete()
+		public static function runInstantiation()
 		{
 			$db = Dbr::instance();
-			$db->del($this->id);
-			$db->sRem('mobs', $this->id);
-			$this->getRoom()->actorRemove($this);
-			Server::instance()->removeSubscriber($this->getSubscriberTick());
+			$mob_ids = $db->sMembers('mobs');
+			foreach($mob_ids as $mob_id) {
+				unserialize($db->get($mob_id));
+			}
 		}
 
 		public function getPath()

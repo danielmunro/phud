@@ -49,12 +49,13 @@
 				Event::EVENT_INPUT,
 				$this,
 				function($subscriber, $user, $ability, $args) use ($alias) {
-					if(strpos($alias, $args[0]) === 0) {
+					if(!$subscriber->isBroadcastSatisfied() && strpos($alias, $args[0]) === 0) {
 						// @TODO check if user can do this
 						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
 						$subscriber->satisfyBroadcast();
 					}
-				}
+				},
+				true
 			);
 		}
 

@@ -31,10 +31,10 @@
 
 	class Room
 	{
-		use Usable, Persistable, Inventory;
+		use Usable, Inventory;
 	
-		static $instances = [];
-		
+		protected static $instances = [];
+		protected $id = '';
 		protected $title = 'Generic room';
 		protected $description = 'A nondescript room.';
 		protected $north = null;
@@ -56,19 +56,29 @@
 	
 		public function __construct($properties = [])
 		{
-			$this->initRoom();
+			$this->_subscriber_movement = $this->getMovementSubscriber();
 			foreach($properties as $property => $value) {
 				if(property_exists($this, $property)) {
-					$this->$property = $value;
+					if($property === 'actors' && is_array($value)) {
+						foreach($value as $actor) {
+							$actor->setRoom($this);
+						}
+					} else {
+						$this->$property = $value;
+					}
 				} else {
 					throw new Exception($this.' does not have any such property: '.$property);
 				}
 			}
+			if(empty($this->id) || isset(self::$instances[$this->id])) {
+				throw new Exception('Room id is empty or already used: '.$this->id);
+			}
+			self::$instances[$this->id] = $this;
 		}
 
-		public static function setStartRoom(self $start_room)
+		public static function setStartRoom($room_id)
 		{
-			self::$start_room = $start_room;
+			self::$start_room = $room_id;
 		}
 
 		public static function getStartRoom()
@@ -116,6 +126,9 @@
 			$door = $this->getDoor($direction_str);
 			if($door instanceof Door && $door->getDisposition() !== Door::DISPOSITION_OPEN)
 				return -1;
+			if(is_numeric($direction)) {
+				$direction = self::find($direction);
+			}
 			return $direction;
 		}
 		
@@ -245,24 +258,7 @@
 			if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self) {
 				return self::$instances[$id];
 			}
-			$db = Dbr::instance();
-			$room_serialized = $db->get($id);
-			if($room_serialized) {
-				self::$instances[$id] = unserialize($room_serialized);
-				self::$instances[$id]->initRoom();
-			} else {
-				$r = new self();
-				$r->setID($id);
-				$r->save();
-				self::$instances[$id] = $r;
-				self::$instances[$id]->initRoom();
-			}
-			return self::$instances[$id];
-		}
-
-		protected function initRoom()
-		{
-			$this->_subscriber_movement = $this->getMovementSubscriber();
+			return new self(['id' => $id]);
 		}
 
 		private function getMovementSubscriber()
@@ -314,19 +310,7 @@
 		public function __sleep()
 		{
 			return [
-				'id',
-				'title',
-				'description',
-				'area',
-				'north',
-				'south',
-				'east',
-				'west',
-				'up',
-				'down',
-				'doors',
-				'visibility',
-				'movement_cost'
+				'id'
 			];
 		}
 	}

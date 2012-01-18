@@ -68,9 +68,14 @@
 		const MATERIAL_WIRE = 'wire';
 		const MATERIAL_WOOD = 'wood';
 		
-		public function __construct()
+		public function __construct($properties = [])
 		{
 			$this->attributes = new Attributes();
+			foreach($properties as $property => $value) {
+				if(property_exists($this, $property)) {
+					$this->$property = $value;
+				}
+			}
 		}
 		
 		public function setShort($short)

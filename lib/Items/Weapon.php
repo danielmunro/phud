@@ -48,10 +48,10 @@
 		protected $verb = '';
 		protected $damage_type = 0;
 		
-		public function __construct()
+		public function __construct($properties = [])
 		{
 			$this->position = Equipment::POSITION_WIELD;
-			parent::__construct();
+			parent::__construct($properties);
 		}
 		
 		public function getWeaponType()

@@ -33,11 +33,6 @@
 		protected $nouns = 'generic food';
 		protected $nourishment = 1;
 
-		public function __construct()
-		{
-			parent::__construct();
-		}
-		
 		public function getNourishment()
 		{
 			return $this->nourishment;

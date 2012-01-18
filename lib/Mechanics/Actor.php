@@ -93,39 +93,47 @@
 			'speech' => 15
 		];
 		
-		public function __construct()
+		public function __construct($properties = [])
 		{
 			$this->attributes = new Attributes([
-				'str' => 15,
-				'int' => 15,
-				'wis' => 15,
-				'dex' => 15,
-				'con' => 15,
-				'cha' => 15,
-				'hp' => 20,
-				'mana' => 100,
-				'movement' => 100,
-				'ac_bash' => 100,
-				'ac_slash' => 100,
-				'ac_pierce' => 100,
-				'ac_magic' => 100,
-				'hit' => 1,
-				'dam' => 1,
-				'saves' => 100
-			]);
+					'str' => 15,
+					'int' => 15,
+					'wis' => 15,
+					'dex' => 15,
+					'con' => 15,
+					'cha' => 15,
+					'hp' => 20,
+					'mana' => 100,
+					'movement' => 100,
+					'ac_bash' => 100,
+					'ac_slash' => 100,
+					'ac_pierce' => 100,
+					'ac_magic' => 100,
+					'hit' => 1,
+					'dam' => 1,
+					'saves' => 100
+					]);
 			$this->max_attributes = new Attributes([
-				'str' => 19,
-				'int' => 19,
-				'wis' => 19,
-				'dex' => 19,
-				'con' => 19,
-				'cha' => 19,
-				'hp' => 20,
-				'mana' => 100,
-				'movement' => 100
-			]);
+					'str' => 19,
+					'int' => 19,
+					'wis' => 19,
+					'dex' => 19,
+					'con' => 19,
+					'cha' => 19,
+					'hp' => 20,
+					'mana' => 100,
+					'movement' => 100
+					]);
 			$this->equipped = new Equipped($this);
-			$this->setRace(Race::lookup('critter'));
+			foreach($properties as $property => $value) {
+				if(property_exists($this, $property)) {
+					$this->$property = $value;
+				}
+			}
+			if(empty($this->race)) {
+				$this->race = 'critter';
+			}
+			$this->setRace(Race::lookup($this->race));
 		}
 
 		///////////////////////////////////////////////////////////////////
@@ -161,19 +169,19 @@
 		///////////////////////////////////////////////////////////////////
 		// Delay functions
 		///////////////////////////////////////////////////////////////////
-		
+
 		public function incrementDelay($delay) {
 			$this->delay += $delay;
 			if(empty($this->_subscriber_delay)) {
 				$this->_subscriber_delay = new Subscriber(
-					Event::EVENT_PULSE,
-					$this,
-					function($subscriber, $server, $fighter) {
+						Event::EVENT_PULSE,
+						$this,
+						function($subscriber, $server, $fighter) {
 						if(!$fighter->decrementDelay()) {
-							$subscriber->kill();
+						$subscriber->kill();
 						}
-					}
-				);
+						}
+						);
 				Server::instance()->addSubscriber($this->_subscriber_delay);
 			}
 
@@ -197,7 +205,7 @@
 		///////////////////////////////////////////////////////////////////
 		// Attributes functions
 		///////////////////////////////////////////////////////////////////
-		
+
 		public function getMaxAttribute($key)
 		{
 			return $this->max_attributes->getAttribute($key);
@@ -245,12 +253,12 @@
 		{
 			if(!$this->_subscriber_tick) {
 				$this->_subscriber_tick = new Subscriber(
-					Event::EVENT_TICK,
-					$this,
-					function($subscriber, $broadcaster, $actor) {
+						Event::EVENT_TICK,
+						$this,
+						function($subscriber, $broadcaster, $actor) {
 						$actor->tick();
-					}
-				);
+						}
+						);
 			}
 			return $this->_subscriber_tick;
 		}
@@ -269,17 +277,17 @@
 		///////////////////////////////////////////////////////////////////////////
 		// Money functions
 		///////////////////////////////////////////////////////////////////////////
-		
+
 		public function getCopper()
 		{
 			return $this->copper;
 		}
-		
+
 		public function getSilver()
 		{
 			return $this->silver;
 		}
-		
+
 		public function getGold()
 		{
 			return $this->gold;
@@ -309,7 +317,7 @@
 		{
 			$this->silver += abs($amount);
 		}
-		
+
 		public function addGold($amount)
 		{
 			$this->gold += abs($amount);
@@ -334,7 +342,7 @@
 			$this->silver -= abs($amount);
 			return true;
 		}
-		
+
 		public function removeGold($amount)
 		{
 			$amount = abs($amount);
@@ -353,7 +361,7 @@
 			}
 
 			$this->copper -= $copper; // Remove the money
-			
+
 			// ensure that copper amount stays above zero
 			while($this->copper < 0) {
 				if($this->silver > 0) {
@@ -372,7 +380,7 @@
 		{
 			return $this->target;
 		}
-		
+
 		public function setTarget(Actor $target = null)
 		{
 			$this->target = $target;
@@ -391,22 +399,22 @@
 		{
 			return $this->alignment;
 		}
-		
+
 		public function setAlignment($alignment)
 		{
 			$this->alignment = $alignment;
 		}
-		
+
 		public function getDisposition()
 		{
 			return $this->disposition;
 		}
-		
+
 		public function setDisposition($disposition)
 		{
 			$this->disposition = $disposition;
 		}
-		
+
 		public function getAlias($upper = null)
 		{
 			if($upper === null)
@@ -414,32 +422,32 @@
 			else
 				return $upper ? ucfirst($this->alias) : $this->alias;
 		}
-		
+
 		public function setAlias($alias)
 		{
 			$this->alias = $alias;
 		}
-		
+
 		public function getLong()
 		{
 			return $this->long;
 		}
-		
+
 		public function setLong($long)
 		{
 			$this->long = $long;
 		}
-		
+
 		public function getEquipped()
 		{
 			return $this->equipped;
 		}
-		
+
 		public function getSex()
 		{
 			return $this->sex;
 		}
-		
+
 		public function getDisplaySex($set = [])
 		{
 			if(empty($set)) {
@@ -450,7 +458,7 @@
 			}
 			return 'its';
 		}
-		
+
 		public function setSex($sex)
 		{
 			if($sex === self::SEX_FEMALE || $sex === self::SEX_MALE || $sex === self::SEX_NEUTRAL) {
@@ -459,7 +467,7 @@
 			}
 			return false;
 		}
-		
+
 		public function setRoom(Room $room)
 		{
 			if($this->room) {
@@ -468,20 +476,20 @@
 			$room->actorAdd($this);
 			$this->room = $room;
 		}
-		
+
 		public function getRoom()
 		{
 			return $this->room;
 		}
-		
+
 		public function getRace()
 		{
 			return $this->race;
 		}
-		
+
 		public function setRace($race)
 		{
-			if($this->race) {
+			if($this->race && $this->race instanceof Race) {
 				// Undo all previous racial subscribers/abilities/stats/proficiencies
 				foreach($this->_subscribers_race as $subscriber) {
 					$this->removeSubscriber($subscriber);
@@ -510,7 +518,7 @@
 				$this->addAbility($ability);
 			}
 		}
-		
+
 		public function setLevel($level)
 		{
 			while($this->level < $level)
@@ -519,79 +527,79 @@
 				$this->levelUp(false);
 			}
 		}
-		
+
 		public function levelUp()
 		{
 			Debug::addDebugLine($this.' levels up.');
 			$this->level++;
 			$this->trains++;
 			$this->practices += ceil($this->getWis() / 5);
-			
+
 			if($display) {
 				Server::out($this, 'You LEVELED UP!');
 				Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
 			}
 		}
-		
+
 		public function getLevel()
 		{
 			return $this->level;
 		}
-		
+
 		public function lookDescribe()
 		{
 			$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
 
 			if(!$this->long)
 				return 'You see nothing special about '.$this->getDisplaySex($sexes).'.';
-			
+
 			return  $this->long . "\r\n" . 
-					ucfirst($this).'.';
+				ucfirst($this).'.';
 		}
 
 		public function getAttackSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_PULSE,
-				$this,
-				function($subscriber, $broadcaster, $fighter) {
+					Event::EVENT_PULSE,
+					$this,
+					function($subscriber, $broadcaster, $fighter) {
 					$target = $fighter->getTarget();
 					if(empty($target) || !$fighter->isAlive()) {
-						$subscriber->kill();
-						return;
+					$subscriber->kill();
+					return;
 					}
 					$fighter->fire(Event::EVENT_MELEE_ATTACK);
 					$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
 					if($subscriber->isSuppressed()) {
-						$subscriber->suppress(false);
+					$subscriber->suppress(false);
 					} else {
-						$fighter->attack('Reg');
+					$fighter->attack('Reg');
 					}
-				}
-			);
+					}
+					);
 		}
 
 		public function getStatus()
 		{
 			$statuses = array
-			(
-				'100' => 'is in excellent condition',
-				'99' => 'has a few scratches',
-				'75' => 'has some small wounds and bruises',
-				'50' => 'has quite a few wounds',
-				'30' => 'has some big nasty wounds and scratches',
-				'15' => 'looks pretty hurt',
-				'0' => 'is in awful condition'
-			);
-			
+				(
+				 '100' => 'is in excellent condition',
+				 '99' => 'has a few scratches',
+				 '75' => 'has some small wounds and bruises',
+				 '50' => 'has quite a few wounds',
+				 '30' => 'has some big nasty wounds and scratches',
+				 '15' => 'looks pretty hurt',
+				 '0' => 'is in awful condition'
+				);
+
 			$hp_percent = ($this->getAttribute('hp') / $this->getMaxAttribute('hp')) * 100;
 			$descriptor = '';
 			foreach($statuses as $index => $status)
 				if($hp_percent <= $index)
 					$descriptor = $status;
-			
+
 			return $descriptor;
-		
+
 		}
 
 		public function isAlive()
@@ -616,9 +624,9 @@
 					Server::instance()->addSubscriber($victim->getAttackSubscriber());
 				}
 			}
-		
+
 			$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
-			
+
 			if($attacking_weapon['equipped']) {
 				if(!$verb) {
 					$verb = $attacking_weapon['equipped']->getVerb();
@@ -630,19 +638,19 @@
 				}
 				$dam_type = Damage::TYPE_BASH;
 			}
-		
+
 			// ATTACKING
 			$hit_roll = $this->getAttribute('hit');
 			$dam_roll = $this->getAttribute('dam');
-			
+
 			$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
-			
+
 			// DEFENDING
 			$def_roll = ($victim->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
-			
+
 			// Size modifier
 			$def_roll += 5 - $victim->getRace()['lookup']->getSize();
-			
+
 			if($dam_type === Damage::TYPE_BASH)
 				$ac = $victim->getAttribute('ac_bash');
 			else if($dam_type === Damage::TYPE_PIERCE)
@@ -651,9 +659,9 @@
 				$ac = $victim->getAttribute('ac_slash');
 			else if($dam_type === Damage::TYPE_MAGIC)
 				$ac = $victim->getAttribute('ac_magic');
-			
+
 			$ac = $ac / 100;	
-			
+
 			$roll['attack'] = rand(0, $hit_roll);
 			$roll['defense'] = rand(0, $def_roll) - $ac;
 
@@ -663,7 +671,7 @@
 			} else {
 				//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
 				//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
-				
+
 				$modifier = 1;
 				$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
 				$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
@@ -671,7 +679,7 @@
 				$dam_roll = Server::_range(0, 200, $dam_roll);
 				$victim->modifyAttribute('hp', -($dam_roll));
 			}
-			
+
 			if($dam_roll < 5)
 				$descriptor = 'clumsy';
 			elseif($dam_roll < 10)
@@ -680,7 +688,7 @@
 				$descriptor = 'competent';
 			else
 				$descriptor = 'skillful';
-			
+
 			$actors = $this->getRoom()->getActors();
 			foreach($actors as $a) {
 				Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
@@ -690,13 +698,13 @@
 				$victim->afterDeath($this);
 			}
 		}
-		
+
 		public function reconcileTarget($args = [])
 		{
 			if(!$args) {
 				return $this->target;
 			}
-			
+
 			$specified_target = is_array($args) ? $this->getRoom()->getActorByInput($args) : $args;
 
 			if(empty($this->target)) {
@@ -715,16 +723,16 @@
 			}
 			return $this->target;
 		}
-		
+
 		protected function afterDeath($killer)
 		{
 			$this->setTarget(null);
 			$killer->setTarget(null);
-		
+
 			Debug::addDebugLine(ucfirst($killer).' killed '.$this.".");
 			Server::out($killer, 'You have KILLED '.$this.'.');
 			$killer->applyExperienceFrom($this);
-			
+
 			if($this instanceof User)
 				$nouns = $this->getAlias();
 			elseif($this instanceof Mob)
@@ -740,7 +748,7 @@
 			$corpse->setNouns('corpse '.$nouns);
 			$corpse->setWeight(100);
 			$corpse->transferItemsFrom($this);
-			
+
 			$killer->addGold($gold);
 			$killer->addSilver($silver);
 			$killer->addCopper($copper);
@@ -752,7 +760,7 @@
 			$corpse->addGold($gold);
 			$corpse->addSilver($silver);
 			$corpse->addCopper($copper);
-			
+
 			$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
 			$r = round(rand(0, 3));
 			if($r > 1) {
@@ -760,7 +768,7 @@
 					['brains', "'s brains splash all over you!"],
 					['guts', ' spills '.$this->getDisplaySex().' guts all over the floor.'],
 					['heart', "'s heart is torn from ".$this->getDisplaySex(). " chest."]
-				];
+						];
 				$r = round(rand(0, sizeof($parts)-1));
 				$meat = new Food();
 				$meat->setShort('the '.$parts[$r][0].' of '.$this);
@@ -770,27 +778,27 @@
 				Server::out($killer, ucfirst($this).$parts[$r][1]);
 			}
 			$this->getRoom()->addItem($corpse);
-							
+
 			if($killer instanceof User) {
 				Server::out($killer, "\n".$killer->prompt(), false);
 			}
-			
+
 			$this->handleDeath();
 		}
-		
+
 		protected function handleDeath()
 		{
 			Debug::addDebugLine(ucfirst($this).' died.');
 			Server::out($this, 'You have been KILLED!');
 		}
-		
+
 		public function applyExperienceFrom(Actor $victim)
 		{
 			if(!$this->experience_per_level) {
 				// Mobs have 0 exp per level
 				return 0;
 			}
-			
+
 			Debug::addDebugLine("Applying experience from ".$victim." to ".$this.".");
 			if($this->experience < $this->experience_per_level) {
 				$experience = $victim->getKillExperience($this);
@@ -798,11 +806,11 @@
 				Server::out($this, "You get ".$experience." experience for your kill.");
 			}
 		}
-		
+
 		public function getKillExperience(Actor $killer)
 		{
 			$level_diff = $this->level - $killer->getLevel();
-			
+
 			switch($level_diff)
 			{
 				case -8:
@@ -905,7 +913,7 @@
 		
 		public function __wakeup()
 		{
-			$this->room = Room::find($this->room->getID());
+			$this->room = Room::find($this->room->getId());
 			$this->race = Race::lookup($this->race['alias']);
 			$this->_subscribers_race = $this->race['lookup']->getSubscribers();
 			foreach($this->_subscribers_race as $subscriber) {

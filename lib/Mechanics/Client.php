@@ -277,7 +277,7 @@
 				$this->user->setAlias($this->login['alias']);
 				$this->user->addCopper(20);
 				$this->user->setPassword(sha1($this->user->getAlias().$this->user->getDateCreated().$this->login['new_pass']));
-				$this->user->setRoom(Room::getStartRoom());
+				$this->user->setRoom(Room::find(Room::getStartRoom()));
 				$this->user->setClient($this);
 				$this->user->save();
 				
