@@ -66,7 +66,7 @@
 			$a->setAffect('sneak');
 			$a->setMessageAffect('Affect: sneak');
 			$a->setMessageEnd('You no longer move silently.');
-			$a->setTimeout(min(10, $actor->getAttrbute('dex') * 2));
+			$a->setTimeout(min(10, $actor->getAttribute('dex') * 2));
 			$att = $a->getAttributes();
 			$att->setAttribute('str', $str);
 			$att->setAttribute('dex', $dex);
