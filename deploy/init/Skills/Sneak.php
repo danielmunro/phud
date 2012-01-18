@@ -48,7 +48,7 @@
 		
 		public function perform(Actor $actor, $chance = 0, $args = null)
 		{
-			$this->incrementDelay(1);
+			$actor->incrementDelay(1);
 			$roll = Server::chance();
 			
 			$roll += $this->getNormalAttributeModifier($actor->getAttribute('dex'));

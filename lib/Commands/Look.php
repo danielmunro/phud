@@ -75,12 +75,12 @@
 				);
 				
 				Server::out($user, 'Exits [' .
-					($user->getRoom()->getNorth() >= 0 ? ' N ' : '') .
-					($user->getRoom()->getSouth() >= 0 ? ' S ' : '') .
-					($user->getRoom()->getEast()  >= 0 ? ' E ' : '') .
-					($user->getRoom()->getWest()  >= 0 ? ' W ' : '') .
-					($user->getRoom()->getUp()    >= 0 ? ' U ' : '') .
-					($user->getRoom()->getDown()  >= 0 ? ' D ' : '') . ']');
+					($user->getRoom()->getNorth() instanceof mRoom ? ' N ' : '') .
+					($user->getRoom()->getSouth() instanceof mRoom ? ' S ' : '') .
+					($user->getRoom()->getEast()  instanceof mRoom ? ' E ' : '') .
+					($user->getRoom()->getWest()  instanceof mRoom ? ' W ' : '') .
+					($user->getRoom()->getUp()    instanceof mRoom ? ' U ' : '') .
+					($user->getRoom()->getDown()  instanceof mRoom ? ' D ' : '') . ']');
 				$items = $user->getRoom()->getItems();
 				
 				if(is_array($items) && sizeof($items) > 0)
@@ -133,23 +133,23 @@
 			Server::out($user, 'Nothing is there.');
 		}
 		
-		public static function lookDirection(&$user, $room_id, $direction)
+		public static function lookDirection(&$user, $room, $direction)
 		{
 			// Closed/locked door
-			$door = mDoor::findByRoomAndDirection($room_id, $direction);
+			$door = mDoor::findByRoomAndDirection($room, $direction);
 			if($door instanceof mDoor)
 			{
 				if($door->getHidden())
 					return Server::out($user, iItem::getInstance($door->getHiddenItemId())->getLong());
 				if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
-					return Server::out($user, ucfirst($door->getLong($room_id)));
+					return Server::out($user, ucfirst($door->getLong($room)));
 			}
 			
-			if($room_id == 0)
+			if(!($room instanceof mRoom))
 				return Server::out($user, 'You see nothing ' . $direction . '.');
 			else
 				return Server::out($user, 'To the ' . $direction . ', you see: ' .
-					mRoom::find($room_id)->getTitle() . '.');
+					$room->getTitle() . '.');
 		}
 	}
 ?>

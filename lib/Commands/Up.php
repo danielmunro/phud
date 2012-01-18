@@ -35,9 +35,9 @@
 			self::addAlias('up', $this, 11);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
-			parent::perform($actor, array($actor->getRoom()->getUp(), 'up'));
+			parent::perform($actor, [$actor->getRoom()->getUp(), 'up']);
 		}
 	}
 ?>

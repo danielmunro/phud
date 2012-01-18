@@ -24,20 +24,17 @@
 	 * @package Phud
 	 *
 	 */
-	namespace Commands;
-	use \Mechanics\Alias,
-		\Mechanics\Actor;
+	namespace Mechanics;
 
-	class East extends Move_Direction
+	class Anonymous
 	{
-		protected function __construct()
+		public function __construct()
 		{
-			self::addAlias('east', $this, 11);
 		}
-	
-		public function perform(Actor $actor, $args = [])
+
+		public function _require_once($file)
 		{
-			parent::perform($actor, [$actor->getRoom()->getEast(), 'east']);
+			require_once($file);
 		}
 	}
 ?>

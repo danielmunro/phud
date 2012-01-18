@@ -38,7 +38,7 @@
 	{
 		protected $dispositions = array(Actor::DISPOSITION_STANDING);
 
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
 			if($actor->getDisposition() === Actor::DISPOSITION_SITTING)
 				return Server::out($actor, "You need to stand up to do that.");
@@ -48,9 +48,9 @@
 			if($actor->getTarget())
 				return Server::out($actor, 'You cannot leave a fight!');
 			
-			if($args[0] > -1)
+			if($args[0] instanceof mRoom)
 			{
-				$room = mRoom::find($args[0]);
+				$room = $args[0];
 				$door = $room->getDoor($args[1]);
 				if($door instanceof mDoor)
 				{

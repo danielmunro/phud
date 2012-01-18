@@ -30,16 +30,14 @@
 
 	class South extends Move_Direction
 	{
-	
 		protected function __construct()
 		{
 			self::addAlias('south', $this, 11);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
-			parent::perform($actor, array($actor->getRoom()->getSouth(), 'south'));
+			parent::perform($actor, [$actor->getRoom()->getSouth(), 'south']);
 		}
-	
 	}
 ?>

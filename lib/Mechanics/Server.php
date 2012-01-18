@@ -30,7 +30,9 @@
 		\Mechanics\Event\Event,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Subscriber,
-		\Living\User;
+		\Living\User,
+		\Exception,
+		\stdClass;
 	
 	class Server
 	{
@@ -48,19 +50,21 @@
 			self::$instance = $this;
 
 			// Incorporate classes that will make up the game
-			$this->readDeploy('/');
+			$this->readDeploy('/init/');
+			$this->readDeploy('/areas/');
 
 			// Initialize these environment variables
 			Debug::addDebugLine("Initializing environment");
 			foreach([
 					'\Mechanics\Command\Command',
 					'\Mechanics\Race',
-					'\Living\Mob',
 					'\Mechanics\Ability\Ability'
 				] as $required) {
 				Debug::addDebugLine("initializing ".$required);
 				$required::runInstantiation();
 			}
+
+			$this->checkDeploySuccess();
 
 			// open the socket
 			$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
@@ -78,14 +82,22 @@
 
 		protected function readDeploy($start)
 		{
-			$d = dir(dirname(__FILE__).'/../../deploy/init'.$start);
+			$d = dir(dirname(__FILE__).'/../../deploy'.$start);
 			while($cd = $d->read()) {
 				if(substr($cd, -4) === '.php') {
 					Debug::addDebugLine("init deploy: ".$cd);
-					require_once($d->path.'/'.$cd);
+					$anon = new Anonymous();
+					$anon->_require_once($d->path.'/'.$cd);
 				} else if(strpos($cd, '.') === false) {
 					$this->readDeploy($start.$cd);
 				}
+			}
+		}
+
+		protected function checkDeploySuccess()
+		{
+			if(!Room::getStartRoom()) {
+				throw new Exception('Start room not set');
 			}
 		}
 

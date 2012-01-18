@@ -27,6 +27,7 @@
 	namespace Commands;
 	use \Mechanics\Actor,
 		\Mechanics\Server,
+		\Mechanics\Room as mRoom,
 		\Mechanics\Command\Command,
 		\Mechanics\Event\Subscriber;
 
@@ -60,7 +61,7 @@
 									$directions,
 									function($d)
 									{
-										return $d !== -1;
+										return $d instanceof mRoom;
 									}
 								);
 			uasort(

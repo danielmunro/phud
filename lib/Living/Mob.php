@@ -66,15 +66,6 @@
 			Server::instance()->addSubscriber($this->getMovementSubscriber());
 		}
 		
-		public static function runInstantiation()
-		{
-			$db = Dbr::instance();
-			$mob_ids = $db->sMembers('mobs');
-			foreach($mob_ids as $mob_id) {
-				unserialize($db->get($mob_id));
-			}
-		}
-		
 		public function delete()
 		{
 			$db = Dbr::instance();
@@ -182,7 +173,7 @@
 										$directions,
 										function($d)
 										{
-											return $d !== -1;
+											return $d instanceof Room;
 										}
 									);
 				uasort(
@@ -194,9 +185,9 @@
 				);
 			}
 			$areas = explode(' ', $this->area);
-			foreach($directions as $dir => $room_id)
+			foreach($directions as $dir => $room)
 			{
-				$other_areas = explode(' ', Room::find($room_id)->getArea());
+				$other_areas = explode(' ', $room->getArea());
 				$intersection = array_intersect($areas, $other_areas);
 				if($intersection)
 				{

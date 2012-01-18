@@ -26,44 +26,54 @@
 	 */
 	namespace Mechanics;
 	use \Mechanics\Event\Subscriber,
-		\Mechanics\Event\Event;
+		\Mechanics\Event\Event,
+		\Exception;
 
 	class Room
 	{
 		use Usable, Persistable, Inventory;
 	
-		const START_ROOM = 5933293242;
-	
 		static $instances = [];
 		
 		protected $title = 'Generic room';
 		protected $description = 'A nondescript room.';
-		protected $north = -1;
-		protected $south = -1;
-		protected $east = -1;
-		protected $west = -1;
-		protected $up = -1;
-		protected $down = -1;
-		protected $doors = [];
+		protected $north = null;
+		protected $south = null;
+		protected $east = null;
+		protected $west = null;
+		protected $up = null;
+		protected $down = null;
+		protected $doors = ['north' => null, 'south' => null, 'east' => null, 'west' => null, 'up' => null, 'down' => null];
 		protected $area = '';
 		protected $visibility = 1;
 		protected $movement_cost = 0;
 		protected $_subscriber_movement = null;
 		protected $persistable_list = 'rooms';
 		protected $actors = [];
+		protected static $start_room = 0;
 	
 		const PURGATORY_ROOM_ID = 5;
 	
-		public function __construct()
+		public function __construct($properties = [])
 		{
-			$this->doors = [
-				'north' => null,
-				'south' => null,
-				'east' => null,
-				'west' => null,
-				'up' => null,
-				'down' => null
-			];
+			$this->initRoom();
+			foreach($properties as $property => $value) {
+				if(property_exists($this, $property)) {
+					$this->$property = $value;
+				} else {
+					throw new Exception($this.' does not have any such property: '.$property);
+				}
+			}
+		}
+
+		public static function setStartRoom(self $start_room)
+		{
+			self::$start_room = $start_room;
+		}
+
+		public static function getStartRoom()
+		{
+			return self::$start_room;
 		}
 
 		public function getVisibility()
@@ -101,12 +111,12 @@
 			$this->movement_cost = $movement_cost;
 		}
 		
-		private function getDirection($direction_str, $direction_id)
+		private function getDirection($direction_str, $direction)
 		{
 			$door = $this->getDoor($direction_str);
 			if($door instanceof Door && $door->getDisposition() !== Door::DISPOSITION_OPEN)
 				return -1;
-			return $direction_id;
+			return $direction;
 		}
 		
 		public function setDoor($direction, Door $door)
