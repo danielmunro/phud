@@ -29,7 +29,6 @@
 				usort($possibilities, function($a, $b) {
 					return $a['priority'] < $b['priority'];
 				});
-				var_dump($possibilities);
 				return $possibilities[0];
 			}
 		}
