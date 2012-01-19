@@ -31,15 +31,14 @@
 		\Mechanics\Actor,
 		\Mechanics\Alias,
 		\Mechanics\Room,
-		\Mechanics\Persistable,
+		\Mechanics\Race,
 		\Mechanics\Quest\Quest,
+		\Mechanics\Ability\Ability,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
 	class User extends Actor
 	{
-		use Persistable;
-
 		protected $hunger = 2;
 		protected $thirst = 2;
 		protected $full = 4;
@@ -211,7 +210,8 @@
 
 		public function save()
 		{
-			return parent::save($this->alias);
+			$dbr = Dbr::instance();
+			$dbr->set($key, serialize($this));
 		}
 
 		public function __sleep()
