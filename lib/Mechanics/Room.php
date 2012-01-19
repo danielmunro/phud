@@ -186,13 +186,13 @@
 		
 		public function actorAdd(Actor $actor)
 		{
-			Debug::addDebugLine($actor.' ('.$actor->getID().') is arriving to '.$this.' ('.$this->getID().')');
+			Debug::addDebugLine($actor.' is arriving to '.$this.' ('.$this->getID().')');
 			$this->actors[] = $actor;
 			$actor->addSubscriber($this->_subscriber_movement);
 		}
 		public function actorRemove(Actor $actor)
 		{
-			Debug::addDebugLine($actor.' ('.$actor->getID().') is leaving '.$this.' ('.$this->getID().')');
+			Debug::addDebugLine($actor.' is leaving '.$this.' ('.$this->getID().')');
 			$key = array_search($actor, $this->actors);
 			if($key === false) {
 				Debug::addDebugLine($actor.' is not here');

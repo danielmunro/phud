@@ -49,19 +49,11 @@
 					return Server::out($user, "That direction doesn't exist.");
 			
 				$room = new mRoom();
-				$room->save();
 				$user->getRoom()->{'set' . ucfirst($direction)}($room->getId());
 				$new_direction = mRoom::getReverseDirection($direction);
 				$room->{'set' . ucfirst($new_direction)}($user->getRoom()->getId());
-				$room->save();
-				$user->getRoom()->save();
 				
 				return Server::out($user, "You've created a new room to the " . $direction . ".");
-			}
-			
-			if($args[1] == 'save') {
-				$user->getRoom()->save();
-				return Server::out($user, "Room saved.");
 			}
 			
 			if($args[1] == 'id')
@@ -79,7 +71,6 @@
 				array_shift($args);
 				$value = implode(' ', $args);
 				$user->getRoom()->$fn($value);
-				$user->getRoom()->save();
 				return Server::out($user, 'Property set.');
 			}
 			
@@ -91,15 +82,12 @@
 					return Server::out($user, "That direction doesn't exist.");
 			
 				$room = new mRoom();
-				$room->save();
 				$user->getRoom()->{'set' . ucfirst($direction)}($room->getId());
-				$user->getRoom()->save();
 				$new_direction = mRoom::getReverseDirection($direction);
 				$room->setTitle($user->getRoom()->getTitle());
 				$room->setDescription($user->getRoom()->getDescription());
 				$room->setArea($user->getRoom()->getArea());
 				$room->{'set' . ucfirst($new_direction)}($user->getRoom()->getId());
-				$room->save();
 				return Server::out($user, 'Property set.');
 			}
 			

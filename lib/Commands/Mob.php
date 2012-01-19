@@ -71,14 +71,12 @@
 			}
 			
 			$mob->setRace($race);
-			$mob->save();
 			$mob->getRoom()->announce($mob, ucfirst($mob)." shapeshifts into a ".$race['alias'].".");
 		}
 		
 		private function doLong(lUser $user, lMob $mob, $long, $args)
 		{
 			$mob->setLong($arg_long);
-			$mob->save();
 			
 			Server::out($user, $mob->getAlias(true)."'s description now reads: ".$mob->getLong());
 		}
@@ -89,7 +87,6 @@
 				return Server::out($user, "Number of levels granted must be a number.");
 			
 			$mob->setLevel($level);
-			$mob->save();
 			
 			return Server::out($user, "You grant ".$mob->getAlias()." ".$level." level".($level==1?'':'s'));
 		}

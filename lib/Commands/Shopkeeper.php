@@ -66,14 +66,12 @@
 			if(!($race instanceof Race))
 				return Server::out($user, "That is not a valid race.");
 			$shopkeeper->setRace($race);
-			$shopkeeper->save();
 			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." spontaneously shapeshifts into a ".$race->getAlias().".");
 		}
 		
 		private function doLong(lUser $user, lShopkeeper $shopkeeper, $long, $args)
 		{
 			$shopkeeper->setLong($long);
-			$shopkeeper->save();
 			Server::out($user, $shopkeeper->getAlias(true)."'s description now reads: ".$shopkeeper->getLong());
 		}
 		
@@ -82,7 +80,6 @@
 			if(!is_numeric($levels))
 				return Server::out($user, "Number of levels granted must be a number.");
 			$shopkeeper->setLevel($levels);
-			$shopkeeper->save();
 			return Server::out($user, "You grant ".$shopkeeper->getAlias()." ".$levels." level".($levels==1?'':'s'));
 		}
 		

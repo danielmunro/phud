@@ -99,7 +99,6 @@
 			$mob = new Mob();
 			$mob->setRoom($user->getRoom());
 			$mob->setStartRoom();
-			$mob->save();
 			
 			$mob->getRoom()->announce($mob, $mob->getAlias(true)." poofs into existence.");
 		}
@@ -108,7 +107,6 @@
 		{
 			$shopkeeper = new lShopkeeper();
 			$shopkeeper->setRoom($user->getRoom());
-			$shopkeeper->save();
 			
 			$shopkeeper->getRoom()->announce($shopkeeper, $shopkeeper->getAlias(true)." poofs into existence.");
 		}
@@ -117,8 +115,7 @@
 		{
 			$questmaster = new Questmaster();
 			$questmaster->setRoom($user->getRoom());
-			$questmaster->save();
-			
+		
 			$questmaster->getRoom()->announce($questmaster, $questmaster->getAlias(true)." poofs into existence.");
 		}
 

@@ -36,7 +36,7 @@
 
 	abstract class Actor
 	{
-		use Affectable, Persistable, Broadcaster, Inventory, Usable;
+		use Affectable, Broadcaster, Inventory, Usable;
 	
 		const MAX_LEVEL = 51;
 		

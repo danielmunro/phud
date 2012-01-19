@@ -31,12 +31,15 @@
 		\Mechanics\Actor,
 		\Mechanics\Alias,
 		\Mechanics\Room,
+		\Mechanics\Persistable,
 		\Mechanics\Quest\Quest,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
 	class User extends Actor
 	{
+		use Persistable;
+
 		protected $hunger = 2;
 		protected $thirst = 2;
 		protected $full = 4;
