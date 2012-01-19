@@ -115,23 +115,29 @@
 					'dam' => 1,
 					'saves' => 100
 					]);
-			$this->max_attributes = new Attributes([
-					'str' => 19,
-					'int' => 19,
-					'wis' => 19,
-					'dex' => 19,
-					'con' => 19,
-					'cha' => 19,
-					'hp' => 20,
-					'mana' => 100,
-					'movement' => 100
-					]);
 			$this->equipped = new Equipped($this);
 			foreach($properties as $property => $value) {
 				if(property_exists($this, $property)) {
-					$this->$property = $value;
+					if($property === 'attributes') {
+						foreach($value as $a => $v) {
+							$this->attributes->setAttribute($a, $v);
+						}
+					} else {
+						$this->$property = $value;
+					}
 				}
 			}
+			$this->max_attributes = new Attributes([
+					'str' => $this->attributes->getAttribute('str') + 4,
+					'int' => $this->attributes->getAttribute('int') + 4,
+					'wis' => $this->attributes->getAttribute('wis') + 4,
+					'dex' => $this->attributes->getAttribute('dex') + 4,
+					'con' => $this->attributes->getAttribute('con') + 4,
+					'cha' => $this->attributes->getAttribute('cha') + 4,
+					'hp' => $this->attributes->getAttribute('hp'),
+					'mana' => $this->attributes->getAttribute('mana'),
+					'movement' => $this->attributes->getAttribute('movement')
+					]);
 			if(empty($this->race)) {
 				$this->race = 'critter';
 			}

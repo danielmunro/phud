@@ -18,7 +18,10 @@ $snail = [
 	'race' => 'critter',
 	'movement_pulses_timeout' => 50,
 	'area' => 'temple_arena',
-	'nouns' => 'snail'
+	'nouns' => 'snail',
+	'attributes' => [
+		'hp' => 5
+	]
 ];
 
 $lizard = [
@@ -29,7 +32,32 @@ $lizard = [
 	'race' => 'critter',
 	'movement_pulses_timeout' => 120,
 	'area' => 'temple_arena',
-	'nouns' => 'lizard'
+	'nouns' => 'lizard',
+	'attributes' => [
+		'hp' => 8,
+		'ac_slash' => 95,
+		'ac_bash' => 95,
+		'ac_pierce' => 95,
+		'ac_magic' => 95
+	]
+];
+
+$fox = [
+	'alias' => 'a fox',
+	'long' => 'A small brown fox sneaks across path.',
+	'level' => 7,
+	'sex' => Actor::SEX_NEUTRAL,
+	'race' => 'critter',
+	'movement_pulses_timeout' => 120,
+	'area' => 'temple_arena',
+	'nouns' => 'small brown fox',
+	'attributes' => [
+		'hp' => 10,
+		'ac_slash' => 90,
+		'ac_bash' => 90,
+		'ac_pierce' => 90,
+		'ac_magic' => 90
+	]
 ];
 
 $bird = [
@@ -40,7 +68,14 @@ $bird = [
 	'race' => 'critter',
 	'movement_pulses_timeout' => 20,
 	'area' => 'temple_arena',
-	'nouns' => 'small gray bird'
+	'nouns' => 'small gray bird',
+	'attributes' => [
+		'hp' => 4,
+		'ac_slash' => 85,
+		'ac_bash' => 85,
+		'ac_pierce' => 85,
+		'ac_magic' => 85
+	]
 ];
 
 // Row 1
@@ -64,7 +99,10 @@ new Room(array_merge($p, [
 	'id' => $id.'3,1',
 	'east' => $id.'4,1',
 	'west' => $id.'2,1',
-	'south' => $id.'3,2'
+	'south' => $id.'3,2',
+	'actors' => [
+		new Mob($fox)
+	]
 ]));
 
 new Room(array_merge($p, [
@@ -156,7 +194,8 @@ new Room(array_merge($p, [
 	'north' => $id.'2,2',
 	'south' => $id.'2,4',
 	'actors' => [
-		new Mob($snail)
+		new Mob($snail),
+		new Mob($fox)
 	]
 ]));
 
@@ -186,7 +225,8 @@ new Room(array_merge($p, [
 	'north' => $id.'5,2',
 	'south' => $id.'5,4',
 	'actors' => [
-		new Mob($snail)
+		new Mob($snail),
+		new Mob($fox)
 	]
 ]));
 
@@ -244,7 +284,8 @@ new Room(array_merge($p, [
 	'east' => $id.'2,5',
 	'north' => $id.'1,4',
 	'actors' => [
-		new Mob($snail)
+		new Mob($snail),
+		new Mob($fox)
 	]
 ]));
 
