@@ -38,7 +38,7 @@
 	{
 		use Broadcaster;
 		
-		const ADDRESS = '192.168.0.102';
+		const ADDRESS = '192.168.0.100';
 		const PORT = 9000;
 		
 		private $socket = null;
