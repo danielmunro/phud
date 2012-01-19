@@ -25,7 +25,9 @@
 	 *
 	 */
 	namespace Mechanics;
-	abstract class Equipment extends \Mechanics\Item
+	use \Mechanics\Item;
+
+	class Equipment extends Item
 	{
 		const POSITION_LIGHT = 'light';
 		const POSITION_FINGER = 'finger';
@@ -47,11 +49,6 @@
 		protected $position = 0;
 		protected $condition = 100;
 		protected $size = 0;
-		
-		public function __construct()
-		{
-			parent::__construct();
-		}
 		
 		public function getPosition()
 		{

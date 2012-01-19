@@ -42,9 +42,16 @@
 		private $args = array();
 		private $attributes = null;
 		
-		public function __construct()
+		public function __construct($properties = [])
 		{
-			$this->attributes = new Attributes();
+			foreach($properties as $property => $value) {
+				if(property_exists($this, $property)) {
+					$this->$property = $value;
+				}
+			}
+			if(empty($this->attributes)) {
+				$this->attributes = new Attributes();
+			}
 		}
 		
 		public function getAttributes()

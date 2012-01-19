@@ -30,7 +30,9 @@
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Event\Event,
-		\Living\User;
+		\Living\User,
+		\Items\Corpse,
+		\Items\Food;
 
 	abstract class Actor
 	{
@@ -742,9 +744,10 @@
 			$silver = round($this->silver / 3);
 			$copper = round($this->copper / 3);
 
-			$corpse = new \Items\Corpse();
+			$corpse = new Corpse();
 			$corpse->setLong('A corpse of '.$this.' lies here.');
 			$corpse->setShort('a corpse of '.$this);
+			$nouns = property_exists($this, 'nouns') ? $this->nouns : $this;
 			$corpse->setNouns('corpse '.$nouns);
 			$corpse->setWeight(100);
 			$corpse->transferItemsFrom($this);

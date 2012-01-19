@@ -126,7 +126,7 @@
 			$door = $this->getDoor($direction_str);
 			if($door instanceof Door && $door->getDisposition() !== Door::DISPOSITION_OPEN)
 				return -1;
-			if(is_numeric($direction)) {
+			if(is_numeric($direction) && $direction > -1 || $direction) {
 				$direction = self::find($direction);
 			}
 			return $direction;

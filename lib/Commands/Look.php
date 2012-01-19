@@ -92,7 +92,8 @@
 				$people = $user->getRoom()->getActors();
 				foreach($people as $a) {
 					if($a !== $user) {
-						Server::out($user, ucfirst($a).' is '.$a->getDisposition().' here.');
+						$disposition = $a->getDisposition() === Actor::DISPOSITION_STANDING ? '' : ' '.$a->getDisposition();
+						Server::out($user, ucfirst($a).' is'.$disposition.' here.');
 					}
 				}
 				return;

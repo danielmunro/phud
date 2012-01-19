@@ -41,16 +41,17 @@
 			self::addAlias('wear', $this);
 		}
 	
-		public function perform(Actor $actor, $args = array())
+		public function perform(Actor $actor, $args = [])
 		{
-		
-			$item = $actor->getItemByInput($args);
+			$item = $actor->getItemByInput($args[1]);
 			
-			if(!$item)
+			if(!$item) {
 				return Server::out($actor, 'You have nothing like that in your inventory.');
+			}
 			
-			if(!($item instanceof mEquipment))
+			if(!($item instanceof mEquipment)) {
 				return Server::out($actor, "You cannot equip ".$item.".");
+			}
 			
 			return $actor->getEquipped()->equip($item);
 		}
