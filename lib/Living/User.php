@@ -211,7 +211,7 @@
 		public function save()
 		{
 			$dbr = Dbr::instance();
-			$dbr->set($key, serialize($this));
+			$dbr->set($this->alias, serialize($this));
 		}
 
 		public function __sleep()
