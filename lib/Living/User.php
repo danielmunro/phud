@@ -245,8 +245,29 @@
 				'max_attributes',
 				'abilities',
 				'delay',
-				'proficiencies'
+				'proficiencies',
+				'items'
 			];
+		}
+
+		public function __wakeup()
+		{
+			$this->room = Room::find($this->room->getId());
+			$this->race = Race::lookup($this->race['alias']);
+			$this->_subscribers_race = $this->race['lookup']->getSubscribers();
+			foreach($this->_subscribers_race as $subscriber) {
+				$this->addSubscriber($subscriber);
+			}
+			foreach($this->affects as $affect) {
+				$affect->applyTimeoutSubscriber($this);
+			}
+			foreach($this->abilities as $user_ab) {
+				$ability = Ability::lookup($user_ab);
+				if($ability['lookup'] instanceof Skill) {
+					$this->addSubscriber($ability['lookup']->getSubscriber());
+				}
+			}
+			Server::instance()->addSubscriber($this->getSubscriberTick());
 		}
 	}
 ?>

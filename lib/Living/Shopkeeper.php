@@ -66,46 +66,5 @@
 		{
 			return $this->not_enough_money_message;
 		}
-
-		public function __sleep()
-		{
-			return [
-				'list_item_message',
-				'no_item_message',
-				'not_enough_money_message',
-				'movement_pulses',
-				'movement_pulses_timeout',
-				'respawn_ticks',
-				'respawn_ticks_timeout',
-				'auto_flee',
-				'unique',
-				'default_respawn_ticks',
-				'dead',
-				'start_room_id',
-				'area',
-				'gold_repop',
-				'silver_repop',
-				'copper_repop',
-				'nouns',
-				'path',
-				'alias',
-				'long',
-				'level',
-				'gold',
-				'silver',
-				'copper',
-				'sex',
-				'disposition',
-				'race',
-				'room',
-				'equipped',
-				'alignment',
-				'attributes',
-				'max_attributes',
-				'abilities',
-				'delay',
-				'proficiencies'
-			];
-		}
 	}
 ?>
