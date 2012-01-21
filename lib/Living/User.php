@@ -43,8 +43,8 @@
 		protected $hunger = 0;
 		protected $thirst = 0;
 		protected $full = 0;
-		protected $trains = 0;
-		protected $practices = 0;
+		protected $trains = 3;
+		protected $practices = 5;
 		protected $password = '';
 		protected $client = null;
 		protected $date_created = null;

@@ -35,7 +35,7 @@
 	{
 		protected $alias = '';
 
-		public function __construct()
+		protected function __construct()
 		{
 			parent::__construct();
 			if(empty($this->alias)) {
