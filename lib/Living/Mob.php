@@ -37,14 +37,13 @@
 
 	class Mob extends Actor
 	{
-		protected $movement_pulses = 100;
-		protected $movement_pulses_timeout = 100;
+		protected $movement = 0;
+		protected $movement_timeout = 0;
 		protected $respawn_ticks = 5;
 		protected $respawn_ticks_timeout = 5;
 		protected $auto_flee = false;
 		protected $unique = false;
 		protected $default_respawn_ticks = 1;
-		protected $dead = false;
 		protected $start_room_id = 0;
 		protected $area = '';
 		protected $gold_repop = 0;
@@ -63,7 +62,10 @@
 		public function __construct($properties = [])
 		{
 			parent::__construct($properties);
-			Server::instance()->addSubscriber($this->getMovementSubscriber());
+			if($this->movement) {
+				$this->movement_timeout = $this->movement;
+				Server::instance()->addSubscriber($this->getMovementSubscriber());
+			}
 		}
 		
 		public static function runInstantiation()
@@ -102,24 +104,21 @@
 		public function getMovementSubscriber()
 		{
 			return new Subscriber(
-				Event::EVENT_PULSE,
+				Event::EVENT_TICK,
 				$this,
 				function($subscriber, $broadcaster, $mob) {
 					$mob->evaluateMove();
-					if($mob->getMovementPulses() === 0) {
-						$subscriber->kill();
-					}
 				}
 			);
 		}
 
 		public function evaluateMove()
 		{
-			$this->movement_pulses_timeout--;
-			if($this->movement_pulses_timeout < 0) {
-				$min = $this->movement_pulses * 0.9;
-				$max = $this->movement_pulses * 1.1;
-				$this->movement_pulses_timeout = round(rand($min, $max));
+			$this->movement_timeout--;
+			if($this->movement_timeout < 0) {
+				$min = $this->movement * 0.5;
+				$max = $this->movement * 2;
+				$this->movement_timeout = round(rand($min, $max));
 				$this->move();
 			}
 		}
@@ -245,14 +244,14 @@
 			$this->start_room_id = $this->room->getID();
 		}
 		
-		public function getMovementPulses()
+		public function getMovement()
 		{
-			return $this->movement_pulses;
+			return $this->movement;
 		}
 
-		public function setMovementPulses($pulses)
+		public function setMovement($ticks)
 		{
-			$this->movement_pulses = intval($pulses);
+			$this->movement = intval($ticks);
 		}
 
 		public function getRespawnTicks()
@@ -270,9 +269,6 @@
 			$this->nouns = trim($nouns);
 		}
 		
-		public function getDead() { return $this->dead; }
-		public function setDead($dead) { $this->dead = $dead; }
-	
 		public function getAutoFlee()
 		{
 			return $this->auto_flee;

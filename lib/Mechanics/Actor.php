@@ -182,14 +182,14 @@
 			$this->delay += $delay;
 			if(empty($this->_subscriber_delay)) {
 				$this->_subscriber_delay = new Subscriber(
-						Event::EVENT_PULSE,
-						$this,
-						function($subscriber, $server, $fighter) {
+					Event::EVENT_PULSE,
+					$this,
+					function($subscriber, $server, $fighter) {
 						if(!$fighter->decrementDelay()) {
-						$subscriber->kill();
+							$subscriber->kill();
 						}
-						}
-						);
+					}
+				);
 				Server::instance()->addSubscriber($this->_subscriber_delay);
 			}
 
@@ -261,12 +261,12 @@
 		{
 			if(!$this->_subscriber_tick) {
 				$this->_subscriber_tick = new Subscriber(
-						Event::EVENT_TICK,
-						$this,
-						function($subscriber, $broadcaster, $actor) {
+					Event::EVENT_TICK,
+					$this,
+					function($subscriber, $broadcaster, $actor) {
 						$actor->tick();
-						}
-						);
+					}
+				);
 			}
 			return $this->_subscriber_tick;
 		}
@@ -497,7 +497,7 @@
 
 		public function setRace($race)
 		{
-			if($this->race && $this->race instanceof Race) {
+			if(is_object($this->race['lookup'])) {
 				// Undo all previous racial subscribers/abilities/stats/proficiencies
 				foreach($this->_subscribers_race as $subscriber) {
 					$this->removeSubscriber($subscriber);
@@ -568,23 +568,23 @@
 		public function getAttackSubscriber()
 		{
 			return new Subscriber(
-					Event::EVENT_PULSE,
-					$this,
-					function($subscriber, $broadcaster, $fighter) {
+				Event::EVENT_PULSE,
+				$this,
+				function($subscriber, $broadcaster, $fighter) {
 					$target = $fighter->getTarget();
 					if(empty($target) || !$fighter->isAlive()) {
-					$subscriber->kill();
-					return;
+						$subscriber->kill();
+						return;
 					}
 					$fighter->fire(Event::EVENT_MELEE_ATTACK);
 					$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
 					if($subscriber->isSuppressed()) {
-					$subscriber->suppress(false);
+						$subscriber->suppress(false);
 					} else {
-					$fighter->attack('Reg');
+						$fighter->attack('Reg');
 					}
-					}
-					);
+				}
+			);
 		}
 
 		public function getStatus()

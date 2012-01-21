@@ -25,7 +25,7 @@
 	 *
 	 */
 	namespace Mechanics;
-	abstract class Item
+	class Item
 	{
 		use Affectable;
 	

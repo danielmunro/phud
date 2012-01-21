@@ -39,25 +39,22 @@
 
 	class User extends Actor
 	{
-		protected $hunger = 2;
-		protected $thirst = 2;
-		protected $full = 4;
+		protected $hunger = 0;
+		protected $thirst = 0;
+		protected $full = 0;
 		protected $trains = 0;
 		protected $practices = 0;
 		protected $password = '';
-		private $client = null;
+		protected $client = null;
 		protected $date_created = null;
 		protected $is_dm = false;
 		protected $quest_log = null;
-		protected $persistable_list = 'users';
 		protected static $instances = array();
 		
 		public function __construct()
 		{
 			$this->date_created = date('Y-m-d H:i:s');
-			
 			parent::__construct();
-			
 			$this->quest_log = new QuestLog($this);
 		}
 		
@@ -114,6 +111,15 @@
 		public function setDM($is_dm)
 		{
 			$this->is_dm = $is_dm;
+		}
+
+		public function setRace($race)
+		{
+			parent::setRace($race);
+			$r = $this->race['lookup'];
+			$this->hunger = $r->getHunger();
+			$this->thirst = $r->getThirst();
+			$this->full = $r->getFull();
 		}
 		
 		public function tick($init = false)

@@ -258,7 +258,12 @@
 			if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self) {
 				return self::$instances[$id];
 			}
-			return new self(['id' => $id]);
+			$dbr = Dbr::instance();
+			$properties = unserialize($dbr->get($id));
+			if(empty($properties)) {
+				$properties = ['id' => $id];
+			}
+			return new self($properties);
 		}
 
 		private function getMovementSubscriber()
