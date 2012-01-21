@@ -47,7 +47,7 @@
 		
 			if(sizeof($args) === 2)
 			{
-				$item = $actor->getRoom()->getItemByInput($args);
+				$item = $actor->getRoom()->getItemByInput($args[1]);
 				$container = $actor->getRoom();
 			}
 			else
