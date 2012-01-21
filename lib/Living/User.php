@@ -34,6 +34,7 @@
 		\Mechanics\Race,
 		\Mechanics\Quest\Quest,
 		\Mechanics\Ability\Ability,
+		\Mechanics\Ability\Skill,
 		\Mechanics\Event\Broadcaster,
 		\Mechanics\Quest\Log as QuestLog;
 
@@ -223,7 +224,6 @@
 		public function __sleep()
 		{
 			return [
-				'id',
 				'hunger',
 				'thirst',
 				'full',

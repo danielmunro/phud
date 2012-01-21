@@ -68,7 +68,9 @@
 				$this->_subscribers_deferred[$event_type] = [];
 			}
 			$is_satisfied = $this->_fire($this->_subscribers[$event_type], $a1, $a2, $a3, $a4);
-			$this->_fire($this->_subscribers_deferred[$event_type], $a1, $a2, $a3, $a4);
+			if(!$is_satisfied) {
+				$is_satisfied = $this->_fire($this->_subscribers_deferred[$event_type], $a1, $a2, $a3, $a4);
+			}
 			return $is_satisfied;
 		}
 

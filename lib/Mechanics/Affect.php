@@ -44,13 +44,19 @@
 		
 		public function __construct($properties = [])
 		{
+			$this->attributes = new Attributes();
 			foreach($properties as $property => $value) {
 				if(property_exists($this, $property)) {
-					$this->$property = $value;
+					if($property === 'attributes') {
+						foreach($value as $a => $v) {
+							$this->attributes->setAttribute($a, $v);
+						}
+					} else {
+						$this->$property = $value;
+					}
+				} else if($property === 'apply') {
+					$this->apply($value);
 				}
-			}
-			if(empty($this->attributes)) {
-				$this->attributes = new Attributes();
 			}
 		}
 		
@@ -112,6 +118,7 @@
 		
 		public function apply($affectable)
 		{
+			Debug::addDebugLine("[Affect] Adding ".$this." to ".$affectable.", ".$this->timeout." tick timeout.");
 			$affectable->fire(Event::EVENT_APPLY_AFFECT, $this);
 			$affectable->addAffect($this);
 			$this->applyTimeoutSubscriber($affectable);
@@ -136,6 +143,11 @@
 					)
 				);
 			}
+		}
+
+		public function __toString()
+		{
+			return $this->affect;
 		}
 	}
 ?>
