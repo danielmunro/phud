@@ -45,6 +45,7 @@
 		protected function __construct()
 		{
 			if(empty($this->proficiency) || empty($this->required_proficiency) || empty($this->saving_attribute)) {
+				var_dump($this);
 				throw new Exception(get_class($this)." is not fully configured");
 			}
 		}
