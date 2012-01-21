@@ -28,10 +28,22 @@
 	use \Living\User,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
-		\Mechanics\Server;
+		\Mechanics\Server,
+		\Exception;
 
 	abstract class Skill extends Ability
 	{
+		protected $alias = '';
+
+		public function __construct()
+		{
+			parent::__construct();
+			if(empty($this->alias)) {
+				throw new Exception('Skill does not have an alias defined: '.get_class($this));
+			}
+			self::addAlias($this->alias, $this);
+		}
+
 		public function tryPerform(User $user, $args = [])
 		{
 			$proficiency = $user->getProficiencyIn($this->proficiency);
@@ -43,8 +55,11 @@
 			}
 		}
 
-		protected function getInputSubscriber($alias)
+		protected function getInputSubscriber($alias = '')
 		{
+			if(empty($alias)) {
+				$alias = $this->alias;
+			}
 			return new Subscriber(
 				Event::EVENT_INPUT,
 				$this,
