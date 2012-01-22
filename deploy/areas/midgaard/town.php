@@ -5,6 +5,7 @@ use \Mechanics\Room,
 	\Mechanics\Affect,
 	\Mechanics\Attributes,
 	\Mechanics\Equipment,
+	\Living\Trainer,
 	\Living\Shopkeeper,
 	\Items\Food,
 	\Items\Drink,
@@ -17,7 +18,9 @@ new Room([
 	'description' => 'A large temple surrounds you, with sculptures of gods adorning the walls.',
 	'area' => 'midgaard',
 	'south' => 2,
-	'down' => 100
+	'actors' => [
+		new Trainer()
+	]
 ]);
 
 new Room([
@@ -25,6 +28,15 @@ new Room([
 	'title' => 'Temple Garden',
 	'description' => 'A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.',
 	'area' => 'midgaard',
+	'items' => [
+		new Drink([
+			'short' => 'an ornate fountain',
+			'long' => 'An ornately carved obsidian fountain is the centerpiece to the temple garden.',
+			'nouns' => 'ornate fountain',
+			'contents' => 'water',
+			'uses' => -1
+		])
+	],
 	'north' => 1,
 	'south' => 3,
 	'west' => 'midgaard_arena5,3'
@@ -217,6 +229,22 @@ new Room([
 	]
 ]);
 
+new Room([
+	'id' => 26,
+	'title' => "Entrance to the Mage's Guild",
+	'description' => '',
+	'area' => 'midgaard',
+	'north' => 6
+]);
+
+new Room([
+	'id' => 27,
+	'title' => "Entrance to the Warrior's Guild",
+	'description' => '',
+	'area' => 'midgaard',
+	'north' => 9
+]);
+
 $p = [
 	'title' => 'Market Street',
 	'description' => 'A cobblestone path travels in a east-west direction with shops lining both sides.',
@@ -224,9 +252,9 @@ $p = [
 ];
 
 new Room(array_merge(['id' => 4, 'east' => 3, 'west' => 6, 'north' => 10, 'south' => 11], $p));
-new Room(array_merge(['id' => 6, 'east' => 4, 'west' => 13, 'north' => 17], $p));
+new Room(array_merge(['id' => 6, 'east' => 4, 'west' => 13, 'north' => 17, 'south' => 26], $p));
 new Room(array_merge(['id' => 7, 'east' => 9, 'west' => 3, 'north' => 12, 'south' => 16], $p));
-new Room(array_merge(['id' => 9, 'west' => 7, 'east' => 14, 'north' => 15], $p));
+new Room(array_merge(['id' => 9, 'west' => 7, 'east' => 14, 'north' => 15, 'south' => 27], $p));
 
 new Room([
 	'id' => 13,
@@ -261,10 +289,52 @@ $p = [
 	'area' => 'midgaard'
 ];
 
-new Room(array_merge(['id' => 19, 'east' => 18, 'west' => 20], $p));
+new Room(array_merge(['id' => 19, 'east' => 18, 'west' => 20, 'north' => 30, 'south' => 31], $p));
 new Room(array_merge(['id' => 20, 'east' => 19], $p));
-new Room(array_merge(['id' => 21, 'east' => 22, 'west' => 18], $p));
+new Room(array_merge(['id' => 21, 'east' => 22, 'west' => 18, 'south' => 28, 'north' => 29], $p));
 new Room(array_merge(['id' => 22, 'west' => 21], $p));
+
+new Room([
+	'id' => 28,
+	'title' => 'Entrance to the Thieves Guild',
+	'description' => '',
+	'area' => 'midgaard',
+	'north' => 21
+]);
+
+new Room([
+	'id' => 29,
+	'title' => 'Tavern',
+	'area' => 'midgaard',
+	'south' => 21,
+	'actors' => [
+		new Shopkeeper([
+			'items' => [
+				new Drink([
+					'short' => 'a firebreather',
+					'long' => 'A firebreather is here.',
+					'nouns' => 'firebreather',
+					'contents' => 'cocktail',
+					'uses' => 1
+				])
+			]
+		])
+	]
+]);
+
+new Room([
+	'id' => 30,
+	'title' => 'Map shop',
+	'area' => 'midgaard',
+	'south' => 19
+]);
+
+new Room([
+	'id' => 31,
+	'title' => 'Inn',
+	'area' => 'midgaard',
+	'north' => 19
+]);
 
 new Room([
 	'id' => 23,
