@@ -25,11 +25,10 @@
 	 *
 	 */
 	namespace Living;
-	use \Mechanics\Actor,
-		\Living\User,
+	use \Living\User,
 		\Mechanics\Server;
 
-	class Trainer extends Actor
+	class Trainer extends Mob
 	{
 		protected $alias = 'a generic trainer';
 		protected $nouns = 'generic trainer';
