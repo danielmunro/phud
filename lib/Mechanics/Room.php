@@ -196,7 +196,7 @@
 			$key = array_search($actor, $this->actors);
 			if($key === false) {
 				Debug::addDebugLine($actor.' is not here');
-				throw new \Exceptions\Room('Actor is not in room', \Exceptions\Room::ACTOR_NOT_HERE);
+				throw new Exception('Actor is not in room');
 			}
 			$actor->removeSubscriber($this->_subscriber_movement);
 			unset($this->actors[$key]);
