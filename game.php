@@ -27,6 +27,17 @@
 	 *
 	 */
 	
+	///////////////////////////////////////////////////////
+	// ADMIN CONFIG
+	///////////////////////////////////////////////////////
+
+	$address = '192.168.0.106';
+	$port = 9000;
+
+	///////////////////////////////////////////////////////
+	// END admin config
+	///////////////////////////////////////////////////////
+	
 	// basic config
 	date_default_timezone_set('America/Los_Angeles');
 	gc_enable();
@@ -38,7 +49,7 @@
 	Debug::clearLog();
 
 	// initiate and run the server
-	$s = new Server();
+	$s = new Server($address, $port);
 	$s->run();
 	
 	// Autoloader

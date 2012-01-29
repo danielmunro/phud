@@ -38,15 +38,16 @@
 	{
 		use Broadcaster;
 		
-		const ADDRESS = '192.168.0.106';
-		const PORT = 9000;
-		
+		private $address = '';
+		private $port = 0;
 		private $socket = null;
 		private $clients = [];
 		private static $instance = null;
 		
-		public function __construct()
+		public function __construct($address, $port)
 		{
+			$this->address = $address;
+			$this->port = $port;
 			self::$instance = $this;
 
 			// Incorporate classes that will make up the game
@@ -72,7 +73,7 @@
 			if($this->socket === false)
 				die('No socket');
 			socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
-			socket_bind($this->socket, self::ADDRESS, self::PORT) or die('Could not bind to address');
+			socket_bind($this->socket, $this->address, $this->port) or die('Could not bind to address');
 			socket_listen($this->socket);
 		}
 		
@@ -243,7 +244,7 @@
 
 		public function __toString()
 		{
-			return self::ADDRESS.':'.self::PORT;
+			return $this->address.':'.$this->port;
 		}
 	}
 ?>
