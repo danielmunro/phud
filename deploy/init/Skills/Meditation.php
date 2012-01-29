@@ -32,40 +32,35 @@
 
 	class Meditation extends Skill
 	{
+		protected $alias = 'meditation';
 		protected $proficiency = 'healing';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'wis';
-
-		protected function __construct()
-		{
-			self::addAlias('meditation', $this);
-		}
+		protected $easy_modifier = ['wis'];
 
 		public function getSubscriber()
 		{
 			return new Subscription(
 				Event::EVENT_TICK,
 				function($subscription, $meditation, $actor) {
-					$meditation->perform($actor, $actor->getProficiencyIn($meditation->getProficiency()));
+					$meditation->perform($actor);
 				}
 			);
 		}
-	
-		public function perform(Actor $actor, $percent, $args = null)
+
+		protected function applyCost(Actor $actor)
 		{
-			if($actor->getDisposition() === Actor::DISPOSITION_STANDING) {
-				return;
-			}
-		
-			$roll = Server::chance() - $percent;
-			$roll += $this->getEasyAttributeModifier($actor->getAttribute('wis'));
-			
-			if($roll < $chance) {
-				$amount = rand(0.01, 0.05);
-				$actor->modifyAttribute('hp', $actor->getMaxAttribute('hp') * $amount);
-				$actor->modifyAttribute('mana', $actor->getMaxAttribute('mana') * $amount);
-				$actor->modifyAttribute('movement', $actor->getMaxAttribute('movement') * $amount);
-			}
+		}
+
+		protected function success(Actor $actor)
+		{
+			$amount = $actor->getProficiencyIn($this->proficiency) / 100;
+			$actor->modifyAttribute('hp', $actor->getMaxAttribute('hp') * $amount);
+			$actor->modifyAttribute('mana', $actor->getMaxAttribute('mana') * $amount);
+			$actor->modifyAttribute('movement', $actor->getMaxAttribute('movement') * $amount);
+		}
+	
+		protected function fail(Actor $actor)
+		{
 		}
 	}
 ?>

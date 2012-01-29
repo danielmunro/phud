@@ -31,18 +31,15 @@
 
 	class Magic_Missile extends Spell
 	{
+		protected $alias = 'magic missile';
 		protected $is_offensive = true;
 		protected $proficiency = 'sorcery';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'int';
-
-		protected function __construct()
-		{
-			self::addAlias('magic missile', $this);
-		}
+		protected $normal_modifier = ['int'];
 		
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
+		protected function success(Actor $actor, Actor $target)
 		{
+			$proficiency = $actor->getProficiencyIn($this->proficiency);
 			$damage = -(round(rand($proficiency / 10, $proficiency / 5))); 
 			$target->modifyAttribute('hp', $damage);
 			Server::out($actor, "Your magic missile hits ".$target.'!');

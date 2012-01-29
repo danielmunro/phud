@@ -25,20 +25,17 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Server;
-    use \Mechanics\Actor;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Server,
+		\Mechanics\Actor;
 
 	class Shield_Block extends Skill
 	{
+		protected $alias = 'shield block';
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 25;
-		protected $saving_attribute = 'str';
-
-		protected function __construct()
-		{
-			self::addAlias('shield block', $this);
-		}
+		protected $normal_modifier = ['dex'];
+		protected $hard_modifier = ['str'];
 		
 		public function getSubscriber()
 		{
@@ -46,33 +43,31 @@
 				Event::EVENT_MELEE_ATTACKED,
 				$this,
 				function($subscriber, $fighter, $ability, $attack_subscriber) {
-					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
-						$attack_subscriber->suppress();
-						Server::out($fighter, "You block ".$fighter->getTarget()."'s attack with your shield!");
-						$subscriber->satisfyBroadcast();
-					}
+					$ability->perform($fighter, [$attack_subscriber, $subscriber]);
 				}
 			);
 		}
-		
-		public function perform(Actor $actor, $percent, $args = null)
+
+		protected function applyCost(Actor $actor)
 		{
-			$roll = Server::chance();
-			
-			$roll += $this->getEasyAttributeModifier($actor->getAttribute('dex'));
-			$roll += $this->getHardAttributeModifier($actor->getAttribute('str'));
-			
-			$roll *= 1.25;
-			
-			if($roll < $this->percent)
-			{
-				Server::out($actor, ucfirst($args)." blocks your attack with " . $args->getDisplaySex() . " shield!");
-				Server::out($args, "You block ".$actor."'s attack with your shield!");
+			if($actor->getAttribute('movement') >= 2) {
+				$actor->modifyAttribute('movement', -2);
 				return true;
 			}
 			return false;
 		}
-	
-	}
 
+		protected function success(Actor $actor, Actor $target, $args)
+		{
+			$args[0]->suppress();
+			$args[1]->satisfyBroadcast();
+			$sexes = [Actor::SEX_MALE => 'his', Actor::SEX_FEMALE => 'her', Actor::SEX_NEUTRAL => 'its'];
+			$s = $actor->getDisplaySex($sexes);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You block '.$target."'s attack with your shield!"],
+				['actor' => $target, 'message' => ucfirst($actor).' blocks your attack with '.$s.' shield!'],
+				['actor' => '*', 'message' => ucfirst($actor).' blocks '.$target."'s attack with ".$s." shield!"]
+			]);
+		}
+	}
 ?>

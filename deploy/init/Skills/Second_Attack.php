@@ -32,26 +32,33 @@
 
 	class Second_Attack extends Skill
 	{
+		protected $alias = 'second attack';
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 30;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('second attack', $this);
-		}
+		protected $normal_modifier = ['dex', 'str'];
 
 		public function getSubscriber()
 		{
 			return new Subscriber(
 				Event::EVENT_MELEE_ATTACK,
-				function($attack_subscriber, $attack, $fighter) {
-					$fighter->getTarget()->fire(Event::EVENT_MELEE_ATTACKED, $attack_subscriber);
+				$this,
+				function($attack_subscriber, $fighter, $ability) {
 					if(!$attack_subscriber->isSuppressed()) {
-						$fighter->attack('2nd');
+						$ability->perform($fighter);
 					}
 				}
 			);
+		}
+
+		protected function applyCost(Actor $actor) {}
+
+		protected function success(Actor $actor)
+		{
+			$actor->attack('2nd');
+		}
+
+		protected function fail(Actor $actor)
+		{
 		}
 	}
 

@@ -31,16 +31,12 @@
 
 	class Cure_Critical extends Spell
 	{
+		protected $alias = 'cure critical';
 		protected $proficiency = 'healing';
 		protected $required_proficiency = 45;
-		protected $saving_attribute = 'wis';
+		protected $normal_modifier = ['wis'];
 
-		protected function __construct()
-		{
-			self::addAlias('cure critical', $this);
-		}
-		
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
+		protected function success(Actor $actor)
 		{
 			$prof_rand = rand(9, 11);
 			$amount = round(rand(10, ($proficiency / $prof_rand) + 8));

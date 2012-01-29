@@ -32,41 +32,34 @@
 
 	class Backstab extends Skill
 	{
+		protected $alias = 'backstab';
 		protected $proficiency = 'stealth';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('backstab', $this);
-		}
+		protected $hard_modifier = ['dex'];
+		protected $needs_target = true;
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('backstab');
+			return $this->getInputSubscriber();
+		}
+
+		protected function applyCost(Actor $actor)
+		{
+			$actor->incrementDelay(2);
 		}
 	
-		public function perform(Actor $actor, $percent, $args = [])
+		protected function success(Actor $actor)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target) {
-				return;
-			}
+			$actor->attack('bks');
+		}
 
-			$roll = Server::chance() - $percent;
-			$roll += $this->getHardAttributeModifier($actor->getDex());
-			$delay = 2;
-			
-			if($roll < $this->percent)
-			{
-				$actor->incrementDelay($delay);
-				$actor->attack('bks');
-			}
-			else
-			{
-				$actor->incrementDelay($delay);
-				Server::out($actor, "You fumble your backstab.");
-			}
+		protected function fail(Actor $actor)
+		{
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "You fumble your backstab."],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." tries to backstab you but fumbles."],
+				['actor' => '*', 'message' => ucfirst($actor)." tries to backstab ".$actor->getTarget()." but fumbles."]
+			]);
 		}
 	}
 ?>

@@ -34,56 +34,56 @@
 
 	class Fear extends Skill
 	{
+		protected $alias = 'fear';
 		protected $proficiency = 'maladictions';
-		protected $proficiency_required = 25;
-		protected $saving_attribute = 'cha';
-
-		protected function __construct()
-		{
-			self::addAlias('fear', $this);
-		}
+		protected $required_proficiency = 25;
+		protected $normal_modifier = ['cha'];
+		protected $requires_target = true;
 
 		public function getSubscriber()
 		{
-			return $this->getInputSubscriber('fear');
+			return $this->getInputSubscriber();
 		}
-	
-		public function perform(Actor $actor, $proficiency, $args = [])
+
+		protected function applyCost(Actor $actor)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target) {
-				return;
+			$cost = 75 - $actor->getLevel();
+			if($actor->getAttribute('movement') < $cost) {
+				Server::out($actor, "You don't have enough energy to instill fear.");
+				return false;
 			}
-			$saves = $this->calculateSaves($actor, $target);
-			$saves = Server::_range(5, 95, $saves);
 			$actor->incrementDelay(2);
-			$actor->setMovement($actor->getAttribute('movement') - 2);
-			if($saves > Server::chance()) {
-				$a = new Affect();
-				$a->setAffect('fear');
-				$a->setTimeout(max(2, round($proficiency / 10)));
-				$mod = -(max(1, round($proficiency / 20)));
-				$a->setMessageAffect('Affect: fear. Decrease strength and constitution by '.$mod);
-				$a->setMessageEnd('You are no longer afraid.');
-				$atts = $a->getAttributes();
-				$atts->modifyAttribute('str', $mod);
-				$atts->modifyAttribute('con', $mod);
-				$a->apply($target);
-				foreach($target->getRoom()->getActors() as $room_actor) {
-					if($room_actor === $actor) {
-						Server::out($actor, "You scare ".$target."!");
-					} else if($room_actor === $target) {
-						Server::out($target, "You become frightened!");
-					} else {
-						Server::out($room_actor, ucfirst($actor)." scares ".$target."!");
-					}
+			$actor->modifyAttribute('movement', -($cost));
+		}
+		
+		protected function success(Actor $actor)
+		{
+			$mod = round(min(3, 3 * ($actor->getLevel()/Actor::MAX_LEVEL)));
+			new Affect([
+				'affect' => 'fear',
+				'timeout' => max(2, round($actor->getProficiencyIn($this->proficiency) / 10)),
+				'message_affect' => 'Affect: fear. Decrease strength and constitution by '.$mod,
+				'message_end' => 'You are no longer fearful.',
+				'attributes' => [
+					'str' => $mod,
+					'con' => $mod
+				],
+				'apply' => $actor->getTarget()
+			]);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You invoke a sense of fear in '.$actor->getTarget().'!'],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor).' invokes a sense of fear in you!'],
+				['actor' => '*', 'message' => ucfirst($actor).' invokes a sense of fear in '.$actor->getTarget().'!']
+			]);
+		}
 
-				}
-				return;
-			}
-			Server::out($actor, "You fail to scare ".$target.".");
-	 	}
-	
+		protected function fail(Actor $actor)
+		{
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'Your fearmongering fails.'],
+				['actor' => $actor->getTarget(), 'message' => 'You bravely stand your ground to '.$actor."'s fearmongering!"],
+				['actor' => '*', 'message' => ucfirst($actor)."'s fearmongering fails to affect ".$actor->getTarget()."."]
+			]);
+		}
 	}
-
 ?>

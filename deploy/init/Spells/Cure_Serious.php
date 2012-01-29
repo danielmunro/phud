@@ -31,20 +31,12 @@
 
 	class Cure_Serious extends Spell
 	{
+		protected $alias = 'cure serious';
 		protected $proficiency = 'healing';
 		protected $required_proficiency = 35;
-		protected $saving_attribute = 'wis';
+		protected $normal_modifier = ['wis'];
 
-		protected function __construct()
-		{
-			self::addAlias('cure serious', $this);
-		}
-
-		public function getSubscriber()
-		{
-		}
-		
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
+		protected function success(Actor $actor)
 		{
 			$prof_rand = rand(9, 11);
 			$amount = round(rand(5, ($proficiency / $prof_rand) + 4));

@@ -34,14 +34,10 @@
 
 	class Haggle extends Skill
 	{
+		protected $alias = 'haggle';
 		protected $proficiency = 'speech';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'cha';
-
-		protected function __construct()
-		{
-			self::addAlias('haggle', $this);
-		}
+		protected $easy_modifier = ['cha'];
 
 		public function getSubscriber()
 		{
@@ -52,17 +48,17 @@
 				}
 			);
 		}
-	
-		public function perform(Actor $actor, $args = null)
-		{
-			$roll = Server::chance();
-			
-			if($roll < $this->percent)
-			{
-				return -(rand($args/10, $args/8));
-			}
-		}
-	
-	}
 
+		protected function applyCost(Actor $actor)
+		{
+		}
+
+		protected function success(Actor $actor)
+		{
+		}
+		
+		protected function fail(Actor $actor)
+		{
+		}
+	}
 ?>

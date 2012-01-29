@@ -32,50 +32,42 @@
 
 	class Sneak extends Skill
 	{
+		protected $alias = 'sneak';
 		protected $proficiency = 'stealth';
-		protected $proficiency_required = 30;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('sneak', $this);
-		}
+		protected $required_proficiency = 30;
+		protected $normal_modifier = ['dex'];
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('sneak');
+			return $this->getInputSubscriber();
 		}
 		
-		public function perform(Actor $actor, $chance = 0, $args = null)
+		protected function applyCost(Actor $actor)
 		{
 			$actor->incrementDelay(1);
-			$roll = Server::chance();
-			
-			$roll += $this->getNormalAttributeModifier($actor->getAttribute('dex'));
-			
 			$m = $actor->getAttribute('movement');
 			$cost = -(round((0.05/min(1, $actor->getLevel()/10))*$m));
 			$actor->modifyAttribute('movement', $cost);
-			
-			if($roll > $chance) {
-				Server::out($actor, "Your attempt to move undetected fails.");
-				return;
-			}
+		}
 
-			$a = new Affect();
-			$a->setAffect('sneak');
-			$a->setMessageAffect('Affect: sneak');
-			$a->setMessageEnd('You no longer move silently.');
-			$a->setTimeout(min(10, $actor->getAttribute('dex') * 2));
-			$att = $a->getAttributes();
-			$att->setAttribute('str', $str);
-			$att->setAttribute('dex', $dex);
-			$a->apply($actor);
+		protected function success(Actor $actor)
+		{
+			$a = new Affect([
+				'affect' => 'sneak',
+				'message_affect' => 'Affect: sneak',
+				'message_end' => 'You no longer move silently.',
+				'timeout' => min($actor->getAttribute('dex') * 2, $actor->getLevel()),
+				'apply' => $actor
+			]);
 			$actor->getRoom()->announce2([
 				['actor' => $actor, 'message' => 'You begin to move silently.'],
 				['actor' => '*', 'message' => $actor.' fades into the shadows.']
 			]);
 		}
+		
+		protected function fail(Actor $actor)
+		{
+			Server::out($actor, "Your attempt to move undetected fails.");
+		}
 	}
-
 ?>

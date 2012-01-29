@@ -34,14 +34,10 @@
 
 	class Enhanced_Damage extends Skill
 	{
+		protected $alias = 'enhanced damage';
 		protected $proficiency = 'melee';
-		protected $proficiency_required = 35;
-		protected $saving_attribute = 'str';
-
-		protected function __construct()
-		{
-			self::addAlias('enhanced damage', $this);
-		}
+		protected $required_proficiency = 35;
+		protected $hard_modifier = ['str'];
 
 		public function getSubscriber()
 		{
@@ -49,14 +45,22 @@
 				Event::EVENT_DAMAGE_MODIFIER_ATTACKING,
 				$this,
 				function($subscriber, $fighter, $enh, $target, &$modifier, &$dam_roll) {
-					$p = $fighter->getProficiencyIn($enh->getProficiency());
-					if($p / 2 > Server::chance()) {
-						$modifier += $p / 200;
-					}
+					$modifier += $this->perform($fighter);
 				}
 			);
 		}
 
-		public function perform(Actor $actor, $proficiency, $args = []) {}
+		protected function applyCost(Actor $actor) {}
+
+		protected function fail(Actor $actor)
+		{
+			return 0;
+		}
+
+		protected function success(Actor $actor)
+		{
+			$v1 = $actor->getAttribute('str') / 100;
+			return rand($v1 / 2, $v1 * 1.25);
+		}
 	}
 ?>

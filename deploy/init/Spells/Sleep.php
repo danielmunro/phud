@@ -32,26 +32,27 @@
 
 	class Sleep extends Spell
 	{
+		protected $alias = 'sleep';
 		protected $proficiency = 'beguiling';
 		protected $required_proficiency = 40;
-		protected $saving_attribute = 'int';
+		protected $normal_modifier = ['int'];
+		protected $easy_modifier = ['cha'];
 
-		protected function __construct()
+		protected function success(Actor $actor, Actor $target)
 		{
-			self::addAlias('sleep', $this);
-		}
-		
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
-		{
+			$proficiency = $actor->getProficiencyIn($this->proficiency);
 			$timeout = round(1 + ($proficiency / 10));
 			$target->setDisposition(Actor::DISPOSITION_SLEEPING);
-			$a = new Affect();
-			$a->setAffect('sleep');
-			$a->setMessageAffect('Spell: sleep');
-			$a->setTimeout($timeout);
-			$a->apply($target);
-			$target->getRoom()->announce($target, ucfirst($target)." goes to sleep.");
-			Server::out($target, "You go to sleep.");
+			$a = new Affect([
+				'affect' => 'sleep',
+				'message_affect' => 'Spell: sleep',
+				'timeout' => $timeout,
+				'apply' => $target
+			]);
+			$target->getRoom()->announce2([
+				['actor' => $target, 'message' => 'You go to sleep.'],
+				['actor' => '*', 'message'  => ucfirst($target).' goes to sleep.']
+			]);
 		}
 	}
 

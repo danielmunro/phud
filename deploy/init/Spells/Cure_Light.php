@@ -32,16 +32,12 @@
 
 	class Cure_Light extends Spell
 	{
+		protected $alias = 'cure light';
 		protected $proficiency = 'healing';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'wis';
+		protected $normal_modifier = ['wis'];
 
-		protected function __construct()
-		{
-			self::addAlias('cure light', $this);
-		}
-
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
+		protected function success(Actor $actor)
 		{
 			$prof_rand = rand(9, 11);
 			$amount = round(rand(1, ($proficiency / $prof_rand) + 1));

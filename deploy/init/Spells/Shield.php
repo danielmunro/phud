@@ -33,16 +33,12 @@
 
 	class Shield extends Spell
 	{
+		protected $alias = 'shield';
 		protected $proficiency = 'benedictions';
 		protected $required_proficiency = 25;
 		protected $saving_attribute = 'wis';
 
-		protected function __construct()
-		{
-			self::addAlias('shield', $this);
-		}
-
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
+		protected function success(Actor $actor)
 		{
 			$timeout = min(30, ceil($proficiency / 2));
 			$mod_ac = min(-(round($proficiency / 1.5)), -30);

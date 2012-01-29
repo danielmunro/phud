@@ -33,45 +33,60 @@
 
 	class Bash extends Skill
 	{
+		protected $alias = 'bash';
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'str';
-
-		protected function __construct()
-		{
-			self::addAlias('bash', $this);
-		}
+		protected $easy_modifier = ['str'];
+		protected $needs_target = true;
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('bash');
+			return $this->getInputSubscriber();
+		}
+
+		protected function applyCost(Actor $actor)
+		{
+			$amount = min(20, 51 - $actor->getLevel());
+			if($actor->getAttribute('movement') < $amount) {
+				return false;
+			}
+			$actor->modifyAttribute('movement', -($amount));
 		}
 	
-		public function perform(Actor $actor, $percent, $args = [])
+		protected function modifyRoll(Actor $actor)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target)
-				return;
-			
-			$roll = Server::chance();
+			$roll = 0;
 			$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
-			$roll += $target->getRace()['lookup']->getSize();
-			$roll += $this->getNormalAttributeModifier($actor->getAttribute('str'));
-			$target->fire(Event::EVENT_BASHED, $target, $roll);
-			
-			$actor->incrementDelay(2);
-			
-			if($roll < $percent)
-			{
-				$a = new Affect();
-				$a->setAffect('stun');
-				$a->setTimeout(1);
-				$a->apply($target);
-				$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-				return Server::out($actor, "You slam into ".$target." and send ".$target->getDisplaySex($sexes)." flying!");
-			}
-			
-			return Server::out($actor, "You fall flat on your face!");
+			$roll += $actor->getTarget()->getRace()['lookup']->getSize();
+			$target->fire(Event::EVENT_BASHED, $actor->getTarget(), $roll);
+			return $roll;
+		}
+
+		protected function fail(Actor $actor)
+		{
+			$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
+			$s = $actor->getDisplaySex($sexes);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You fall flat on your face!'],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." tries to bash you but you evade their attack!"],
+				['actor' => '*', 'message' => ucfirst($actor)." falls flat on ".$s." trying to bash ".$actor->getTarget()."!"]
+			]);
+		}
+
+		protected function success(Actor $actor)
+		{
+			new Affect([
+				'affect' => 'stun',
+				'timeout' => 1,
+				'apply' => $actor->getTarget()
+			]);
+			$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
+			$s = $actor->getTarget()->getDisplaySex($sexes);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "You slam into ".$actor->getTarget()." and send ".$s." flying!"],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." slams into you and sends you flying!"],
+				['actor' => '*', 'message' => ucfirst($actor)." slams into ".$actor->getTarget()." and sends ".$s." flying!"]
+			]);
 		}
 	}
 ?>

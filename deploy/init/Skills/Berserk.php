@@ -32,48 +32,58 @@
 
 	class Berserk extends Skill
 	{
+		protected $alias = 'berserk';
 		protected $proficiency = 'melee';
-		protected $proficiency_required = 25;
-		protected $saving_attribute = 'con';
-
-		protected function __construct()
-		{
-			self::addAlias('berserk', $this);
-		}
+		protected $required_proficiency = 25;
+		protected $normal_modifier = ['str', 'dex'];
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('berserk');
+			return $this->getInputSubscriber();
 		}
-		
-		public function perform(Actor $actor, $chance = 0, $args = null)
+
+		protected function applyCost(Actor $actor)
 		{
-			$this->incrementDelay(2);
-			$roll = Server::chance();
-			
-			$roll += $this->getHardAttributeModifier($actor->getAttribute('dex'));
-			$roll += $this->getNormalAttributeModifier($actor->getAttribute('str'));
-			
+			if($actor->getAttribute('movement') < 75) {
+				Server::out($actor, "You do not have the energy to do that.");
+				return false;
+			}
+			$actor->incrementDelay(2);
 			$actor->modifyAttribute('movement', -($actor->getAttribute('movement') / 2));
 			$actor->modifyAttribute('mana', -($actor->getAttribute('mana') / 2));
-			
-			if($roll > $chance)
-				return $this->fail_message;
-			
+		}
+		
+		protected function success(Actor $actor)
+		{
 			$p = $actor->getLevel() / Actor::MAX_LEVEL;
-			$timeout = ceil(10 * $p);
-			$str = ceil(4 * $p);
-			$dex = ceil(2 * $p);
-			$a = new Affect();
-			$a->setAffect('berserk');
-			$a->setMessageAffect('Affect: berserk');
-			$a->setMessageEnd('You cool down.');
-			$a->setTimeout($timeout);
-			$att = $a->getAttributes();
-			$att->setAttribute('str', $str);
-			$att->setAttribute('dex', $dex);
-			$a->apply($actor);
-			return "You fly into a rage!";
+			$timeout = round(max(2, 2 * $p));
+			$str = round(max(1, 4 * $p));
+			$dex = round(max(1, 2 * $p));
+			new Affect([
+				'affect' => 'berserk',
+				'message_affect' => 'Affect: berserk',
+				'message_end' => 'You cool down.',
+				'timeout' => $timeout,
+				'attributes' => [
+					'str' => $str,
+					'dex' => $dex
+				],
+				'apply' => $actor
+			]);
+			$actor->modifyAttribute('hp', round(min(5, 75 * $p)));
+			$sex = $actor->getDisplaySex([Actor::SEX_MALE => 'he', Actor::SEX_FEMALE => 'she', Actor::SEX_NEUTRAL => 'it']);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'Your pulse speeds up as you are consumed by rage!'],
+				['actor' => '*', 'message' => ucfirst($actor)."'s pulse speeds up as ".$sex." is consumed by rage!"]
+			]);
+		}
+
+		protected function fail(Actor $actor)
+		{
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'Your face gets a little red.'],
+				['actor' => '*', 'message' => ucfirst($actor)."'s face gets a little red."]
+			]);
 		}
 	}
 

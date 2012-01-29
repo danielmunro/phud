@@ -25,46 +25,49 @@
 	 *
 	 */
 	namespace Skills;
-    use \Mechanics\Ability\Skill;
-    use \Mechanics\Server;
-    use \Mechanics\Actor;
-    use \Mechanics\Damage;
+    use \Mechanics\Ability\Skill,
+		\Mechanics\Server,
+		\Mechanics\Actor,
+		\Mechanics\Damage;
 
 	class Kick extends Skill
 	{
+		protected $alias = 'kick';
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'str';
-
-		protected function __construct()
-		{
-			self::addAlias('kick', $this);
-		}
+		protected $normal_modifier = ['dex', 'str'];
+		protected $needs_target = true;
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('kick');
+			return $this->getInputSubscriber();
 		}
-	
-		public function perform(Actor $actor, $percent, $args = array())
+
+		protected function applyCost(Actor $actor)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target)
-				return;
-			
 			$actor->incrementDelay(1);
-			$roll = Server::chance() - $percent;
-			$roll += $this->getEasyAttributeModifier($actor->getDex());
-			$roll -= $this->getEasyAttributeModifier($target->getDex());
-			
-			if($roll > $chance)
-				return Server::out($actor, 'You fall flat on your face!');
-			
-			if($actor->damage($target, rand(1, 1 + $actor->getLevel()), Damage::TYPE_BASH))
-			{
-				Server::out($actor, 'You kick ' . $target->getAlias() . ', causing him pain!');
-				Server::out($final_target, $actor->getAlias(true) . ' kicks you!');
-			}
+		}
+
+		protected function fail(Actor $actor)
+		{
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "Your kick misses ".$actor->getTarget()." harmlessly."],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)."'s kick misses you harmlessly."],
+				['actor' => '*', 'message' => ucfirst($actor)."'s kick misses ".$actor->getTarget()." harmlessly."]
+			]);
+		}
+
+		protected function success(Actor $actor)
+		{
+			$damage = rand(1, (1+$actor->getLevel()/2));
+			$actor->getTarget()->modifyAttribute('hp', -($damage));
+			$sexes = [Actor::SEX_MALE => "him", Actor::SEX_FEMALE => "her", Actor::SEX_NEUTRAL => "it"];
+			$s = $actor->getDisplaySex($sexes);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "Your kick hits ".$actor->getTarget().", causing ".$s." pain!"],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)."'s kick hits you!"],
+				['actor' => '*', 'message' => ucfirst($actor)."'s kick hits ".$actor->getTarget().", causing ".$s." pain!"]
+			]);
 		}
 	}
 

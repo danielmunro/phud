@@ -32,31 +32,29 @@
 
 	class Armor extends Spell
 	{
+		protected $alias = 'armor';
 		protected $proficiency = 'benedictions';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'wis';
+		protected $normal_modifier = ['wis'];
 
-		protected function __construct()
+		protected function success(Actor $actor, Actor $target)
 		{
-			self::addAlias('armor', $this);
-		}
-		
-		public function perform(Actor $caster, Actor $target, $proficiency, $args = [])
-		{
+			$proficiency = $actor->getProficiencyIn($this->proficiency);
 			$timeout = min(30, ceil($proficiency / 2));
 			$mod_ac = min(-(round($proficiency / 2)), -15);
 			
-			$a = new Affect();
-			$a->setAffect('armor');
-			$a->setMessageAffect('Spell: armor: '.$mod_ac.' to armor class');
-			$a->setMessageEnd('You feel less protected.');
-			$a->setTimeout($timeout);
-			$atts = $a->getAttributes();
-			$atts->setAcBash($mod_ac);
-			$atts->setAcSlash($mod_ac);
-			$atts->setAcPierce($mod_ac);
-			$atts->setAcMagic($mod_ac);
-			$a->apply($target);
+			$a = new Affect([
+				'affect' => 'armor',
+				'message_affect' => 'Spell: armor: '.$mod_ac.' to armor class',
+				'attributes' => [
+					'ac_slash' => $mod_ac,
+					'ac_bash' => $mod_ac,
+					'ac_pierce' => $mod_ac,
+					'ac_magic' => $mod_ac
+				],
+				'apply' => $target
+			]);
+
 			Server::out($target, "You feel more protected!");
 		}
 	}

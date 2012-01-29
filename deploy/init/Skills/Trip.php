@@ -32,43 +32,49 @@
 
 	class Trip extends Skill
 	{
+		protected $alias = 'trip';
 		protected $proficiency = 'melee';
 		protected $required_proficiency = 20;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('trip', $this);
-		}
+		protected $hard_modifier = ['dex'];
+		protected $needs_target = true;
 
 		public function getSubscriber()
 		{
-			return parent::getInputSubscriber('trip');
+			return $this->getInputSubscriber();
 		}
-	
-		public function perform(Actor $actor, $percent, $args = [])
+
+		protected function applyCost(Actor $actor)
 		{
-			$target = $actor->reconcileTarget($args);
-			if(!$target) {
-				return;
-			}
-			
+			$cost = 50 - $this->level;
 			$actor->incrementDelay(1);
-			$roll = Server::chance() - $percent;
-			$roll -= $this->getEasyAttributeModifier($actor->getAttribute('dex'));
-			$roll += $this->getEasyAttributeModifier($target->getAttribute('dex'));
-			
-			if($roll > $percent) {
-				return Server::out($actor, 'You fall flat on your face!');
+			if($actor->getAttribute('movement') < $cost) {
+				Server::out($actor, "You don't have enough energy to trip.");
+				return false;
 			}
-			
-			$a = new Affect();
-			$a->setAffect('stun');
-			$a->setTimeout(1);
-			$a->apply($target);
-			Server::out($actor, 'You throw a leg out and trip '.$target.'.');
-			Server::out($target, ucfirst($actor).' trips you and you go down!');
+			$actor->modifyAttribute('movement', -($cost));
+		}
+		
+		protected function success(Actor $actor)
+		{
+			new Affect([
+				'affect' => 'stun',
+				'timeout' => 1,
+				'apply' => $actor->getTarget()
+			]);
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You throw a leg out and trip '.$actor->getTarget().'.'],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor).' trips you and you go down!'],
+				['actor' => '*', 'message' => ucfirst($actor).' trips '.$actor->getTarget().' and they go down!']
+			]);
+		}
+
+		protected function fail(Actor $actor)
+		{
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => 'You try to trip '.$actor->getTarget().' but fail.'],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor).' tries to trip you but you evade their attack.'],
+				['actor' => '*', 'message' => ucfirst($actor).' tries to trip '.$actor->getTarget().' but they fail.']
+			]);
 		}
 	}
-
 ?>

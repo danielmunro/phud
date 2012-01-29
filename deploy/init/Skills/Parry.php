@@ -26,21 +26,20 @@
 	 */
 	namespace Skills;
     use \Mechanics\Ability\Skill,
+    	\Mechanics\Ability\Ability,
+		\Mechanics\Event\Event,
+		\Mechanics\Event\Subscriber,
 		\Mechanics\Actor,
     	\Mechanics\Equipped,
-    	\Mechanics\Ability\Ability,
+		\Mechanics\Race,
     	\Mechanics\Server;
 
 	class Parry extends Skill
 	{
+		protected $alias = 'parry';
 		protected $proficiency = 'evasive';
 		protected $required_proficiency = 25;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('parry', $this);
-		}
+		protected $hard_modifier = ['dex'];
 
 		public function getSubscriber()
 		{
@@ -48,46 +47,29 @@
 				Event::EVENT_MELEE_ATTACKED,
 				$this,
 				function($subscriber, $fighter, $ability, $attack_event) {
-					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
-						$attack_event->suppress();
-						$subscriber->satisfyBroadcast();
-					}
+					$ability->perform($fighter, [$attack_event, $subscriber]);
 				}
 			);
 		}
-	
-		public function perform(Actor $actor, $args = null)
-		{
-			$weapon = $this->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD);
-			if(!$weapon)
-				return false;
 		
-			$roll = \Mechanics\Server::chance();
-			switch($actor->getSize())
-			{
-				case \Mechanics\Race::SIZE_TINY:
-					$roll -= 10;
-					break;
-				case \Mechanics\Race::SIZE_SMALL:
-					$roll -= 5;
-					break;
-				case \Mechanics\Race::SIZE_LARGE:
-					$roll += 5;
-					break;
+		protected function modifyRoll(Actor $actor)
+		{
+			$weapon = $actor->getEquipped()->getEquipmentByPosition(Equipped::POSITION_WIELD);
+			if(!$weapon) {
+				return -1;
 			}
-			
-			$roll += $this->getNormalAttributeModifier($actor->getDex());
-			
-			$roll *= 1.25;
-			
-			if($roll < $this->percent)
-			{
-				Server::out($actor, $args->getAlias(true) . ' parries your attack!');
-				Server::out($args, 'You parry ' . $actor->getAlias() . "'s attack!");
-				return true;
-			}
+			return ($actor->getSize() - Race::SIZE_NORMAL) * 10;
 		}
-	
-	}
 
+		protected function success(Actor $actor, Actor $target, $args)
+		{
+			$args[0]->suppress();
+			$args[1]->satisfyBroadcast();
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "You parry ".$actor->getTarget()."'s attack!"],
+				['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." parries your attack!"],
+				['actor' => '*', 'message' => ucfirst($actor)." parries ".$actor->getTarget()."'s attack!"]
+			]);
+		}
+	}
 ?>

@@ -33,14 +33,10 @@
 
 	class Dodge extends Skill
 	{
+		protected $alias = 'dodge';
 		protected $proficiency = 'evasive';
-		protected $proficiency_required = 25;
-		protected $saving_attribute = 'dex';
-
-		protected function __construct()
-		{
-			self::addAlias('dodge', $this);
-		}
+		protected $required_proficiency = 25;
+		protected $easy_modifier = ['dex'];
 
 		public function getSubscriber()
 		{
@@ -48,42 +44,25 @@
 				Event::EVENT_MELEE_ATTACKED,
 				$this,
 				function($subscriber, $fighter, $ability, $attack_event) {
-					if($ability->perform($fighter, $fighter->getProficiencyIn($ability->getProficiency()))) {
-						$attack_event->suppress();
-						Server::out($fighter, "You dodge ".$fighter->getTarget()."'s attack!");
-						$subscriber->satisfyBroadcast();
-					}
+					$ability->perform($fighter, [$attack_event, $subscriber]);
 				}
 			);
 		}
 	
-		public function perform(Actor $actor, $percent, $args = null)
+		public function modifyRoll(Actor $actor)
 		{
-			$roll = Server::chance();
-			switch($actor->getSize())
-			{
-				case Race::SIZE_TINY:
-					$chance += 5;
-					break;
-				case Race::SIZE_SMALL:
-					$chance += 1;
-					break;
-				case Race::SIZE_LARGE:
-					$chance -= 5;
-					break;
-			}
-			
-			$roll += $this->getNormalAttributeModifier($actor->getDex());
-			
-			if($roll < $this->percent)
-			{
-				Server::out($actor, $args->getAlias(true) . ' dodges your attack!');
-				Server::out($args, 'You dodge ' . $actor->getAlias() . "'s attack!");
-				return true;
-			}
-			return false;
+			return ($actor->getSize() - Race::SIZE_NORMAL) * 10;
 		}
-	
-	}
 
+		protected function success(Actor $actor, Actor $target, $args)
+		{
+			$args[0]->suppress();
+			$args[1]->satisfyBroadcast();
+			$actor->getRoom()->announce2([
+				['actor' => $actor, 'message' => "You dodge ".$target."'s attack."],
+				['actor' => $target, 'message' => $actor." dodges your attack."],
+				['actor' => '*', 'message' => $actor." dodges ".$target."'s attack."]
+			]);
+		}
+	}
 ?>
