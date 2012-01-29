@@ -25,14 +25,13 @@
 	 *
 	 */
 	namespace Mechanics\Ability;
-	use \Mechanics\Actor;
+	use \Mechanics\Actor,
+		\Mechanics\Server;
 
 	abstract class Spell extends Ability
 	{
 		protected $initial_mana_cost = 50;
 		protected $min_mana_cost = 15;
-		protected $is_offensive = false;
-		protected $delay = 1;
 	
 		public function getManaCost($proficiency)
 		{
@@ -40,16 +39,33 @@
 			return max($min, $this->min_mana_cost);
 		}
 
-		public function getDelay()
+		protected function applyCost(Actor $actor)
 		{
-			return $this->delay;
+			$mana_cost = $this->getManaCost($actor->getProficiencyIn($this->proficiency));
+			if($actor->getAttribute('mana') < $mana_cost) {
+				Server::out($actor, "You lack the mana to do that.");
+				return false;
+			}
+			$actor->modifyAttribute('mana', -($mana_cost));
 		}
 
-		public function isOffensive()
+		protected function fail(Actor $actor)
 		{
-			return $this->is_offensive;
+			Server::out($actor, "You lost your concentration.");
 		}
 
-		abstract public function perform(Actor $caster, Actor $target, $proficiency, $args = []);
+		protected function determineTarget(Actor $actor, $args)
+		{
+			$s = sizeof($args);
+			if($s === 2) {
+				return $actor;
+			} else if($s > 2) {
+				// Spells, unlike skills, can target the actor performing the ability
+				$target = $actor->getRoom()->getActorByInput(array_slice($args, -1)[0]);
+				if($target) {
+					return $target;
+				}
+			}
+		}
 	}
 ?>

@@ -40,30 +40,24 @@
 
 		protected $proficiency = '';
 		protected $required_proficiency = 0;
-		protected $saving_attribute = '';
+		protected $hard_modifier = [];
+		protected $easy_modifier = [];
+		protected $normal_modifier = [];
+		protected $needs_target = false;
+		protected $alias = '';
 		
 		protected function __construct()
 		{
-			if(empty($this->proficiency) || empty($this->required_proficiency) || empty($this->saving_attribute)) {
-				var_dump($this);
-				throw new Exception(get_class($this)." is not fully configured");
+			if(empty($this->proficiency)) {
+				throw new Exception(get_class($this).' is not fully configured, missing: proficiency');
 			}
-		}
-
-		public function calculateSaves(Actor $initiator, Actor $target = null)
-		{
-			if(is_null($target)) {
-				$target = $initiator->getTarget();
+			if(empty($this->required_proficiency)) {
+				throw new Exception(get_class($this).' is not fully configured, missing: required proficiency level');
 			}
-			$saves = ($initiator->getAttribute($this->saving_attribute) - $target->getAttribute($this->saving_attribute)) * 10;
-			$saves += ($initiator->getLevel() - $target->getLevel()) * 5;
-			$saves += ($initiator->getProficiencyIn($this->proficiency) - $target->getProficiencyIn($this->proficiency)) * 2;
-			return $saves;
-		}
-
-		public function getSavingAttribute()
-		{
-			return $this->saving_attribute;
+			if(empty($this->alias)) {
+				throw new Exception(get_class($this).' is not fully configured, missing: alias');
+			}
+			self::addAlias($this->alias, $this);
 		}
 
 		public function getProficiency()
@@ -71,13 +65,6 @@
 			return $this->proficiency;
 		}
 		
-		public function checkProficiencyRoll(Actor $actor)
-		{
-			$prof = $actor->getProficiencyIn($this->proficiency);
-			$roll = max(75, $prof * 2);
-			return $roll < Server::chance();
-		}
-
 		public static function runInstantiation()
 		{
 			$namespaces = ['Skills', 'Spells'];
@@ -94,7 +81,60 @@
 				}
 			}
 		}
-	
+
+		public function perform(Actor $actor, $args = [])
+		{
+			// check for a target if necessary
+			$target = $this->determineTarget($actor, $args);
+			if($this->needs_target && !$target) {
+				return;
+			}
+			// check if actor satisfies requirements as far as mana, mv, etc
+			if($this->applyCost($actor) === false) {
+				return;
+			}
+			// do a proficiency roll to determine success or failure
+			$roll = Server::chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
+			foreach($this->hard_modifier as $m) {
+				$roll += $this->getHardAttributeModifier($actor->getAttribute($m));
+				$roll -= $this->getHardAttributeModifier($target->getAttribute($m));
+			}
+			foreach($this->normal_modifier as $m) {
+				$roll += $this->getNormalAttributeModifier($actor->getAttribute($m));
+				$roll -= $this->getNormalAttributeModifier($target->getAttribute($m));
+			}
+			foreach($this->easy_modifier as $m) {
+				$roll += $this->getEasyAttributeModifier($actor->getAttribute($m));
+				$roll -= $this->getEasyAttributeModifier($target->getAttribute($m));
+			}
+			$roll += $this->modifyRoll($actor);
+			if($roll > Server::chance()) {
+				return $this->success($actor, $target, $args);
+			} else {
+				return $this->fail($actor, $target);
+			}
+		}
+		
+		protected function determineTarget(Actor $actor, $args)
+		{
+		}
+
+		protected function success(Actor $actor, Actor $target, $args = [])
+		{
+		}
+
+		protected function fail(Actor $actor, Actor $target, $args = [])
+		{
+		}
+
+		protected function applyCost(Actor $actor, $args = [])
+		{
+		}
+
+		protected function modifyRoll(Actor $actor)
+		{
+		}
+
 		protected function getEasyAttributeModifier($attribute)
 		{
 			switch($attribute)
@@ -152,5 +192,4 @@
 			}
 		}
 	}
-
 ?>

@@ -26,6 +26,7 @@
 	 */
 	namespace Mechanics\Ability;
 	use \Living\User,
+		\Mechanics\Actor,
 		\Mechanics\Event\Subscriber,
 		\Mechanics\Event\Event,
 		\Mechanics\Server,
@@ -33,28 +34,6 @@
 
 	abstract class Skill extends Ability
 	{
-		protected $alias = '';
-
-		protected function __construct()
-		{
-			parent::__construct();
-			if(empty($this->alias)) {
-				throw new Exception('Skill does not have an alias defined: '.get_class($this));
-			}
-			self::addAlias($this->alias, $this);
-		}
-
-		public function tryPerform(User $user, $args = [])
-		{
-			$proficiency = $user->getProficiencyIn($this->proficiency);
-			if($this->required_proficiency < $proficiency) {
-				return Server::out($user, "You do not have the skill necessary to do that.");
-			}
-			if($this->is_performable) {
-				$ability->perform($user, $percent, $args);
-			}
-		}
-
 		protected function getInputSubscriber($alias = '')
 		{
 			if(empty($alias)) {
@@ -65,8 +44,7 @@
 				$this,
 				function($subscriber, $user, $ability, $args) use ($alias) {
 					if(!$subscriber->isBroadcastSatisfied() && strpos($alias, $args[0]) === 0) {
-						// @TODO check if user can do this
-						$ability->perform($user, $user->getProficiencyIn($ability->getProficiency()), $args);
+						$ability->perform($user, $args);
 						$subscriber->satisfyBroadcast();
 					}
 				},
@@ -74,7 +52,11 @@
 			);
 		}
 
-		//abstract public function perform(Actor $actor, $proficiency, $args = []);
+		protected function determineTarget(Actor $actor, $args)
+		{
+			return $actor->reconcileTarget($args);
+		}
+		
 		abstract public function getSubscriber();
 	}
 ?>
