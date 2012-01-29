@@ -46,46 +46,16 @@
 		
 		public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
 		{
-			/**
-			 * STEP 1
-			 * Parse the input from the user. This includes resolving the spell and the target from
-			 * the provided input.
-			 */
-
-			array_shift($args); // get rid of the command part of the args
 			$s = sizeof($args);
-			$arg_spell_casting = null;
-			$target = null;
-
-			if($s === 1) {
-				$arg_spell_casting = Ability::lookup(trim($args[0], "'"));
-				$target = $actor;
-			} else {
-				$arg_target = $args[$s-1];
-				$arg_target_lookup = $actor->getRoom()->getActorByInput($arg_target);
-				if($arg_target_lookup) {
-					$target = $arg_target_lookup;
-					array_pop($args); // remove the target from the casting string
-				} else {
-					$target = $actor;
-				}
-				$arg_spell_casting = Ability::lookup(trim(implode(' ', $args), "'"));
+			if($s === 2) {
+				$arg_spell_casting = Ability::lookup(implode(' ', array_slice($args, 1)));
+			} else if($s > 2) {
+				$arg_spell_casting = Ability::lookup(implode(' ', array_slice($args, 1, $s-2)));
 			}
-
-			/**
-			 * STEP 2
-			 * Sanity checks. Make sure we found both a target and a spell and the caster has
-			 * enough mana to cast the spell.
-			 */
 
 			// Check if the spell exists
 			if(empty($arg_spell_casting) || !($arg_spell_casting['lookup'] instanceof mSpell)) {
 				return Server::out($actor, "That spell does not exist in this realm.");
-			}
-
-			// Check if the target exists
-			if(empty($target)) {
-				return Server::out($actor, "Cast ".$arg_spell_casting['alias']." on who?");
 			}
 
 			// Does the caster actually know the spell?
@@ -93,28 +63,9 @@
 				return Server::out($actor, "You do not know that spell.");
 			}
 
-			// Does the caster have sufficient mana?
-			$cost = $arg_spell_casting['lookup']->getManaCost($actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()));
-			if($cost > $actor->getAttribute('mana')) {
-				return Server::out($actor, "You lack the mana to cast ".$arg_spell_casting['alias']." right now.");
-			}
-
-			/**
-			 * STEP 3
-			 * Increment the delay, do a proficiency roll, calculate saves, and perform.
-			 */
-
-			$actor->incrementDelay($arg_spell_casting['lookup']->getDelay());
-
-			// Caster will roll to see if they lose concentration
-			if(!$arg_spell_casting['lookup']->checkProficiencyRoll($actor)) {
-				$actor->modifyAttribute('mana', -(round($cost/2)));
-				return Server::out($actor, "You lost your concentration.");
-			}
-
-			$actor->modifyAttribute('mana', -($cost));
-
 			// This event announces the beginning of battle, allowing for the target to have an observer that cancels the fight
+			// @TODO move this to the ability classes
+			/**
 			if($arg_spell_casting['lookup']->isOffensive()) {
 				if($actor->reconcileTarget($target)) {
 					$target->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
@@ -123,16 +74,9 @@
 					}
 				}
 			}
+			*/
 
-			// Determine saving throws on this cast and perform
-			$modifier = 1;
-			$saves = $arg_spell_casting['lookup']->calculateSaves($actor, $target);
-			$actor->fire(Event::EVENT_CASTING, $target, $arg_spell_casting, $modifier, $saves);
-			$target->fire(Event::EVENT_CASTED_AT, $actor, $arg_spell_casting, $modifier, $saves);
-			$modifier = Server::_range(0.1, 2, $modifier);
-			$saves *= $modifier;
-			$saves = Server::_range(5, 95, $saves);
-			$arg_spell_casting['lookup']->perform($actor, $target, $actor->getProficiencyIn($arg_spell_casting['lookup']->getProficiency()), $saves);
+			$arg_spell_casting['lookup']->perform($actor, $args);
 		}
 	}
 ?>
