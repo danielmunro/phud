@@ -12,7 +12,7 @@ use \Mechanics\Alias,
 
 class Cast extends Command
 {
-	protected $alias = 'cast';
+	protected $alias = ['cast', 11];
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 	
 	public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
