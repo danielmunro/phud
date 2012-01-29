@@ -61,11 +61,12 @@
 				return $actor;
 			} else if($s > 2) {
 				// Spells, unlike skills, can target the actor performing the ability
-				$target = $actor->getRoom()->getActorByInput(array_slice($args, -1)[0]);
+				$target = $actor->getRoom()->getActorByInput($args[$s-1]);
 				if($target) {
 					return $target;
 				}
 			}
+			return null;
 		}
 	}
 ?>

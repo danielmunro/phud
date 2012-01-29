@@ -89,6 +89,9 @@
 			if($this->needs_target && !$target) {
 				return;
 			}
+			if(!$target) {
+				$target = $actor;
+			}
 			// check if actor satisfies requirements as far as mana, mv, etc
 			if($this->applyCost($actor) === false) {
 				return;

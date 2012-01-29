@@ -709,7 +709,7 @@
 
 		public function reconcileTarget($args = [])
 		{
-			if(!$args) {
+			if(sizeof($args) <= 1) {
 				return $this->target;
 			}
 
