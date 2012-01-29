@@ -8,12 +8,8 @@ use \Mechanics\Alias,
 
 class Wake extends Command
 {
+	protected $alias = 'wake';
 	protected $dispositions = [Actor::DISPOSITION_SLEEPING];
-
-	protected function __construct()
-	{
-		self::addAlias('wake', $this);
-	}
 
 	public function perform(Actor $actor, $args = array())
 	{

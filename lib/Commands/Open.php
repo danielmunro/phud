@@ -8,13 +8,8 @@ use \Mechanics\Actor,
 
 class Open extends Command
 {
-
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('open', $this);
-	}
+	protected $alias = 'open';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = array())
 	{

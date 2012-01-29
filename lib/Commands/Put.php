@@ -8,12 +8,11 @@ use \Mechanics\Alias,
 
 class Put extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
-
-	protected function __construct()
-	{
-		self::addAlias('put', $this);
-	}
+	protected $alias = 'put';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING
+	];
 
 	public function perform(Actor $actor, $args = array())
 	{

@@ -8,12 +8,8 @@ use \Mechanics\Actor,
 
 class Flee extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('flee', $this);
-	}
+	protected $alias = 'flee';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $fighter, $args = [], Subscriber $command_subscriber)
 	{

@@ -3,21 +3,17 @@ namespace Commands;
 use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Server,
-	\Mechanics\Command\Command,
+	\Mechanics\Command\User as cUser,
 	\Mechanics\Item as mItem,
 	\Items\Food;
 
-class Eat extends Command
+class Eat extends cUser
 {
+	protected $alias = 'eat';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
-
-	protected function __construct()
-	{
-		self::addAlias('eat', $this);
-	}
 
 	public function perform(Actor $actor, $args = array())
 	{

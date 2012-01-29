@@ -9,12 +9,8 @@ use \Mechanics\Actor,
 
 class Kill extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('kill', $this);
-	}
+	protected $alias = 'kill';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
 	{

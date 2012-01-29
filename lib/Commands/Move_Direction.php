@@ -11,7 +11,7 @@ use \Mechanics\Actor,
 
 abstract class Move_Direction extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = [])
 	{

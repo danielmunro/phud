@@ -6,10 +6,7 @@ use \Mechanics\Alias,
 
 class Gossip extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('gossip', $this);
-	}
+	protected $alias = 'gossip';
 
 	public function perform(lUser $user, $args = array())
 	{

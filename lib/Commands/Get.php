@@ -10,12 +10,11 @@ use \Mechanics\Actor,
 
 class Get extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
-
-	protected function __construct()
-	{
-		self::addAlias('get', $this);
-	}
+	protected $alias = 'get';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING
+	];
 
 	public function perform(Actor $actor, $args = array())
 	{

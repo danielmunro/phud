@@ -9,12 +9,8 @@ use \Mechanics\Alias,
 class Close extends Command
 {
 
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('close', $this);
-	}
+	protected $alias = 'close';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = array())
 	{

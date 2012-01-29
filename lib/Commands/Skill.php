@@ -9,10 +9,7 @@ use \Mechanics\Alias,
 
 class Skill extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('skill', $this);
-	}
+	protected $alias = 'skill';
 
 	public function perform(lUser $user, $args = array())
 	{

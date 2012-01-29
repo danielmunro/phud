@@ -8,13 +8,8 @@ use \Mechanics\Alias,
 
 class Drop extends Command
 {
-
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
-
-	protected function __construct()
-	{
-		self::addAlias('drop', $this);
-	}
+	protected $alias = 'drop';
+	protected $dispositions = [Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING];
 
 	public function perform(Actor $actor, $args = array())
 	{

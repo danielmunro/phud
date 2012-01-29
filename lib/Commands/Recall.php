@@ -7,15 +7,11 @@ use \Mechanics\Alias,
 
 class Recall extends Command
 {
+	protected $alias = 'recall';
 
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	protected function __construct()
-	{
-		self::addAlias('recall', $this);
-	}
-
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
 		$actor->setRoom(mRoom::find(1));
 	}

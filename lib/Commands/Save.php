@@ -3,17 +3,13 @@ namespace Commands;
 use \Mechanics\Alias,
 	\Mechanics\Server,
 	\Mechanics\Actor,
-	\Mechanics\Command\Command,
+	\Mechanics\Command\User as cUser,
 	\Living\User,
 	\Living\Mob as mMob;
 
-class Save extends Command
+class Save extends cUser
 {
-
-	protected function __construct()
-	{
-		self::addAlias('save', $this);
-	}
+	protected $alias = 'save';
 	
 	public function perform(Actor $actor, $args = array())
 	{

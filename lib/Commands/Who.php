@@ -7,10 +7,7 @@ use \Mechanics\Alias,
 
 class Who extends cUser
 {
-	protected function __construct()
-	{
-		self::addAlias('who', $this);
-	}
+	protected $alias = 'who';
 
 	public function perform(lUser $user, $args = array())
 	{

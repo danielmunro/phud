@@ -8,12 +8,8 @@ use \Mechanics\Alias,
 
 class Unlock extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('unlock', $this);
-	}
+	protected $alias = 'unlock';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = array())
 	{

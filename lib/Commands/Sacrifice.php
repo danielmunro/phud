@@ -11,10 +11,7 @@ use \Mechanics\Alias,
 
 class Sacrifice extends Command
 {
-	protected function __construct()
-	{
-		self::addAlias('sacrifice', $this);
-	}
+	protected $alias = 'sacrifice';
 
 	public function perform(Actor $actor, $args = array())
 	{

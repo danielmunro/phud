@@ -7,12 +7,8 @@ use \Mechanics\Actor,
 
 class Lock extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('lock', $this);
-	}
+	protected $alias = 'lock';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = array())
 	{

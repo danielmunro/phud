@@ -8,11 +8,7 @@ use \Living\User as lUser;
 
 class Room extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('room', $this);
-	}
+	protected $alias = 'room';
 	
 	public function perform(lUser $user, $args = array())
 	{

@@ -8,11 +8,7 @@ use \Mechanics\Alias,
 
 class AttSet extends DM
 {
-	
-	protected function __construct()
-	{
-		self::addAlias('attset', $this);
-	}
+	protected $alias = 'attset';
 	
 	public function perform(lUser $user, $args = array())
 	{

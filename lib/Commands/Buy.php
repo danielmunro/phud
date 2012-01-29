@@ -10,14 +10,13 @@ use \Mechanics\Item as mItem,
 
 class Buy extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
+	protected $alias = 'buy';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING
+	];
 
-	protected function __construct()
-	{
-		self::addAlias('buy', $this);
-	}
-
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
 	
 		if(sizeof($args) == 3)

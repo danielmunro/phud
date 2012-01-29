@@ -8,16 +8,12 @@ use \Mechanics\Alias,
 
 class Affects extends User
 {
+	protected $alias = ['affects', 11];
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING,
 		Actor::DISPOSITION_SLEEPING
 	];
-
-	protected function __construct()
-	{
-		self::addAlias('affects', $this, 11);
-	}
 
 	public function perform(lUser $user, $args = array())
 	{

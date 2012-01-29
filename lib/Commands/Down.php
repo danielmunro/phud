@@ -5,10 +5,7 @@ use \Mechanics\Alias,
 
 class Down extends Move_Direction
 {
-	protected function __construct()
-	{
-		self::addAlias('down', $this, 11);
-	}
+	protected $alias = ['down', 11];
 
 	public function perform(Actor $actor, $args = [])
 	{

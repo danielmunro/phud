@@ -8,11 +8,7 @@ use \Mechanics\Alias,
 
 class Dungeon_Master extends User
 {
-
-	protected function __construct()
-	{
-		self::addAlias('dungeon master', $this);
-	}
+	protected $alias = 'dungeon master';
 
 	public function perform(lUser $user, $args = array())
 	{

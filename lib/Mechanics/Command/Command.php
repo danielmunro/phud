@@ -4,6 +4,7 @@ use \Living\User,
 	\Mechanics\Debug,
 	\Mechanics\Server,
 	\ReflectionClass,
+	\Exception,
 	\Mechanics\Alias,
 	\Mechanics\Actor;
 
@@ -11,9 +12,20 @@ abstract class Command
 {
 	use Alias;
 
+	protected $alias = null;
 	protected $dispositions = [];
 	
-	protected function __construct() {}
+	protected function __construct()
+	{
+		if(is_array($this->alias)) {
+			list($alias, $priority) = $this->alias;
+			self::addAlias($alias, $this, $priority);
+		} else if(is_string($this->alias)) {
+			self::addAlias($this->alias, $this);
+		} else {
+			throw new Exception(get_class($this).' is not fully configured.');
+		}
+	}
 	
 	public static function runInstantiation()
 	{

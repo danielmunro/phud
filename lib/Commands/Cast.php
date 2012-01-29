@@ -12,12 +12,8 @@ use \Mechanics\Alias,
 
 class Cast extends Command
 {
+	protected $alias = 'cast';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
-	
-	protected function __construct()
-	{
-		self::addAlias('cast', $this, 11);
-	}
 	
 	public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
 	{

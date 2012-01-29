@@ -17,11 +17,7 @@ use \Mechanics\Server,
 
 class Create extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('create', $this);
-	}
+	protected $alias = 'create';
 
 	public function perform(lUser $user, $args = array())
 	{

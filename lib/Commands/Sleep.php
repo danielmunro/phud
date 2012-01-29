@@ -7,11 +7,8 @@ use \Mechanics\Alias,
 	
 class Sleep extends Command
 {
+	protected $alias = 'sleep';
 	protected $dispositions = [Actor::DISPOSITION_SLEEPING];
-	protected function __construct()
-	{
-		self::addAlias('sleep', $this);
-	}
 
 	public function perform(Actor $actor, $args = array())
 	{

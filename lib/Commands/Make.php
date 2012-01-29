@@ -8,11 +8,7 @@ use \Mechanics\Alias,
 
 class Make extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('make', $this);
-	}
+	protected $alias = 'make';
 
 	public function perform(lUser $user, $args = array())
 	{

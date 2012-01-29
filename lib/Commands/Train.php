@@ -1,18 +1,14 @@
 <?php
 namespace Commands;
-use \Mechanics\Command\Command,
+use \Mechanics\Command\User as cUser,
 	\Living\Trainer,
 	\Mechanics\Actor,
 	\Mechanics\Server;
 
-class Train extends Command
+class Train extends cUser
 {
+	protected $alias = 'train';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
-
-	protected function __construct()
-	{
-		self::addAlias('train', $this);
-	}
 
 	public function perform(Actor $actor, $args = [])
 	{

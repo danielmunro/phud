@@ -9,10 +9,7 @@ use \Mechanics\Alias,
 
 class Spell extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('spell', $this);
-	}
+	protected $alias = 'spell';
 
 	public function perform(lUser $user, $args = array())
 	{

@@ -9,11 +9,7 @@ use \Living\User;
 
 class Door extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('door', $this);
-	}
+	protected $alias = 'door';
 
 	public function perform(User $user, $args = array())
 	{

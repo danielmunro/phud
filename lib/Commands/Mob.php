@@ -14,10 +14,7 @@ use \Mechanics\Server,
 
 class Mob extends DM
 {
-	protected function __construct()
-	{
-		self::addAlias('mob', $this);
-	}
+	protected $alias = 'mob';
 
 	public function perform(lUser $user, $args = array())
 	{

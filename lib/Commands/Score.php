@@ -8,10 +8,7 @@ use \Mechanics\Alias,
 
 class Score extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('score', $this);
-	}
+	protected $alias = 'score';
 
 	public function perform(lUser $user, $args = array())
 	{

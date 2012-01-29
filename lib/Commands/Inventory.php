@@ -7,10 +7,7 @@ use \Mechanics\Alias,
 
 class Inventory extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('inventory', $this);
-	}
+	protected $alias = 'inventory';
 
 	public function perform(lUser $user, $args = array())
 	{

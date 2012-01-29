@@ -10,11 +10,7 @@ use \Mechanics\Server,
 
 class Shopkeeper extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('shopkeeper', $this);
-	}
+	protected $alias = 'shopkeeper';
 
 	public function perform(lUser $user, $args = array())
 	{

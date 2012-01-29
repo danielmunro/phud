@@ -12,11 +12,7 @@ use \Mechanics\Alias,
 
 class Item extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('item', $this);
-	}
+	protected $alias = 'item';
 
 	public function perform(lUser $user, $args = array())
 	{

@@ -8,17 +8,14 @@ use \Mechanics\Actor,
 
 class Remove extends Command
 {
-
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
-
-	protected function __construct()
-	{
-		self::addAlias('remove', $this);
-	}
+	protected $alias = 'remove';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING
+	];
 
 	public function perform(Actor $actor, $args = array())
 	{
-	
 		$equipment = $actor->getEquipped()->getItemByInput($args);
 		
 		if($equipment instanceof Equipment)

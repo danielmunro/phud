@@ -12,13 +12,11 @@ use \Mechanics\Alias,
 
 class Quest extends User
 {
-
-	protected $dispositions = array(Actor::DISPOSITION_STANDING, Actor::DISPOSITION_SITTING);
-
-	protected function __construct()
-	{
-		self::addAlias('quest', $this);
-	}
+	protected $alias = 'quest';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING
+	];
 
 	public function perform(lUser $user, $args = array())
 	{

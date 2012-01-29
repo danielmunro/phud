@@ -8,11 +8,7 @@ use \Mechanics\Alias,
 
 class Grant extends DM
 {
-
-	protected function __construct()
-	{
-		self::addAlias('grant', $this);
-	}
+	protected $alias = 'grant';
 
 	public function perform(User $user, $args = array())
 	{

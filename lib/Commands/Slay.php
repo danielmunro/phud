@@ -9,10 +9,7 @@ use \Mechanics\Server,
 
 class Slay extends DM
 {
-	protected function __construct()
-	{
-		self::addAlias('slay', $this);
-	}
+	protected $alias = 'slay';
 
 	public function perform(lUser $user, $args = array())
 	{

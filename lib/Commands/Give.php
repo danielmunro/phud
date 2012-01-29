@@ -9,15 +9,11 @@ use \Mechanics\Alias,
 
 class Give extends Command
 {
+	protected $alias = 'give';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
-
-	protected function __construct()
-	{
-		self::addAlias('give', $this);
-	}
 
 	public function perform(Actor $actor, $args = [])
 	{

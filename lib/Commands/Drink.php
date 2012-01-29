@@ -6,20 +6,16 @@ use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Item as mItem,
 	\Items\Drink as iDrink,
-	\Mechanics\Command\Command;
+	\Mechanics\Command\User as cUser;
 
-class Drink extends Command
+class Drink extends cUser
 {
 
+	protected $alias = 'drink';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
-
-	protected function __construct()
-	{
-		self::addAlias('drink', $this);
-	}
 	
 	public function perform(Actor $actor, $args = [])
 	{

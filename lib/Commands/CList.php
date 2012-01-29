@@ -9,17 +9,13 @@ use \Mechanics\Alias,
 
 class CList extends cUser
 {
+	protected $alias = 'list';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
 
-	protected function __construct()
-	{
-		self::addAlias('list', $this);
-	}
-
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
 		if(sizeof($args) == 3) {
 			$target = $user->getRoom()->getActorByInput($args);

@@ -12,16 +12,11 @@ use \Mechanics\Alias,
 
 class Look extends User
 {
-	
+	protected $alias = 'look';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
-	
-	protected function __construct()
-	{
-		self::addAlias('look', $this);
-	}
 	
 	public function perform(lUser $user, $args = array())
 	{

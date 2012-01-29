@@ -8,12 +8,8 @@ use \Mechanics\Alias,
 
 class Wear extends Command
 {
-	protected $dispositions = array(Actor::DISPOSITION_STANDING);
-
-	protected function __construct()
-	{
-		self::addAlias('wear', $this);
-	}
+	protected $alias = 'wear';
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
 	public function perform(Actor $actor, $args = [])
 	{

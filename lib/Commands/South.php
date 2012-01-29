@@ -5,10 +5,7 @@ use \Mechanics\Alias,
 
 class South extends Move_Direction
 {
-	protected function __construct()
-	{
-		self::addAlias('south', $this, 11);
-	}
+	protected $alias = ['south', 11];
 
 	public function perform(Actor $actor, $args = [])
 	{

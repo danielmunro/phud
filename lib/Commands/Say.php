@@ -7,11 +7,7 @@ use \Mechanics\Alias,
 
 class Say extends Command
 {
-
-	protected function __construct()
-	{
-		self::addAlias('say', $this);
-	}
+	protected $alias = 'say';
 
 	public function perform(Actor $actor, $args = array())
 	{

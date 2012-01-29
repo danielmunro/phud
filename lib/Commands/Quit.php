@@ -7,10 +7,7 @@ use \Mechanics\Alias,
 	\Living\User as lUser;
 class Quit extends User
 {
-	protected function __construct()
-	{
-		self::addAlias('quit', $this);
-	}
+	protected $alias = 'quit';
 	
 	public function perform(lUser $user, $args = array())
 	{
