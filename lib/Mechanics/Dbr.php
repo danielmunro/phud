@@ -4,7 +4,7 @@ class Dbr extends \Redis
 {
 	private static $instance = null;
 	
-	protected function __construct()
+	public function __construct()
 	{
 	}
 	
