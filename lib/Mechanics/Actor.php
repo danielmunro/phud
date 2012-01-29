@@ -713,7 +713,7 @@
 				return $this->target;
 			}
 
-			$specified_target = is_array($args) ? $this->getRoom()->getActorByInput($args) : $args;
+			$specified_target = is_array($args) ? $this->getRoom()->getActorByInput(array_slice($args, -1)[0]) : $args;
 
 			if(empty($this->target)) {
 				if(empty($specified_target)) {
