@@ -157,7 +157,6 @@ new Room([
 		new Shopkeeper([
 			'alias' => 'Mardwyn',
 			'nouns' => 'mardwyn clerk',
-			'short' => 'Mardwyn, the general store clerk',
 			'long' => 'A small gnomish man fidgets before you.',
 			'race' => 'elf',
 			'sex' => Actor::SEX_MALE,
@@ -351,27 +350,9 @@ new Room([
 	'description' => 'A meandering path leads from fields to the east into a dark forest to the west.',
 	'area' => 'dark forest',
 	'east' => 23,
-	'south' => 25
+	'west' => 'goblinforest0'
 ]);
 
-new Room([
-	'id' => 25,
-	'title' => 'The Dark Forest',
-	'description' => '',
-	'area' => 'dark forest',
-	'north' => 24,
-	'south' => 26,
-	'items' => [
-		new Item([
-			'short' => 'a wooden sign',
-			'long' => "A wooden sign is on the side of the path. It reads,\n".
-						"\"Beyond this point is infested with spiders. Continue at your own risk.\"",
-			'nouns' => 'wooden sign',
-			'material' => Item::MATERIAL_WOOD,
-			'can_own' => false
-		])
-	]
-]);
 
 Room::setStartRoom(1);
 
