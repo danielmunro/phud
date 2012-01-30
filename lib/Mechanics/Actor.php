@@ -738,23 +738,29 @@ abstract class Actor
 		$corpse->addCopper($copper);
 
 		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
-		$r = round(rand(0, 3));
-		if($r > 1) {
-			$parts = [
-				['brains', "'s brains splash all over you!"],
-				['guts', ' spills '.$this->getDisplaySex().' guts all over the floor.'],
-				['heart', "'s heart is torn from ".$this->getDisplaySex(). " chest."]
-					];
-			$r = round(rand(0, sizeof($parts)-1));
+		if(Server::chance() < 25) {
+			$parts = $this->race['lookup']->getParts();
+			$custom_message = [
+				['brains' => ucfirst($this)."'s brains splash all over you!"],
+				['guts' => ucfirst($this).' spills '.$this->getDisplaySex().' guts all over the floor.'],
+				['heart' => ucfirst($this)."'s heart is torn from ".$this->getDisplaySex(). " chest."]
+			];
+			$k = array_rand($parts);
+			if(isset($custom_message[$parts[$k]])) {
+				$message = $custom_message[$parts[$k]];
+			} else {
+				$message = ucfirst($this)."'s ".$parts[$k].' is sliced from '.$this->getDisplaySex().' body.';
+			}
+			$this->getRoom()->announce2([
+				['actor' => '*', 'message' => $message]
+			]);
 			$meat = new Food();
-			$meat->setShort('the '.$parts[$r][0].' of '.$this);
-			$meat->setLong('The '.$parts[$r][0].' of '.$this.' is here.');
-			$meat->setNourishment(1);
+			$meat->setShort('the '.$parts[$k].' of '.$this);
+			$meat->setLong('The '.$parts[$k].' of '.$this.' is here.');
+			$meat->setNourishment(5);
 			$this->getRoom()->addItem($meat);
-			Server::out($killer, ucfirst($this).$parts[$r][1]);
 		}
 		$this->getRoom()->addItem($corpse);
-
 		if($killer instanceof User) {
 			Server::out($killer, "\n".$killer->prompt(), false);
 		}

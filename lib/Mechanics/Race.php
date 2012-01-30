@@ -93,7 +93,7 @@ abstract class Race
 		return $this->proficiencies;
 	}
 
-	public static function getParts()
+	public function getParts()
 	{
 		return $this->parts;
 	}
