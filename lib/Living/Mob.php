@@ -52,6 +52,14 @@ class Mob extends Actor
 		}
 	}
 
+	public function setRoom(Room $room)
+	{
+		parent::setRoom($room);
+		if(empty($this->start_room_id)) {
+			$this->start_room_id = $this->room->getID();
+		}
+	}
+
 	public function getPath()
 	{
 		return $this->path;
