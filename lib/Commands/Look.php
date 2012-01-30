@@ -79,8 +79,8 @@ class Look extends User
 		if(empty($target))
 			$target = $user->getItemByInput($looking);
 		
-		if(!empty($target))
-			return Server::out($user, $target->lookDescribe());
+		if(!empty($target) && method_exists($target, 'getLong'))
+			return Server::out($user, $target->getLong());
 		
 		// Direction
 		if(strpos($args[1], 'n') === 0)

@@ -13,10 +13,9 @@ class Container extends Item
 	protected $nouns = 'generic container';
 	private $inventory = null;
 
-	public function lookDescribe()
+	public function getLong()
 	{
-		return $this->long . "\n" . $this->displayContents();
-	
+		return parent::getLong()."\n".$this->displayContents();
 	}
 }
 ?>

@@ -416,7 +416,7 @@ abstract class Actor
 
 	public function getLong()
 	{
-		return $this->long;
+		return $this->long ? $this->long : 'You see nothing special about '.$this->getDisplaySex([self::SEX_MALE => 'him', self::SEX_FEMALE => 'her', self::SEX_NEUTRAL => 'it']).'.';
 	}
 
 	public function setLong($long)
@@ -530,17 +530,6 @@ abstract class Actor
 	public function getLevel()
 	{
 		return $this->level;
-	}
-
-	public function lookDescribe()
-	{
-		$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
-
-		if(!$this->long)
-			return 'You see nothing special about '.$this->getDisplaySex($sexes).'.';
-
-		return  $this->long . "\r\n" . 
-			ucfirst($this).'.';
 	}
 
 	public function getAttackSubscriber()

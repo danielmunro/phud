@@ -145,11 +145,6 @@ class Item
 		return $this->attributes->getAttribute($key);
 	}
 	
-	public function lookDescribe()
-	{
-		return $this->long;
-	}
-	
 	public function transferOwnership(Inventory $from, Inventory $to)
 	{
 		$from->remove($this);
