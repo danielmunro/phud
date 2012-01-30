@@ -757,6 +757,7 @@ abstract class Actor
 			$meat = new Food();
 			$meat->setShort('the '.$parts[$k].' of '.$this);
 			$meat->setLong('The '.$parts[$k].' of '.$this.' is here.');
+			$meat->setNouns($parts[$k].' '.$nouns);
 			$meat->setNourishment(5);
 			$this->getRoom()->addItem($meat);
 		}
