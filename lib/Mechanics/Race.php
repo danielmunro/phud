@@ -93,16 +93,9 @@ abstract class Race
 		return $this->proficiencies;
 	}
 
-	public static function getParts(Actor $actor)
+	public static function getParts()
 	{
-		// @todo finish parts... this can wait for other more important things
-		$parts = array
-		(
-			self::PART_HEAD => "'s severed head rolls to the floor",
-			self::PART_ARM => "'s arm is sliced from ",
-			self::PART_LEG => 'leg',
-			self::PART_HEART => 'heart'
-		);
+		return $this->parts;
 	}
 	
 	public function getAttributes()
