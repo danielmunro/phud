@@ -145,10 +145,10 @@ class Item
 		return $this->attributes->getAttribute($key);
 	}
 	
-	public function transferOwnership(Inventory $from, Inventory $to)
+	public function transferOwnership($from, $to)
 	{
-		$from->remove($this);
-		$to->add($this);
+		$from->removeItem($this);
+		$to->addItem($this);
 	}
 	
 	public static function getMaterials()

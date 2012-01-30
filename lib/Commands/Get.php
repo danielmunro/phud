@@ -16,63 +16,43 @@ class Get extends Command
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
-	
-		if(sizeof($args) === 2)
-		{
+		$s = sizeof($args);
+		if($s === 2) {
 			$item = $actor->getRoom()->getItemByInput($args[1]);
-			$container = $actor->getRoom();
+			if(!$item->getCanOwn()) {
+				return Server::out($actor, "You cannot pick that up.");
+			}
+			$actor->getRoom()->removeItem($item);
+			$actor->addItem($item);
+			return Server::out($actor, 'You get '.$item.'.');
 		}
-		else
-		{
-			
-			array_shift($args);
-			
+		else if($s > 2) {
 			// getting something from somewhere
-			$container = $actor->getRoom()->getContainerByInput($args);
-			if(!($container instanceof Container))
-				$container = $actor->getContainerByInput($args);
-			if(!($container instanceof Container))
+			$container = $actor->getRoom()->getContainerByInput($args[$s-1]);
+			if(!$container) {
+				$container = $actor->getContainerByInput($args[$s-1]);
+			}
+			if(!$container) {
 				return Server::out($actor, "Nothing is there.");
+			}
 			
-			if($args[0] == 'all')
-			{
-				foreach($container->getItems() as $item)
-				{
+			if($args[1] == 'all') {
+				foreach($container->getItems() as $item) {
 					$item->transferOwnership($container, $actor);
 					Server::out($actor, 'You get '.$item.' from '.$container.'.');
 				}
-				return;
+			} else {
+				$item = $container->getItemByInput(implode(' ', array_slice($args, 1, $s-2)));
+				if($item) {
+					$item->transferOwnership($container, $actor);
+					Server::out($actor, 'You get '.$item.' from '.$container.'.');
+				}
 			}
-			else
-			{
-			
-				$item = $container->getItemByInput(array('', $args[0]));
-			
-				if($item instanceof iItem)
-					$from = ' from ' . $container;
-				else
-					return Server::out($actor, "You see nothing like that.");
-			}
+			return;
 		}
-		
-		if($item instanceof mItem)
-		{
-			if(!$item->getCanOwn())
-				return Server::out($actor, "You cannot pick that up.");
-			
-			$container->removeItem($item);
-			$actor->addItem($item);
-			Server::out($actor, 'You get '.$item.(isset($from) ? $from : '') . '.');
-		}
-		else
-		{
-			Server::out($actor, 'You see nothing like that.');
-		}
-	
+		return Server::out($actor, "You see nothing like that.");
 	}
-
 }
-
 ?>

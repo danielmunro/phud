@@ -2,9 +2,10 @@
 namespace Commands;
 use \Mechanics\Alias,
 	\Mechanics\Actor,
+	\Mechanics\Server,
 	\Mechanics\Command\Command,
 	\Items\Container,
-	\Items\Item as iItem;
+	\Mechanics\Item as mItem;
 
 class Put extends Command
 {
@@ -14,21 +15,22 @@ class Put extends Command
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
+		$s = sizeof($args);
+		$item = $actor->getItemByInput(implode(' ', array_slice($args, 1, $s-2)));
 		
-		$item = $actor->getItemByInput($args);
-		
-		if(!($item instanceof iItem))
+		if(!($item instanceof mItem)) {
 			return Server::out($actor, "You don't appear to have that.");
+		}
 		
-		array_shift($args);
-		
-		$target = $actor->getContainerByInput($args);
-		if(!($target instanceof Container))
-			$target = $actor->getRoom()->getContainerByInput($args);
-		if(!($target instanceof Container))
+		$target = $actor->getContainerByInput($args[$s-1]);
+		if(!($target instanceof Container)) {
+			$target = $actor->getRoom()->getContainerByInput($args[$s-1]);
+		}
+		if(!($target instanceof Container)) {
 			return Server::out($actor, "You don't have anything to put that in.");
+		}
 		
 		$item->transferOwnership($actor, $target);
 		
