@@ -13,6 +13,7 @@ class Bash extends Skill
 	protected $required_proficiency = 20;
 	protected $easy_modifier = ['str'];
 	protected $needs_target = true;
+	protected $is_offensive = true;
 
 	public function getSubscriber()
 	{

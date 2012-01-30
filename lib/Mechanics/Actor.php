@@ -367,6 +367,9 @@ abstract class Actor
 	public function setTarget(Actor $target = null)
 	{
 		$this->target = $target;
+		if($this->target) {
+			Server::instance()->addSubscriber($this->getAttackSubscriber());
+		}
 	}
 
 	public function getProficiencyIn($proficiency)
@@ -700,7 +703,7 @@ abstract class Actor
 			if($this === $specified_target) {
 				return Server::out($this, "You can't target yourself!");
 			}
-			$this->target = $specified_target;
+			$this->setTarget($specified_target);
 		} else if(!empty($specified_target) && $this->target !== $specified_target) {
 			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
 		}

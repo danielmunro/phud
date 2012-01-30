@@ -12,6 +12,7 @@ class Backstab extends Skill
 	protected $required_proficiency = 20;
 	protected $hard_modifier = ['dex'];
 	protected $needs_target = true;
+	protected $is_offensive = true;
 
 	public function getSubscriber()
 	{

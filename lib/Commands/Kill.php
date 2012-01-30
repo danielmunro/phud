@@ -21,7 +21,6 @@ class Kill extends Command
 		$actor->getTarget()->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
 		if(!$command_subscriber->isSuppressed()) {
 			Server::out($actor, "You scream and attack!");
-			Server::instance()->addSubscriber($actor->getAttackSubscriber());
 		}
 	}
 }

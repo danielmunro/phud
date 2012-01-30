@@ -20,6 +20,7 @@ abstract class Ability
 	protected $normal_modifier = [];
 	protected $needs_target = false;
 	protected $alias = '';
+	protected $is_offensive = false;
 	
 	protected function __construct()
 	{
@@ -66,6 +67,10 @@ abstract class Ability
 		}
 		if(!$target) {
 			$target = $actor;
+		}
+		if($this->is_offensive && $actor != $target) {
+			$actor->setTarget($target);
+			$target->setTarget($actor);
 		}
 		// check if actor satisfies requirements as far as mana, mv, etc
 		if($this->applyCost($actor) === false) {
