@@ -24,9 +24,9 @@ abstract class Race
 	protected $playable = false;
 	protected $alias = null;
 	protected $proficiencies = [];
-	protected $thirst = 2;
-	protected $hunger = 2;
-	protected $full = 4;
+	protected $thirst = 20;
+	protected $hunger = 20;
+	protected $full = 40;
 	protected $movement_cost = 1;
 	protected $form = self::FORM_HUMANOID;
 	protected $parts = ['head', 'arm', 'leg', 'heart', 'brain', 'guts', 'hand', 'foot', 'finger', 'ear', 'eye', 'long tongue', 'tentacles', 'fins', 'wings', 'tail'];

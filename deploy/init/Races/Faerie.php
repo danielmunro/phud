@@ -10,6 +10,9 @@ class Faerie extends Race
 	protected $unarmed_verb = 'slap';
 	protected $size = self::SIZE_TINY;
 	protected $playable = true;
+	protected $thirst = 30;
+	protected $hunger = 30;
+	protected $full = 60;
 	protected $proficiencies = [
 		'healing' => 5,
 		'alchemy' => 5,

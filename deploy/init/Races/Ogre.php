@@ -13,9 +13,9 @@ class Ogre extends Race
 {
 	protected $alias = 'ogre';
 	protected $movement_cost = 2;
-	protected $full = 2;
-	protected $hunger = 4;
-	protected $thirst = 2;
+	protected $full = 30;
+	protected $hunger = 15;
+	protected $thirst = 15;
 	protected $unarmed_verb = 'pummel';
 	protected $size = self::SIZE_LARGE;
 	protected $playable = true;

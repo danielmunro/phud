@@ -9,8 +9,6 @@ use \Mechanics\Alias,
 class Undead extends Race
 {
 	protected $alias = 'undead';
-	protected $full = 5;
-	protected $hunger = 3;
 	protected $movement_cost = 2;
 	protected $unarmed_verb = 'swipe';
 	protected $move_verb = 'limps';

@@ -13,9 +13,9 @@ class Giant extends Race
 {
 	protected $alias = 'giant';
 	protected $movement_cost = 2;
-	protected $full = 2;
-	protected $hunger = 4;
-	protected $thirst = 3;
+	protected $full = 30;
+	protected $hunger = 15;
+	protected $thirst = 15;
 	protected $unarmed_verb = 'pummel';
 	protected $size = self::SIZE_GIGANTIC;
 	protected $playable = true;
