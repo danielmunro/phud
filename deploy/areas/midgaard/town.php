@@ -68,14 +68,12 @@ new Room([
 			'race' => 'elf',
 			'items' => [
 				new Food([
-					'alias' => 'a baked apple pie',
 					'short' => 'a baked apple pie',
 					'nouns' => 'baked apple pie',
 					'nourishment' => 1,
 					'value' => 5
 				]),
 				new Food([
-					'alias' => 'a big pot pie',
 					'short' => 'a big pot pie',
 					'nouns' => 'pot pie',
 					'nourishment' => 2,
