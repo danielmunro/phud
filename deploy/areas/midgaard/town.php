@@ -64,7 +64,6 @@ new Room([
 		new Shopkeeper([
 			'alias' => 'Anyan',
 			'nouns' => 'anyan baker',
-			'short' => 'Anyan, the town baker',
 			'long' => 'An old and wirey elf stands before you.',
 			'race' => 'elf',
 			'items' => [
@@ -107,7 +106,6 @@ new Room([
 	'actors' => [
 		new Shopkeeper([
 			'alias' => 'Halek',
-			'short' => 'Halek, the blacksmith',
 			'nouns' => 'blacksmith halek',
 			'race' => 'human',
 			'long' => 'A tall and lean blacksmith stands before you.',

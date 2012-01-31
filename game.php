@@ -26,7 +26,8 @@ $s->run();
 // autoloader
 function __autoload($class) {
 	$path = 'lib/'.str_replace("\\", "/", $class).".php";
-	if(file_exists($path))
+	if(file_exists($path)) {
 		require_once($path);
+	}
 }
 ?>

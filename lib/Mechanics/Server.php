@@ -191,11 +191,12 @@ class Server
 	{
 		// Take the user out of its room
 		$user = $client->getUser();
-		if($user && $user->getRoom()) {
-			$user->getRoom()->actorRemove($user);
+		if($user) {
+			if($user->getRoom()) {
+				$user->getRoom()->actorRemove($user);
+			}
+			$this->removeSubscriber($user->getSubscriberTick());
 		}
-
-		$this->removeSubscriber($user->getSubscriberTick());
 		
 		// clean out the client
 		socket_close($client->getSocket());
