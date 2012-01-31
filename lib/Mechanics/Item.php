@@ -2,7 +2,7 @@
 namespace Mechanics;
 class Item
 {
-	use Affectable;
+	use Affectable, EasyInit;
 
 	protected $short = 'a generic item';
 	protected $long = 'A generic item lays here';
@@ -45,14 +45,8 @@ class Item
 	
 	public function __construct($properties = [])
 	{
-		foreach($properties as $property => $value) {
-			if(property_exists($this, $property)) {
-				$this->$property = $value;
-			}
-		}
-		if(empty($this->attributes)) {
-			$this->attributes = new Attributes();
-		}
+		$this->attributes = new Attributes();
+		$this->initializeProperties($properties);
 	}
 	
 	public function setShort($short)

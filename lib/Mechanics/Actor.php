@@ -11,7 +11,7 @@ use \Mechanics\Ability\Ability,
 
 abstract class Actor
 {
-	use Affectable, Broadcaster, Inventory, Usable;
+	use Affectable, Broadcaster, Inventory, Usable, EasyInit;
 
 	const MAX_LEVEL = 51;
 	
@@ -33,7 +33,7 @@ abstract class Actor
 	protected $copper = 0;
 	protected $sex = self::SEX_NEUTRAL;
 	protected $disposition = self::DISPOSITION_STANDING;
-	protected $race = '';
+	protected $race = 'critter';
 	protected $room = null;
 	protected $equipped = null;
 	protected $alignment = 0;
@@ -73,50 +73,43 @@ abstract class Actor
 	public function __construct($properties = [])
 	{
 		$this->attributes = new Attributes([
-				'str' => 15,
-				'int' => 15,
-				'wis' => 15,
-				'dex' => 15,
-				'con' => 15,
-				'cha' => 15,
-				'hp' => 20,
-				'mana' => 100,
-				'movement' => 100,
-				'ac_bash' => 100,
-				'ac_slash' => 100,
-				'ac_pierce' => 100,
-				'ac_magic' => 100,
-				'hit' => 1,
-				'dam' => 1,
-				'saves' => 100
-				]);
-		$this->equipped = new Equipped($this);
-		foreach($properties as $property => $value) {
-			if(property_exists($this, $property)) {
-				if($property === 'attributes') {
-					foreach($value as $a => $v) {
-						$this->attributes->setAttribute($a, $v);
-					}
-				} else {
-					$this->$property = $value;
+			'str' => 15,
+			'int' => 15,
+			'wis' => 15,
+			'dex' => 15,
+			'con' => 15,
+			'cha' => 15,
+			'hp' => 20,
+			'mana' => 100,
+			'movement' => 100,
+			'ac_bash' => 100,
+			'ac_slash' => 100,
+			'ac_pierce' => 100,
+			'ac_magic' => 100,
+			'hit' => 1,
+			'dam' => 1,
+			'saves' => 100
+		]);
+		$this->initializeProperties($properties, [
+			'attributes' => function($actor, $property, $value) {
+				foreach($value as $attr => $attr_value) {
+					$actor->getAttributes()->setAttribute($attr, $attr_value);
 				}
 			}
-		}
+		]);
 		$this->max_attributes = new Attributes([
-				'str' => $this->attributes->getAttribute('str') + 4,
-				'int' => $this->attributes->getAttribute('int') + 4,
-				'wis' => $this->attributes->getAttribute('wis') + 4,
-				'dex' => $this->attributes->getAttribute('dex') + 4,
-				'con' => $this->attributes->getAttribute('con') + 4,
-				'cha' => $this->attributes->getAttribute('cha') + 4,
-				'hp' => $this->attributes->getAttribute('hp'),
-				'mana' => $this->attributes->getAttribute('mana'),
-				'movement' => $this->attributes->getAttribute('movement')
-				]);
-		if(empty($this->race)) {
-			$this->race = 'critter';
-		}
+			'str' => $this->attributes->getAttribute('str') + 4,
+			'int' => $this->attributes->getAttribute('int') + 4,
+			'wis' => $this->attributes->getAttribute('wis') + 4,
+			'dex' => $this->attributes->getAttribute('dex') + 4,
+			'con' => $this->attributes->getAttribute('con') + 4,
+			'cha' => $this->attributes->getAttribute('cha') + 4,
+			'hp' => $this->attributes->getAttribute('hp'),
+			'mana' => $this->attributes->getAttribute('mana'),
+			'movement' => $this->attributes->getAttribute('movement')
+		]);
 		$this->setRace(Race::lookup($this->race));
+		$this->equipped = new Equipped($this);
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -199,6 +192,11 @@ abstract class Actor
 		return $this->attributes->getAttribute($key);
 	}
 
+	public function getAttributes()
+	{
+		return $this->attributes;
+	}
+
 	public function getAttribute($key)
 	{
 		$n = $this->attributes->getAttribute($key);
@@ -261,79 +259,28 @@ abstract class Actor
 	// Money functions
 	///////////////////////////////////////////////////////////////////////////
 
-	public function getCopper()
+	private function isCurrency($currency)
 	{
-		return $this->copper;
-	}
-
-	public function getSilver()
-	{
-		return $this->silver;
-	}
-
-	public function getGold()
-	{
-		return $this->gold;
+		return $currency === 'copper' || $currency === 'silver' || $currency === 'gold';
 	}
 
 	public function getCurrency($currency)
 	{
-		return $this->$currency;
+		if($this->isCurrency($currency)) {
+			return $this->$currency;
+		}
 	}
 
 	public function modifyCurrency($currency, $amount)
 	{
-		$this->$currency += $amount;
+		if($this->isCurrency($currency)) {
+			$this->$currency += $amount;
+		}
 	}
 
 	public function getWorth()
 	{
 		return $this->copper + ($this->silver * 100) + ($this->gold * 1000);
-	}
-
-	public function addCopper($amount)
-	{
-		$this->copper += abs($amount);
-	}
-
-	public function addSilver($amount)
-	{
-		$this->silver += abs($amount);
-	}
-
-	public function addGold($amount)
-	{
-		$this->gold += abs($amount);
-	}
-
-	public function removeCopper($amount)
-	{
-		$amount = abs($amount);
-		if($amount > $this->copper) {
-			return false;
-		}
-		$this->copper -= abs($amount);
-		return true;
-	}
-
-	public function removeSilver($amount)
-	{
-		$amount = abs($amount);
-		if($amount > $this->silver) {
-			return false;
-		}
-		$this->silver -= abs($amount);
-		return true;
-	}
-
-	public function removeGold($amount)
-	{
-		$amount = abs($amount);
-		if($amount > $this->gold) {
-			return false;
-		}
-		$this->gold -= abs($amount);
-		return true;
 	}
 
 	public function decreaseFunds($copper)
@@ -401,12 +348,9 @@ abstract class Actor
 		$this->disposition = $disposition;
 	}
 
-	public function getAlias($upper = null)
+	public function getAlias()
 	{
-		if($upper === null)
-			return $this instanceof User ? ucfirst($this->alias) : $this->alias;
-		else
-			return $upper ? ucfirst($this->alias) : $this->alias;
+		return $this->alias;
 	}
 
 	public function setAlias($alias)
@@ -449,9 +393,7 @@ abstract class Actor
 	{
 		if($sex === self::SEX_FEMALE || $sex === self::SEX_MALE || $sex === self::SEX_NEUTRAL) {
 			$this->sex = $sex;
-			return true;
 		}
-		return false;
 	}
 
 	public function setRoom(Room $room)
@@ -595,9 +537,7 @@ abstract class Actor
 
 		$victim_target = $victim->getTarget();
 		if(!$victim_target) {
-			if($victim->reconcileTarget($this) === $this) {
-				Server::instance()->addSubscriber($victim->getAttackSubscriber());
-			}
+			$victim_target->setTarget($this);
 		}
 
 		$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
@@ -617,7 +557,6 @@ abstract class Actor
 		// ATTACKING
 		$hit_roll = $this->getAttribute('hit');
 		$dam_roll = $this->getAttribute('dam');
-
 		$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
 
 		// DEFENDING
@@ -717,25 +656,17 @@ abstract class Actor
 		$silver = round($this->silver / 3);
 		$copper = round($this->copper / 3);
 
-		$corpse = new Corpse();
-		$corpse->setLong('A corpse of '.$this.' lies here.');
-		$corpse->setShort('a corpse of '.$this);
-		$nouns = property_exists($this, 'nouns') ? $this->nouns : $this;
-		$corpse->setNouns('corpse '.$nouns);
-		$corpse->setWeight(100);
-		$corpse->transferItemsFrom($this);
-
-		$killer->addGold($gold);
-		$killer->addSilver($silver);
-		$killer->addCopper($copper);
+		$killer->modifyCurrency('gold', $gold);
+		$killer->modifyCurrency('silver', $silver);
+		$killer->modifyCurrency('copper', $copper);
 
 		$this->gold = $gold;
 		$this->silver = $silver;
 		$this->copper = $copper;
 
-		$corpse->addGold($gold);
-		$corpse->addSilver($silver);
-		$corpse->addCopper($copper);
+		$corpse->modifyCurrency('gold', $gold);
+		$corpse->modifyCurrency('silver', $silver);
+		$corpse->modifyCurrency('copper', $copper);
 
 		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
 		if(Server::chance() < 25) {
@@ -754,13 +685,20 @@ abstract class Actor
 			$this->getRoom()->announce2([
 				['actor' => '*', 'message' => $message]
 			]);
-			$meat = new Food();
-			$meat->setShort('the '.$parts[$k].' of '.$this);
-			$meat->setLong('The '.$parts[$k].' of '.$this.' is here.');
-			$meat->setNouns($parts[$k].' '.$nouns);
-			$meat->setNourishment(5);
-			$this->getRoom()->addItem($meat);
+			$this->getRoom()->addItem(new Food([
+				'short' => 'the '.$parts[$k].' of '.$this,
+				'long' => 'The '.$parts[$k].' of '.$this.' is here.',
+				'nouns' => $parts[$k].' '.$nouns,
+				'nourishment' => 5
+			]));
 		}
+		$corpse = new Corpse([
+			'short' => 'a corpse of '.$this,
+			'long' => 'A corpse of '.$this.' lies here.',
+			'nouns' => 'corpse '.(property_exists($this, 'nouns') ? $this->nouns : $this),
+			'weight' => 100
+		]);
+		$corpse->transferItemsFrom($this);
 		$this->getRoom()->addItem($corpse);
 		if($killer instanceof User) {
 			Server::out($killer, "\n".$killer->prompt(), false);
@@ -778,7 +716,6 @@ abstract class Actor
 	public function applyExperienceFrom(Actor $victim)
 	{
 		if(!$this->experience_per_level) {
-			// Mobs have 0 exp per level
 			return 0;
 		}
 
@@ -867,31 +804,9 @@ abstract class Actor
 		return $this->experience_per_level; 
 	}
 	
-	public function setExperiencePerLevel($xp = 0)
-	{
-		if($xp < 1)
-			$xp = $this->getExperiencePerLevelFromCP();
-		$this->experience_per_level = $xp;
-	}
-	
-	public function getExperiencePerLevelFromCP()
-	{
-		$cp = $this->getCreationPoints();
-	
-		if($cp < 30)
-			return 1000;
-	
-		$base_mod = 100;
-		if($cp < 99)
-			return $cp * $base_mod;
-		
-		$upper_mod = 200;
-		return (100 * $base_mod) + ($cp - 100 * $upper_mod);
-	}
-	
 	public function __toString()
 	{
-		return $this->getAlias();
+		return $this->alias;
 	}
 }
 ?>

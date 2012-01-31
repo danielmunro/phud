@@ -6,7 +6,7 @@ use \Mechanics\Event\Subscriber,
 
 class Room
 {
-	use Usable, Inventory;
+	use Usable, Inventory, EasyInit;
 
 	protected static $instances = [];
 	protected $id = '';
@@ -32,19 +32,13 @@ class Room
 	public function __construct($properties = [])
 	{
 		$this->_subscriber_movement = $this->getMovementSubscriber();
-		foreach($properties as $property => $value) {
-			if(property_exists($this, $property)) {
-				if($property === 'actors' && is_array($value)) {
-					foreach($value as $actor) {
-						$actor->setRoom($this);
-					}
-				} else {
-					$this->$property = $value;
+		$this->initializeProperties($properties, [
+			'actors' => function($room, $property, $value) {
+				foreach($value as $actor) {
+					$actor->setRoom($room);
 				}
-			} else {
-				throw new Exception($this.' does not have any such property: '.$property);
 			}
-		}
+		]);
 		if(empty($this->id) || isset(self::$instances[$this->id])) {
 			throw new Exception('Room id is empty or already used: '.$this->id);
 		}
