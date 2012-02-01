@@ -113,7 +113,7 @@ class Client
 		if($user_status === true)
 		{
 			Server::out($this, "\n".$this->user->prompt(), false);
-			Debug::addDebugLine($this->user->getAlias()." logged in");
+			Debug::log($this->user->getAlias()." logged in");
 		}
 		else if($user_status === false)
 		{

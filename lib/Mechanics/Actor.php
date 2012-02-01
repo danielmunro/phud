@@ -322,7 +322,7 @@ abstract class Actor
 	public function getProficiencyIn($proficiency)
 	{
 		if(!isset($this->proficiencies[$proficiency])) {
-			Debug::addDebugLine("Error, proficiency not defined: ".$proficiency);
+			Debug::log("Error, proficiency not defined: ".$proficiency);
 			$this->proficiencies[$proficiency] = 15;
 		}
 		return $this->proficiencies[$proficiency];
@@ -458,7 +458,7 @@ abstract class Actor
 
 	public function levelUp()
 	{
-		Debug::addDebugLine($this.' levels up.');
+		Debug::log($this.' levels up.');
 		$this->level++;
 		$this->trains++;
 		$this->practices += ceil($this->getWis() / 5);
@@ -643,7 +643,7 @@ abstract class Actor
 		$this->setTarget(null);
 		$killer->setTarget(null);
 
-		Debug::addDebugLine(ucfirst($killer).' killed '.$this.".");
+		Debug::log(ucfirst($killer).' killed '.$this.".");
 		Server::out($killer, 'You have KILLED '.$this.'.');
 		$killer->applyExperienceFrom($this);
 
@@ -697,7 +697,10 @@ abstract class Actor
 			'silver' => $silver,
 			'gold' => $gold
 		]);
-		$corpse->transferItemsFrom($this);
+		foreach($this->items as $i) {
+			$this->removeItem($i);
+			$corpse->addItem($i);
+		}
 		$this->getRoom()->addItem($corpse);
 		if($killer instanceof User) {
 			Server::out($killer, "\n".$killer->prompt(), false);
@@ -708,7 +711,7 @@ abstract class Actor
 
 	protected function handleDeath()
 	{
-		Debug::addDebugLine(ucfirst($this).' died.');
+		Debug::log(ucfirst($this).' died.');
 		Server::out($this, 'You have been KILLED!');
 	}
 
@@ -718,7 +721,7 @@ abstract class Actor
 			return 0;
 		}
 
-		Debug::addDebugLine("Applying experience from ".$victim." to ".$this.".");
+		Debug::log("Applying experience from ".$victim." to ".$this.".");
 		if($this->experience < $this->experience_per_level) {
 			$experience = $victim->getKillExperience($this);
 			$this->experience += $experience;

@@ -15,7 +15,7 @@ class Debug
 		fclose($fp);
 	}
 	
-	public static function addDebugLine($msg, $new_line = true)
+	public static function log($msg, $new_line = true)
 	{
 		if(!self::$enabled)
 			return;

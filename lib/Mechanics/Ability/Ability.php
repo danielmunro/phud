@@ -48,7 +48,7 @@ abstract class Ability
 			$d = dir(dirname(__FILE__) . '/../../../deploy/init/'.$namespace);
 			while($ability = $d->read()) {
 				if(substr($ability, -4) === ".php") {
-					Debug::addDebugLine("init ability: ".$ability);
+					Debug::log("init ability: ".$ability);
 					$class = substr($ability, 0, strpos($ability, '.'));
 					$called_class = $namespace.'\\'.$class;
 					$reflection = new ReflectionClass($called_class);

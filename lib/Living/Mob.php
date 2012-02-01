@@ -143,7 +143,7 @@ class Mob extends Actor
 					$direction = Room::getReverseDirection($this->path[$this->path_index]);
 				}
 			}
-			Debug::addDebugLine($this.' is moving, path index: '.$this->path_index.', direction: '.$direction);
+			Debug::log($this.' is moving, path index: '.$this->path_index.', direction: '.$direction);
 			foreach($directions as $alias => $d) {
 				if(strpos($alias, $direction) === 0) {
 					$directions = [$direction => $d];

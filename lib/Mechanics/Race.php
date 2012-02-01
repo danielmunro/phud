@@ -81,7 +81,7 @@ abstract class Race
 		while($race = $d->read())
 			if(substr($race, -4) === ".php")
 			{
-				Debug::addDebugLine("init race: ".$race);
+				Debug::log("init race: ".$race);
 				$class = substr($race, 0, strpos($race, '.'));
 				$called_class = $namespace.'\\'.$class;
 				new $called_class();
@@ -152,9 +152,7 @@ abstract class Race
 
 	public function __sleep()
 	{
-		return [
-			'alias'
-		];
+		return ['alias'];
 	}
 }
 ?>

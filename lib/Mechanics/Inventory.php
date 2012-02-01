@@ -60,14 +60,5 @@ trait Inventory
 		}
 		return trim($buffer);
 	}
-	
-	public function transferItemsFrom($inventory)
-	{
-		$items = $inventory->getItems();
-		foreach($items as $item) {
-			$inventory->removeItem($item);
-			$this->addItem($item);
-		}
-	}
 }
 ?>

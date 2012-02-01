@@ -152,17 +152,17 @@ class Room
 
 	public function actorAdd(Actor $actor)
 	{
-		Debug::addDebugLine($actor.' is arriving to '.$this.' ('.$this->getID().')');
+		Debug::log($actor.' is arriving to '.$this.' ('.$this->getID().')');
 		$this->actors[] = $actor;
 		$actor->addSubscriber($this->_subscriber_movement);
 	}
 
 	public function actorRemove(Actor $actor)
 	{
-		Debug::addDebugLine($actor.' is leaving '.$this.' ('.$this->getID().')');
+		Debug::log($actor.' is leaving '.$this.' ('.$this->getID().')');
 		$key = array_search($actor, $this->actors);
 		if($key === false) {
-			Debug::addDebugLine($actor.' is not here');
+			Debug::log($actor.' is not here');
 			return;
 		}
 		$actor->removeSubscriber($this->_subscriber_movement);

@@ -29,13 +29,13 @@ class Server
 		$this->readDeploy('/init/');
 
 		// Initialize these environment variables
-		Debug::addDebugLine("Initializing environment");
+		Debug::log("Initializing environment");
 		foreach([
 				'\Mechanics\Command\Command',
 				'\Mechanics\Race',
 				'\Mechanics\Ability\Ability'
 			] as $required) {
-			Debug::addDebugLine("initializing ".$required);
+			Debug::log("initializing ".$required);
 			$required::runInstantiation();
 		}
 
@@ -62,7 +62,7 @@ class Server
 		$d = dir(dirname(__FILE__).'/../../deploy'.$start);
 		while($cd = $d->read()) {
 			if(substr($cd, -4) === '.php') {
-				Debug::addDebugLine("init deploy: ".$cd);
+				Debug::log("including deploy script: ".$cd);
 				$anon = new Anonymous();
 				$anon->_require_once($d->path.'/'.$cd);
 			} else if(strpos($cd, '.') === false) {
@@ -164,7 +164,7 @@ class Server
 			$bytes_written = socket_write($client->getSocket(), $data, strlen($data));
 
 			if($bytes_written === false) {
-				Debug::addDebugLine("Socket write error, client link dead");
+				Debug::log("Socket write error, client link dead");
 				return false;
 			}
 		}
@@ -205,7 +205,7 @@ class Server
 
 		// reindex arrays
 		$this->clients = array_values($this->clients);
-		Debug::addDebugLine($user." disconnected");
+		Debug::log($user." disconnected");
 	}
 	
 	public static function chance()

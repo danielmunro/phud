@@ -217,5 +217,4 @@ class Item
 		return $this->short;
 	}
 }
-
 ?>
