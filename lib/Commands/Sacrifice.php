@@ -28,22 +28,6 @@ class Sacrifice extends Command
 			$actor->addCopper($copper);
 			return;
 		}
-		else if($actor instanceof User && $actor->isDM())
-		{
-			$mob = $actor->getRoom()->getActorByInput($args[1]);
-			if($mob instanceof Mob)
-			{
-				$actor->getRoom()->actorRemove($mob);
-				return Server::out($actor, "You slay ".$mob." and eat its soul in the name of your gods.");
-			}
-			
-			$door = $actor->getRoom()->getDoorByInput($args[1]);
-			if($door instanceof Door)
-			{
-				$actor->getRoom()->removeDoor($door);
-				return Server::out($actor, ucfirst($door)." crumbles into dust and disappears into the wind.");
-			}
-		}
 		Server::out($actor, "You can't find that.");
 	}
 }
