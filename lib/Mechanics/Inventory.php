@@ -27,41 +27,37 @@ trait Inventory
 
 	public function getItemByInput($input)
 	{
-		return $this->getUsableNounByInput($this->items, $input);
+		return $this->getUsableByInput($this->items, $input);
 	}
 	
 	public function getContainerByInput($input)
 	{
-		$container = $this->getUsableNounByInput($this->items, $input);
+		$container = $this->getUsableByInput($this->items, $input);
 		return $container instanceof Container ? $container : null;
 	}
 	
 	public function displayContents($show_prices = false)
 	{
 		$buffer = '';
-		if(sizeof($this->items) > 0)
-		{
-			$items = array();
-			$prices = array();
-			
-			foreach($this->items as $item)
-			{
+		if(sizeof($this->items) > 0) {
+			$items = [];
+			$prices = [];
+			foreach($this->items as $item) {
 				if(!isset($items[$item->getShort()]))
 					$items[$item->getShort()] = 0;
 				$items[$item->getShort()] += 1;
 				$prices[$item->getShort()] = $item->getValue();
 			}
-			foreach($items as $key => $item)
-			{
+			foreach($items as $key => $item) {
 				if($show_prices)
 					$pre = $prices[$key] . ' copper - ';
 				else
 					$pre = ($item > 1 ? '(' . $item . ') ' : '' );
 				$buffer .=  $pre . $key .  "\n";
 			}
-		}
-		else
+		} else {
 			$buffer = "Nothing.";
+		}
 		return trim($buffer);
 	}
 	

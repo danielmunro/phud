@@ -11,8 +11,10 @@ trait EasyInit
 				if(isset($exceptions[$property])) {
 					$exceptions[$property]($this, $property, $value);
 				} else {
-					if(gettype($value) !== gettype($this->$property)) {
-						Debug::addDebugLine('Property ('.$property.') of '.$this.' has a type mismatch');
+					$t1 = gettype($value);
+					$t2 = gettype($this->$property);
+					if($t1 !== $t2) {
+						Debug::addDebugLine('Property ('.$property.') of '.$this.' has a type mismatch, expecting ('.$t2.'), got ('.$t1.')');
 					}
 					$this->$property = $value;
 				}

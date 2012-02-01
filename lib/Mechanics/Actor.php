@@ -537,7 +537,7 @@ abstract class Actor
 
 		$victim_target = $victim->getTarget();
 		if(!$victim_target) {
-			$victim_target->setTarget($this);
+			$victim->setTarget($this);
 		}
 
 		$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
@@ -664,10 +664,6 @@ abstract class Actor
 		$this->silver = $silver;
 		$this->copper = $copper;
 
-		$corpse->modifyCurrency('gold', $gold);
-		$corpse->modifyCurrency('silver', $silver);
-		$corpse->modifyCurrency('copper', $copper);
-
 		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
 		if(Server::chance() < 25) {
 			$parts = $this->race['lookup']->getParts();
@@ -696,7 +692,10 @@ abstract class Actor
 			'short' => 'a corpse of '.$this,
 			'long' => 'A corpse of '.$this.' lies here.',
 			'nouns' => 'corpse '.(property_exists($this, 'nouns') ? $this->nouns : $this),
-			'weight' => 100
+			'weight' => 100,
+			'copper' => $copper,
+			'silver' => $silver,
+			'gold' => $gold
 		]);
 		$corpse->transferItemsFrom($this);
 		$this->getRoom()->addItem($corpse);
