@@ -33,7 +33,7 @@ abstract class Command
 		$d = dir(dirname(__FILE__) . '/../../'.$namespace);
 		while($command = $d->read()) {
 			if(substr($command, -4) === ".php") {
-				Debug::addDebugLine("init command: ".$command);
+				Debug::log("init command: ".$command);
 				$class = substr($command, 0, strpos($command, '.'));
 				$called_class = $namespace.'\\'.$class;
 				$reflection = new ReflectionClass($called_class);

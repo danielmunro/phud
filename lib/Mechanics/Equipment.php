@@ -30,22 +30,12 @@ class Equipment extends Item
 		return $this->position;
 	}
 	
-	public function setPosition($position)
-	{
-		$this->position = $position;
-	}
-	
 	public function getCondition()
 	{
 		return $this->condition;
 	}
 	
-	public function setCondition($condition)
-	{
-		$this->condition = $condition;
-	}
-	
-	public function addCondition($condition)
+	public function modifyCondition($condition)
 	{
 		$this->condition += $condition;
 	}
@@ -53,11 +43,6 @@ class Equipment extends Item
 	public function getSize()
 	{
 		return $this->size;
-	}
-	
-	public function setSize($size)
-	{
-		$this->size = $size;
 	}
 	
 	public static function getPositionByStr($position)

@@ -6,6 +6,7 @@ use \Living\User,
 
 class Affect
 {
+	use EasyInit;
 
 	const GLOW = 'glow';
 	const STUN = 'stun';
@@ -20,19 +21,16 @@ class Affect
 	public function __construct($properties = [])
 	{
 		$this->attributes = new Attributes();
-		foreach($properties as $property => $value) {
-			if(property_exists($this, $property)) {
-				if($property === 'attributes') {
-					foreach($value as $a => $v) {
-						$this->attributes->setAttribute($a, $v);
-					}
-				} else {
-					$this->$property = $value;
+		$this->initializeProperties($properties, [
+			'attributes' => function($actor, $property, $value) {
+				foreach($value as $attr => $attr_value) {
+					$actor->getAttributes()->setAttribute($attr, $attr_value);
 				}
-			} else if($property === 'apply') {
-				$this->apply($value);
+			},
+			'apply' => function($affect, $property, $value) {
+				$affect->apply($value);
 			}
-		}
+		]);
 	}
 	
 	public function getAttributes()
@@ -45,19 +43,9 @@ class Affect
 		return $this->attributes->getAttribute($key);
 	}
 	
-	public function setAffect($affect)
-	{
-		$this->affect = $affect;
-	}
-	
 	public function getAffect()
 	{
 		return $this->affect;
-	}
-	
-	public function setMessageAffect($message)
-	{
-		$this->message_affect = $message;
 	}
 	
 	public function getMessageAffect()
@@ -65,19 +53,9 @@ class Affect
 		return $this->message_affect;
 	}
 	
-	public function setMessageEnd($message)
-	{
-		$this->message_end = $message;
-	}
-	
 	public function getMessageEnd()
 	{
 		return $this->message_end;
-	}
-	
-	public function setTimeout($timeout)
-	{
-		$this->timeout = $timeout;
 	}
 	
 	public function getTimeout()
@@ -93,7 +71,7 @@ class Affect
 	
 	public function apply($affectable)
 	{
-		Debug::addDebugLine("[Affect] Adding ".$this." to ".$affectable.", ".$this->timeout." tick timeout.");
+		Debug::log("[Affect] Adding ".$this." to ".$affectable.", ".$this->timeout." tick timeout.");
 		$affectable->fire(Event::EVENT_APPLY_AFFECT, $this);
 		$affectable->addAffect($this);
 		$this->applyTimeoutSubscriber($affectable);
@@ -101,23 +79,21 @@ class Affect
 
 	public function applyTimeoutSubscriber($affectable)
 	{
-		if($this->timeout > 0) {
-			Server::instance()->addSubscriber(
-				new Subscriber(
-					Event::EVENT_TICK,
-					$this,
-					function($subscriber, $server, $affect) use ($affectable) {
-						if($affect->decreaseTimeout()) {
-							$affectable->removeAffect($affect);
-							if($affect->getMessageEnd() && $affectable instanceof User) {
-								Server::out($affectable, $affect->getMessageEnd());
-							}
-							$subscriber->kill();
+		Server::instance()->addSubscriber(
+			new Subscriber(
+				Event::EVENT_TICK,
+				$this,
+				function($subscriber, $server, $affect) use ($affectable) {
+					if($affect->decreaseTimeout()) {
+						$affectable->removeAffect($affect);
+						if($affect->getMessageEnd() && $affectable instanceof User) {
+							Server::out($affectable, $affect->getMessageEnd());
 						}
+						$subscriber->kill();
 					}
-				)
-			);
-		}
+				}
+			)
+		);
 	}
 
 	public function __toString()
