@@ -678,7 +678,7 @@ abstract class Actor
 			} else {
 				$message = ucfirst($this)."'s ".$parts[$k].' is sliced from '.$this->getDisplaySex().' body.';
 			}
-			$this->getRoom()->announce2([
+			$this->getRoom()->announce([
 				['actor' => '*', 'message' => $message]
 			]);
 			$this->getRoom()->addItem(new Food([
