@@ -29,7 +29,6 @@ class Client
 				}
 			}
 		);
-		Server::out($this, 'By what name do you wish to be known? ', false);
 	}
 
 	public function getInputSubscriber()
