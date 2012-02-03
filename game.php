@@ -19,13 +19,9 @@ use \Mechanics\Debug;
 use \Mechanics\Server;
 Debug::clearLog();
 
-$dry_run = isset($argv[1]) && $argv[1] === '--dry-run';
-
 // initiate and run the server
 $s = new Server($address, $port);
-if(!$dry_run) {
-	$s->run();
-}
+$s->run();
 
 // autoloader
 function __autoload($class) {
