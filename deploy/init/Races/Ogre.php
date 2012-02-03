@@ -53,7 +53,7 @@ class Ogre extends Race
 			new Subscriber(
 				Event::EVENT_MELEE_ATTACK,
 				function($subscriber, $attacker) {
-					if(Server::chance() < 5) {
+					if(chance() < 5) {
 						$attacker->attack('Ogr');
 					}
 				}

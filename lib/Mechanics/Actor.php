@@ -590,7 +590,7 @@ abstract class Actor
 			$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
 			$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
 			$dam_roll *= $modifier;
-			$dam_roll = Server::_range(0, 200, $dam_roll);
+			$dam_roll = _range(0, 200, $dam_roll);
 			$victim->modifyAttribute('hp', -($dam_roll));
 		}
 
@@ -665,7 +665,7 @@ abstract class Actor
 		$this->copper = $copper;
 
 		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
-		if(Server::chance() < 25) {
+		if(chance() < 25) {
 			$parts = $this->race['lookup']->getParts();
 			$custom_message = [
 				['brains' => ucfirst($this)."'s brains splash all over you!"],

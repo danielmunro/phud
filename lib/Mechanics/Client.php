@@ -13,12 +13,28 @@ class Client
 	private $socket = null;
 	private $command_buffer = array();
 	private $login = array('alias' => false);
+	protected $input_subscriber = null;
 	protected $last_input = '';
 	
 	public function __construct($socket)
 	{
 		$this->socket = $socket;
+		$this->input_subscriber = new Subscriber(
+			Event::EVENT_GAME_CYCLE,
+			$this,
+			function($subscriber, $server, $client) {
+				$client->checkCommandBuffer();
+				if(!is_resource($client->getSocket())) {
+					$subscriber->kill();
+				}
+			}
+		);
 		Server::out($this, 'By what name do you wish to be known? ', false);
+	}
+
+	public function getInputSubscriber()
+	{
+		return $this->input_subscriber;
 	}
 	
 	public function getUser()

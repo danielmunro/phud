@@ -34,4 +34,14 @@ function __autoload($class) {
 		require_once($path);
 	}
 }
+	
+function chance()
+{
+	return rand(0, 10000) / 100;
+}
+
+function _range($min, $max, $n)
+{
+	return $min > $n ? $min : ($max < $n ? $max : $n);
+}
 ?>

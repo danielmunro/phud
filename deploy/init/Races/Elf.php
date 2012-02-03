@@ -63,7 +63,7 @@ class Elf extends Race
 			new Subscriber(
 				Event::EVENT_MELEE_ATTACKED,
 				function($subscriber, $target, $attack_subscriber) {
-					if(Server::chance() < 5) {
+					if(chance() < 5) {
 						$attack_subscriber->suppress();
 						Server::out($target, "Your quick reflexes evade ".$target->getTarget()."'s attack!");
 						$target->getRoom()->announce($target, ucfirst($target)." evades ".$target->getTarget()."'s attack!");

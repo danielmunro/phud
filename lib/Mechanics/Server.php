@@ -23,59 +23,22 @@ class Server
 	{
 		$this->address = $address;
 		$this->port = $port;
-		self::$instance = $this;
-
-		// Incorporate classes that will make up the game
-		$this->readDeploy('/init/');
-
-		// Initialize these environment variables
-		Debug::log("Initializing environment");
-		foreach([
-				'\Mechanics\Command\Command',
-				'\Mechanics\Race',
-				'\Mechanics\Ability\Ability'
-			] as $required) {
-			Debug::log("initializing ".$required);
-			$required::runInstantiation();
-		}
-
-		$this->readDeploy('/areas/');
-
-		$this->checkDeploySuccess();
 
 		// open the socket
+		Debug::log("Attempting to create socket on (".$this.")");
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
-		if($this->socket === false)
+		if($this->socket === false) {
 			die('No socket');
+		}
 		socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
 		socket_bind($this->socket, $this->address, $this->port) or die('Could not bind to address');
 		socket_listen($this->socket);
+		Debug::log("Success creating socket");
 	}
 	
-	private function __destruct()
+	public function __destruct()
 	{
 		socket_close($this->socket);
-	}
-
-	protected function readDeploy($start)
-	{
-		$d = dir(dirname(__FILE__).'/../../deploy'.$start);
-		while($cd = $d->read()) {
-			if(substr($cd, -4) === '.php') {
-				Debug::log("including deploy script: ".$cd);
-				$anon = new Anonymous();
-				$anon->_require_once($d->path.'/'.$cd);
-			} else if(strpos($cd, '.') === false) {
-				$this->readDeploy($start.$cd);
-			}
-		}
-	}
-
-	protected function checkDeploySuccess()
-	{
-		if(!Room::getStartRoom()) {
-			throw new Exception('Start room not set');
-		}
 	}
 
 	public static function instance()
@@ -85,6 +48,8 @@ class Server
 	
 	public function run()
 	{
+		self::$instance = $this;
+		$this->deployEnvironment();
 		$this->addSubscriber(
 			new Subscriber(
 				Event::EVENT_CONNECTED,
@@ -136,18 +101,6 @@ class Server
 		}
 	}
 
-	public function scanNewConnections()
-	{
-		$n = null;
-
-		// check for new connections
-		$s = [$this->socket];
-		$new_connection = socket_select($s, $n, $n, 0, 0);
-		if($new_connection) {
-			$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
-		}
-	}
-	
 	public static function out($client, $message, $break_line = true)
 	{
 		if($client instanceof User) {
@@ -155,7 +108,6 @@ class Server
 		}
 
 		if($client instanceof Client) {
-
 			if(!is_resource($client->getSocket())) {
 				return false;
 			}
@@ -170,24 +122,38 @@ class Server
 		}
 	}
 
-	public function addClient(Client $client)
+	public function __toString()
+	{
+		return $this->address.':'.$this->port;
+	}
+
+	protected function deployEnvironment()
+	{
+		// Include deploy scripts that will compose the races, skills, and spells.
+		// After that, run all the area generation scripts, and validate success.
+		Debug::log("Including deploy init scripts");
+		$this->readDeploy('/init/');
+		Debug::log("Initializing environment");
+		foreach([
+				'\Mechanics\Command\Command',
+				'\Mechanics\Race',
+				'\Mechanics\Ability\Ability'
+			] as $required) {
+			Debug::log("initializing ".$required);
+			$required::runInstantiation();
+		}
+		Debug::log("Including deploy area scripts");
+		$this->readDeploy('/areas/');
+		$this->checkDeploySuccess();
+	}
+
+	protected function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_GAME_CYCLE,
-				$client,
-				function($subscriber, $server, $client) {
-					$client->checkCommandBuffer();
-					if(!is_resource($client->getSocket())) {
-						$subscriber->kill();
-					}
-				}
-			)
-		);
+		$this->addSubscriber($client->getInputSubscriber());
 	}
 	
-	public function disconnectClient(Client $client)
+	protected function disconnectClient(Client $client)
 	{
 		// Take the user out of its room
 		$user = $client->getUser();
@@ -197,6 +163,8 @@ class Server
 			}
 			$this->removeSubscriber($user->getSubscriberTick());
 		}
+
+		$this->removeSubscriber($client->getInputSubscriber());
 		
 		// clean out the client
 		socket_close($client->getSocket());
@@ -207,20 +175,38 @@ class Server
 		$this->clients = array_values($this->clients);
 		Debug::log($user." disconnected");
 	}
+
+	protected function scanNewConnections()
+	{
+		$n = null;
+
+		// check for new connections
+		$s = [$this->socket];
+		$new_connection = socket_select($s, $n, $n, 0, 0);
+		if($new_connection) {
+			$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
+		}
+	}
 	
-	public static function chance()
+	protected function readDeploy($start)
 	{
-		return rand(0, 10000) / 100;
+		$d = dir(dirname(__FILE__).'/../../deploy'.$start);
+		while($cd = $d->read()) {
+			if(substr($cd, -4) === '.php') {
+				Debug::log("including deploy script: ".$cd);
+				$anon = new Anonymous();
+				$anon->_require_once($d->path.'/'.$cd);
+			} else if(strpos($cd, '.') === false) {
+				$this->readDeploy($start.$cd);
+			}
+		}
 	}
 
-	public static function _range($min, $max, $n)
+	protected function checkDeploySuccess()
 	{
-		return $min > $n ? $min : ($max < $n ? $max : $n);
-	}
-
-	public function __toString()
-	{
-		return $this->address.':'.$this->port;
+		if(!Room::getStartRoom()) {
+			throw new Exception('Start room not set');
+		}
 	}
 }
 ?>

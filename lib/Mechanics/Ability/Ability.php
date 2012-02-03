@@ -77,7 +77,7 @@ abstract class Ability
 			return;
 		}
 		// do a proficiency roll to determine success or failure
-		$roll = Server::chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
+		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
 		foreach($this->hard_modifier as $m) {
 			$roll += $this->getHardAttributeModifier($actor->getAttribute($m));
 			$roll -= $this->getHardAttributeModifier($target->getAttribute($m));
@@ -91,7 +91,7 @@ abstract class Ability
 			$roll -= $this->getEasyAttributeModifier($target->getAttribute($m));
 		}
 		$roll += $this->modifyRoll($actor);
-		if($roll > Server::chance()) {
+		if($roll > chance()) {
 			return $this->success($actor, $target, $args);
 		} else {
 			return $this->fail($actor, $target);
