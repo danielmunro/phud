@@ -19,11 +19,30 @@ use \Mechanics\Debug;
 use \Mechanics\Server;
 Debug::clearLog();
 
-$dry_run = isset($argv[1]) && $argv[1] === '--dry-run';
+///////////////////////////////////////////////////////
+// Set default arguments for starting phud, then parse
+// through any command line args that were passed
+// when starting the game.
+///////////////////////////////////////////////////////
+
+$dry_run = false;
+$deploy = 'deploy';
+
+foreach($argv as $i => $arg) {
+	switch($arg) {
+		case '--dry-run':
+			$dry_run = true;
+			break;
+		case '--deploy':
+			$deploy = $argv[$i+1];
+			array_splice($argv, $i+1, 1);
+			break;
+	}
+}
 
 // initiate and run the server
 $s = new Server($address, $port);
-$s->deployEnvironment('deploy');
+$s->deployEnvironment($deploy);
 if(!$dry_run) {
 	$s->run();
 }

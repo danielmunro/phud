@@ -193,15 +193,20 @@ class Server
 
 	protected function readDeploy($start)
 	{
-		$d = dir(dirname(__FILE__).'/../../'.$start);
-		while($cd = $d->read()) {
-			if(substr($cd, -4) === '.php') {
-				Debug::log("including deploy script: ".$cd);
-				$anon = new Anonymous();
-				$anon->_require_once($d->path.'/'.$cd);
-			} else if(strpos($cd, '.') === false) {
-				$this->readDeploy($start.$cd);
+		$relative_path = dirname(__FILE__).'/../../'.$start;
+		if(file_exists($relative_path)) {
+			$d = dir($relative_path);
+			while($cd = $d->read()) {
+				if(substr($cd, -4) === '.php') {
+					Debug::log("including deploy script: ".$cd);
+					$anon = new Anonymous();
+					$anon->_require_once($d->path.'/'.$cd);
+				} else if(strpos($cd, '.') === false) {
+					$this->readDeploy($start.$cd);
+				}
 			}
+		} else {
+			throw new Exception('Invalid deploy directory defined: '.$start);
 		}
 	}
 
