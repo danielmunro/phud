@@ -33,12 +33,14 @@ class Server
 		socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
 		socket_bind($this->socket, $this->address, $this->port) or die('Could not bind to address');
 		socket_listen($this->socket);
-		Debug::log("Success creating socket");
+		Debug::log("Server is listening for incoming transmissions on (".$this.")");
 	}
 	
 	public function __destruct()
 	{
-		socket_close($this->socket);
+		if(is_resource($this->socket)) {
+			socket_close($this->socket);
+		}
 	}
 
 	public static function instance()
@@ -46,10 +48,60 @@ class Server
 		return self::$instance;
 	}
 	
+	public function addClient(Client $client)
+	{
+		$this->clients[] = $client;
+		$this->addSubscriber($client->getInputSubscriber());
+	}
+	
+	public function disconnectClient(Client $client)
+	{
+		// Take the user out of its room
+		$user = $client->getUser();
+		if($user) {
+			if($user->getRoom()) {
+				$user->getRoom()->actorRemove($user);
+			}
+			$this->removeSubscriber($user->getSubscriberTick());
+		}
+
+		$this->removeSubscriber($client->getInputSubscriber());
+		
+		// clean out the client
+		socket_close($client->getSocket());
+		$key = array_search($client, $this->clients);
+		unset($this->clients[$key]);
+
+		// reindex arrays
+		$this->clients = array_values($this->clients);
+		Debug::log($user." disconnected");
+	}
+
+	public function deployEnvironment($deploy_dir)
+	{
+		// Set the server instance so that the deploy scripts may reference it
+		self::$instance = $this;
+
+		// Include deploy scripts that will compose the races, skills, and spells.
+		// After that, run all the area generation scripts, and validate success.
+		Debug::log("Including deploy init scripts");
+		$this->readDeploy($deploy_dir.'/init/');
+		Debug::log("Initializing environment");
+		foreach([
+				'\Mechanics\Command\Command',
+				'\Mechanics\Race',
+				'\Mechanics\Ability\Ability'
+			] as $required) {
+			Debug::log("initializing ".$required);
+			$required::runInstantiation();
+		}
+		Debug::log("Including deploy area scripts");
+		$this->readDeploy($deploy_dir.'/areas/');
+		$this->checkDeploySuccess();
+	}
+	
 	public function run()
 	{
-		self::$instance = $this;
-		$this->deployEnvironment();
 		$this->addSubscriber(
 			new Subscriber(
 				Event::EVENT_CONNECTED,
@@ -127,55 +179,6 @@ class Server
 		return $this->address.':'.$this->port;
 	}
 
-	protected function deployEnvironment()
-	{
-		// Include deploy scripts that will compose the races, skills, and spells.
-		// After that, run all the area generation scripts, and validate success.
-		Debug::log("Including deploy init scripts");
-		$this->readDeploy('/init/');
-		Debug::log("Initializing environment");
-		foreach([
-				'\Mechanics\Command\Command',
-				'\Mechanics\Race',
-				'\Mechanics\Ability\Ability'
-			] as $required) {
-			Debug::log("initializing ".$required);
-			$required::runInstantiation();
-		}
-		Debug::log("Including deploy area scripts");
-		$this->readDeploy('/areas/');
-		$this->checkDeploySuccess();
-	}
-
-	protected function addClient(Client $client)
-	{
-		$this->clients[] = $client;
-		$this->addSubscriber($client->getInputSubscriber());
-	}
-	
-	protected function disconnectClient(Client $client)
-	{
-		// Take the user out of its room
-		$user = $client->getUser();
-		if($user) {
-			if($user->getRoom()) {
-				$user->getRoom()->actorRemove($user);
-			}
-			$this->removeSubscriber($user->getSubscriberTick());
-		}
-
-		$this->removeSubscriber($client->getInputSubscriber());
-		
-		// clean out the client
-		socket_close($client->getSocket());
-		$key = array_search($client, $this->clients);
-		unset($this->clients[$key]);
-
-		// reindex arrays
-		$this->clients = array_values($this->clients);
-		Debug::log($user." disconnected");
-	}
-
 	protected function scanNewConnections()
 	{
 		$n = null;
@@ -187,10 +190,10 @@ class Server
 			$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
 		}
 	}
-	
+
 	protected function readDeploy($start)
 	{
-		$d = dir(dirname(__FILE__).'/../../deploy'.$start);
+		$d = dir(dirname(__FILE__).'/../../'.$start);
 		while($cd = $d->read()) {
 			if(substr($cd, -4) === '.php') {
 				Debug::log("including deploy script: ".$cd);
