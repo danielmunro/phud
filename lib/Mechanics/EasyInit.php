@@ -18,6 +18,8 @@ trait EasyInit
 					}
 					$this->$property = $value;
 				}
+			} else if($property === 'apply') {
+				$this->apply($value);
 			} else {
 				throw new Exception('Property of '.$this.' ('.$property.') does not exist');
 			}

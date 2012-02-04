@@ -13,6 +13,7 @@ class Kick extends Skill
 	protected $normal_modifier = ['dex', 'str'];
 	protected $needs_target = true;
 	protected $is_offensive = true;
+	protected $delay = 1;
 
 	public function getSubscriber()
 	{
@@ -21,7 +22,6 @@ class Kick extends Skill
 
 	protected function applyCost(Actor $actor)
 	{
-		$actor->incrementDelay(1);
 	}
 
 	protected function fail(Actor $actor)

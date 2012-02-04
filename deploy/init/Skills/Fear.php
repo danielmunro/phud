@@ -14,6 +14,7 @@ class Fear extends Skill
 	protected $required_proficiency = 25;
 	protected $normal_modifier = ['cha'];
 	protected $requires_target = true;
+	protected $delay = 2;
 
 	public function getSubscriber()
 	{
@@ -27,7 +28,6 @@ class Fear extends Skill
 			Server::out($actor, "You don't have enough energy to instill fear.");
 			return false;
 		}
-		$actor->incrementDelay(2);
 		$actor->modifyAttribute('movement', -($cost));
 	}
 	

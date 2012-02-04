@@ -13,6 +13,7 @@ class Backstab extends Skill
 	protected $hard_modifier = ['dex'];
 	protected $needs_target = true;
 	protected $is_offensive = true;
+	protected $delay = 2;
 
 	public function getSubscriber()
 	{
@@ -21,7 +22,6 @@ class Backstab extends Skill
 
 	protected function applyCost(Actor $actor)
 	{
-		$actor->incrementDelay(2);
 	}
 
 	protected function success(Actor $actor)

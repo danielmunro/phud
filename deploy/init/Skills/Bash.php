@@ -34,7 +34,7 @@ class Bash extends Skill
 		$roll = 0;
 		$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
 		$roll += $actor->getTarget()->getRace()['lookup']->getSize();
-		$target->fire(Event::EVENT_BASHED, $actor->getTarget(), $roll);
+		$actor->getTarget()->fire(Event::EVENT_BASHED, $actor->getTarget(), $roll);
 		return $roll;
 	}
 
@@ -42,7 +42,7 @@ class Bash extends Skill
 	{
 		$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
 		$s = $actor->getDisplaySex($sexes);
-		$actor->getRoom()->announce2([
+		$actor->getRoom()->announce([
 			['actor' => $actor, 'message' => 'You fall flat on your face!'],
 			['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." tries to bash you but you evade their attack!"],
 			['actor' => '*', 'message' => ucfirst($actor)." falls flat on ".$s." trying to bash ".$actor->getTarget()."!"]
@@ -58,7 +58,7 @@ class Bash extends Skill
 		]);
 		$sexes = [Actor::SEX_MALE=>'him',Actor::SEX_FEMALE=>'her',Actor::SEX_NEUTRAL=>'it'];
 		$s = $actor->getTarget()->getDisplaySex($sexes);
-		$actor->getRoom()->announce2([
+		$actor->getRoom()->announce([
 			['actor' => $actor, 'message' => "You slam into ".$actor->getTarget()." and send ".$s." flying!"],
 			['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." slams into you and sends you flying!"],
 			['actor' => '*', 'message' => ucfirst($actor)." slams into ".$actor->getTarget()." and sends ".$s." flying!"]

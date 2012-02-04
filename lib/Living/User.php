@@ -11,6 +11,8 @@ use \Mechanics\Server,
 	\Mechanics\Ability\Ability,
 	\Mechanics\Ability\Skill,
 	\Mechanics\Event\Broadcaster,
+	\Mechanics\Event\Subscriber,
+	\Mechanics\Event\Event,
 	\Mechanics\Quest\Log as QuestLog;
 
 class User extends Actor
@@ -25,6 +27,7 @@ class User extends Actor
 	protected $date_created = null;
 	protected $is_dm = false;
 	protected $quest_log = null;
+	protected $delay = 0;
 	protected static $instances = array();
 	
 	public function __construct()
@@ -54,6 +57,38 @@ class User extends Actor
 		$this->client = $client;
 	}
 	
+	public function incrementDelay($delay) {
+		$this->delay += $delay;
+		if(empty($this->_subscriber_delay)) {
+			$this->_subscriber_delay = new Subscriber(
+				Event::EVENT_PULSE,
+				$this,
+				function($subscriber, $server, $fighter) {
+					if(!$fighter->decrementDelay()) {
+						$subscriber->kill();
+					}
+				}
+			);
+			Server::instance()->addSubscriber($this->_subscriber_delay);
+		}
+
+	}
+
+	public function decrementDelay()
+	{
+		if($this->delay > 0) {
+			$this->delay--;
+			return true;
+		} 
+		unset($this->_subscriber_delay);
+		return false;
+	}
+
+	public function getDelay()
+	{
+		return $this->delay;
+	}
+
 	public function getDateCreated()
 	{
 		return $this->date_created;

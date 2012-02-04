@@ -21,6 +21,7 @@ abstract class Ability
 	protected $needs_target = false;
 	protected $alias = '';
 	protected $is_offensive = false;
+	protected $delay = 0;
 	
 	protected function __construct()
 	{
@@ -34,6 +35,11 @@ abstract class Ability
 			throw new Exception(get_class($this).' is not fully configured, missing: alias');
 		}
 		self::addAlias($this->alias, $this);
+	}
+
+	public function getDelay()
+	{
+		return $this->delay;
 	}
 
 	public function getProficiency()
@@ -63,7 +69,7 @@ abstract class Ability
 		// check for a target if necessary
 		$target = $this->determineTarget($actor, $args);
 		if($this->needs_target && !$target) {
-			return;
+			return false;
 		}
 		if(!$target) {
 			$target = $actor;
@@ -74,7 +80,7 @@ abstract class Ability
 		}
 		// check if actor satisfies requirements as far as mana, mv, etc
 		if($this->applyCost($actor) === false) {
-			return;
+			return false;
 		}
 		// do a proficiency roll to determine success or failure
 		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
@@ -92,9 +98,11 @@ abstract class Ability
 		}
 		$roll += $this->modifyRoll($actor);
 		if($roll > chance()) {
-			return $this->success($actor, $target, $args);
+			$this->success($actor, $target, $args);
+			return true;
 		} else {
-			return $this->fail($actor, $target);
+			$this->fail($actor, $target);
+			return false;
 		}
 	}
 	

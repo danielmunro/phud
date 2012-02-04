@@ -11,6 +11,7 @@ class Berserk extends Skill
 	protected $proficiency = 'melee';
 	protected $required_proficiency = 25;
 	protected $normal_modifier = ['str', 'dex'];
+	protected $delay = 2;
 
 	public function getSubscriber()
 	{
@@ -23,7 +24,6 @@ class Berserk extends Skill
 			Server::out($actor, "You do not have the energy to do that.");
 			return false;
 		}
-		$actor->incrementDelay(2);
 		$actor->modifyAttribute('movement', -($actor->getAttribute('movement') / 2));
 		$actor->modifyAttribute('mana', -($actor->getAttribute('mana') / 2));
 	}

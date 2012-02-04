@@ -13,6 +13,7 @@
 		protected $hard_modifier = ['dex'];
 		protected $needs_target = true;
 		protected $is_offensive = true;
+		protected $delay = 1;
 
 		public function getSubscriber()
 		{
@@ -22,7 +23,6 @@
 		protected function applyCost(Actor $actor)
 		{
 			$cost = 50 - $this->level;
-			$actor->incrementDelay(1);
 			if($actor->getAttribute('movement') < $cost) {
 				Server::out($actor, "You don't have enough energy to trip.");
 				return false;

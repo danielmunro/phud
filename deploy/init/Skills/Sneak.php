@@ -11,6 +11,7 @@ class Sneak extends Skill
 	protected $proficiency = 'stealth';
 	protected $required_proficiency = 30;
 	protected $normal_modifier = ['dex'];
+	protected $delay = 1;
 
 	public function getSubscriber()
 	{
@@ -19,7 +20,6 @@ class Sneak extends Skill
 	
 	protected function applyCost(Actor $actor)
 	{
-		$actor->incrementDelay(1);
 		$m = $actor->getAttribute('movement');
 		$cost = -(round((0.05/min(1, $actor->getLevel()/10))*$m));
 		$actor->modifyAttribute('movement', $cost);

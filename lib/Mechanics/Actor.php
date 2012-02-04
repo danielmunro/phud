@@ -40,7 +40,6 @@ abstract class Actor
 	protected $attributes = null;
 	protected $max_attributes = null;
 	protected $abilities = [];
-	protected $delay = 0;
 	protected $target = null;
 	protected $experience = 0;
 	protected $experience_per_level = 0;
@@ -140,42 +139,6 @@ abstract class Actor
 				$this->removeSubscriber($ability['lookup']->getSubscriber());
 			}
 		}
-	}
-
-	///////////////////////////////////////////////////////////////////
-	// Delay functions
-	///////////////////////////////////////////////////////////////////
-
-	public function incrementDelay($delay) {
-		$this->delay += $delay;
-		if(empty($this->_subscriber_delay)) {
-			$this->_subscriber_delay = new Subscriber(
-				Event::EVENT_PULSE,
-				$this,
-				function($subscriber, $server, $fighter) {
-					if(!$fighter->decrementDelay()) {
-						$subscriber->kill();
-					}
-				}
-			);
-			Server::instance()->addSubscriber($this->_subscriber_delay);
-		}
-
-	}
-
-	public function decrementDelay()
-	{
-		if($this->delay > 0) {
-			$this->delay--;
-			return true;
-		} 
-		unset($this->_subscriber_delay);
-		return false;
-	}
-
-	public function getDelay()
-	{
-		return $this->delay;
 	}
 
 	///////////////////////////////////////////////////////////////////
