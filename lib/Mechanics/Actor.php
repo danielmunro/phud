@@ -92,7 +92,7 @@ abstract class Actor
 		$this->initializeProperties($properties, [
 			'attributes' => function($actor, $property, $value) {
 				foreach($value as $attr => $attr_value) {
-					$actor->getAttributes()->setAttribute($attr, $attr_value);
+					$actor->setAttribute($attr, $attr_value);
 				}
 			}
 		]);
@@ -155,11 +155,6 @@ abstract class Actor
 		return $this->attributes->getAttribute($key);
 	}
 
-	public function getAttributes()
-	{
-		return $this->attributes;
-	}
-
 	public function getAttribute($key)
 	{
 		$n = $this->attributes->getAttribute($key);
@@ -173,7 +168,7 @@ abstract class Actor
 				$n += $aff->getAttribute($key);
 			}
 		}
-		$n += $this->race['lookup']->getAttributes()->getAttribute($key);
+		$n += $this->race['lookup']->getAttribute($key);
 		$max = $this->max_attributes->getAttribute($key);
 		$n = round($n);
 		return $max > 0 ? min($n, $this->max_attributes->getAttribute($key)) : $n;

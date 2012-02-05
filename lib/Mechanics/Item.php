@@ -129,11 +129,6 @@ class Item
 		return $this->material;
 	}
 	
-	public function getAttributes()
-	{
-		return $this->attributes;
-	}
-
 	public function getAttribute($key)
 	{
 		return $this->attributes->getAttribute($key);

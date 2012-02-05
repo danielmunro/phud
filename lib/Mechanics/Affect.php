@@ -24,7 +24,7 @@ class Affect
 		$this->initializeProperties($properties, [
 			'attributes' => function($actor, $property, $value) {
 				foreach($value as $attr => $attr_value) {
-					$actor->getAttributes()->setAttribute($attr, $attr_value);
+					$actor->setAttribute($attr, $attr_value);
 				}
 			},
 			'apply' => function($affect, $property, $value) {
@@ -33,11 +33,6 @@ class Affect
 		]);
 	}
 	
-	public function getAttributes()
-	{
-		return $this->attributes;
-	}
-
 	public function getAttribute($key)
 	{
 		return $this->attributes->getAttribute($key);

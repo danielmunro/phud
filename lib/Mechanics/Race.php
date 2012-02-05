@@ -40,6 +40,11 @@ abstract class Race
 		$this->setPartsFromForm();
 	}
 
+	public function getAttribute($key)
+	{
+		return $this->attributes->getAttribute($key);
+	}
+
 	protected function addParts($parts_add)
 	{
 		$this->parts = array_merge($this->parts, array_diff($this->parts, $parts_add));
@@ -96,11 +101,6 @@ abstract class Race
 	public function getParts()
 	{
 		return $this->parts;
-	}
-	
-	public function getAttributes()
-	{
-		return $this->attributes;
 	}
 	
 	public function getMaxAttributes()
