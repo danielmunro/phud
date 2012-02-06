@@ -281,7 +281,7 @@ class Client
 			else
 				return Server::out($this, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
 			
-			$this->unverified_user->setAlignment($this->login['align']);
+			$this->unverified_user->modifyAlignment($this->login['align']);
 			$this->login['finish'] = false;
 		}
 

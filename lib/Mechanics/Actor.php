@@ -226,6 +226,8 @@ abstract class Actor
 	{
 		if($this->isCurrency($currency)) {
 			return $this->$currency;
+		} else {
+			Debug::log("[".$currency."] is not a valid currency type.");
 		}
 	}
 
@@ -264,6 +266,10 @@ abstract class Actor
 		}
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+	// Fighting methods
+	///////////////////////////////////////////////////////////////////////////
+
 	public function getTarget()
 	{
 		return $this->target;
@@ -275,6 +281,219 @@ abstract class Actor
 		if($this->target) {
 			Server::instance()->addSubscriber($this->getAttackSubscriber());
 		}
+	}
+
+	public function reconcileTarget($args = [])
+	{
+		if(sizeof($args) <= 1) {
+			return $this->target;
+		}
+
+		$specified_target = is_array($args) ? $this->getRoom()->getActorByInput(array_slice($args, -1)[0]) : $args;
+
+		if(empty($this->target)) {
+			if(empty($specified_target)) {
+				return Server::out($this, "No one is there.");
+			}
+			if(!($specified_target instanceof self)) {
+				return Server::out($this, "I don't think they would like that very much.");
+			}
+			if($this === $specified_target) {
+				return Server::out($this, "You can't target yourself!");
+			}
+			$this->setTarget($specified_target);
+		} else if(!empty($specified_target) && $this->target !== $specified_target) {
+			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
+		}
+		return $this->target;
+	}
+
+	public function getAttackSubscriber()
+	{
+		return new Subscriber(
+			Event::EVENT_PULSE,
+			$this,
+			function($subscriber, $broadcaster, $fighter) {
+				$target = $fighter->getTarget();
+				if(empty($target) || !$fighter->isAlive()) {
+					$subscriber->kill();
+					return;
+				}
+				$fighter->fire(Event::EVENT_MELEE_ATTACK);
+				$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
+				if($subscriber->isSuppressed()) {
+					$subscriber->suppress(false);
+				} else {
+					$fighter->attack('Reg');
+				}
+			}
+		);
+	}
+
+	public function attack($attack_name = '', $verb = '')
+	{
+		$victim = $this->getTarget();
+		if(!$victim) {
+			return;
+		}
+
+		if(!$attack_name) {
+			$attack_name = 'Reg';
+		}
+
+		$victim_target = $victim->getTarget();
+		if(!$victim_target) {
+			$victim->setTarget($this);
+		}
+
+		$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
+
+		if($attacking_weapon['equipped']) {
+			if(!$verb) {
+				$verb = $attacking_weapon['equipped']->getVerb();
+			}
+			$dam_type = $attacking_weapon['equipped']->getDamageType();
+		} else {
+			if(!$verb) {
+				$verb = $this->getRace()['lookup']->getUnarmedVerb();
+			}
+			$dam_type = Damage::TYPE_BASH;
+		}
+
+		// ATTACKING
+		$hit_roll = $this->getAttribute('hit');
+		$dam_roll = $this->getAttribute('dam');
+		$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
+
+		// DEFENDING
+		$def_roll = ($victim->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
+
+		// Size modifier
+		$def_roll += 5 - $victim->getRace()['lookup']->getSize();
+
+		if($dam_type === Damage::TYPE_BASH)
+			$ac = $victim->getAttribute('ac_bash');
+		else if($dam_type === Damage::TYPE_PIERCE)
+			$ac = $victim->getAttribute('ac_pierce');
+		else if($dam_type === Damage::TYPE_SLASH)
+			$ac = $victim->getAttribute('ac_slash');
+		else if($dam_type === Damage::TYPE_MAGIC)
+			$ac = $victim->getAttribute('ac_magic');
+
+		$ac = $ac / 100;	
+
+		$roll['attack'] = rand(0, $hit_roll);
+		$roll['defense'] = rand(0, $def_roll) - $ac;
+
+		// Lost the hit roll -- miss
+		if($roll['attack'] <= $roll['defense']) {
+			$dam_roll = 0;
+		} else {
+			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
+			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
+
+			$modifier = 1;
+			$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
+			$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
+			$dam_roll *= $modifier;
+			$dam_roll = _range(0, 200, $dam_roll);
+			$victim->modifyAttribute('hp', -($dam_roll));
+		}
+
+		if($dam_roll < 5)
+			$descriptor = 'clumsy';
+		elseif($dam_roll < 10)
+			$descriptor = 'amateur';
+		elseif($dam_roll < 15)
+			$descriptor = 'competent';
+		else
+			$descriptor = 'skillful';
+
+		$actors = $this->getRoom()->getActors();
+		foreach($actors as $a) {
+			Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
+		}
+
+		if(!$victim->isAlive()) {
+			$victim->afterDeath($this);
+		}
+	}
+
+	protected function afterDeath($killer)
+	{
+		$this->setTarget(null);
+		$killer->setTarget(null);
+
+		Debug::log(ucfirst($killer).' killed '.$this.".");
+		Server::out($killer, 'You have KILLED '.$this.'.');
+		$killer->applyExperienceFrom($this);
+
+		if($this instanceof User)
+			$nouns = $this->getAlias();
+		elseif($this instanceof Mob)
+			$nouns = $this->getNouns();
+
+		$gold = round($this->gold / 3);
+		$silver = round($this->silver / 3);
+		$copper = round($this->copper / 3);
+
+		$killer->modifyCurrency('gold', $gold);
+		$killer->modifyCurrency('silver', $silver);
+		$killer->modifyCurrency('copper', $copper);
+
+		$this->gold = $gold;
+		$this->silver = $silver;
+		$this->copper = $copper;
+
+		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
+		if(chance() < 25) {
+			$parts = $this->race['lookup']->getParts();
+			$custom_message = [
+				['brains' => ucfirst($this)."'s brains splash all over you!"],
+				['guts' => ucfirst($this).' spills '.$this->getDisplaySex().' guts all over the floor.'],
+				['heart' => ucfirst($this)."'s heart is torn from ".$this->getDisplaySex(). " chest."]
+			];
+			$k = array_rand($parts);
+			if(isset($custom_message[$parts[$k]])) {
+				$message = $custom_message[$parts[$k]];
+			} else {
+				$message = ucfirst($this)."'s ".$parts[$k].' is sliced from '.$this->getDisplaySex().' body.';
+			}
+			$this->getRoom()->announce([
+				['actor' => '*', 'message' => $message]
+			]);
+			$this->getRoom()->addItem(new Food([
+				'short' => 'the '.$parts[$k].' of '.$this,
+				'long' => 'The '.$parts[$k].' of '.$this.' is here.',
+				'nouns' => $parts[$k].' '.$nouns,
+				'nourishment' => 5
+			]));
+		}
+		$corpse = new Corpse([
+			'short' => 'a corpse of '.$this,
+			'long' => 'A corpse of '.$this.' lies here.',
+			'nouns' => 'corpse '.(property_exists($this, 'nouns') ? $this->nouns : $this),
+			'weight' => 100,
+			'copper' => $copper,
+			'silver' => $silver,
+			'gold' => $gold
+		]);
+		foreach($this->items as $i) {
+			$this->removeItem($i);
+			$corpse->addItem($i);
+		}
+		$this->getRoom()->addItem($corpse);
+		if($killer instanceof User) {
+			Server::out($killer, "\n".$killer->prompt(), false);
+		}
+
+		$this->handleDeath();
+	}
+
+	protected function handleDeath()
+	{
+		Debug::log(ucfirst($this).' died.');
+		Server::out($this, 'You have been KILLED!');
 	}
 
 	public function getProficiencyIn($proficiency)
@@ -291,9 +510,9 @@ abstract class Actor
 		return $this->alignment;
 	}
 
-	public function setAlignment($alignment)
+	public function modifyAlignment($alignment)
 	{
-		$this->alignment = $alignment;
+		$this->alignment += $alignment;
 	}
 
 	public function getDisposition()
@@ -311,19 +530,9 @@ abstract class Actor
 		return $this->alias;
 	}
 
-	public function setAlias($alias)
-	{
-		$this->alias = $alias;
-	}
-
 	public function getLong()
 	{
 		return $this->long ? $this->long : 'You see nothing special about '.$this->getDisplaySex([self::SEX_MALE => 'him', self::SEX_FEMALE => 'her', self::SEX_NEUTRAL => 'it']).'.';
-	}
-
-	public function setLong($long)
-	{
-		$this->long = $long;
 	}
 
 	public function getEquipped()
@@ -432,28 +641,6 @@ abstract class Actor
 		return $this->level;
 	}
 
-	public function getAttackSubscriber()
-	{
-		return new Subscriber(
-			Event::EVENT_PULSE,
-			$this,
-			function($subscriber, $broadcaster, $fighter) {
-				$target = $fighter->getTarget();
-				if(empty($target) || !$fighter->isAlive()) {
-					$subscriber->kill();
-					return;
-				}
-				$fighter->fire(Event::EVENT_MELEE_ATTACK);
-				$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
-				if($subscriber->isSuppressed()) {
-					$subscriber->suppress(false);
-				} else {
-					$fighter->attack('Reg');
-				}
-			}
-		);
-	}
-
 	public function getStatus()
 	{
 		$statuses = array
@@ -480,197 +667,6 @@ abstract class Actor
 	public function isAlive()
 	{
 		return $this->getAttribute('hp') > 0;
-	}
-
-	public function attack($attack_name = '', $verb = '')
-	{
-		$victim = $this->getTarget();
-		if(!$victim) {
-			return;
-		}
-
-		if(!$attack_name) {
-			$attack_name = 'Reg';
-		}
-
-		$victim_target = $victim->getTarget();
-		if(!$victim_target) {
-			$victim->setTarget($this);
-		}
-
-		$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
-
-		if($attacking_weapon['equipped']) {
-			if(!$verb) {
-				$verb = $attacking_weapon['equipped']->getVerb();
-			}
-			$dam_type = $attacking_weapon['equipped']->getDamageType();
-		} else {
-			if(!$verb) {
-				$verb = $this->getRace()['lookup']->getUnarmedVerb();
-			}
-			$dam_type = Damage::TYPE_BASH;
-		}
-
-		// ATTACKING
-		$hit_roll = $this->getAttribute('hit');
-		$dam_roll = $this->getAttribute('dam');
-		$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
-
-		// DEFENDING
-		$def_roll = ($victim->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
-
-		// Size modifier
-		$def_roll += 5 - $victim->getRace()['lookup']->getSize();
-
-		if($dam_type === Damage::TYPE_BASH)
-			$ac = $victim->getAttribute('ac_bash');
-		else if($dam_type === Damage::TYPE_PIERCE)
-			$ac = $victim->getAttribute('ac_pierce');
-		else if($dam_type === Damage::TYPE_SLASH)
-			$ac = $victim->getAttribute('ac_slash');
-		else if($dam_type === Damage::TYPE_MAGIC)
-			$ac = $victim->getAttribute('ac_magic');
-
-		$ac = $ac / 100;	
-
-		$roll['attack'] = rand(0, $hit_roll);
-		$roll['defense'] = rand(0, $def_roll) - $ac;
-
-		// Lost the hit roll -- miss
-		if($roll['attack'] <= $roll['defense']) {
-			$dam_roll = 0;
-		} else {
-			//(Primary Stat / 2) + (Weapon Skill * 4) + (Weapon Mastery * 3) + (ATR Enchantments) * 1.stance modifier
-			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
-
-			$modifier = 1;
-			$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
-			$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
-			$dam_roll *= $modifier;
-			$dam_roll = _range(0, 200, $dam_roll);
-			$victim->modifyAttribute('hp', -($dam_roll));
-		}
-
-		if($dam_roll < 5)
-			$descriptor = 'clumsy';
-		elseif($dam_roll < 10)
-			$descriptor = 'amateur';
-		elseif($dam_roll < 15)
-			$descriptor = 'competent';
-		else
-			$descriptor = 'skillful';
-
-		$actors = $this->getRoom()->getActors();
-		foreach($actors as $a) {
-			Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
-		}
-
-		if(!$victim->isAlive()) {
-			$victim->afterDeath($this);
-		}
-	}
-
-	public function reconcileTarget($args = [])
-	{
-		if(sizeof($args) <= 1) {
-			return $this->target;
-		}
-
-		$specified_target = is_array($args) ? $this->getRoom()->getActorByInput(array_slice($args, -1)[0]) : $args;
-
-		if(empty($this->target)) {
-			if(empty($specified_target)) {
-				return Server::out($this, "No one is there.");
-			}
-			if(!($specified_target instanceof self)) {
-				return Server::out($this, "I don't think they would like that very much.");
-			}
-			if($this === $specified_target) {
-				return Server::out($this, "You can't target yourself!");
-			}
-			$this->setTarget($specified_target);
-		} else if(!empty($specified_target) && $this->target !== $specified_target) {
-			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
-		}
-		return $this->target;
-	}
-
-	protected function afterDeath($killer)
-	{
-		$this->setTarget(null);
-		$killer->setTarget(null);
-
-		Debug::log(ucfirst($killer).' killed '.$this.".");
-		Server::out($killer, 'You have KILLED '.$this.'.');
-		$killer->applyExperienceFrom($this);
-
-		if($this instanceof User)
-			$nouns = $this->getAlias();
-		elseif($this instanceof Mob)
-			$nouns = $this->getNouns();
-
-		$gold = round($this->gold / 3);
-		$silver = round($this->silver / 3);
-		$copper = round($this->copper / 3);
-
-		$killer->modifyCurrency('gold', $gold);
-		$killer->modifyCurrency('silver', $silver);
-		$killer->modifyCurrency('copper', $copper);
-
-		$this->gold = $gold;
-		$this->silver = $silver;
-		$this->copper = $copper;
-
-		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
-		if(chance() < 25) {
-			$parts = $this->race['lookup']->getParts();
-			$custom_message = [
-				['brains' => ucfirst($this)."'s brains splash all over you!"],
-				['guts' => ucfirst($this).' spills '.$this->getDisplaySex().' guts all over the floor.'],
-				['heart' => ucfirst($this)."'s heart is torn from ".$this->getDisplaySex(). " chest."]
-			];
-			$k = array_rand($parts);
-			if(isset($custom_message[$parts[$k]])) {
-				$message = $custom_message[$parts[$k]];
-			} else {
-				$message = ucfirst($this)."'s ".$parts[$k].' is sliced from '.$this->getDisplaySex().' body.';
-			}
-			$this->getRoom()->announce([
-				['actor' => '*', 'message' => $message]
-			]);
-			$this->getRoom()->addItem(new Food([
-				'short' => 'the '.$parts[$k].' of '.$this,
-				'long' => 'The '.$parts[$k].' of '.$this.' is here.',
-				'nouns' => $parts[$k].' '.$nouns,
-				'nourishment' => 5
-			]));
-		}
-		$corpse = new Corpse([
-			'short' => 'a corpse of '.$this,
-			'long' => 'A corpse of '.$this.' lies here.',
-			'nouns' => 'corpse '.(property_exists($this, 'nouns') ? $this->nouns : $this),
-			'weight' => 100,
-			'copper' => $copper,
-			'silver' => $silver,
-			'gold' => $gold
-		]);
-		foreach($this->items as $i) {
-			$this->removeItem($i);
-			$corpse->addItem($i);
-		}
-		$this->getRoom()->addItem($corpse);
-		if($killer instanceof User) {
-			Server::out($killer, "\n".$killer->prompt(), false);
-		}
-
-		$this->handleDeath();
-	}
-
-	protected function handleDeath()
-	{
-		Debug::log(ucfirst($this).' died.');
-		Server::out($this, 'You have been KILLED!');
 	}
 
 	public function applyExperienceFrom(Actor $victim)

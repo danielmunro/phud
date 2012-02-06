@@ -231,6 +231,11 @@ class User extends Actor
 		$dbr->set($this->alias, serialize($this));
 	}
 
+	public function setAlias($alias)
+	{
+		$this->alias = $alias;
+	}
+
 	public function __sleep()
 	{
 		return [
