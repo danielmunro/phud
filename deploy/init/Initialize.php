@@ -1,5 +1,6 @@
 <?php
 use Living\User,
+	Mechanics\Actor,
 	Mechanics\Dbr,
 	Mechanics\Server,
 	Mechanics\Race,
@@ -17,6 +18,7 @@ $server->addSubscriber(
 			Server::out($client, 'By what name do you wish to be known? ', false);
 			$progress = ['alias' => false];
 			$unverified_user = null;
+			$user_properties = [];
 			$input_subscriber = new Subscriber(
 				Event::EVENT_INPUT,
 				function($subscriber, $client, $args) {
@@ -30,7 +32,7 @@ $server->addSubscriber(
 			$client->addSubscriber(
 				new Subscriber(
 					Event::EVENT_INPUT,
-					function($subscriber, $client, $args) use (&$progress, &$unverified_user, &$input_subscriber) {
+					function($subscriber, $client, $args) use (&$progress, &$unverified_user, &$input_subscriber, &$user_properties) {
 						$subscriber->satisfyBroadcast();
 						$racesAvailable = function($client) {
 							$races = Race::getAliases();
@@ -76,11 +78,12 @@ $server->addSubscriber(
 								$unverified_user->getRoom()->actorAdd($unverified_user);
 								$command = Command::lookup('look');
 								$command['lookup']->perform($unverified_user);
+								Debug::log("User logged in: ".$user);
 							} else {
 								Server::out($client, 'Wrong password.');
-								$subscriber->kill();
 								Server::instance()->disconnectClient($client);
 							}
+							$subscriber->kill();
 							return;
 						}
 
@@ -89,11 +92,10 @@ $server->addSubscriber(
 							switch($progress['confirm_new']) {
 								case 'y':
 								case 'yes':
-									$unverified_user = new User();
-									$unverified_user->setAlias($progress['alias']);
+									$user_properties['alias'] = $progress['alias'];
 									$progress['new_pass'] = false;
 									Server::out($client, "New character.");
-									Server::out($client, "Give me a password for ".$progress['alias'].": ", false);
+									Server::out($client, "Give me a password for ".$user_properties['alias'].": ", false);
 									break;
 								case 'n':
 								case 'no':
@@ -115,6 +117,7 @@ $server->addSubscriber(
 						if(isset($progress['new_pass_2']) && $progress['new_pass_2'] === false) {
 							$progress['new_pass_2'] = $input;
 							if($progress['new_pass'] == $progress['new_pass_2']) {
+								$user_properties['password'] = $progress['new_pass'];
 								$progress['race'] = false;
 								$racesAvailable($client);
 							} else {
@@ -130,7 +133,7 @@ $server->addSubscriber(
 							$progress['race'] = $input;
 							$race = Race::lookup($progress['race']);
 							if($race && $race['lookup']->isPlayable()) {
-								$unverified_user->setRace($race);
+								$user_properties['race'] = $race['alias'];
 							} else {
 								Server::out($client, "That's not a valid race.");
 								$racesAvailable($client);
@@ -144,14 +147,14 @@ $server->addSubscriber(
 						
 						if(isset($progress['sex']) && $progress['sex'] === '') {
 							if($input == 'm' || $input == 'male')
-								$progress['sex'] = 'm';
+								$progress['sex'] = Actor::SEX_MALE;
 							else if($input == 'f' || $input == 'female')
-								$progress['sex'] = 'f';
+								$progress['sex'] = Actor::SEX_FEMALE;
 							else
 								return Server::out($client, "That's not a sex.\nWhat IS your sex? ", false);
 							
 							if($progress['sex']) {
-								$unverified_user->setSex($progress['sex']);
+								$user_properties['sex'] = $progress['sex'];
 								$progress['align'] = false;
 								return Server::out($client, "What is your alignment (good/neutral/evil)? ", false);
 							}
@@ -160,35 +163,32 @@ $server->addSubscriber(
 						if(isset($progress['align']) && $progress['align'] === false)
 						{
 							if($input == 'g' || $input == 'good')
-								$progress['align'] = 500;
+								$user_properties['alignment'] = 500;
 							else if($input == 'n' || $input == 'neutral')
-								$progress['align'] = 0;
+								$user_properties['alignment'] = 0;
 							else if($input == 'e' || $input == 'evil')
-								$progress['align'] = -500;
+								$user_properties['alignment'] = -500;
 							else
 								return Server::out($client, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
-							
-							$unverified_user->modifyAlignment($progress['align']);
 							$progress['finish'] = false;
 						}
 
 						if(isset($progress['finish']) && $progress['finish'] === false)
 						{
+							$user = new User($user_properties);
 							$client->addSubscriber($input_subscriber);
-							User::addInstance($unverified_user);
-							$unverified_user->setAlias($progress['alias']);
-							$unverified_user->modifyCurrency('copper', 20);
-							$unverified_user->setPassword(sha1($unverified_user.$unverified_user->getDateCreated().$progress['new_pass']));
-							$unverified_user->setRoom(Room::find(Room::getStartRoom()));
-							$unverified_user->setClient($client);
-							$unverified_user->save();
-							
+							$user->modifyCurrency('copper', 20);
+							$user->setPassword(sha1($user.$user->getDateCreated().$user_properties['password']));
+							$user->setRoom(Room::find(Room::getStartRoom()));
+							$user->setClient($client);
+							$client->setUser($user);
+							$user->save();
 							$command = Command::lookup('look');
-							$command['lookup']->perform($unverified_user);
-							Server::out($client, $unverified_user->prompt(), false);
+							$command['lookup']->perform($user);
+							User::addInstance($user);
+							Debug::log("New user account for ".$user);
+							$subscriber->kill();
 						}
-						Debug::log($unverified_user." logged in");
-						$subscriber->kill();
 					}
 				)
 			);
