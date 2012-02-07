@@ -62,8 +62,8 @@ trait Broadcaster
 				$callback($subscriber, $this, $a1, $a2, $a3, $a4);
 			}
 			if($subscriber->isKilled()) {
+				$subscriber->satisfyBroadcast();
 				unset($this->_subscribers[$subscriber->getEventType()][$i]);
-				continue;
 			}
 			$is_satisfied = $subscriber->isBroadcastSatisfied();
 			if($is_satisfied) {
