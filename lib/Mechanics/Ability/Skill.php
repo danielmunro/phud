@@ -17,8 +17,9 @@ abstract class Skill extends Ability
 		return new Subscriber(
 			Event::EVENT_INPUT,
 			$this,
-			function($subscriber, $user, $skill, $args) use ($alias) {
+			function($subscriber, $client, $skill, $args) use ($alias) {
 				if(!$subscriber->isBroadcastSatisfied() && strpos($alias, $args[0]) === 0) {
+					$user = $client->getUser();
 					if($skill->perform($user, $args)) {
 						$user->incrementDelay($skill->getDelay());
 					}
