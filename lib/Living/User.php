@@ -30,10 +30,10 @@ class User extends Actor
 	protected $delay = 0;
 	protected static $instances = array();
 	
-	public function __construct()
+	public function __construct($properties = [])
 	{
 		$this->date_created = date('Y-m-d H:i:s');
-		parent::__construct();
+		parent::__construct($properties);
 		$this->quest_log = new QuestLog($this);
 	}
 	
