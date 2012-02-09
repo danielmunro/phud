@@ -1,0 +1,18 @@
+rooms
+1
+Temple of Midgaard
+A large temple surrounds you, with sculptures of gods adorning the walls.
+~
+midgaard
+s 2
+~
+2
+Temple Garden
+A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.
+~
+midgaard
+n 1
+s 3
+#w 100
+w midgaard_arena5,3
+~
