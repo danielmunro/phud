@@ -11,7 +11,7 @@ use \Mechanics\Room,
 	\Items\Drink,
 	\Items\Container,
 	\Items\Armor;
-
+/**
 new Room([
 	'id' => 1,
 	'title' => 'Temple of Midgaard',
@@ -41,6 +41,7 @@ new Room([
 	'south' => 3,
 	'west' => 'midgaard_arena5,3'
 ]);
+*/
 
 new Room([
 	'id' => 3,

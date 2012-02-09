@@ -197,12 +197,19 @@ class Server
 		if(file_exists($relative_path)) {
 			$d = dir($relative_path);
 			while($cd = $d->read()) {
-				if(substr($cd, -4) === '.php') {
+				$pos = strpos($cd, '.');
+				if($pos === false) {
+					$this->readDeploy($start.$cd);
+					continue;
+				}
+				$ext = substr($cd, $pos+1);
+				if($ext === 'php') {
 					Debug::log("including deploy script: ".$cd);
 					$anon = new Anonymous();
 					$anon->_require_once($d->path.'/'.$cd);
-				} else if(strpos($cd, '.') === false) {
-					$this->readDeploy($start.$cd);
+				} else if($ext === 'area') {
+					Debug::log("including deploy script: ".$cd);
+					new Area($relative_path.'/'.$cd);
 				}
 			}
 		} else {

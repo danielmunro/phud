@@ -78,7 +78,7 @@ $server->addSubscriber(
 								$unverified_user->getRoom()->actorAdd($unverified_user);
 								$command = Command::lookup('look');
 								$command['lookup']->perform($unverified_user);
-								Debug::log("User logged in: ".$user);
+								Debug::log("User logged in: ".$unverified_user);
 							} else {
 								Server::out($client, 'Wrong password.');
 								Server::instance()->disconnectClient($client);
