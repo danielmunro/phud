@@ -1,18 +1,22 @@
-rooms
-1
+room 1
 Temple of Midgaard
-A large temple surrounds you, with sculptures of gods adorning the walls.
-~
+A large temple surrounds you, with sculptures of gods adorning the walls.~
 midgaard
-s 2
-~
-2
+s 2~
+
+room 2
 Temple Garden
-A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.
-~
+A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.~
 midgaard
 n 1
 s 3
-#w 100
-w midgaard_arena5,3
-~
+w midgaard_arena5,3~
+
+item
+Drink
+ornate fountain
+an ornate fountain
+An ornately carved fountain is the centerpiece to the temple garden.~
+water
+-1~
+
