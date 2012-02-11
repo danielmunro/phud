@@ -16,6 +16,9 @@ class Area
 				case strpos($line, 'item') === 0:
 					$this->loadItems();
 					break 1;
+				case strpos($line, 'actor') === 0:
+					$this->loadActors();
+					break 1;
 			}
 		}
 	}
@@ -30,11 +33,8 @@ class Area
 				}
 			}
 		};
-		$p = [];
-		$p['id'] = $id;
-		$p['title'] = $this->readLine();
-		$p['description'] = $this->readBlock();
-		$p['area'] = $this->readLine();
+		$p = $this->loadThing(['id', 'title', 'description' => 'block', 'area']);
+		var_dump($p);die;
 		$line = $this->readLine();
 		$break = false;
 		while($line) {
@@ -60,6 +60,7 @@ class Area
 			}
 			$p = [];
 			$class = ucfirst($line);
+			$p = $this->loadThing(
 			$p['nouns'] = $this->readLine();
 			$p['short'] = $this->readLine();
 			$p['long'] = $this->readBlock();
@@ -81,6 +82,50 @@ class Area
 			$full_class = 'Items\\'.$class;
 			$this->last_room->addItem(new $full_class($p));
 		}
+	}
+
+	protected function loadActors()
+	{
+		while($line = $this->readLine()) {
+			if($line === '~') {
+				break;
+			}
+			$p = [];
+			$class = ucfirst($line);
+			$p['alias'] = $this->readLine();
+			$p['nouns'] = $this->readLine();
+			$p['long'] = $this->readBlock();
+			$p['race'] = $this->readLine();
+		}
+	}
+
+	protected function loadThing($properties)
+	{
+		foreach($properties as $property => $type) {
+			$method = '';
+			if(is_numeric($property)) {
+				$property = $type;
+				$type = $line;
+			}
+			if($type === 'line') {
+				$method = 'readLine';
+			} else if($type === 'block') {
+				$method = 'readBlock';
+			} else if($type === 'property') {
+				$method = 'readProperty';
+			} else {
+				Debug::log('Error in area parser: '.$type.' is not a defined type');
+				continue;
+			}
+			$value = $this->$method();
+			if(substr($value, -1) === '~') {
+				$value = substr($value, 0, -1);
+				$p[$property] = $value;
+				return $p;
+			}
+			$p[$property] = $value;
+		}
+		return $p;
 	}
 
 	private function parseProperty($line)
