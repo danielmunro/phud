@@ -54,21 +54,35 @@ class Area
 
 	protected function loadItems()
 	{
-		$p = [];
-		$class = $this->readLine();
-		$p['nouns'] = $this->readLine();
-		$p['short'] = $this->readLine();
-		$p['long'] = $this->readBlock();
-		$p['contents'] = $this->readLine();
-		$uses = $this->readLine();
-		if(substr($uses, -1) === '~') {
-			$p['uses'] = substr($uses, 0, -1);
-		} else {
-			$p['uses'] = $uses;
-			$this->loadItems();
+		while($line = $this->readLine()) {
+			if($line === "~") {
+				break;
+			}
+			$p = [];
+			$class = ucfirst($line);
+			$p['nouns'] = $this->readLine();
+			$p['short'] = $this->readLine();
+			$p['long'] = $this->readBlock();
+			$break = false;
+			while($line = $this->readLine()) {
+				list($property, $value) = $this->parseProperty($line);
+				if(substr($value, -1) === "~") {
+					$value = substr($value, 0, -1);
+					$break = true;
+				}
+				$p[$property] = $value;
+				if($break) {
+					break;
+				}
+			}
+			$full_class = 'Items\\'.$class;
+			$this->last_room->addItem(new $full_class($p));
 		}
-		$full_class = 'Items\\'.$class;
-		$this->last_room->addItem(new $full_class($p));
+	}
+
+	private function parseProperty($line)
+	{
+		return array_map(function($p) { return trim($p); }, explode(':', $line));
 	}
 
 	private function readLine()

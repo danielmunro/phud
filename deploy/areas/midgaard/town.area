@@ -12,11 +12,16 @@ n 1
 s 3
 w midgaard_arena5,3~
 
-item
-Drink
+items
+drink
 ornate fountain
 an ornate fountain
 An ornately carved fountain is the centerpiece to the temple garden.~
-water
--1~
-
+contents: water
+uses: -1~
+item
+plaque
+a small plaque
+A small brass plaque is here, affixed to the temple wall, it reads:
+Welcome to Midgaard.~
+~
