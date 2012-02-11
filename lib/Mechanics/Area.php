@@ -73,7 +73,7 @@ class Area
 					$value = substr($value, 0, -1);
 					$break = true;
 				}
-				$p[$property] = $value;
+				$p[$property] = is_integer($value) ? intval($value) : $value;
 				if($break) {
 					break;
 				}
