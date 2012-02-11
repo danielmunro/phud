@@ -4,7 +4,7 @@ use \Mechanics\Alias,
 	\Mechanics\Race,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
-	\Mechanics\Item,
+	\Items\Item,
 	\Mechanics\Server,
 	\Mechanics\Attributes;
 

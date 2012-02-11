@@ -1,6 +1,6 @@
 <?php
-namespace Mechanics;
-use \Mechanics\Item;
+namespace Items;
+use \Mechanics\Equipped;
 
 class Equipment extends Item
 {

@@ -1,5 +1,8 @@
 <?php
-namespace Mechanics;
+namespace Items;
+use \Mechanics\Affectable,
+	\Mechanics\EasyInit,
+	\Mechanics\Attributes;
 class Item
 {
 	use Affectable, EasyInit;

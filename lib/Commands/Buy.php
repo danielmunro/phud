@@ -1,6 +1,6 @@
 <?php
 namespace Commands;
-use \Mechanics\Item as mItem,
+use \Items\Item as mItem,
 	\Mechanics\Alias,
 	\Mechanics\Actor,
 	\Mechanics\Server,

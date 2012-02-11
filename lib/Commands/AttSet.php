@@ -2,7 +2,7 @@
 namespace Commands;
 use \Mechanics\Alias,
 	\Mechanics\Server,
-	\Mechanics\Item as mItem,
+	\Items\Item as mItem,
 	\Mechanics\Command\DM,
 	\Living\User as lUser;
 

@@ -1,10 +1,10 @@
 <?php
 use \Mechanics\Room,
-	\Mechanics\Item,
+	\Items\Item,
 	\Mechanics\Actor,
 	\Mechanics\Affect,
 	\Mechanics\Attributes,
-	\Mechanics\Equipment,
+	\Items\Equipment,
 	\Living\Trainer,
 	\Living\Shopkeeper,
 	\Items\Food,

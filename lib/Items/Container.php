@@ -1,7 +1,6 @@
 <?php
 namespace Items;
-use \Mechanics\Item,
-	\Mechanics\Inventory,
+use \Mechanics\Inventory,
 	\Mechanics\Usable;
 
 class Container extends Item

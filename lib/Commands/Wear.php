@@ -4,7 +4,7 @@ use \Mechanics\Alias,
 	\Mechanics\Actor,
 	\Mechanics\Server,
 	\Mechanics\Command\Command,
-	\Mechanics\Equipment as mEquipment;
+	\Items\Equipment as iEquipment;
 
 class Wear extends Command
 {
@@ -19,7 +19,7 @@ class Wear extends Command
 			return Server::out($actor, 'You have nothing like that in your inventory.');
 		}
 		
-		if(!($item instanceof mEquipment)) {
+		if(!($item instanceof iEquipment)) {
 			return Server::out($actor, "You cannot equip ".$item.".");
 		}
 		

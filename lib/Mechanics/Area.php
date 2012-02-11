@@ -105,7 +105,7 @@ class Area
 				$line = substr($line, 0, -1);
 				$break = true;
 			}
-			$block .= $line;
+			$block .= $line."\n";
 			if($break) {
 				break;
 			}

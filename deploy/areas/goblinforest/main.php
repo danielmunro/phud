@@ -1,7 +1,7 @@
 <?php
 use \Mechanics\Room,
 	\Living\Mob,
-	\Mechanics\Item;
+	\Items\Item;
 
 $id = 'goblinforest';
 $area = 'goblinforest';

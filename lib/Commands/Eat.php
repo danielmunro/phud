@@ -4,7 +4,7 @@ use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Server,
 	\Mechanics\Command\User as cUser,
-	\Mechanics\Item as mItem,
+	\Items\Item as mItem,
 	\Items\Food;
 
 class Eat extends cUser

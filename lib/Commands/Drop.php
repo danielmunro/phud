@@ -4,7 +4,7 @@ use \Mechanics\Alias,
 	\Mechanics\Actor,
 	\Mechanics\Server,
 	\Mechanics\Command\Command,
-	\Mechanics\Item as mItem;
+	\Items\Item as mItem;
 
 class Drop extends Command
 {

@@ -4,9 +4,7 @@ use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Server,
 	\Mechanics\Command\Command,
-	\Items\Container,
-	\Items\Item as iItem,
-	\Mechanics\Item as mItem;
+	\Items\Container;
 
 class Get extends Command
 {

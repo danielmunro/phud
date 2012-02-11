@@ -5,7 +5,7 @@ use \Mechanics\Alias,
 	\Mechanics\Server,
 	\Mechanics\Command\Command,
 	\Items\Container,
-	\Mechanics\Item as mItem;
+	\Items\Item as mItem;
 
 class Put extends Command
 {

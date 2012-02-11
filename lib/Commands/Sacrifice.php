@@ -2,7 +2,7 @@
 namespace Commands;
 use \Mechanics\Alias,
 	\Mechanics\Actor,
-	\Mechanics\Item as mItem,
+	\Items\Item as mItem,
 	\Mechanics\Server,
 	\Mechanics\Command\Command,
 	\Items\Corpse,

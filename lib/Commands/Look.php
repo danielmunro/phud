@@ -6,7 +6,6 @@ use \Mechanics\Alias,
 	\Mechanics\Actor,
 	\Mechanics\Command\User,
 	\Living\User as lUser,
-	\Items\Item as iItem,
 	\Mechanics\Door as mDoor,
 	\Mechanics\Room as mRoom;
 
@@ -106,6 +105,7 @@ class Look extends User
 	
 	public static function lookDirection(&$user, $room, $direction)
 	{
+		/**
 		// Closed/locked door
 		$door = mDoor::findByRoomAndDirection($room, $direction);
 		if($door instanceof mDoor)
@@ -115,6 +115,7 @@ class Look extends User
 			if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
 				return Server::out($user, ucfirst($door->getLong($room)));
 		}
+		*/
 		
 		if(!($room instanceof mRoom))
 			return Server::out($user, 'You see nothing ' . $direction . '.');

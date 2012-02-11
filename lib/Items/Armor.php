@@ -1,6 +1,5 @@
 <?php
 namespace Items;
-use \Mechanics\Equipment;
 
 class Armor extends Equipment
 {

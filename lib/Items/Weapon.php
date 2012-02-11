@@ -1,7 +1,6 @@
 <?php
 namespace Items;
-use \Mechanics\Equipment,
-	\Mechanics\Damage;
+use \Mechanics\Damage;
 
 class Weapon extends Equipment
 {

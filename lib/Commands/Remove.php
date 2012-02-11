@@ -3,7 +3,7 @@ namespace Commands;
 use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Server,
-	\Mechanics\Equipment,
+	\Items\Equipment,
 	\Mechanics\Command\Command;
 
 class Remove extends Command

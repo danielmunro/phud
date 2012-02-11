@@ -4,7 +4,7 @@ use \Mechanics\Actor,
 	\Mechanics\Server,
 	\Mechanics\Debug,
 	\Mechanics\Alias,
-	\Mechanics\Item as mItem,
+	\Items\Item as mItem,
 	\Items\Drink as iDrink,
 	\Mechanics\Command\User as cUser;
 

@@ -3,7 +3,7 @@ namespace Mechanics\Quest;
 use \Living\User,
 	\Mechanics\Alias,
 	\Mechanics\Server,
-	\Mechanics\Item,
+	\Items\Item,
 	\Mechanics\Usable,
 	\Mechanics\Inventory;
 

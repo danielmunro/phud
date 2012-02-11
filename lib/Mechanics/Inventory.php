@@ -1,6 +1,7 @@
 <?php
 namespace Mechanics;
-use \Items\Container;
+use \Items\Container,
+	\Items\Item;
 
 trait Inventory
 {

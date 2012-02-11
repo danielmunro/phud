@@ -1,5 +1,7 @@
 <?php
 namespace Mechanics;
+use \Items\Equipment;
+
 class Equipped
 {
 	use Inventory, Usable;

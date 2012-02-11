@@ -1,6 +1,6 @@
 <?php
 namespace Items;
-use \Mechanics\Item;
+
 class Food extends Item
 {
 	protected $short = 'a generic food item';
