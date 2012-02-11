@@ -12,10 +12,11 @@ use \Mechanics\Room,
 	\Items\Container,
 	\Items\Armor;
 
+/**
 new Room([
 	'id' => 10,
 	'title' => 'Blue Moon Bakery',
-	'description' => 'You enter a small but brightly lit room. All along the walls are shelves lined with baked goods.',
+	'description' => '',
 	'area' => 'midgaard',
 	'south' => 4,
 	'actors' => [
@@ -41,6 +42,7 @@ new Room([
 		])
 	]
 ]);
+*/
 
 $p = [
 	'value' => 50,

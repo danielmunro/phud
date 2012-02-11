@@ -33,8 +33,8 @@ class Area
 				}
 			}
 		};
-		$p = $this->loadThing(['id', 'title', 'description' => 'block', 'area']);
-		var_dump($p);die;
+		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
+		$p['id'] = $id;
 		$line = $this->readLine();
 		$break = false;
 		while($line) {
@@ -60,7 +60,6 @@ class Area
 			}
 			$p = [];
 			$class = ucfirst($line);
-			$p = $this->loadThing(
 			$p['nouns'] = $this->readLine();
 			$p['short'] = $this->readLine();
 			$p['long'] = $this->readBlock();
@@ -105,7 +104,7 @@ class Area
 			$method = '';
 			if(is_numeric($property)) {
 				$property = $type;
-				$type = $line;
+				$type = 'line';
 			}
 			if($type === 'line') {
 				$method = 'readLine';
@@ -153,10 +152,11 @@ class Area
 				$line = substr($line, 0, -1);
 				$break = true;
 			}
-			$block .= $line."\n";
+			$block .= $line;
 			if($break) {
 				break;
 			}
+			$block .= "\n";
 		}
 		return $block;
 	}
