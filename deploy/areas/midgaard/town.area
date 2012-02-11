@@ -24,3 +24,50 @@ plaque
 a small plaque
 A small brass plaque is here, affixed to the temple wall, it reads:
 Welcome to Midgaard.~
+~
+~
+
+room 3
+Midgaard Market Square
+Cobblestone paths from all directions converge here, with shops lining a massive square.~
+midgaard
+n 2
+w 4
+e 7
+s 18~
+
+room 4
+Market Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+e 3
+w 6
+n 10
+s 11~
+
+room 6
+Market Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+e 4
+w 13
+n 17
+s 26~
+
+room 7
+Market Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+e 9
+w 3
+n 12
+s 16~
+
+room 9
+Market Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+w 7
+e 14
+n 15
+s 27~

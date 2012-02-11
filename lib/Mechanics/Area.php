@@ -65,6 +65,9 @@ class Area
 			$p['long'] = $this->readBlock();
 			$break = false;
 			while($line = $this->readLine()) {
+				if($line === "~") {
+					break;
+				}
 				list($property, $value) = $this->parseProperty($line);
 				if(substr($value, -1) === "~") {
 					$value = substr($value, 0, -1);

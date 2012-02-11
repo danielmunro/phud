@@ -11,49 +11,6 @@ use \Mechanics\Room,
 	\Items\Drink,
 	\Items\Container,
 	\Items\Armor;
-/**
-new Room([
-	'id' => 1,
-	'title' => 'Temple of Midgaard',
-	'description' => 'A large temple surrounds you, with sculptures of gods adorning the walls.',
-	'area' => 'midgaard',
-	'south' => 2,
-	'actors' => [
-		new Trainer()
-	]
-]);
-
-new Room([
-	'id' => 2,
-	'title' => 'Temple Garden',
-	'description' => 'A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.',
-	'area' => 'midgaard',
-	'items' => [
-		new Drink([
-			'short' => 'an ornate fountain',
-			'long' => 'An ornately carved obsidian fountain is the centerpiece to the temple garden.',
-			'nouns' => 'ornate fountain',
-			'contents' => 'water',
-			'uses' => -1
-		])
-	],
-	'north' => 1,
-	'south' => 3,
-	'west' => 'midgaard_arena5,3'
-]);
-*/
-
-new Room([
-	'id' => 3,
-	'title' => 'Midgaard Market Square',
-	'description' => 'Cobblestone paths from all directions converge here, with shops lining a massive square.',
-	'area' => 'midgaard',
-	'north' => 2,
-	'west' => 4,
-	'east' => 7,
-	'south' => 18
-]);
-
 
 new Room([
 	'id' => 10,
@@ -240,17 +197,6 @@ new Room([
 	'area' => 'midgaard',
 	'north' => 9
 ]);
-
-$p = [
-	'title' => 'Market Street',
-	'description' => 'A cobblestone path travels in a east-west direction with shops lining both sides.',
-	'area' => 'midgaard'
-];
-
-new Room(array_merge(['id' => 4, 'east' => 3, 'west' => 6, 'north' => 10, 'south' => 11], $p));
-new Room(array_merge(['id' => 6, 'east' => 4, 'west' => 13, 'north' => 17, 'south' => 26], $p));
-new Room(array_merge(['id' => 7, 'east' => 9, 'west' => 3, 'north' => 12, 'south' => 16], $p));
-new Room(array_merge(['id' => 9, 'west' => 7, 'east' => 14, 'north' => 15, 'south' => 27], $p));
 
 new Room([
 	'id' => 13,
