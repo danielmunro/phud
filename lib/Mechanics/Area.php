@@ -5,6 +5,7 @@ class Area
 	protected $fp = null;
 	protected $last_added = null;
 	protected $last_room = null;
+	protected $break = false;
 
 	public function __construct($area)
 	{
@@ -36,19 +37,12 @@ class Area
 		};
 		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
 		$p['id'] = $id;
-		$line = $this->readLine();
-		$break = false;
-		while($line) {
-			if(substr($line, -1) === '~') {
-				$line = substr($line, 0, -1);
-				$break = true;
-			}
+		while($line = $this->readLine()) {
 			list($dir, $id) = explode(' ', $line);
 			$p[$getdir($dir)] = $id;
-			if($break) {
+			if($this->break()) {
 				break;
 			}
-			$line = $this->readLine();
 		}
 		$this->last_added = $this->last_room = new Room($p);
 	}
@@ -67,12 +61,8 @@ class Area
 					break;
 				}
 				list($property, $value) = $this->parseProperty($line);
-				if(substr($value, -1) === "~") {
-					$value = substr($value, 0, -1);
-					$break = true;
-				}
 				$p[$property] = is_integer($value) ? intval($value) : $value;
-				if($break) {
+				if($this->break()) {
 					break;
 				}
 			}
@@ -128,7 +118,6 @@ class Area
 	{
 		return array_map(function($p) {
 			$p = trim($p);
-			var_dump($p);
 			if($p === 'true') {
 				return true;
 			} else if($p === 'false') {
@@ -144,6 +133,10 @@ class Area
 		$line = trim($input);
 		if(strpos($line, '#') === 0 || (strlen($line) === 0 && $input !== false)) {
 			return $this->readLine();
+		}
+		if(substr($line, -1) === '~') {
+			$this->break = true;
+			$line = substr($line, 0, -1);
 		}
 		return $line;
 	}
@@ -165,6 +158,14 @@ class Area
 			$block .= "\n";
 		}
 		return $block;
+	}
+
+	private function break()
+	{
+		if($this->break) {
+			$this->break = false;
+			return true;
+		}
 	}
 }
 ?>
