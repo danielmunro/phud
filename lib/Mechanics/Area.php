@@ -6,6 +6,7 @@ class Area
 	protected $last_added = null;
 	protected $last_room = null;
 	protected $break = false;
+	protected $buffer = [];
 
 	public function __construct($area)
 	{
@@ -38,9 +39,9 @@ class Area
 		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
 		$p['id'] = $id;
 		while($line = $this->readLine()) {
-			list($dir, $id) = explode(' ', $line);
+			list($dir, $id) = $this->parseProperty($line);
 			$p[$getdir($dir)] = $id;
-			if($this->break()) {
+			if($this->_break()) {
 				break;
 			}
 		}
@@ -55,14 +56,13 @@ class Area
 			}
 			$p = $this->loadThing(['nouns', 'short', 'long' => 'block']);
 			$class = ucfirst($line);
-			$break = false;
 			while($line = $this->readLine()) {
 				if($line === "~") {
 					break;
 				}
 				list($property, $value) = $this->parseProperty($line);
 				$p[$property] = is_integer($value) ? intval($value) : $value;
-				if($this->break()) {
+				if($this->_break()) {
 					break;
 				}
 			}
@@ -124,15 +124,33 @@ class Area
 				return false;
 			}
 			return $p;
-	 	}, explode(':', $line));
+	 	}, preg_split('/\s/', trim($line), 2));
 	}
 
-	private function readLine()
+	private function readLine($properties = [])
 	{
-		$input = fgets($this->fp);
-		$line = trim($input);
-		if(strpos($line, '#') === 0 || (strlen($line) === 0 && $input !== false)) {
-			return $this->readLine();
+		if($this->buffer) {
+			$line = array_shift($this->buffer);
+		} else {
+			$input = fgets($this->fp);
+			if($input === false) {
+				return false;
+			}
+			$line = trim($input);
+			$comment_pos = strpos($line, '#');
+			if($comment_pos !== false) {
+				$line = substr($line, 0, $comment_pos);
+			}
+			if(empty($line)) {
+				return $this->readLine();
+			}
+			if((isset($properties['comma']) && $properties['comma'] !== 'accept') || !isset($properties['comma'])) {
+				$comma_pos = strpos($line, ',');
+				if($comma_pos !== false) {
+					$this->buffer = explode(', ', $line);
+					$line = array_shift($this->buffer);
+				}
+			}
 		}
 		if(substr($line, -1) === '~') {
 			$this->break = true;
@@ -143,16 +161,10 @@ class Area
 
 	private function readBlock()
 	{
-		$line = '';
 		$block = '';
-		$break = false;
-		while($line = $this->readLine()) {
-			if(substr($line, -1) === '~') {
-				$line = substr($line, 0, -1);
-				$break = true;
-			}
+		while($line = $this->readLine(['comma' => 'accept'])) {
 			$block .= $line;
-			if($break) {
+			if($this->_break()) {
 				break;
 			}
 			$block .= "\n";
@@ -160,7 +172,7 @@ class Area
 		return $block;
 	}
 
-	private function break()
+	private function _break()
 	{
 		if($this->break) {
 			$this->break = false;

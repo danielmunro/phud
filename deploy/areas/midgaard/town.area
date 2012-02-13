@@ -8,43 +8,33 @@ room 2
 Temple Garden
 A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.~
 midgaard
-n 1
-s 3
-w midgaard_arena5,3~
+n 1, s 3, w midgaard_arena5,3~
 
 items
 drink
 ornate fountain
 an ornate fountain
 An ornately carved fountain is the centerpiece to the temple garden.~
-contents: water
-uses: -1
-can_own: false~
+contents water, uses -1, can_own false~
 item
 plaque
 a small plaque
 A small brass plaque is here, affixed to the temple wall, it reads:
 Welcome to Midgaard.~
-can_own: false~
+can_own false~
 ~
 
 room 3
 Midgaard Market Square
 Cobblestone paths from all directions converge here, with shops lining a massive square.~
 midgaard
-n 2
-w 4
-e 7
-s 18~
+n 2, w 4, e 7, s 18~
 
 room 4
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
-e 3
-w 6
-n 10
-s 11~
+e 3, w 6, n 10, s 11~
 
 room 10
 Blue Moon Bakery
@@ -63,39 +53,52 @@ food
 baked apple pie
 a baked apple pie
 A delicious apple pie is here.~
-nourishment: 1
-value: 5~
+nourishment 1, value 5~
 food
 chicken pot pie
 a big chicken pot pie
 A big chicken pot pie with a brown flaky crust is here.~
-nourishment: 2
-value: 8~
+nourishment 2, value 8~
+~
+#
+room 11
+Midgaard Armory
+A hallway is lined with implements of destruction on one side, and pieces of various types of armor on the other.
+midgaard
+n 4~
+actors
+shopkeeper
+Halek
+blacksmith halek
+A tall and lean blacksmith stands before you.~
+human~
+~
+items
+armor
+ragged leather boots
+leather boots
+Torn and ragged leather boots are here.~
+value 50, weight 2, level 5, material leather~
+#attributes
+#ac_slash -5
+#ac_bash -5
+#ac_pierce -5~
 ~
 
 room 6
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
-e 4
-w 13
-n 17
-s 26~
+e 4, w 13, n 17, s 26~
 
 room 7
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
-e 9
-w 3
-n 12
-s 16~
+e 9, w 3, n 12, s 16~
 
 room 9
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
-w 7
-e 14
-n 15
-s 27~
+w 7, e 14, n 15, s 27~

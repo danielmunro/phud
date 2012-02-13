@@ -13,37 +13,6 @@ use \Mechanics\Room,
 	\Items\Armor;
 
 /**
-new Room([
-	'id' => 10,
-	'title' => 'Blue Moon Bakery',
-	'description' => '',
-	'area' => 'midgaard',
-	'south' => 4,
-	'actors' => [
-		new Shopkeeper([
-			'alias' => 'Anyan',
-			'nouns' => 'anyan baker',
-			'long' => 'An old and wirey elf stands before you.',
-			'race' => 'elf',
-			'items' => [
-				new Food([
-					'short' => 'a baked apple pie',
-					'nouns' => 'baked apple pie',
-					'nourishment' => 1,
-					'value' => 5
-				]),
-				new Food([
-					'short' => 'a big pot pie',
-					'nouns' => 'pot pie',
-					'nourishment' => 2,
-					'value' => 8
-				])
-			]
-		])
-	]
-]);
-*/
-
 $p = [
 	'value' => 50,
 	'weight' => 2,
@@ -102,6 +71,7 @@ new Room([
 		])
 	]
 ]);
+*/
 
 new Room([
 	'id' => 12,
