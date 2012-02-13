@@ -18,7 +18,8 @@ ornate fountain
 an ornate fountain
 An ornately carved fountain is the centerpiece to the temple garden.~
 contents: water
-uses: -1~
+uses: -1
+can_own: false~
 item
 plaque
 a small plaque
@@ -50,26 +51,27 @@ Blue Moon Bakery
 You enter a small but brightly lit room. All along the walls are shelves lined with baked goods.~
 midgaard
 s 4~
-#actors
-#shopkeeper
-#Anyan
-#anyan baker
-#An old and wirey elf is here kneeding dough and running between ovens.
-#elf~
-#items
-#food
-#baked apple pie
-#a baked apple pie
-#A delicious apple pie is here.~
-#nourishment: 1
-#value: 5~
-#food
-#chicken pot pie
-#a big chicken pot pie
-#A big chicken pot pie with a brown flaky crust is here.~
-#nourishment: 2
-#value: 8~
-#~
+actors
+shopkeeper
+Anyan
+anyan baker
+An old and wirey elf is here kneeding dough and running between ovens.~
+elf~
+~
+items
+food
+baked apple pie
+a baked apple pie
+A delicious apple pie is here.~
+nourishment: 1
+value: 5~
+food
+chicken pot pie
+a big chicken pot pie
+A big chicken pot pie with a brown flaky crust is here.~
+nourishment: 2
+value: 8~
+~
 
 room 6
 Market Street

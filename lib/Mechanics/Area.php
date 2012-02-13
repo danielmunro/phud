@@ -3,6 +3,7 @@ namespace Mechanics;
 class Area
 {
 	protected $fp = null;
+	protected $last_added = null;
 	protected $last_room = null;
 
 	public function __construct($area)
@@ -49,7 +50,7 @@ class Area
 			}
 			$line = $this->readLine();
 		}
-		$this->last_room = new Room($p);
+		$this->last_added = $this->last_room = new Room($p);
 	}
 
 	protected function loadItems()
@@ -58,11 +59,8 @@ class Area
 			if($line === "~") {
 				break;
 			}
-			$p = [];
+			$p = $this->loadThing(['nouns', 'short', 'long' => 'block']);
 			$class = ucfirst($line);
-			$p['nouns'] = $this->readLine();
-			$p['short'] = $this->readLine();
-			$p['long'] = $this->readBlock();
 			$break = false;
 			while($line = $this->readLine()) {
 				if($line === "~") {
@@ -79,7 +77,7 @@ class Area
 				}
 			}
 			$full_class = 'Items\\'.$class;
-			$this->last_room->addItem(new $full_class($p));
+			$this->last_added->addItem(new $full_class($p));
 		}
 	}
 
@@ -89,12 +87,11 @@ class Area
 			if($line === '~') {
 				break;
 			}
-			$p = [];
+			$p = $this->loadThing(['alias', 'nouns', 'long' => 'block', 'race']);
 			$class = ucfirst($line);
-			$p['alias'] = $this->readLine();
-			$p['nouns'] = $this->readLine();
-			$p['long'] = $this->readBlock();
-			$p['race'] = $this->readLine();
+			$full_class = 'Living\\'.$class;
+			$this->last_added = new $full_class($p);
+			$this->last_added->setRoom($this->last_room);
 		}
 	}
 
@@ -129,7 +126,16 @@ class Area
 
 	private function parseProperty($line)
 	{
-		return array_map(function($p) { return trim($p); }, explode(':', $line));
+		return array_map(function($p) {
+			$p = trim($p);
+			var_dump($p);
+			if($p === 'true') {
+				return true;
+			} else if($p === 'false') {
+				return false;
+			}
+			return $p;
+	 	}, explode(':', $line));
 	}
 
 	private function readLine()
