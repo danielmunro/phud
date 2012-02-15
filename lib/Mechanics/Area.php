@@ -17,10 +17,10 @@ class Area
 					$this->loadRoom(substr($line, strpos($line, ' ')+1));
 					break 1;
 				case strpos($line, 'item') === 0:
-					$this->loadItems();
+					$this->loadItem();
 					break 1;
 				case strpos($line, 'actor') === 0:
-					$this->loadActors();
+					$this->loadActor();
 					break 1;
 			}
 		}
@@ -48,41 +48,52 @@ class Area
 		$this->last_added = $this->last_room = new Room($p);
 	}
 
-	protected function loadItems()
+	protected function loadItem()
 	{
+		$p = $this->loadThing(['nouns', 'short', 'long' => 'block']);
+		$class = '';
 		while($line = $this->readLine()) {
-			if($line === "~") {
-				break;
-			}
-			$p = $this->loadThing(['nouns', 'short', 'long' => 'block']);
-			$class = ucfirst($line);
-			while($line = $this->readLine()) {
-				if($line === "~") {
-					break;
-				}
+			if($class) {
 				list($property, $value) = $this->parseProperty($line);
 				$p[$property] = is_integer($value) ? intval($value) : $value;
-				if($this->_break()) {
-					break;
-				}
+			} else {
+				$class = ucfirst($line);
 			}
-			$full_class = 'Items\\'.$class;
-			$this->last_added->addItem(new $full_class($p));
-		}
-	}
-
-	protected function loadActors()
-	{
-		while($line = $this->readLine()) {
-			if($line === '~') {
+			if($this->_break()) {
 				break;
 			}
-			$p = $this->loadThing(['alias', 'nouns', 'long' => 'block', 'race']);
-			$class = ucfirst($line);
-			$full_class = 'Living\\'.$class;
-			$this->last_added = new $full_class($p);
-			$this->last_added->setRoom($this->last_room);
 		}
+		$p['attributes'] = [];
+		while($line = $this->readLine()) {
+			list($property, $value) = $this->parseProperty($line);
+			$p['attributes'][$property] = is_integer($value) ? intval($value) : $value;
+			if($this->_break()) {
+				break;
+			}
+		}
+		$full_class = 'Items\\'.$class;
+		$this->last_added->addItem(new $full_class($p));
+	}
+
+	protected function loadActor()
+	{
+		$p = $this->loadThing(['alias', 'nouns', 'long' => 'block', 'race']);
+		$p['attributes'] = [];
+		$class = '';
+		while($line = $this->readLine()) {
+			if($class) {
+				list($property, $value) = $this->parseProperty($line);
+				$p[$property] = is_integer($value) ? intval($value) : $value;
+			} else {
+				$class = ucfirst($line);
+			}
+			if($this->_break()) {
+				break;
+			}
+		}
+		$full_class = 'Living\\'.$class;
+		$this->last_added = new $full_class($p);
+		$this->last_added->setRoom($this->last_room);
 	}
 
 	protected function loadThing($properties)
@@ -152,6 +163,9 @@ class Area
 				}
 			}
 		}
+		if($line === '~') {
+			return false;
+		}
 		if(substr($line, -1) === '~') {
 			$this->break = true;
 			$line = substr($line, 0, -1);
@@ -161,6 +175,7 @@ class Area
 
 	private function readBlock()
 	{
+		$this->break = false;
 		$block = '';
 		while($line = $this->readLine(['comma' => 'accept'])) {
 			$block .= $line;
