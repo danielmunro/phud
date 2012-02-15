@@ -31,7 +31,7 @@ class Score extends User
 		Server::out($user,
 			'Level ' . $user->getLevel() . ', ' . $experience . ' experience to next level');
 		Server::out($user,
-			$user->getGold() . ' gold, ' . $user->getSilver() . ' silver, ' . $user->getCopper() . ' copper.');
+			$user->getCurrency('gold') . ' gold, ' . $user->getCurrency('silver') . ' silver, ' . $user->getCurrency('copper') . ' copper.');
 	
 		Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_bash')) . 'against bashing.');
 		Server::out($user, 'You are' . self::getAcString($user->getAttribute('ac_slash')) . 'against slashing.');
