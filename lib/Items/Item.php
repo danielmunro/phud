@@ -49,7 +49,13 @@ class Item
 	public function __construct($properties = [])
 	{
 		$this->attributes = new Attributes();
-		$this->initializeProperties($properties);
+		$this->initializeProperties($properties, [
+			'attributes' => function($actor, $property, $value) {
+				foreach($value as $attr => $attr_value) {
+					$actor->getAttributes()->setAttribute($attr, $attr_value);
+				}
+			}
+		]);
 	}
 	
 	public function setShort($short)
@@ -135,6 +141,11 @@ class Item
 	public function getAttribute($key)
 	{
 		return $this->attributes->getAttribute($key);
+	}
+	
+	public function getAttributes()
+	{
+		return $this->attributes;
 	}
 	
 	public function transferOwnership($from, $to)
