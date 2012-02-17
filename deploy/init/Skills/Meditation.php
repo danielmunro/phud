@@ -2,6 +2,8 @@
 namespace Skills;
 use \Mechanics\Ability\Skill,
 	\Mechanics\Ability\Ability,
+	\Mechanics\Event\Subscriber,
+	\Mechanics\Event\Event,
 	\Mechanics\Server,
 	\Mechanics\Actor;
 
@@ -14,7 +16,7 @@ class Meditation extends Skill
 
 	public function getSubscriber()
 	{
-		return new Subscription(
+		return new Subscriber(
 			Event::EVENT_TICK,
 			function($subscription, $meditation, $actor) {
 				$meditation->perform($actor);
