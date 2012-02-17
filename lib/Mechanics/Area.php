@@ -14,7 +14,7 @@ class Area
 		while($line = $this->readLine()) {
 			switch($line) {
 				case strpos($line, 'room') === 0:
-					$this->loadRoom(substr($line, strpos($line, ' ')+1));
+					$this->loadRoom();
 					break 1;
 				case strpos($line, 'item') === 0:
 					$this->loadItem();
@@ -26,7 +26,7 @@ class Area
 		}
 	}
 
-	protected function loadRoom($id)
+	protected function loadRoom()
 	{
 		$getdir = function($d) {
 			$directions = ['north', 'south', 'east', 'west', 'up', 'down'];
@@ -35,9 +35,9 @@ class Area
 					return $dir;
 				}
 			}
+			return $d;
 		};
 		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
-		$p['id'] = $id;
 		while($line = $this->readLine()) {
 			list($dir, $id) = $this->parseProperty($line);
 			$p[$getdir($dir)] = $id;

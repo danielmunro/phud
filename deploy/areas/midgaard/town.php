@@ -12,67 +12,6 @@ use \Mechanics\Room,
 	\Items\Container,
 	\Items\Armor;
 
-/**
-$p = [
-	'value' => 50,
-	'weight' => 2,
-	'level' => 5,
-	'material' => Item::MATERIAL_LEATHER,
-	'attributes' => new Attributes([
-		'ac_bash' => -5,
-		'ac_slash' => -5,
-		'ac_pierce' => -5
-	])
-];
-new Room([
-	'id' => 11,
-	'title' => 'Midgaard Armory',
-	'description' => 'A hallway is lined with implements of destruction on one side, and pieces of various types of armor on the other.',
-	'area' => 'midgaard',
-	'north' => 4,
-	'actors' => [
-		new Shopkeeper([
-			'alias' => 'Halek',
-			'nouns' => 'blacksmith halek',
-			'race' => 'human',
-			'long' => 'A tall and lean blacksmith stands before you.',
-			'items' => [
-				new Armor(array_merge($p, [
-					'short' => 'ragged leather boots',
-					'long' => 'Torn and ragged leather boots are here.',
-					'nouns' => 'leather boots',
-					'position' => Equipment::POSITION_FEET
-				])),
-				new Armor(array_merge($p, [
-					'short' => 'a ragged leather helmet',
-					'long' => 'A ragged leather helmet is here.',
-					'nouns' => 'leather helmet',
-					'position' => Equipment::POSITION_HEAD
-				])),
-				new Armor(array_merge($p, [
-					'short' => 'ragged leather leggings',
-					'long' => 'Ragged leather leggings are here.',
-					'nouns' => 'leather leggings',
-					'position' => Equipment::POSITION_LEGS
-				])),
-				new Armor(array_merge($p, [
-					'short' => 'a ragged leather chest armor',
-					'long' => 'Ragged leather chest armor is here.',
-					'nouns' => 'leather chest armor',
-					'position' => Equipment::POSITION_TORSO
-				])),
-				new Armor(array_merge($p, [
-					'short' => 'a ragged leather belt',
-					'long' => 'Ragged leather belt is here.',
-					'nouns' => 'leather belt',
-					'position' => Equipment::POSITION_WAIST
-				]))
-			]
-		])
-	]
-]);
-*/
-
 new Room([
 	'id' => 12,
 	'title' => 'Midgaard General Store',
