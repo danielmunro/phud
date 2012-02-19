@@ -28,7 +28,7 @@ class Area
 
 	protected function loadRoom()
 	{
-		$getdir = function($d) {
+		$fixshorthand = function($d) {
 			$directions = ['north', 'south', 'east', 'west', 'up', 'down'];
 			foreach($directions as $dir) {
 				if(strpos($dir, $d) === 0) {
@@ -40,7 +40,7 @@ class Area
 		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
 		while($line = $this->readLine()) {
 			list($dir, $id) = $this->parseProperty($line);
-			$p[$getdir($dir)] = $id;
+			$p[$fixshorthand($dir)] = $id;
 			if($this->_break()) {
 				break;
 			}
