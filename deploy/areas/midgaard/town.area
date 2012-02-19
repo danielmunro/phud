@@ -4,12 +4,13 @@ A large temple surrounds you, with sculptures of gods adorning the walls.~
 midgaard
 id 1, s 2~
 
-actor
+mob
 Hassan
 hassan
 Standing at over 12 feet tall, with an earth-like consistency, Hassan has an intimidating appearance even for a giant.~
-giant~
-mob~
+race giant, level 41~
+hp 10000, movement 500, hit 4, dam 20, saves -10~
+berserk, bash, kick, dirt kick, heal~
 
 room
 Temple Garden
@@ -17,19 +18,19 @@ A small fountain lies to the side of the cobblestone path, which dissects an imp
 midgaard
 id 2, n 1, s 3, w midgaard_arena5,3~
 
-item
-ornate fountain
+drink
 an ornate fountain
+ornate fountain
 An ornately carved fountain is the centerpiece to the temple garden.~
-drink, contents water, uses -1, can_own false~
+contents water, uses -1, can_own false~
 ~
 
 item
-plaque
 a small plaque
+plaque
 A small brass plaque is here, affixed to the temple wall, it reads:
 Welcome to Midgaard.~
-item, can_own false~
+can_own false~
 ~
 
 room
@@ -37,6 +38,14 @@ Midgaard Market Square
 Cobblestone paths from all directions converge here, with shops lining a massive square.~
 midgaard
 id 3, n 2, w 4, e 7, s 18~
+
+mob
+a Midgaard city guard
+city guard
+A tall guard stands here, patrolling the streets of Midgaard.~
+race human, area midgaard~
+hp 100, level 15~
+bash, kick~
 
 room
 Market Street
@@ -50,25 +59,25 @@ You enter a small but brightly lit room. All along the walls are shelves lined w
 midgaard
 id 10, s 4~
 
-actor
+shopkeeper
 Anyan
 anyan baker
 An old and wirey elf is here kneeding dough and running between ovens.~
-elf~
-shopkeeper~
-
-item
-baked apple pie
-a baked apple pie
-A delicious apple pie is here.~
-food, nourishment 1, value 5~
+race elf, area midgaard~
 ~
 
-item
-chicken pot pie
+food
+a baked apple pie
+baked apple pie
+A delicious apple pie is here.~
+nourishment 1, value 5~
+~
+
+food
 a big chicken pot pie
+chicken pot pie
 A big chicken pot pie with a brown flaky crust is here.~
-food, nourishment 2, value 8~
+nourishment 2, value 8~
 ~
 
 room
@@ -77,46 +86,46 @@ A hallway is lined with implements of destruction on one side, and pieces of var
 midgaard
 id 11, n 4~
 
-actor
+shopkeeper
 Halek
 blacksmith halek
 A tall and lean blacksmith stands before you.~
-human~
-shopkeeper~
+race human, area midgaard~
+~
 
-item
+armor
 ragged leather boots
 leather boots
 A battered pair of torn and ragged leather boots are here.~
-armor, position feet, value 50, weight 2, level 5, material leather~
+position feet, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-item
+armor
 ragged leather helmet
 leather helmet
 A crumpled up and ragged leather helmet is here.~
-armor, position head, value 50, weight 2, level 5, material leather~
+position head, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-item
+armor
 ragged leather leggings
 leather leggings
 A torn and ragged pair of leggings are here.~
-armor, position legs, value 50, weight 2, level 5, material leather~
+position legs, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-item
+armor
 ragged leather chest armor
 leather chest armor
 A torn and ragged piece of leather chest armor is here.~
-armor, position torso, value 50, weight 2, level 5, material leather~
+position torso, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-item
+armor
 ragged leather belt
 leather belt
 A torn and ragged leather belt is here.~
-armor, position waist, value 50, weight 2, level 5, material leather~
+ position waist, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 room

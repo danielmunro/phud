@@ -1,5 +1,7 @@
 <?php
 namespace Mechanics;
+use \Mechanics\Ability\Ability;
+
 class Area
 {
 	protected $fp = null;
@@ -13,14 +15,20 @@ class Area
 		$this->fp = fopen($area, 'r');
 		while($line = $this->readLine()) {
 			switch($line) {
-				case strpos($line, 'room') === 0:
+				case 'room':
 					$this->loadRoom();
 					break 1;
-				case strpos($line, 'item') === 0:
-					$this->loadItem();
+				case 'item':
+				case 'drink':
+				case 'food':
+				case 'armor':
+					$this->loadItem(ucfirst($line));
 					break 1;
-				case strpos($line, 'actor') === 0:
-					$this->loadActor();
+				case 'mob':
+					$this->loadMob();
+					break 1;
+				case 'shopkeeper':
+					$this->loadActor('shopkeeper');
 					break 1;
 			}
 		}
@@ -28,69 +36,52 @@ class Area
 
 	protected function loadRoom()
 	{
-		$fixshorthand = function($d) {
-			$directions = ['north', 'south', 'east', 'west', 'up', 'down'];
-			foreach($directions as $dir) {
-				if(strpos($dir, $d) === 0) {
-					return $dir;
-				}
-			}
-			return $d;
-		};
 		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
 		while($line = $this->readLine()) {
-			list($dir, $id) = $this->parseProperty($line);
-			$p[$fixshorthand($dir)] = $id;
-			if($this->_break()) {
-				break;
-			}
+			$this->parseInto($p, $line, function(&$p, $property, $value) {
+				$long = ['north', 'south', 'east', 'west', 'up', 'down'];
+				foreach($long as $l) {
+					if(strpos($l, $property) === 0) {
+						$p[$l] = $value;
+						return true;
+					}
+				}
+			});
 		}
 		$this->last_added = $this->last_room = new Room($p);
 	}
 
-	protected function loadItem()
+	protected function loadItem($class)
 	{
-		$p = $this->loadThing(['nouns', 'short', 'long' => 'block']);
-		$class = '';
+		$p = $this->loadThing(['short', 'nouns', 'long' => 'block']);
 		while($line = $this->readLine()) {
-			if($class) {
-				list($property, $value) = $this->parseProperty($line);
-				$p[$property] = is_integer($value) ? intval($value) : $value;
-			} else {
-				$class = ucfirst($line);
-			}
-			if($this->_break()) {
-				break;
-			}
+			$this->parseInto($p, $line);
 		}
-		$p['attributes'] = [];
-		while($line = $this->readLine()) {
-			list($property, $value) = $this->parseProperty($line);
-			$p['attributes'][$property] = is_integer($value) ? intval($value) : $value;
-			if($this->_break()) {
-				break;
-			}
-		}
+		$this->parseAttributes($p);
 		$full_class = 'Items\\'.$class;
 		$this->last_added->addItem(new $full_class($p));
 	}
 
-	protected function loadActor()
+	protected function loadMob()
 	{
-		$p = $this->loadThing(['alias', 'nouns', 'long' => 'block', 'race']);
-		$p['attributes'] = [];
-		$class = '';
+		$this->loadActor('Mob');
 		while($line = $this->readLine()) {
-			if($class) {
-				list($property, $value) = $this->parseProperty($line);
-				$p[$property] = is_integer($value) ? intval($value) : $value;
+			$ability = Ability::lookup($line);
+			if($ability) {
+				$this->last_added->addAbility($ability);
 			} else {
-				$class = ucfirst($line);
-			}
-			if($this->_break()) {
-				break;
+				Debug::log('Ability does not exist: '.$line);
 			}
 		}
+	}
+
+	protected function loadActor($class)
+	{
+		$p = $this->loadThing(['alias', 'nouns', 'long' => 'block']);
+		while($line = $this->readLine()) {
+			$this->parseInto($p, $line);
+		}
+		$this->parseAttributes($p);
 		$full_class = 'Living\\'.$class;
 		$this->last_added = new $full_class($p);
 		$this->last_added->setRoom($this->last_room);
@@ -125,21 +116,39 @@ class Area
 		return $p;
 	}
 
-	private function parseProperty($line)
+	private function parseAttributes(&$p)
 	{
-		return array_map(function($p) {
-			$p = trim($p);
-			if($p === 'true') {
+		$p['attributes'] = [];
+		while($line = $this->readLine()) {
+			$this->parseInto($p, $line, function(&$p, $property, $value) {
+				$p['attributes'][$property] = $value;
 				return true;
-			} else if($p === 'false') {
-				return false;
-			}
-			return $p;
-	 	}, preg_split('/\s/', trim($line), 2));
+			});
+		}
+	}
+
+	private function parseInto(&$p, $line, $callback = null)
+	{
+		list($property, $value) = preg_split('/\s/', trim($line), 2);
+		$value = trim($value);
+		if($value === 'true') {
+			$value = true;
+		} else if($value === 'false') {
+			$value = false;
+		} else if(is_numeric($value)) {
+			$value = intval($value);
+		}
+		if($callback && $callback($p, $property, $value)) {
+			return;
+		}
+		$p[$property] = $value;
 	}
 
 	private function readLine($properties = [])
 	{
+		if($this->_break()) {
+			return false;
+		}
 		if($this->buffer) {
 			$line = array_shift($this->buffer);
 		} else {
