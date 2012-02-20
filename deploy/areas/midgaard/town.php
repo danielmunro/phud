@@ -13,51 +13,6 @@ use \Mechanics\Room,
 	\Items\Armor;
 
 new Room([
-	'id' => 12,
-	'title' => 'Midgaard General Store',
-	'description' => 'You are standing in an empty room. On the far end is a small desk with a gnomish man behind it.',
-	'area' => 'midgaard',
-	'south' => 7,
-	'actors' => [
-		new Shopkeeper([
-			'alias' => 'Mardwyn',
-			'nouns' => 'mardwyn clerk',
-			'long' => 'A small gnomish man fidgets before you.',
-			'race' => 'elf',
-			'sex' => Actor::SEX_MALE,
-			'items' => [
-				new Equipment([
-					'short' => 'a wooden torch',
-					'long' => 'A wooden torch is glowing lightly.',
-					'nouns' => 'wooden torch',
-					'position' => Equipment::POSITION_LIGHT,
-					'material' => Item::MATERIAL_WOOD,
-					'value' => 5,
-					'affects' => [
-						new Affect(['affect' => 'glow'])
-					]
-				]),
-				new Drink([
-					'short' => 'a small canteen',
-					'long' => ' a small tin canteen is bound by leather. Looks like it can carry water.',
-					'nouns' => 'canteen',
-					'material' => Item::MATERIAL_TIN,
-					'value' => 10,
-					'amount' => 10
-				]),
-				new Container([
-					'short' => 'a leather satchel',
-					'long' => 'A leather satchel looks perfect for carrying items.',
-					'nouns' => 'leather satchel',
-					'material' => Item::MATERIAL_LEATHER,
-					'value' => 15
-				])
-			]
-		])
-	]
-]);
-
-new Room([
 	'id' => 15,
 	'title' => 'Midgaard Alchemy Shop',
 	'description' => '',

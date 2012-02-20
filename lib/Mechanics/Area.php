@@ -1,6 +1,7 @@
 <?php
 namespace Mechanics;
-use \Mechanics\Ability\Ability;
+use \Mechanics\Affect,
+	\Mechanics\Ability\Ability;
 
 class Area
 {
@@ -22,6 +23,8 @@ class Area
 				case 'drink':
 				case 'food':
 				case 'armor':
+				case 'equipment':
+				case 'container':
 					$this->loadItem(ucfirst($line));
 					break 1;
 				case 'mob':
@@ -30,13 +33,25 @@ class Area
 				case 'shopkeeper':
 					$this->loadActor('shopkeeper');
 					break 1;
+				case 'affect':
+					$this->loadAffect();
+					break 1;
 			}
 		}
 	}
 
+	protected function loadAffect()
+	{
+		$p = [];
+		while($line = $this->readLine()) {
+			$this->parseInto($p, $line);
+		}
+		$this->last_added->addAffect(new Affect($p));
+	}
+
 	protected function loadRoom()
 	{
-		$p = $this->loadThing(['title', 'description' => 'block', 'area']);
+		$p = $this->loadRequired(['title', 'description' => 'block', 'area']);
 		while($line = $this->readLine()) {
 			$this->parseInto($p, $line, function(&$p, $property, $value) {
 				$long = ['north', 'south', 'east', 'west', 'up', 'down'];
@@ -53,7 +68,7 @@ class Area
 
 	protected function loadItem($class)
 	{
-		$p = $this->loadThing(['short', 'nouns', 'long' => 'block']);
+		$p = $this->loadRequired(['short', 'nouns', 'long' => 'block']);
 		while($line = $this->readLine()) {
 			$this->parseInto($p, $line);
 		}
@@ -65,6 +80,9 @@ class Area
 	protected function loadMob()
 	{
 		$this->loadActor('Mob');
+		if(!$this->last_added->getArea()) {
+			$this->last_added->setArea($this->last_room->getArea());
+		}
 		while($line = $this->readLine()) {
 			$ability = Ability::lookup($line);
 			if($ability) {
@@ -77,7 +95,7 @@ class Area
 
 	protected function loadActor($class)
 	{
-		$p = $this->loadThing(['alias', 'nouns', 'long' => 'block']);
+		$p = $this->loadRequired(['alias', 'nouns', 'long' => 'block']);
 		while($line = $this->readLine()) {
 			$this->parseInto($p, $line);
 		}
@@ -87,7 +105,7 @@ class Area
 		$this->last_added->setRoom($this->last_room);
 	}
 
-	protected function loadThing($properties)
+	protected function loadRequired($properties)
 	{
 		foreach($properties as $property => $type) {
 			$method = '';
@@ -129,7 +147,11 @@ class Area
 
 	private function parseInto(&$p, $line, $callback = null)
 	{
-		list($property, $value) = preg_split('/\s/', trim($line), 2);
+		$x = preg_split('/\s/', trim($line), 2);
+		if(!isset($x[1])) {
+			var_dump($x);die;
+		}
+		list($property, $value) = $x;
 		$value = trim($value);
 		if($value === 'true') {
 			$value = true;

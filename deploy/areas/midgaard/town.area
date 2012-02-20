@@ -63,7 +63,7 @@ shopkeeper
 Anyan
 anyan baker
 An old and wirey elf is here kneeding dough and running between ovens.~
-race elf, area midgaard~
+race elf, level 5~
 ~
 
 food
@@ -90,7 +90,7 @@ shopkeeper
 Halek
 blacksmith halek
 A tall and lean blacksmith stands before you.~
-race human, area midgaard~
+race human, level 5~
 ~
 
 armor
@@ -145,3 +145,39 @@ Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
 id 9, w 7, e 14, n 15, s 27~
+
+room
+Midgaard General Store
+You are standing in an empty room. On the far end is a small desk with a gnomish man behind it.~
+midgaard
+id 12, s 7~
+
+shopkeeper
+Mardwyn
+mardwyn clerk
+A small gnomish man fidgets behind a desk in the corner of the general store.~
+race gnome, sex male, level 10~
+~
+
+equipment
+a wooden torch
+wooden torch
+A wooden torch is glowing lightly.~
+level 1, position light, material wood, value 5~
+~
+affect
+affect glow~
+
+drink
+a tin canteen
+tin canteen
+A small tin canteen is bound by leather. It would be good for carrying water.~
+level 1, material tin, value 10, amount 10~
+~
+
+container
+a leather satchel
+leather satchel
+A leather satchel looks perfect for carrying items.~
+level 3, material leather, value 15~
+~
