@@ -7,7 +7,6 @@ class Drink extends Item
 {
 	protected $short = 'a generic drink container';
 	protected $long = 'A generic drink container lays here';
-	protected $nouns = 'generic drink container';
 	protected $amount = 0;
 	protected $contents = '';
 	protected $thirst = 0;

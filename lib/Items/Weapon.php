@@ -17,7 +17,6 @@ class Weapon extends Equipment
 	
 	protected $short = 'a generic weapon';
 	protected $long = 'A generic weapon lays here';
-	protected $nouns = 'generic weapon';
 	protected $weapon_type = 0;
 	protected $verb = '';
 	protected $damage_type = 0;

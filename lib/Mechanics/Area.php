@@ -68,7 +68,7 @@ class Area
 
 	protected function loadItem($class)
 	{
-		$p = $this->loadRequired(['short', 'nouns', 'long' => 'block']);
+		$p = $this->loadRequired(['short', 'long' => 'block']);
 		while($line = $this->readLine()) {
 			$this->parseInto($p, $line);
 		}
@@ -95,7 +95,7 @@ class Area
 
 	protected function loadActor($class)
 	{
-		$p = $this->loadRequired(['alias', 'nouns', 'long' => 'block']);
+		$p = $this->loadRequired(['alias', 'long' => 'block']);
 		while($line = $this->readLine()) {
 			$this->parseInto($p, $line);
 		}

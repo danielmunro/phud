@@ -4,7 +4,6 @@ use \Living\User as User;
 class Quest
 {
 	protected $short = 'a generic quest';
-	protected $nouns = 'generic quest';
 	protected $experience = 0;
 	protected $requirements_to_accept = null;
 	protected $requirements_to_complete = null;

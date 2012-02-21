@@ -5,7 +5,6 @@ class Food extends Item
 {
 	protected $short = 'a generic food item';
 	protected $long = 'A generic food item lays here';
-	protected $nouns = 'generic food';
 	protected $nourishment = 1;
 
 	public function getNourishment()

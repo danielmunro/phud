@@ -9,7 +9,6 @@ class Container extends Item
 
 	protected $short = 'a generic container';
 	protected $long = 'A generic container lays here';
-	protected $nouns = 'generic container';
 	private $inventory = null;
 
 	public function getLong()

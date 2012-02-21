@@ -2,14 +2,14 @@
 namespace Items;
 use \Mechanics\Affectable,
 	\Mechanics\EasyInit,
-	\Mechanics\Attributes;
+	\Mechanics\Attributes,
+	\Mechanics\Nouns;
 class Item
 {
-	use Affectable, EasyInit;
+	use Affectable, EasyInit, Nouns;
 
 	protected $short = 'a generic item';
 	protected $long = 'A generic item lays here';
-	protected $nouns = 'generic';
 	protected $value = 0;
 	protected $weight = 0.0;
 	protected $can_own = true;
@@ -68,11 +68,6 @@ class Item
 		$this->long = $long;
 	}
 	
-	public function setNouns($nouns)
-	{
-		$this->nouns = $nouns;
-	}
-	
 	public function setValue($value)
 	{
 		$this->value = $value;
@@ -106,11 +101,6 @@ class Item
 	public function getLong()
 	{
 		return $this->long;
-	}
-	
-	public function getNouns()
-	{
-		return $this->nouns;
 	}
 	
 	public function getCanOwn()
@@ -222,6 +212,11 @@ class Item
 	}
 	
 	public function __toString()
+	{
+		return $this->short;
+	}
+
+	protected function getDefaultNouns()
 	{
 		return $this->short;
 	}

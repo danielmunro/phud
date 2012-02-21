@@ -6,7 +6,6 @@ id 1, s 2~
 
 mob
 Hassan
-hassan
 Standing at over 12 feet tall, with an earth-like consistency, Hassan has an intimidating appearance even for a giant.~
 race giant, level 41~
 hp 10000, movement 500, hit 4, dam 20, saves -10~
@@ -20,14 +19,12 @@ id 2, n 1, s 3, w midgaard_arena5,3~
 
 drink
 an ornate fountain
-ornate fountain
 An ornately carved fountain is the centerpiece to the temple garden.~
 contents water, uses -1, can_own false~
 ~
 
 item
 a small plaque
-plaque
 A small brass plaque is here, affixed to the temple wall, it reads:
 Welcome to Midgaard.~
 can_own false~
@@ -41,7 +38,6 @@ id 3, n 2, w 4, e 7, s 18~
 
 mob
 a Midgaard city guard
-city guard
 A tall guard stands here, patrolling the streets of Midgaard.~
 race human, area midgaard~
 hp 100, level 15~
@@ -60,22 +56,19 @@ midgaard
 id 10, s 4~
 
 shopkeeper
-Anyan
-anyan baker
+Anyan the baker
 An old and wirey elf is here kneeding dough and running between ovens.~
 race elf, level 5~
 ~
 
 food
 a baked apple pie
-baked apple pie
 A delicious apple pie is here.~
 nourishment 1, value 5~
 ~
 
 food
 a big chicken pot pie
-chicken pot pie
 A big chicken pot pie with a brown flaky crust is here.~
 nourishment 2, value 8~
 ~
@@ -87,43 +80,37 @@ midgaard
 id 11, n 4~
 
 shopkeeper
-Halek
-blacksmith halek
+Halek the blacksmith
 A tall and lean blacksmith stands before you.~
 race human, level 5~
 ~
 
 armor
 ragged leather boots
-leather boots
 A battered pair of torn and ragged leather boots are here.~
 position feet, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 armor
 ragged leather helmet
-leather helmet
 A crumpled up and ragged leather helmet is here.~
 position head, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 armor
 ragged leather leggings
-leather leggings
 A torn and ragged pair of leggings are here.~
 position legs, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 armor
 ragged leather chest armor
-leather chest armor
 A torn and ragged piece of leather chest armor is here.~
 position torso, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 armor
 ragged leather belt
-leather belt
 A torn and ragged leather belt is here.~
  position waist, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
@@ -153,15 +140,13 @@ midgaard
 id 12, s 7~
 
 shopkeeper
-Mardwyn
-mardwyn clerk
+Mardwyn the grocer
 A small gnomish man fidgets behind a desk in the corner of the general store.~
 race gnome, sex male, level 10~
 ~
 
 equipment
 a wooden torch
-wooden torch
 A wooden torch is glowing lightly.~
 level 1, position light, material wood, value 5~
 ~
@@ -170,14 +155,12 @@ affect glow~
 
 drink
 a tin canteen
-tin canteen
 A small tin canteen is bound by leather. It would be good for carrying water.~
 level 1, material tin, value 10, amount 10~
 ~
 
 container
 a leather satchel
-leather satchel
 A leather satchel looks perfect for carrying items.~
 level 3, material leather, value 15~
 ~

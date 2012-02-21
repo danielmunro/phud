@@ -8,10 +8,13 @@ use \Mechanics\Dbr,
 	\Mechanics\Server,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
-	\Mechanics\Command\Command;
+	\Mechanics\Command\Command,
+	\Mechanics\Nouns;
 
 class Mob extends Actor
 {
+	use Nouns;
+
 	protected $movement = 0;
 	protected $movement_timeout = 0;
 	protected $respawn_ticks = 5;
@@ -25,7 +28,6 @@ class Mob extends Actor
 	protected $silver_repop = 0;
 	protected $copper_repop = 0;
 	protected $alias = 'a generic mob';
-	protected $nouns = 'generic mob';
 	protected $path = [];
 	protected $is_recording_path = false;
 	protected $path_index = -1;
@@ -242,16 +244,6 @@ class Mob extends Actor
 		return $this->respawn_ticks;
 	}
 	
-	public function getNouns()
-	{
-		return $this->nouns;
-	}
-	
-	public function setNouns($nouns)
-	{
-		$this->nouns = trim($nouns);
-	}
-	
 	public function getAutoFlee()
 	{
 		return $this->auto_flee;
@@ -319,6 +311,11 @@ class Mob extends Actor
 	public function setCopperRepop($copper)
 	{
 		$this->copper_repop = $copper;
+	}
+
+	protected function getDefaultNouns()
+	{
+		return $this->alias;
 	}
 }
 ?>

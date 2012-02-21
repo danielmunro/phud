@@ -6,7 +6,6 @@ use \Living\User,
 class Trainer extends Mob
 {
 	protected $alias = 'a generic trainer';
-	protected $nouns = 'generic trainer';
 	protected $max_proficiency = 0;
 
 	public function train(User $user, $stat)
