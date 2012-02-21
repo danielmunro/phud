@@ -85,34 +85,34 @@ A tall and lean blacksmith stands before you.~
 race human, level 5~
 ~
 
-armor
+equipment
 ragged leather boots
 A battered pair of torn and ragged leather boots are here.~
 position feet, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-armor
+equipment
 ragged leather helmet
 A crumpled up and ragged leather helmet is here.~
 position head, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-armor
+equipment
 ragged leather leggings
 A torn and ragged pair of leggings are here.~
 position legs, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-armor
+equipment
 ragged leather chest armor
 A torn and ragged piece of leather chest armor is here.~
 position torso, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
-armor
+equipment
 ragged leather belt
 A torn and ragged leather belt is here.~
- position waist, value 50, weight 2, level 5, material leather~
+position waist, value 50, weight 2, level 5, material leather~
 ac_slash -5, ac_bash -5, ac_pierce -5~
 
 room

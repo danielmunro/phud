@@ -22,7 +22,6 @@ class Area
 				case 'item':
 				case 'drink':
 				case 'food':
-				case 'armor':
 				case 'equipment':
 				case 'container':
 					$this->loadItem(ucfirst($line));
@@ -31,7 +30,7 @@ class Area
 					$this->loadMob();
 					break 1;
 				case 'shopkeeper':
-					$this->loadActor('shopkeeper');
+					$this->loadActor('Shopkeeper');
 					break 1;
 				case 'affect':
 					$this->loadAffect();
@@ -73,8 +72,8 @@ class Area
 			$this->parseInto($p, $line);
 		}
 		$this->parseAttributes($p);
-		$full_class = 'Items\\'.$class;
-		$this->last_added->addItem(new $full_class($p));
+		$class = 'Items\\'.$class;
+		$this->last_added->addItem(new $class($p));
 	}
 
 	protected function loadMob()
@@ -100,8 +99,8 @@ class Area
 			$this->parseInto($p, $line);
 		}
 		$this->parseAttributes($p);
-		$full_class = 'Living\\'.$class;
-		$this->last_added = new $full_class($p);
+		$class = 'Living\\'.$class;
+		$this->last_added = new $class($p);
 		$this->last_added->setRoom($this->last_room);
 	}
 

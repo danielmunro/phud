@@ -21,6 +21,8 @@ class Equipment extends Item
 	const POSITION_WIELD = 'wield';
 	const POSITION_GENERIC = 'generic';
 
+	protected $short = 'a generic piece of equipment';
+	protected $long = 'A generic piece of equipment lays here';
 	protected $position = 0;
 	protected $condition = 100;
 	protected $size = 0;
