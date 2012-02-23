@@ -13,58 +13,6 @@ use \Mechanics\Room,
 	\Items\Armor;
 
 new Room([
-	'id' => 15,
-	'title' => 'Midgaard Alchemy Shop',
-	'description' => '',
-	'area' => 'midgaard',
-	'south' => 9,
-	'actors' => [
-		new Shopkeeper([
-		])
-	]
-]);
-
-new Room([
-	'id' => 16,
-	'title' => 'Midgaard Bank',
-	'description' => '',
-	'area' => 'midgaard',
-	'north' => 7,
-	'actors' => [
-		new Shopkeeper([
-		])
-	]
-]);
-
-new Room([
-	'id' => 17,
-	'title' => 'Midgaard Wand Shop',
-	'description' => '',
-	'area' => 'midgaard',
-	'south' => 6,
-	'actors' => [
-		new Shopkeeper([
-		])
-	]
-]);
-
-new Room([
-	'id' => 26,
-	'title' => "Entrance to the Mage's Guild",
-	'description' => '',
-	'area' => 'midgaard',
-	'north' => 6
-]);
-
-new Room([
-	'id' => 27,
-	'title' => "Entrance to the Warrior's Guild",
-	'description' => '',
-	'area' => 'midgaard',
-	'north' => 9
-]);
-
-new Room([
 	'id' => 13,
 	'title' => 'West Gate of Midgaard',
 	'description' => 'A stone gate to the west marks the end of Midgaard. Cobblestone paths lead in all directions.',

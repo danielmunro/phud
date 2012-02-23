@@ -30,7 +30,7 @@ class Area
 					$this->loadMob();
 					break 1;
 				case 'shopkeeper':
-					$this->loadActor('Shopkeeper');
+					$this->loadShopkeeper();
 					break 1;
 				case 'affect':
 					$this->loadAffect();
@@ -41,88 +41,75 @@ class Area
 
 	protected function loadAffect()
 	{
-		$p = [];
-		while($line = $this->readLine()) {
-			$this->parseInto($p, $line);
-		}
+		$p = $this->loadRequired([], ['properties']);
 		$this->last_added->addAffect(new Affect($p));
 	}
 
 	protected function loadRoom()
 	{
-		$p = $this->loadRequired(['title', 'description' => 'block', 'area']);
-		while($line = $this->readLine()) {
-			$this->parseInto($p, $line, function(&$p, $property, $value) {
-				$long = ['north', 'south', 'east', 'west', 'up', 'down'];
-				foreach($long as $l) {
-					if(strpos($l, $property) === 0) {
-						$p[$l] = $value;
-						return true;
-					}
+		$p = $this->loadRequired(['title', 'description' => 'block', 'area'], ['properties' => function(&$p, $property, $value) {
+			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
+			foreach($long as $l) {
+				if(strpos($l, $property) === 0) {
+					$p[$l] = $value;
+					return true;
 				}
-			});
-		}
+			}
+		}]);
 		$this->last_added = $this->last_room = new Room($p);
 	}
 
 	protected function loadItem($class)
 	{
-		$p = $this->loadRequired(['short', 'long' => 'block']);
-		while($line = $this->readLine()) {
-			$this->parseInto($p, $line);
-		}
-		$this->parseAttributes($p);
+		$p = $this->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']);
 		$class = 'Items\\'.$class;
 		$this->last_added->addItem(new $class($p));
 	}
 
 	protected function loadMob()
 	{
-		$this->loadActor('Mob');
+		$this->loadActor('Mob', [], ['properties', 'attributes', 'abilities']);
 		if(!$this->last_added->getArea()) {
+			// Game rule: every mob needs a default area. If one is not assigned, set
+			// it to the area where they first pop.
 			$this->last_added->setArea($this->last_room->getArea());
-		}
-		while($line = $this->readLine()) {
-			$ability = Ability::lookup($line);
-			if($ability) {
-				$this->last_added->addAbility($ability);
-			} else {
-				Debug::log('Ability does not exist: '.$line);
-			}
 		}
 	}
 
-	protected function loadActor($class)
+	protected function loadShopkeeper()
 	{
-		$p = $this->loadRequired(['alias', 'long' => 'block']);
-		while($line = $this->readLine()) {
-			$this->parseInto($p, $line);
+		$this->loadActor('Shopkeeper', [], ['properties']);
+		$this->last_added->addAbility(Ability::lookup('haggle')); // All shopkeepers get haggle. It's part of the trade
+	}
+
+	protected function loadActor($class, $required_properties = [], $additional = [])
+	{
+		if(empty($required_properties)) {
+			$required_properties = ['alias', 'long' => 'block'];
 		}
-		$this->parseAttributes($p);
+		if(empty($additional)) {
+			$additional = ['properties', 'attributes'];
+		}
+		$p = $this->loadRequired($required_properties, $additional);
 		$class = 'Living\\'.$class;
 		$this->last_added = new $class($p);
 		$this->last_added->setRoom($this->last_room);
 	}
 
-	protected function loadRequired($properties)
+	protected function loadRequired($properties, $additional = [])
 	{
+		$types = ['line' => 'readLine', 'block' => 'readBlock'];
 		foreach($properties as $property => $type) {
 			$method = '';
 			if(is_numeric($property)) {
 				$property = $type;
 				$type = 'line';
 			}
-			if($type === 'line') {
-				$method = 'readLine';
-			} else if($type === 'block') {
-				$method = 'readBlock';
-			} else if($type === 'property') {
-				$method = 'readProperty';
-			} else {
+			if(!isset($types[$type])) {
 				Debug::log('Error in area parser: '.$type.' is not a defined type');
 				continue;
 			}
-			$value = $this->$method();
+			$value = $this->$types[$type]();
 			if(substr($value, -1) === '~') {
 				$value = substr($value, 0, -1);
 				$p[$property] = $value;
@@ -130,10 +117,28 @@ class Area
 			}
 			$p[$property] = $value;
 		}
+		foreach($additional as $key => $value) {
+			if(is_numeric($key)) {
+				$add = $value;
+				$callback = null;
+			} else {
+				$add = $key;
+				$callback = $value;
+			}
+			if($add === 'properties') {
+				$this->_parseProperties($p, $callback);
+			}
+			else if($add === 'attributes') {
+				$this->_parseAttributes($p);
+			}
+			else if($add === 'abilities') {
+				$this->_parseAbilities($p);
+			}
+		}
 		return $p;
 	}
 
-	private function parseAttributes(&$p)
+	private function _parseAttributes(&$p)
 	{
 		$p['attributes'] = [];
 		while($line = $this->readLine()) {
@@ -144,10 +149,32 @@ class Area
 		}
 	}
 
+	private function _parseProperties(&$p, $callback = null)
+	{
+		while($line = $this->readLine()) {
+			$this->parseInto($p, $line, $callback);
+		}
+	}
+
+	private function _parseAbilities(&$p)
+	{
+		$p['abilities'] = [];
+		while($line = $this->readLine()) {
+			$ability = Ability::lookup($line);
+			if($ability) {
+				$p['abilities'][] = $ability;
+			} else {
+				Debug::log('Ability does not exist: '.$line);
+			}
+		}
+	}
+
 	private function parseInto(&$p, $line, $callback = null)
 	{
 		$x = preg_split('/\s/', trim($line), 2);
 		if(!isset($x[1])) {
+			Debug::log('Error in parser. Expecting key-value pair, got: '.print_r($x, true));
+			echo 'Error in parser. Expecting key-value pair, got: ';
 			var_dump($x);die;
 		}
 		list($property, $value) = $x;
