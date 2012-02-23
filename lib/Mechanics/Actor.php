@@ -94,6 +94,11 @@ abstract class Actor
 				foreach($value as $attr => $attr_value) {
 					$actor->setAttribute($attr, $attr_value);
 				}
+			},
+			'abilities' => function($actor, $property, $value) {
+				foreach($value as $ability) {
+					$actor->addAbility($ability);
+				}
 			}
 		]);
 		$this->max_attributes = new Attributes([
