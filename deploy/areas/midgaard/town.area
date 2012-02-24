@@ -206,3 +206,92 @@ Entrance to the Warrior's Guild
 Two battle axes hang over a mural of a lion next to the entrance.~
 midgaard
 id 27, n 9~
+
+room
+West Gate of Midgaard
+A stone gate to the west marks the end of Midgaard. Cobblestone paths lead in all directions.~
+midgaard
+id 13, e 6, w 23~
+
+room
+East Gate of Midgaard
+A stone gate to the east marks the end of Midgaard. Cobblestone paths lead in all directions.~
+midgaard
+id 14, w 9~
+
+room
+Common Square
+~
+midgaard
+id 18, n 3, w 19, e 21~
+
+room
+A Cobblestone Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+id 19, e 18, w 20, n 30, s 31~
+
+room
+A Cobblestone Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+id 20, e 19~
+
+room
+A Cobblestone Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+id 21, e 22, w 18, s 28, n 29~
+
+room
+A Cobblestone Street
+A cobblestone path travels in a east-west direction with shops lining both sides.~
+midgaard
+id 22, w 21~
+
+room
+Entrance to the Thieves Guild
+~
+midgaard
+id 28, n 21~
+
+room
+Midgaard Tavern
+~
+midgaard
+id 29, s 21~
+
+shopkeeper
+a burly looking ogre
+A burly looking ogre stands behind the counter, pouring beers and mopping up messes.~
+race ogre, level 5~
+
+drink
+a firebreather
+A firebreather is here.~
+contents cocktail, uses 3~
+~
+
+room
+Midgaard Map Shop
+Large maps adorn the walls of this old and mostly empty building.~
+midgaard
+id 30, s 19~
+
+room
+Midgaard Inn
+A wooden den greets you with a small counter on one end. A set of stairs lead up to the rest of the inn.~
+midgaard
+id 31, n 19~
+
+room
+Outside the West Gate of Midgaard
+You are in a vast, open field, which gives way to an ominously dark forest in the west. To the east is a large gate to Midgaard.~
+outside_midgaard
+id 23, e 13, w 24~
+
+room
+A path leading towards the woods
+A meandering path leads from fields to the east into a dark forest to the west.~
+outside_midgaard
+id 24, e 23, w goblinforest0~
