@@ -174,8 +174,12 @@ class Area
 		$x = preg_split('/\s/', trim($line), 2);
 		if(!isset($x[1])) {
 			Debug::log('Error in parser. Expecting key-value pair, got: '.print_r($x, true));
-			echo 'Error in parser. Expecting key-value pair, got: ';
-			var_dump($x);die;
+			echo "\n\nError in parser. Expecting key-value pair, got: \n\n";
+			var_dump($x);
+			echo "\n\n";
+			echo "Currently parsing: \n\n";
+			var_dump($p);
+			die;
 		}
 		list($property, $value) = $x;
 		$value = trim($value);

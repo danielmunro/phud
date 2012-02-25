@@ -3,6 +3,7 @@ use \Mechanics\Room,
 	\Living\Mob,
 	\Items\Item;
 
+/**
 $id = 'goblinforest';
 $area = 'goblinforest';
 
@@ -70,5 +71,6 @@ new Room([
 	'area' => $area,
 	'east' => $id.'4'
 ]);
+*/
 
 ?>
