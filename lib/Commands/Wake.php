@@ -9,7 +9,10 @@ use \Mechanics\Alias,
 class Wake extends Command
 {
 	protected $alias = 'wake';
-	protected $dispositions = [Actor::DISPOSITION_SLEEPING];
+	protected $dispositions = [
+		Actor::DISPOSITION_SLEEPING,
+		Actor::DISPOSITION_SITTING
+	];
 
 	public function perform(Actor $actor, $args = array())
 	{
@@ -23,6 +26,7 @@ class Wake extends Command
 		
 		Server::out($actor, "You wake up and stand up.");
 		$actor->getRoom()->announce($actor, ucfirst($actor)." wakes up and stands up.");
+		$actor->setFurniture(null);
 		$actor->setDisposition(Actor::DISPOSITION_STANDING);
 	}
 

@@ -1,0 +1,100 @@
+room
+Adelwine Manor Foyer
+Large windows in the arching foyer of the Adelwine manor let in some of the only light in the abandoned building. From here you can see a hall leading north, and it looks like there is movement but it's impossible to see anything.~
+adelwine
+id 32, s 20, n 33~
+
+mob
+a ghost of a servant boy
+A ghost of a servant boy is here, looking for something useful to do.~
+movement 3~
+hp 10, level 8~
+trip~
+
+room
+Adelwine Manor Sitting Room
+Portraits of the previous owners of Adelwine Manor hang on the wall. Badly aged and decayed, their condition is a stark reminder of the age of the manor. The hallway has opened up to a sitting room, with a staircase leading up, presumably to the bedrooms.~
+adelwine
+id 33, s 32, n 36, w 34, e 35~
+
+room
+Sitting Room
+A record player is set against crumblinging walls in this part of the room. It looks like there is a small pantry to the west.~
+adelwine
+id 34, e 33, n 37, w 39~
+
+item
+a decrepit record player
+A very old, and very broken looking record player is set against the wall.~
+can_own false~
+~
+
+mob
+a ghost of a servant boy
+A ghost of a servant boy is here, looking for something useful to do.~
+movement 3~
+hp 10, level 8~
+~
+
+room
+Sitting Room
+This part of the room is too dark to make out any details.~
+adelwine
+id 35, w 33, n 38~
+
+room 
+Sitting Room
+You are greeted by an empty room, with a window on the wall and a single chair in it. The chair is covered in a cloth.~
+adelwine
+id 36, s 32, w 37, e 38~
+
+furniture
+a leather bound chair
+A leather bound chair is here, covered by a white linen cloth.~
+material leather, regen .2~
+~
+
+mob
+a ghost of a servant boy
+A ghost of a servant boy is here, looking for something useful to do.~
+movement 3~
+hp 10, level 8~
+~
+
+room
+Sitting Room
+A boarded up window allows just enough light through to see severe damage to the flooring and walls.~
+adelwine
+id 37, s 34, e 36~
+
+room
+Sitting Room
+This part of the room is empty except for a couch with a linen sheet over it.~
+adelwine
+id 38, w 36, s 35~
+
+mob
+a ghost of a servant boy
+A ghost of a servant boy is here, looking for something useful to do.~
+movement 3~
+hp 10, level 8~
+~
+
+furniture
+a leather bound couch
+A leather bound couch is here, covered by a white linen sheet.~
+material leather~
+~
+
+room
+a small pantry
+The pantry is loaded with food that has long gone bad.~
+adelwine
+id 39, e 34~
+
+mob
+a ghost of a servant boy
+A ghost of a servant boy is here, looking for something useful to do.~
+movement 3~
+hp 10, level 8~
+~

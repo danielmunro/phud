@@ -7,7 +7,8 @@ use \Mechanics\Ability\Ability,
 	\Mechanics\Event\Event,
 	\Living\User,
 	\Items\Corpse,
-	\Items\Food;
+	\Items\Food,
+	\Items\Furniture;
 
 abstract class Actor
 {
@@ -43,6 +44,7 @@ abstract class Actor
 	protected $target = null;
 	protected $experience = 0;
 	protected $experience_per_level = 0;
+	protected $furniture = null;
 	protected $_subscriber_delay = null;
 	protected $_subscribers_race = [];
 	protected $_subscriber_tick = null;
@@ -508,6 +510,19 @@ abstract class Actor
 			$this->proficiencies[$proficiency] = 15;
 		}
 		return $this->proficiencies[$proficiency];
+	}
+
+	public function getFurniture()
+	{
+		return $this->furniture;
+	}
+
+	public function setFurniture(Furniture $furniture = null)
+	{
+		if($this->furniture) {
+			$this->furniture->removeActor($this);
+		}
+		$this->furniture = $furniture;
 	}
 
 	public function getAlignment()

@@ -46,7 +46,14 @@ class Room
 			}
 		]);
 		if(empty($this->id) || isset(self::$instances[$this->id])) {
-			throw new Exception('Room id is empty or already used: '.$this->id);
+			$room = self::$instances[$this->id];
+			if($room) {
+				echo "Room already exists for ID (".$this->id.") -> ".$room->getTitle();
+			} else {
+				echo "Room ID is empty for: \n\n";
+				var_dump($properties);
+			}
+			die;
 		}
 		self::$instances[$this->id] = $this;
 	}

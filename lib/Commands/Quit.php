@@ -8,6 +8,11 @@ use \Mechanics\Alias,
 class Quit extends User
 {
 	protected $alias = 'quit';
+	protected $dispositions = [
+		Actor::DISPOSITION_STANDING,
+		Actor::DISPOSITION_SITTING,
+		Actor::DISPOSITION_SLEEPING
+	];
 	
 	public function perform(lUser $user, $args = array())
 	{

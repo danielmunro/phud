@@ -39,7 +39,7 @@ id 3, n 2, w 4, e 7, s 18~
 mob
 a Midgaard city guard
 A tall guard stands here, patrolling the streets of Midgaard.~
-race human, area midgaard~
+race human~
 hp 100, level 15~
 bash, kick~
 
@@ -235,7 +235,7 @@ room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
 midgaard
-id 20, e 19~
+id 20, e 19, n 32~
 
 room
 A Cobblestone Street

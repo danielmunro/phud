@@ -24,6 +24,7 @@ class Area
 				case 'food':
 				case 'equipment':
 				case 'container':
+				case 'furniture':
 					$this->loadItem(ucfirst($line));
 					break 1;
 				case 'mob':
