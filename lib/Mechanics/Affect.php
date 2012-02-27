@@ -13,6 +13,7 @@ class Affect
 	
 	private $affect = '';
 	private $message_affect = '';
+	private $message_start = '';
 	private $message_end = '';
 	private $timeout = 0;
 	private $args = array();
@@ -47,6 +48,11 @@ class Affect
 	{
 		return $this->message_affect;
 	}
+
+	public function getMessageStart()
+	{
+		return $this->message_start;
+	}
 	
 	public function getMessageEnd()
 	{
@@ -67,6 +73,9 @@ class Affect
 	public function apply($affectable)
 	{
 		Debug::log("[Affect] Adding ".$this." to ".$affectable.", ".$this->timeout." tick timeout.");
+		if($this->getMessageStart()) {
+			Server::out($affectable, $this->getMessageStart());
+		}
 		$affectable->fire(Event::EVENT_APPLY_AFFECT, $this);
 		$affectable->addAffect($this);
 		$this->applyTimeoutSubscriber($affectable);

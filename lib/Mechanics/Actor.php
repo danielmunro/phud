@@ -8,7 +8,8 @@ use \Mechanics\Ability\Ability,
 	\Living\User,
 	\Items\Corpse,
 	\Items\Food,
-	\Items\Furniture;
+	\Items\Furniture,
+	\Items\Equipment;
 
 abstract class Actor
 {
@@ -778,6 +779,15 @@ abstract class Actor
 	public function getExperiencePerLevel()
 	{
 		return $this->experience_per_level; 
+	}
+
+	public function consume($item)
+	{
+		if($this->removeItem($item) !== false) {
+			foreach($item->getAffects() as $aff) {
+				$aff->apply($this);
+			}
+		}
 	}
 	
 	public function __toString()

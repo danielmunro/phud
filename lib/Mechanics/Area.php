@@ -7,6 +7,7 @@ class Area
 {
 	protected $fp = null;
 	protected $last_added = null;
+	protected $last_first_class = null;
 	protected $last_room = null;
 	protected $break = false;
 	protected $buffer = [];
@@ -57,14 +58,15 @@ class Area
 				}
 			}
 		}]);
-		$this->last_added = $this->last_room = new Room($p);
+		$this->last_added = $this->last_first_class = $this->last_room = new Room($p);
 	}
 
 	protected function loadItem($class)
 	{
 		$p = $this->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']);
 		$class = 'Items\\'.$class;
-		$this->last_added->addItem(new $class($p));
+		$this->last_added = new $class($p);
+		$this->last_first_class->addItem($this->last_added);
 	}
 
 	protected function loadMob()
@@ -93,7 +95,7 @@ class Area
 		}
 		$p = $this->loadRequired($required_properties, $additional);
 		$class = 'Living\\'.$class;
-		$this->last_added = new $class($p);
+		$this->last_added = $this->last_first_class = new $class($p);
 		$this->last_added->setRoom($this->last_room);
 	}
 
