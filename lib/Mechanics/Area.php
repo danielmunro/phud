@@ -34,7 +34,7 @@ class Area
 				case 'shopkeeper':
 					$this->loadShopkeeper();
 					break 1;
-				case 'affect':
+				case 'glow':
 				case 'poison':
 					$this->loadAffect(ucfirst($line));
 					break 1;
@@ -44,11 +44,7 @@ class Area
 
 	protected function loadAffect($affect)
 	{
-		if($affect === 'Affect') {
-			$affect = 'Mechanics\\Affect';
-		} else {
-			$affect = 'Affects\\'.$affect;
-		}
+		$affect = 'Affects\\'.$affect;
 		$p = $this->loadRequired([], ['properties']);
 		$this->last_added->addAffect(new $affect($p));
 	}
