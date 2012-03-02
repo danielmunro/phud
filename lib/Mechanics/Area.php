@@ -35,16 +35,22 @@ class Area
 					$this->loadShopkeeper();
 					break 1;
 				case 'affect':
-					$this->loadAffect();
+				case 'poison':
+					$this->loadAffect(ucfirst($line));
 					break 1;
 			}
 		}
 	}
 
-	protected function loadAffect()
+	protected function loadAffect($affect)
 	{
+		if($affect === 'Affect') {
+			$affect = 'Mechanics\\Affect';
+		} else {
+			$affect = 'Affects\\'.$affect;
+		}
 		$p = $this->loadRequired([], ['properties']);
-		$this->last_added->addAffect(new Affect($p));
+		$this->last_added->addAffect(new $affect($p));
 	}
 
 	protected function loadRoom()
@@ -102,6 +108,7 @@ class Area
 	protected function loadRequired($properties, $additional = [])
 	{
 		$types = ['line' => 'readLine', 'block' => 'readBlock'];
+		$p = [];
 		foreach($properties as $property => $type) {
 			$method = '';
 			if(is_numeric($property)) {

@@ -20,5 +20,6 @@ class Event
 	const EVENT_BASHED = 'bashed';
 	const EVENT_APPLY_AFFECT = 'apply affect';
 	const EVENT_HEALING = 'healing';
+	const EVENT_TICK_ATTRIBUTE_MODIFIER = 'tick attribute modifier';
 }
 ?>

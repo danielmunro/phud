@@ -262,7 +262,8 @@ class User extends Actor
 			'abilities',
 			'delay',
 			'proficiencies',
-			'items'
+			'items',
+			'affects'
 		];
 	}
 

@@ -102,6 +102,9 @@ A foul smelling mushroom seem to be left here from long ago.~
 nourishment 0, value 1, level 5~
 ~
 
+poison
+timeout 3~
+
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~

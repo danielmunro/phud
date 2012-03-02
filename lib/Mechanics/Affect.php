@@ -11,13 +11,14 @@ class Affect
 	const GLOW = 'glow';
 	const STUN = 'stun';
 	
-	private $affect = '';
-	private $message_affect = '';
-	private $message_start = '';
-	private $message_end = '';
-	private $timeout = 0;
-	private $args = array();
-	private $attributes = null;
+	protected $affect = '';
+	protected $message_affect = '';
+	protected $message_start = '';
+	protected $message_end = '';
+	protected $timeout = 0;
+	protected $args = [];
+	protected $attributes = null;
+	protected $subscribers = [];
 	
 	public function __construct($properties = [])
 	{
@@ -32,6 +33,7 @@ class Affect
 				$affect->apply($value);
 			}
 		]);
+		$this->initSubscribers();
 	}
 	
 	public function getAttribute($key)
@@ -64,6 +66,11 @@ class Affect
 		return $this->timeout;
 	}
 
+	public function getSubscribers()
+	{
+		return $this->subscribers;
+	}
+
 	public function decreaseTimeout()
 	{
 		$this->timeout--;
@@ -83,6 +90,9 @@ class Affect
 
 	public function applyTimeoutSubscriber($affectable)
 	{
+		foreach($this->subscribers as $subscriber) {
+			$affectable->addSubscriber($subscriber);
+		}
 		Server::instance()->addSubscriber(
 			new Subscriber(
 				Event::EVENT_TICK,
@@ -93,6 +103,9 @@ class Affect
 						if($affect->getMessageEnd() && $affectable instanceof User) {
 							Server::out($affectable, $affect->getMessageEnd());
 						}
+						foreach($affect->getSubscribers() as $s) {
+							$s->kill();
+						}
 						$subscriber->kill();
 					}
 				}
@@ -100,9 +113,31 @@ class Affect
 		);
 	}
 
+	protected function initSubscribers()
+	{
+	}
+
 	public function __toString()
 	{
 		return $this->affect;
+	}
+
+	public function __sleep()
+	{
+		return [
+			'affect',
+			'message_affect',
+			'message_start',
+			'message_end',
+			'timeout',
+			'args',
+			'attributes'
+		];
+	}
+
+	public function __wakeup()
+	{
+		$this->initSubscribers();
 	}
 }
 ?>

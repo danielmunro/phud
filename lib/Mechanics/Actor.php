@@ -216,6 +216,9 @@ abstract class Actor
 			foreach(['hp', 'mana', 'movement'] as $att) {
 				$max = $this->getMaxAttribute($att);
 				$amount = round(rand($max * 0.05, $max * 0.1));
+				$modifier = 1;
+				$this->fire(Event::EVENT_TICK_ATTRIBUTE_MODIFIER, $this, $att, $modifier);
+				$amount *= $modifier;
 				$this->modifyAttribute($att, $amount);
 			}
 		}
