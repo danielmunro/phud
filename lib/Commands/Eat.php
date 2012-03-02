@@ -26,8 +26,8 @@ class Eat extends cUser
 		if(!($item instanceof Food))
 			return Server::out($actor, "You can't eat that!");
 		
-		$actor->consume($item);
 		Server::out($actor, "You eat ".$item.".");
+		$actor->consume($item);
 	}
 }
 ?>
