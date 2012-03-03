@@ -9,7 +9,8 @@ use \Mechanics\Dbr,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
 	\Mechanics\Command\Command,
-	\Mechanics\Nouns;
+	\Mechanics\Nouns,
+	\Items\Corpse;
 
 class Mob extends Actor
 {
@@ -17,8 +18,8 @@ class Mob extends Actor
 
 	protected $movement = 0;
 	protected $movement_timeout = 0;
-	protected $respawn_ticks = 5;
-	protected $respawn_ticks_timeout = 5;
+	protected $respawn_ticks = 1;
+	protected $respawn_ticks_timeout = 1;
 	protected $auto_flee = false;
 	protected $unique = false;
 	protected $default_respawn_ticks = 1;
@@ -199,6 +200,14 @@ class Mob extends Actor
 				}
 			)
 		);
+	}
+
+	protected function deathTransferItems(Corpse $corpse)
+	{
+		foreach($this->items as $i) {
+			$class = get_class($i);
+			$corpse->addItem(new $class($i->getInitializingProperties()));
+		}
 	}
 
 	public function evaluateRespawn()

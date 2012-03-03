@@ -489,16 +489,21 @@ abstract class Actor
 			'silver' => $silver,
 			'gold' => $gold
 		]);
-		foreach($this->items as $i) {
-			$this->removeItem($i);
-			$corpse->addItem($i);
-		}
+		$this->deathTransferItems($corpse);
 		$this->getRoom()->addItem($corpse);
 		if($killer instanceof User) {
 			Server::out($killer, "\n".$killer->prompt(), false);
 		}
 
 		$this->handleDeath();
+	}
+
+	protected function deathTransferItems(Corpse $corpse)
+	{
+		foreach($this->items as $i) {
+			$this->removeItem($i);
+			$corpse->addItem($i);
+		}
 	}
 
 	protected function handleDeath()
