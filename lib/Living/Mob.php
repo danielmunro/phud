@@ -186,7 +186,7 @@ class Mob extends Actor
 		parent::handleDeath();
 		$this->setAttribute('hp', -1);
 		$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
-		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - 2, $this->respawn_ticks + 2));
+		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - ($this->respawn_ticks / 2), $this->respawn_ticks + ($this->respawn_ticks / 2)));
 		Server::instance()->addSubscriber(
 			new Subscriber(
 				Event::EVENT_TICK,
@@ -209,7 +209,9 @@ class Mob extends Actor
 			$this->setAttribute('mana', $this->getMaxAttribute('mana'));
 			$this->setAttribute('movement', $this->getMaxAttribute('movement'));
 			$this->setRoom($this->getStartRoom());
-			$this->getRoom()->announce($this, ucfirst($this).' arrives in a puff of smoke.');
+			$this->getRoom()->announce([
+				['actor' => '*', 'message' => ucfirst($this).' arrives in a puff of smoke.']
+			]);
 		}
 	}
 	
