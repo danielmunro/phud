@@ -23,7 +23,6 @@ class Room
 	protected $visibility = 1;
 	protected $movement_cost = 0;
 	protected $_subscriber_movement = null;
-	protected $persistable_list = 'rooms';
 	protected $actors = [];
 	protected static $start_room = 0;
 

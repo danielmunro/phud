@@ -32,7 +32,6 @@ class Mob extends Actor
 	protected $is_recording_path = false;
 	protected $path_index = -1;
 	protected $last_path_index = -2;
-	protected $persistable_list = 'mobs';
 	
 	const FLEE_PERCENT = 10;
 	
