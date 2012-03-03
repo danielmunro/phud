@@ -25,7 +25,7 @@ class Sacrifice extends Command
 				$copper = min($copper, $item->getValue());
 			Server::out($actor, "Mojo finds ".$item." pleasing and rewards you.");
 			$actor->getRoom()->announce($actor, $actor." sacrifices ".$item." to Mojo.");
-			$actor->addCopper($copper);
+			$actor->modifyCurrency('copper', $copper);
 			return;
 		}
 		Server::out($actor, "You can't find that.");
