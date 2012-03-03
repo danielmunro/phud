@@ -15,6 +15,13 @@ movement 3~
 hp 10, level 8~
 trip~
 
+key
+a brass key
+A tarnished brass key is here.~
+level 3~
+~
+
+
 room
 Adelwine Manor Sitting Room
 Portraits of the previous owners of Adelwine Manor hang on the wall. Badly aged and decayed, their condition is a stark reminder of the age of the manor. The hallway has opened up to a sitting room, with a staircase leading up, presumably to the bedrooms.~
