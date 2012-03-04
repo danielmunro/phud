@@ -476,7 +476,6 @@ abstract class Actor
 			$this->getRoom()->addItem(new Food([
 				'short' => 'the '.$parts[$k].' of '.$this,
 				'long' => 'The '.$parts[$k].' of '.$this.' is here.',
-				'nouns' => $parts[$k].' '.$nouns,
 				'nourishment' => 5
 			]));
 		}
