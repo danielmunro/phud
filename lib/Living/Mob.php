@@ -10,7 +10,8 @@ use \Mechanics\Dbr,
 	\Mechanics\Event\Event,
 	\Mechanics\Command\Command,
 	\Mechanics\Nouns,
-	\Items\Corpse;
+	\Items\Corpse,
+	\Items\Item;
 
 class Mob extends Actor
 {
@@ -33,6 +34,7 @@ class Mob extends Actor
 	protected $is_recording_path = false;
 	protected $path_index = -1;
 	protected $last_path_index = -2;
+	protected $repop_item_properties = [];
 	
 	const FLEE_PERCENT = 10;
 	
@@ -51,6 +53,14 @@ class Mob extends Actor
 		$mob_ids = $db->sMembers('mobs');
 		foreach($mob_ids as $mob_id) {
 			unserialize($db->get($mob_id));
+		}
+	}
+
+	public function setRepopItemProperties()
+	{
+		$this->repop_item_properties = [];
+		foreach($this->items as $item) {
+			$this->repop_item_properties[] = $item->getInitializingProperties();
 		}
 	}
 
@@ -202,14 +212,6 @@ class Mob extends Actor
 		);
 	}
 
-	protected function deathTransferItems(Corpse $corpse)
-	{
-		foreach($this->items as $i) {
-			$class = get_class($i);
-			$corpse->addItem(new $class($i->getInitializingProperties()));
-		}
-	}
-
 	public function evaluateRespawn()
 	{
 		$this->respawn_ticks_timeout--;
@@ -221,6 +223,11 @@ class Mob extends Actor
 			$this->getRoom()->announce([
 				['actor' => '*', 'message' => ucfirst($this).' arrives in a puff of smoke.']
 			]);
+			foreach($this->repop_item_properties as $p) {
+				if($p['repop'] > chance()) {
+					$this->addItem(new Item($p));
+				}
+			}
 		}
 	}
 	

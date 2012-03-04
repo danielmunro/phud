@@ -1,7 +1,8 @@
 <?php
 namespace Mechanics;
 use \Mechanics\Affect,
-	\Mechanics\Ability\Ability;
+	\Mechanics\Ability\Ability,
+	\Living\Mob;
 
 class Area
 {
@@ -70,6 +71,9 @@ class Area
 		$class = 'Items\\'.$class;
 		$this->last_added = new $class($p);
 		$this->last_first_class->addItem($this->last_added);
+		if($this->last_first_class instanceof Mob) {
+			$this->last_first_class->setRepopItemProperties();
+		}
 	}
 
 	protected function loadMob()

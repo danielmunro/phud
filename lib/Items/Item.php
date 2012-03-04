@@ -17,6 +17,7 @@ class Item
 	protected $level = 0;
 	protected $material = 'generic';
 	protected $initializing_properties = [];
+	protected $repop = 100;
 	
 	const MATERIAL_ADAMANTITE = 'adamantite';
 	const MATERIAL_ALLOY = 'alloy';
@@ -59,11 +60,6 @@ class Item
 			}
 		]);
 	}
-
-	public function getInitializingProperties()
-	{
-		return $this->initializing_properties;
-	}
 	
 	public function setShort($short)
 	{
@@ -98,6 +94,16 @@ class Item
 	public function setMaterial($material)
 	{
 		$this->material = $material;
+	}
+
+	public function getInitializingProperties()
+	{
+		return $this->initializing_properties;
+	}
+
+	public function getRepop()
+	{
+		return $this->repop;
 	}
 	
 	public function getShort()
