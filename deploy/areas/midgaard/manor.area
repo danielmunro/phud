@@ -18,7 +18,7 @@ trip~
 key
 a brass key
 A tarnished brass key is here.~
-level 3, repop 50~
+level 3, repop 50, door_id 1~
 ~
 
 room
@@ -97,10 +97,10 @@ hp 10, level 8~
 ~
 
 room
-a small pantry
-The pantry is loaded with food that has long gone bad.~
+A small pantry
+The pantry is loaded with food that has long gone bad. A stairway leads to the attic.~
 adelwine
-id 39, e 34~
+id 39, e 34, u 40~
 
 food
 a molded mushroom
@@ -117,3 +117,43 @@ A ghost of a servant boy is here, looking for something useful to do.~
 movement 3~
 hp 10, level 8~
 ~
+
+#
+# Attic
+#
+
+room
+Attic of Adelwine Manor
+A narrow and dark hallway is here. It's hard to discern any details.~
+adelwine
+id 40, d 39, n 41~
+
+mob
+a ghost of Adelwine manor
+A ghost of Adelwine manor is here, wandering the halls in the attic.~
+movement 3~
+hp 25, level 12~
+~
+
+room
+Attic of Adelwine Manor
+You are surrounded by a narrow and dark hallway.~
+adelwine
+id 41, s 40, w 42~
+
+door
+a creaky wooden door
+There is a creaky wooden door here.
+id 1, disposition locked~
+
+room
+Attic of Adelwine Manor
+A narrow dark hallway is here.~
+adelwine
+id 42, e 41, w 43, door w 1~
+
+room
+A Small Room in the Back of the Attic
+A small room in the back of Adelwine manor attic is here.~
+adelwine
+id 43, e 42, door e 1~
