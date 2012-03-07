@@ -30,6 +30,11 @@ trait Inventory
 	{
 		return $this->getUsableByInput($this->items, $input);
 	}
+
+	public function getManyItemsByInput($input)
+	{
+		return $this->getManyUsablesByInput($this->items, $input);
+	}
 	
 	public function getContainerByInput($input)
 	{

@@ -11,20 +11,18 @@ class Open extends Command
 	protected $alias = 'open';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
-		if(sizeof($args) < 2)
+		if(sizeof($args) < 2) {
 			return Server::out($actor, 'Open what?');
+		}
 		
 		$door = $actor->getRoom()->getDoorByInput($args[1]);
 		
-		if(!empty($door) && !$door->isHidden())
-		{
-			switch($door->getDisposition())
-			{
+		if($door) {
+			switch($door->getDisposition()) {
 				case mDoor::DISPOSITION_CLOSED:
 					$door->setDisposition(mDoor::DISPOSITION_OPEN);
-					$door->getParnterDoor()->setDisposition(mDoor::DISPOSITION_OPEN);
 					return Server::out($actor, 'You open '.$door.'.');
 				case mDoor::DISPOSITION_OPEN:
 					return Server::out($actor, ucfirst($door).' is already open.');

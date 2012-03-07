@@ -3,43 +3,38 @@ namespace Commands;
 use \Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Server,
-	\Mechanics\Command\Command;
+	\Mechanics\Command\Command,
+	\Items\Key;
 
 class Lock extends Command
 {
 	protected $alias = 'lock';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
-	
-		if(sizeof($args) < 2)
-			return Server::out($actor, 'Unlock what?');
-	
-		/**
-		@TODO redo this crap
-		$door = Command::findObjectByArgs(
-								Door::findByRoomId($actor->getRoom()->getId()),
-								$args[1]);
-		
-		if(empty($door))
-			$door = Door::findByRoomAndDirection($actor->getRoom()->getId(), $args[1]);
-		
-		if(!($door instanceof Door))
+		if(sizeof($args) < 2) {
 			return Server::out($actor, 'Lock what?');
-		
-		if($door->getDisposition() == Door::DISPOSITION_OPEN)
-			return Server::out($actor, "You must close the door first.");
-		
-		foreach($actor->getItems() as $item)
-			if($item->getDoorUnlockId() == $door->getId())
-			{
-				$door->setDisposition('locked');
-				return Server::out($actor, "You lock " . $door->getShort() . " with " . $item->getShort() . ".");
+		}
+		$door = $actor->getRoom()->getDoorByInput($args[1]);
+		if($door) {
+			$d = $door->getDisposition();
+			if($d === 'open') {
+				return Server::out($actor, ucfirst($door).' is open.');
+			} else if($d === 'locked') {
+				return Server::out($actor, ucfirst($door).' is already locked.');
+			} else if($d === 'closed') {
+				$keys = $actor->getManyItemsByInput('key');
+				foreach($keys as $key) {
+					if($key instanceof Key && $key->getDoorID() == $door->getID()) {
+						$door->setDisposition('locked');
+						return Server::out($actor, "You lock ".$door.".");
+					}
+				}
 			}
-		
-		*/
-		Server::out($actor, "You don't have the key!");
+			return Server::out($actor, "You don't have the key!");
+		}
+		Server::out($actor, "You don't see a door like that anywhere.");
 	}
 }
 ?>

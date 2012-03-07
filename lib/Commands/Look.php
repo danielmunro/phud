@@ -21,45 +21,35 @@ class Look extends User
 	{
 		if(!$args || sizeof($args) == 1) // The user is looking
 		{
-			if(!$user->getRoom()->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
+			$r = $user->getRoom();
+			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
 				return Server::out($user, "You can't see anything, it's so dark!");
 			
-			Server::out($user, $user->getRoom()->getTitle());
-			Server::out($user, $user->getRoom()->getDescription() . "\n");
-			
-			$doors = $user->getRoom()->getDoors();
-			array_walk(
-				$doors,
-				function($door) use ($user)
-				{
-					if($door)
-					{
-						$display = true;
-						if($door->isHidden())
-							$display = rand(0, 3) === 3 ? true : false;
-						if($display)
-							Server::out($user, ucfirst($door->getLong()) . "\n");
-					}
+			Server::out($user, $r->getTitle());
+			Server::out($user, $r->getDescription() . "\n");
+
+			$doors = $r->getDoors();
+			foreach($doors as $i => $door) {
+				Server::out($user, ucfirst($door).' is here.'.($i == sizeof($doors)-1 ? "\n" : ""));
+			}
+
+			$dir_str = '';
+			foreach(['north' => $r->getNorth(), 'south' => $r->getSouth(), 'east' => $r->getEast(), 'west' => $r->getWest(), 'up' => $r->getUp(), 'down' => $r->getDown()] as $dir => $room) {
+				if(isset($doors[$dir]) && $doors[$dir]->getDisposition() !== mDoor::DISPOSITION_OPEN) {
+					continue;
 				}
-			);
+				if($room) {
+					$dir_str .= ucfirst(substr($dir, 0, 1));
+				}
+			}
+
+			Server::out($user, 'Exits ['.$dir_str.']');
+
+			foreach($user->getRoom()->getItems() as $key => $item) {
+				Server::out($user, ucfirst($item) . ' is here.');
+			}
 			
-			Server::out($user, 'Exits [' .
-				($user->getRoom()->getNorth() instanceof mRoom ? ' N ' : '') .
-				($user->getRoom()->getSouth() instanceof mRoom ? ' S ' : '') .
-				($user->getRoom()->getEast()  instanceof mRoom ? ' E ' : '') .
-				($user->getRoom()->getWest()  instanceof mRoom ? ' W ' : '') .
-				($user->getRoom()->getUp()    instanceof mRoom ? ' U ' : '') .
-				($user->getRoom()->getDown()  instanceof mRoom ? ' D ' : '') . ']');
-			$items = $user->getRoom()->getItems();
-			
-			if(is_array($items) && sizeof($items) > 0)
-				foreach($items as $key => $item)
-					Server::out($user, 
-						ucfirst($item->getShort()) . ' is here.');
-			
-			
-			$people = $user->getRoom()->getActors();
-			foreach($people as $a) {
+			foreach($user->getRoom()->getActors() as $a) {
 				if($a !== $user) {
 					$disposition = $a->getDisposition() === Actor::DISPOSITION_STANDING ? '' : ' '.$a->getDisposition();
 					Server::out($user, ucfirst($a).' is'.$disposition.' here.');

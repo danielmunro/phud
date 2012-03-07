@@ -10,6 +10,7 @@ class Area
 	protected $last_added = null;
 	protected $last_first_class = null;
 	protected $last_room = null;
+	protected $last_property = [];
 	protected $break = false;
 	protected $buffer = [];
 
@@ -40,8 +41,16 @@ class Area
 				case 'poison':
 					$this->loadAffect(ucfirst($line));
 					break 1;
+				case 'door':
+					$this->loadDoor();
 			}
 		}
+	}
+
+	protected function loadDoor()
+	{
+		$p = $this->loadRequired(['short', 'long'], ['properties']);
+		$this->last_added = new Door($p);
 	}
 
 	protected function loadAffect($affect)
@@ -53,14 +62,16 @@ class Area
 
 	protected function loadRoom()
 	{
-		$p = $this->loadRequired(['title', 'description' => 'block', 'area'], ['properties' => function(&$p, $property, $value) {
-			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
-			foreach($long as $l) {
-				if(strpos($l, $property) === 0) {
-					$p[$l] = $value;
-					return true;
+		$p = $this->loadRequired(
+			['title', 'description' => 'block', 'area'], 
+			['properties' => function(&$p, $property, $value) {
+				$long = ['north', 'south', 'east', 'west', 'up', 'down'];
+				foreach($long as $l) {
+					if(strpos($l, $property) === 0) {
+						$p[$l] = $value;
+						return true;
+					}
 				}
-			}
 		}]);
 		$this->last_added = $this->last_first_class = $this->last_room = new Room($p);
 	}
@@ -202,9 +213,10 @@ class Area
 			$value = intval($value);
 		}
 		if($callback && $callback($p, $property, $value)) {
-			return;
+		} else {
+			$p[$property] = $value;
 		}
-		$p[$property] = $value;
+		$this->last_property = [$property, $value];
 	}
 
 	private function readLine($properties = [])

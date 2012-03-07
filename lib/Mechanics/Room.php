@@ -6,10 +6,9 @@ use \Mechanics\Event\Subscriber,
 
 class Room
 {
-	use Usable, Inventory, EasyInit;
+	use Usable, Inventory, EasyInit, Identity;
 
 	protected static $instances = [];
-	protected $id = '';
 	protected $title = 'Generic room';
 	protected $description = 'A nondescript room.';
 	protected $north = '';
@@ -18,15 +17,15 @@ class Room
 	protected $west = '';
 	protected $up = '';
 	protected $down = '';
-	protected $doors = ['north' => null, 'south' => null, 'east' => null, 'west' => null, 'up' => null, 'down' => null];
 	protected $area = '';
 	protected $visibility = 1;
 	protected $movement_cost = 0;
 	protected $_subscriber_movement = null;
 	protected $actors = [];
+	protected $doors = [];
 	protected static $start_room = 0;
 
-	const PURGATORY_ROOM_ID = 5;
+	const PURGATORY_ROOM_ID = 900;
 
 	public function __construct($properties = [])
 	{
@@ -42,6 +41,10 @@ class Room
 				foreach($value as $actor) {
 					$actor->setRoom($room);
 				}
+			},
+			'door' => function($room, $property, $value) {
+				list($direction, $door_id) = explode(' ', $value);
+				$room->setDoor(Room::getFullDirectionAlias($direction), Door::getByID($door_id));
 			}
 		]);
 		if(empty($this->id) || isset(self::$instances[$this->id])) {
@@ -54,7 +57,7 @@ class Room
 			}
 			die;
 		}
-		self::$instances[$this->id] = $this;
+		self::$identities[$this->id] = $this;
 	}
 
 	public static function setStartRoom($room_id)
@@ -67,14 +70,24 @@ class Room
 		return self::$start_room;
 	}
 
+	public function setDoor($direction, Door $door)
+	{
+		$this->doors[$direction] = $door;
+	}
+
+	public function getDoors()
+	{
+		return $this->doors;
+	}
+
+	public function getDoorByInput($input)
+	{
+		return $this->getUsableByInput($this->doors, $input);
+	}
+
 	public function getVisibility()
 	{
 		return $this->visibility;
-	}
-	
-	public function getId()
-	{
-		return $this->id;
 	}
 	
 	public function getTitle()
@@ -92,63 +105,34 @@ class Room
 		return $this->movement_cost;
 	}
 
-	private function getDirection($direction_str, $direction)
-	{
-		$door = $this->getDoor($direction_str);
-		if($door instanceof Door && $door->getDisposition() !== Door::DISPOSITION_OPEN) {
-			return -1;
-		}
-		if(is_numeric($direction) && $direction > -1 || $direction) {
-			$direction = self::find($direction);
-		}
-		return $direction;
-	}
-	
-	public function getDoor($direction)
-	{
-		if(isset($this->doors[$direction]))
-			return $this->doors[$direction];
-		return null;
-	}
-	
-	public function getDoors()
-	{
-		return $this->doors;
-	}
-	
-	public function getDoorByInput($input)
-	{
-		return $this->getUsableNounByInput($doors, $input);
-	}
-	
 	public function getNorth()
 	{
-		return $this->getDirection('north', $this->north);
+		return $this->north;
 	}
 
 	public function getSouth()
 	{
-		return $this->getDirection('south', $this->south);
+		return $this->south;
 	}
 
 	public function getEast()
 	{
-		return $this->getDirection('east', $this->east);
+		return $this->east;
 	}
 
 	public function getWest()
 	{
-		return $this->getDirection('west', $this->west);
+		return $this->west;
 	}
 
 	public function getUp()
 	{
-		return $this->getDirection('up', $this->up);
+		return $this->up;
 	}
 
 	public function getDown()
 	{
-		return $this->getDirection('down', $this->down);
+		return $this->down;
 	}
 
 	public function getArea()
@@ -208,28 +192,9 @@ class Room
 	
 	public static function find($id)
 	{
-		if(isset(self::$instances[$id]) && self::$instances[$id] instanceof self) {
-			return self::$instances[$id];
-		}
-		$dbr = Dbr::instance();
-		$properties = unserialize($dbr->get($id));
-		if(empty($properties)) {
-			$properties = ['id' => $id];
-		}
-		return new self($properties);
-	}
-	
-	public static function getDirectionStr($dir)
-	{
-		switch($dir)
-		{
-			case strpos('north', $dir) === 0: return 'north';
-			case strpos('south', $dir) === 0: return 'south';
-			case strpos('east', $dir) === 0: return 'east';
-			case strpos('west', $dir) === 0: return 'west';
-			case strpos('up', $dir) === 0: return 'up';
-			case strpos('down', $dir) === 0: return 'down';
-			default: return false;
+		$room = static::getByID($id);
+		if($room) {
+			return $room;
 		}
 	}
 	
@@ -257,6 +222,15 @@ class Room
 	public function __sleep()
 	{
 		return ['id'];
+	}
+
+	public static function getFullDirectionAlias($dir)
+	{
+		foreach(['north', 'south', 'east', 'west', 'up', 'down'] as $direction) {
+			if(strpos($direction, $dir) === 0) {
+				return $direction;
+			}
+		}
 	}
 }
 ?>
