@@ -17,7 +17,8 @@ trait Usable
 	{
 		$found = [];
 		foreach($collection as $c) {
-			foreach($this->getUsableProperty($c) as $u) {
+			$usable = $this->getUsableProperty($c);
+			foreach($usable as $u) {
 				if(stripos($u, $input) === 0) {
 					if($scalar) {
 						return $c;
