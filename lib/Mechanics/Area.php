@@ -37,6 +37,9 @@ class Area
 				case 'shopkeeper':
 					$this->loadShopkeeper();
 					break 1;
+				case 'questmaster':
+					$this->loadQuestmaster();
+					break 1;
 				case 'glow':
 				case 'poison':
 					$this->loadAffect(ucfirst($line));
@@ -101,6 +104,11 @@ class Area
 	{
 		$this->loadActor('Shopkeeper', [], ['properties']);
 		$this->last_added->addAbility(Ability::lookup('haggle')); // All shopkeepers get haggle. It's part of the trade
+	}
+
+	protected function loadQuestmaster()
+	{
+		$this->loadActor('Questmaster', [], ['properties']);
 	}
 
 	protected function loadActor($class, $required_properties = [], $additional = [])

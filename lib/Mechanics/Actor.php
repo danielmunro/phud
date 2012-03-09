@@ -13,7 +13,7 @@ use \Mechanics\Ability\Ability,
 
 abstract class Actor
 {
-	use Affectable, Broadcaster, Inventory, Usable, EasyInit;
+	use Affectable, Broadcaster, Inventory, Usable, EasyInit, Identity;
 
 	const MAX_LEVEL = 51;
 	
