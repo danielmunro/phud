@@ -117,6 +117,9 @@ abstract class Actor
 		]);
 		$this->setRace(Race::lookup($this->race));
 		$this->equipped = new Equipped($this);
+		if($this->id) {
+			self::$identities[$this->id] = $this;
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -697,12 +700,13 @@ abstract class Actor
 		return $this->getAttribute('hp') > 0;
 	}
 
+	public function addExperience($experience)
+	{
+		$this->experience += $experience;
+	}
+
 	public function applyExperienceFrom(Actor $victim)
 	{
-		if(!$this->experience_per_level) {
-			return 0;
-		}
-
 		Debug::log("Applying experience from ".$victim." to ".$this.".");
 		if($this->experience < $this->experience_per_level) {
 			$experience = $victim->getKillExperience($this);

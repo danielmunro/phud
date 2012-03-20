@@ -1,96 +1,83 @@
 <?php
 namespace Mechanics\Quest;
-use \Living\User as User;
+use \Living\User as User,
+	\Mechanics\Nouns,
+	\Mechanics\EasyInit,
+	\Mechanics\Identity;
+
 class Quest
 {
-	protected $short = 'a generic quest';
-	protected $experience = 0;
+	use Nouns, EasyInit, Identity;
+
+	protected $short = '';
+	protected $long = '';
 	protected $requirements_to_accept = null;
-	protected $requirements_to_complete = null;
-	protected $hooks = array();
-	protected static $instances = array();
+	protected $subscribers = [];
+	protected $reward = null;
+	protected $satisfied = false;
+	protected $initializing_properties = [];
 	
-	const HOOK_CREATE = 'create';
-
-	public function __construct()
+	public function __construct($properties = [])
 	{
-		$this->requirements_to_accept = new Requirements();
-		$this->requirements_to_complete = new Requirements();
-	}
-
-	public function addHook($hook)
-	{
-		if($hook === self::HOOK_CREATE)
-		{
-			$this->hooks[] = $hook;
-			return;
+		$this->initializing_properties = $properties;
+		$this->initializeProperties($properties);
+		if(!is_callable($this->requirements_to_accept) || !is_callable($this->reward)) {
+			throw new Exception('quest not configured correctly');
 		}
-		// err
-	}
-	
-	public function isQualifiedToAccept(User $user, Questmaster $questmaster = null)
-	{
-		return $this->requirements_to_accept->isQualified($user, $questmaster);
-	}
-	
-	public function isQualifiedToComplete(User $user, Questmaster $questmaster = null)
-	{
-		return $this->requirements_to_complete->isQualified($user, $questmaster);
-	}
-	
-	public function getRequirementsToAccept()
-	{
-		return $this->requirements_to_accept;
 	}
 
-	public function getRequirementsToComplete()
+	public function canAccept(User $user)
 	{
-		return $this->requirements_to_complete;
+		return call_user_func_array($this->requirements_to_accept, [$user]);
 	}
-	
-	public function getMinimumLevels()
+
+	public function applySubscribers(User $user)
 	{
-		return $this->minimum_level;
+		foreach($this->subscribers as $subscriber) {
+			$user->addSubscriber($subscriber);
+		}
 	}
-	
+
+	public function reward(User $user)
+	{
+		return $this->reward($user);
+	}
+
 	public function getShort()
 	{
 		return $this->short;
 	}
-	
-	public function getNouns()
+	public function getLong()
 	{
-		return $this->nouns;
-	}
-	
-	public function getHooks()
-	{
-		return $this->hooks;
-	}
-	
-	public function getExperience()
-	{
-		return $this->experience;
-	}
-	
-	public function setExperience($experience)
-	{
-		$this->experience = $experience;
+		return $this->long;
 	}
 
-	public function setShort($short)
+	public function getInitializingProperties()
 	{
-		$this->short = $short;
+		return $this->initializing_properties;
 	}
-	
-	public function setNouns($nouns)
+
+	public function getDefaultNouns()
 	{
-		$this->nouns = $nouns;
+		return $this->short;
 	}
-	
+
 	public function __toString()
 	{
 		return $this->short;
+	}
+
+	public function __sleep()
+	{
+		return ['id'];
+	}
+
+	public function __wakeup()
+	{
+		$q = self::getByID($this->id);
+		foreach($q->getInitializingProperties() as $p => $v) {
+			$this->$p = $v;
+		}
 	}
 }
 ?>

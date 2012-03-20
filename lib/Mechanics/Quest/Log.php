@@ -1,35 +1,38 @@
 <?php
 namespace Mechanics\Quest;
-use \Living\User as User,
-	\Mechanics\Usable;
+use \Mechanics\Usable;
 
-class Log
+trait Log
 {
 	use Usable;
 
-	protected $user = null;
 	protected $quests = [];
 
-	public function __construct(User $user)
+	public function addQuest(Quest $quest)
 	{
-		$this->user = $user;
+		$this->quests[$quest->getID()] = new Quest($quest->getInitializingProperties());
 	}
 	
-	public function add(Quest $quest)
+	public function removeQuest(Quest $quest)
 	{
-		$this->quests[] = new Instance($this->user, $quest);
+		if(isset($this->quests[$quest->getID()])) {
+			unset($this->quests[$quest->getID()]);
+		}
 	}
-	
-	public function remove(Quest $quest)
+
+	public function getQuests()
 	{
-		$key = array_search($quest, $this->quests);
-		if($key !== false)
-			array_splice($this->quests, $key, 1);
+		return $this->quests;
+	}
+
+	public function getQuestByID($id)
+	{
+		return isset($this->quests[$id]) ? $this->quests[$id] : null;
 	}
 
 	public function getQuestByInput($input)
 	{
-		return $this->getUsableNounByInput($this->quests, $input);
+		return $this->getUsableByInput($this->quests, $input);
 	}
 }
 ?>

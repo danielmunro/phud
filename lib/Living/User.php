@@ -17,6 +17,8 @@ use \Mechanics\Server,
 
 class User extends Actor
 {
+	use QuestLog;
+
 	protected $hunger = 0;
 	protected $thirst = 0;
 	protected $full = 0;
@@ -26,15 +28,14 @@ class User extends Actor
 	protected $client = null;
 	protected $date_created = null;
 	protected $is_dm = false;
-	protected $quest_log = null;
 	protected $delay = 0;
-	protected static $instances = array();
+	protected $quests_completed = [];
+	protected static $instances = [];
 	
 	public function __construct($properties = [])
 	{
 		$this->date_created = date('Y-m-d H:i:s');
 		parent::__construct($properties);
-		$this->quest_log = new QuestLog($this);
 	}
 	
 	public static function getInstances()
@@ -92,11 +93,6 @@ class User extends Actor
 	public function getDateCreated()
 	{
 		return $this->date_created;
-	}
-	
-	public function getQuestLog()
-	{
-		return $this->quest_log;
 	}
 	
 	public function prompt()
@@ -231,6 +227,11 @@ class User extends Actor
 		$dbr->set($this->alias, serialize($this));
 	}
 
+	public function hasCompletedQuest(Quest $quest)
+	{
+		return isset($this->quests_completed[$quest->getID()]);
+	}
+
 	public function __sleep()
 	{
 		return [
@@ -242,7 +243,6 @@ class User extends Actor
 			'password',
 			'date_created',
 			'is_dm',
-			'quest_log',
 			'experience',
 			'experience_per_level',
 			'alias',
@@ -263,7 +263,8 @@ class User extends Actor
 			'delay',
 			'proficiencies',
 			'items',
-			'affects'
+			'affects',
+			'quests'
 		];
 	}
 
