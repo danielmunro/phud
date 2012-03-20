@@ -196,6 +196,7 @@ class Server
 		$relative_path = dirname(__FILE__).'/../../'.$start;
 		if(file_exists($relative_path)) {
 			$d = dir($relative_path);
+			$deferred = [];
 			while($cd = $d->read()) {
 				$pos = strpos($cd, '.');
 				if($pos === false) {
@@ -204,13 +205,16 @@ class Server
 				}
 				$ext = substr($cd, $pos+1);
 				if($ext === 'php') {
-					Debug::log("including deploy script: ".$cd);
-					$anon = new Anonymous();
-					$anon->_require_once($d->path.'/'.$cd);
+					$deferred[] = $cd;
 				} else if($ext === 'area') {
 					Debug::log("including deploy script: ".$cd);
 					new Area($relative_path.'/'.$cd);
 				}
+			}
+			foreach($deferred as $def) {
+				Debug::log("including deploy script: ".$def);
+				$anon = new Anonymous();
+				$anon->_require_once($d->path.'/'.$def);
 			}
 		} else {
 			throw new Exception('Invalid deploy directory defined: '.$start);
