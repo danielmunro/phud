@@ -227,6 +227,16 @@ class User extends Actor
 		$dbr->set($this->alias, serialize($this));
 	}
 
+	public function finishQuest(Quest $quest)
+	{
+		if(isset($this->quests[$quest->getID()])) {
+			$q = $this->quests[$quest->getID()];
+			$q->reward($this);
+			$this->quests_completed[$q->getID()] = $q;
+			unset($this->quests[$quest->getID()]);
+		}
+	}
+
 	public function hasCompletedQuest(Quest $quest)
 	{
 		return isset($this->quests_completed[$quest->getID()]);

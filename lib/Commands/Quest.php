@@ -18,11 +18,37 @@ class Quest extends User
 
 	public function perform(lUser $user, $args = [])
 	{
-		if($args[1] === 'list') {
+		if(empty($args[1])) {
+			$this->listCurrentQuests($user, $args);
+		} else if($args[1] === 'list') {
 			$this->doList($user, $args);
 		} else if($args[1] === 'accept') {
 			$this->doAccept($user, $args);
+		} else if($args[1] === 'finish') {
+			$this->doFinish($user, $args);
 		}
+	}
+
+	private function listCurrentQuests(lUser $user, $args = [])
+	{
+		$quests = '';
+		foreach($user->getQuests() as $quest) {
+			$quests .= '['.$quest->getStatus().'] '.$quest."\n";
+		}
+		Server::out($user, "Active Quests:\n\n".$quests);
+	}
+
+	private function doFinish(lUser $user, $args = [])
+	{
+		$questmaster = $this->findQuestmaster($user);
+		if($questmaster) {
+			$quest = $questmaster->getQuestByInput(array_pop($args));
+			if($quest) {
+				$user->finishQuest($quest);
+				return Server::out($user, "You accept the quest ".$quest.".");
+			}
+		}
+		return Server($user, "There is no quest to accept.");
 	}
 	
 	private function doList(lUser $user, $args = [])

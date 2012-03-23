@@ -23,7 +23,7 @@ $adept->addQuest(
 				function($subscriber, $user, $movement_cost, $room) {
 					if($user->getRoom()->getID() === 40) {
 						$quest = $user->getQuestByID(1);
-						$quest->satisfy();
+						$quest->setStatus(Quest::STATUS_COMPLETED);
 						$subscriber->kill();
 					}
 				}

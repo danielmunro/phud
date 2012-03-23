@@ -14,8 +14,12 @@ class Quest
 	protected $requirements_to_accept = null;
 	protected $subscribers = [];
 	protected $reward = null;
-	protected $satisfied = false;
 	protected $initializing_properties = [];
+	protected $status = 'initialized';
+
+	const STATUS_INITIALIZED = 'initialized';
+	const STATUS_COMPLETED = 'completed';
+	const STATUS_CLOSED = 'closed';
 	
 	public function __construct($properties = [])
 	{
@@ -24,6 +28,7 @@ class Quest
 		if(!is_callable($this->requirements_to_accept) || !is_callable($this->reward)) {
 			throw new Exception('quest not configured correctly');
 		}
+		self::$identities[$this->id] = $this;
 	}
 
 	public function canAccept(User $user)
@@ -62,6 +67,16 @@ class Quest
 		return $this->short;
 	}
 
+	public function getStatus()
+	{
+		return $this->status;
+	}
+
+	public function setStatus($status)
+	{
+		$this->status = $status;
+	}
+
 	public function __toString()
 	{
 		return $this->short;
@@ -69,13 +84,16 @@ class Quest
 
 	public function __sleep()
 	{
-		return ['id'];
+		return ['id', 'status'];
 	}
 
 	public function __wakeup()
 	{
 		$q = self::getByID($this->id);
 		foreach($q->getInitializingProperties() as $p => $v) {
+			if($p === 'status') {
+				continue;
+			}
 			$this->$p = $v;
 		}
 	}
