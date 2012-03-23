@@ -274,7 +274,8 @@ class User extends Actor
 			'proficiencies',
 			'items',
 			'affects',
-			'quests'
+			'quests',
+			'quests_completed'
 		];
 	}
 
@@ -294,6 +295,9 @@ class User extends Actor
 			if($ability['lookup'] instanceof Skill) {
 				$this->addSubscriber($ability['lookup']->getSubscriber());
 			}
+		}
+		foreach($this->quests as $quest) {
+			$quest->applySubscribers($this);
 		}
 		Server::instance()->addSubscriber($this->getSubscriberTick());
 	}

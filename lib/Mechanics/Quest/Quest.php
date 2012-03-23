@@ -45,7 +45,7 @@ class Quest
 
 	public function reward(User $user)
 	{
-		return $this->reward($user);
+		return call_user_func_array($this->reward, [$user]);
 	}
 
 	public function getShort()

@@ -19,7 +19,7 @@ class Quest extends User
 	public function perform(lUser $user, $args = [])
 	{
 		if(empty($args[1])) {
-			$this->listCurrentQuests($user, $args);
+			$this->listCurrentQuests($user);
 		} else if($args[1] === 'list') {
 			$this->doList($user, $args);
 		} else if($args[1] === 'accept') {
@@ -29,13 +29,17 @@ class Quest extends User
 		}
 	}
 
-	private function listCurrentQuests(lUser $user, $args = [])
+	private function listCurrentQuests(lUser $user)
 	{
-		$quests = '';
+		$quests = "Active Quests:\n\n";
 		foreach($user->getQuests() as $quest) {
 			$quests .= '['.$quest->getStatus().'] '.$quest."\n";
 		}
-		Server::out($user, "Active Quests:\n\n".$quests);
+		$quests .= "\nCompleted Quests:\n\n";
+		foreach($user->getQuests() as $quest) {
+			$quests .= $quest."\n";
+		}
+		Server::out($user, $quests);
 	}
 
 	private function doFinish(lUser $user, $args = [])
@@ -45,10 +49,10 @@ class Quest extends User
 			$quest = $questmaster->getQuestByInput(array_pop($args));
 			if($quest) {
 				$user->finishQuest($quest);
-				return Server::out($user, "You accept the quest ".$quest.".");
+				return Server::out($user, "You have finished the quest ".$quest.".");
 			}
 		}
-		return Server($user, "There is no quest to accept.");
+		return Server::out($user, "Which quest would you like to finish?");
 	}
 	
 	private function doList(lUser $user, $args = [])
@@ -64,7 +68,7 @@ class Quest extends User
 				}
 			}
 		} else {
-			Server::out($user, "No questmaster is here.");
+			return $this->listCurrentQuests($user);
 		}
 	}
 
