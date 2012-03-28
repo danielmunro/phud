@@ -1,4 +1,3 @@
-#!/usr/bin/php5
 <?php
 ///////////////////////////////////////////////////////
 // ADMIN CONFIG
@@ -12,6 +11,7 @@ $port = 9000;
 // in order to run
 ///////////////////////////////////////////////////////
 
+$global_path = dirname(__FILE__);
 date_default_timezone_set('America/Los_Angeles');
 gc_enable();
 set_time_limit(0);
@@ -49,7 +49,8 @@ if(!$dry_run) {
 
 // autoloader
 function __autoload($class) {
-	$path = 'lib/'.str_replace("\\", "/", $class).".php";
+	global $global_path;
+	$path = $global_path.'/lib/'.str_replace("\\", "/", $class).".php";
 	if(file_exists($path)) {
 		require_once($path);
 	}
