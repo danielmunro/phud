@@ -30,22 +30,11 @@ class User extends Actor
 	protected $is_dm = false;
 	protected $delay = 0;
 	protected $quests_completed = [];
-	protected static $instances = [];
 	
 	public function __construct($properties = [])
 	{
 		$this->date_created = date('Y-m-d H:i:s');
 		parent::__construct($properties);
-	}
-	
-	public static function getInstances()
-	{
-		return self::$instances;
-	}
-
-	public static function addInstance(self $user)
-	{
-		self::$instances[] = $user;
 	}
 	
 	public function getClient()

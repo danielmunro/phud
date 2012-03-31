@@ -47,6 +47,11 @@ class Server
 	{
 		return self::$instance;
 	}
+
+	public function getClients()
+	{
+		return $this->clients;
+	}
 	
 	public function addClient(Client $client)
 	{
@@ -122,14 +127,16 @@ class Server
 			new Subscriber(
 				Event::EVENT_PULSE,
 				function($subscriber, $server) {
-					$users = User::getInstances();
 					array_walk(
-						$users,
-						function($u) {
-							$target = $u->getTarget();
-							if($target) {
-								Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
-								Server::out($u, $u->prompt(), false);
+						$server->getClients(),
+						function($c) {
+							if($c->getUser()) {
+								$u = $c->getUser();
+								$target = $u->getTarget();
+								if($target) {
+									Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
+									Server::out($u, $u->prompt(), false);
+								}
 							}
 						}
 					);

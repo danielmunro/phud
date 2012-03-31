@@ -74,7 +74,6 @@ $server->addSubscriber(
 								$unverified_user->setClient($client);
 								$client->setUser($unverified_user);
 								$client->addSubscriber($input_subscriber);
-								User::addInstance($unverified_user);
 								$unverified_user->getRoom()->actorAdd($unverified_user);
 								$command = Command::lookup('look');
 								$command['lookup']->perform($unverified_user);
@@ -185,7 +184,6 @@ $server->addSubscriber(
 							$user->save();
 							$command = Command::lookup('look');
 							$command['lookup']->perform($user);
-							User::addInstance($user);
 							Debug::log("New user account for ".$user);
 							$subscriber->kill();
 						}
