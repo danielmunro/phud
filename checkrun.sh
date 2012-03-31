@@ -7,5 +7,6 @@ else
 	echo "Starting run"
 	echo $$ > /tmp/phud.lock
 	/usr/bin/php /home/dan/phud-git/game.php
+	rm /tmp/phud.lock
 	exit 0
 fi
