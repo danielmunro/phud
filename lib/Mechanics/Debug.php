@@ -15,16 +15,18 @@ class Debug
 		fclose($fp);
 	}
 	
-	public static function log($msg, $new_line = true)
+	public static function log($msg)
 	{
-		if(!self::$enabled)
+		if(!self::$enabled) {
 			return;
+		}
 		
+		$n = 0;
+		if(Server::instance()) {
+			$n = sizeof(Server::instance()->getClients());
+		}
 		$fp = fopen('debug.log', 'a');
-		if($new_line)
-			fwrite($fp, date('Y-m-d H:i:s')." ".$msg." [mem: " . (memory_get_usage(true)/1024) . "kb, users: " . sizeof(\Living\User::getInstances()) . "]\n");
-		else
-			fwrite($fp, $msg);
+		fwrite($fp, date('Y-m-d H:i:s')." ".$msg." [mem: ".(memory_get_usage(true)/1024)."kb, clients: ".$n."]\n");
 		fclose($fp);
 	}
 }

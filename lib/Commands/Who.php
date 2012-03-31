@@ -11,13 +11,16 @@ class Who extends cUser
 
 	public function perform(lUser $user, $args = array())
 	{
-		Server::out($user, 'Who list:');
-		$users = lUser::getInstances();
-		foreach($users as $u) {
-			Server::out($user, '[' . $u->getLevel() . ' ' . $u->getRace()['alias'] . '] ' . $u);
+		$out = "Who list:\n";
+		$n = 0;
+		foreach(Server::instance()->getClients() as $c) {
+			if($c->getUser()) {
+				$u = $c->getUser();
+				$out .= '['.$u->getLevel().' '.$u->getRace()['alias'].'] '.$u."\n";
+				$n++;
+			}
 		}
-		$size = sizeof($users);
-		Server::out($user, $size . ' player' . ($size != 1 ? 's' : '') . ' found.');
+		Server::out($user, $out.$n.' player'.($n != 1 ? 's' : '').' found.');
 	}
 }
 ?>
