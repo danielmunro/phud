@@ -17,7 +17,6 @@ gc_enable();
 set_time_limit(0);
 use \Mechanics\Debug;
 use \Mechanics\Server;
-Debug::clearLog();
 
 ///////////////////////////////////////////////////////
 // Set default arguments for starting phud, then parse
@@ -42,9 +41,11 @@ foreach($argv as $i => $arg) {
 
 // initiate and run the server
 $s = new Server($address, $port);
-$s->deployEnvironment($deploy);
-if(!$dry_run) {
-	$s->run();
+if($s->isInitialized()) {
+	$s->deployEnvironment($deploy);
+	if(!$dry_run) {
+		$s->run();
+	}
 }
 
 // autoloader

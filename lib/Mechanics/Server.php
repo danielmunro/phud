@@ -13,10 +13,11 @@ class Server
 {
 	use Broadcaster;
 	
-	private $address = '';
-	private $port = 0;
-	private $socket = null;
-	private $clients = [];
+	protected $address = '';
+	protected $port = 0;
+	protected $socket = null;
+	protected $clients = [];
+	protected $initialized = false;
 	private static $instance = null;
 	
 	public function __construct($address, $port)
@@ -25,15 +26,14 @@ class Server
 		$this->port = $port;
 
 		// open the socket
-		Debug::log("Attempting to create socket on (".$this.")");
 		$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
-		if($this->socket === false) {
-			die('No socket');
-		}
 		socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
-		socket_bind($this->socket, $this->address, $this->port) or die('Could not bind to address');
-		socket_listen($this->socket);
-		Debug::log("Server is listening for incoming transmissions on (".$this.")");
+		$success = @socket_bind($this->socket, $this->address, $this->port);
+		if($success) {
+			socket_listen($this->socket);
+			$this->initialized = true;
+			Debug::log("Server is listening for incoming transmissions on (".$this.")");
+		}
 	}
 	
 	public function __destruct()
@@ -46,6 +46,11 @@ class Server
 	public static function instance()
 	{
 		return self::$instance;
+	}
+
+	public function isInitialized()
+	{
+		return $this->initialized;
 	}
 
 	public function getClients()
