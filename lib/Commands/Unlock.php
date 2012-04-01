@@ -1,11 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Door as mDoor,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Key;
+namespace Phud\Commands;
+use Phud\Door as mDoor,
+	Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Key;
 
 class Unlock extends Command
 {

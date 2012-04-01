@@ -1,10 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Items\Equipment,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Equipment,
+	Phud\Commands\Command;
 
 class Remove extends Command
 {

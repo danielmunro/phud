@@ -1,14 +1,12 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Debug,
-	\Mechanics\Alias,
-	\Items\Item as mItem,
-	\Items\Drink as iDrink,
-	\Mechanics\Command\User as cUser;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Debug,
+	Phud\Items\Item as mItem,
+	Phud\Items\Drink as iDrink;
 
-class Drink extends cUser
+class Drink extends User
 {
 
 	protected $alias = 'drink';

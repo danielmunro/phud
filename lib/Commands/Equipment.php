@@ -1,9 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server;
 
 class Equipment extends Command
 {

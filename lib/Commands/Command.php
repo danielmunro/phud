@@ -1,12 +1,12 @@
 <?php
-namespace Phud\Command;
+namespace Phud\Commands;
 use Living\User,
 	Phud\Debug,
 	Phud\Server,
 	\ReflectionClass,
 	\Exception,
 	Phud\Alias,
-	Phud\Actor\Actor;
+	Phud\Actors\Actor;
 
 abstract class Command
 {
@@ -36,7 +36,7 @@ abstract class Command
 			if(substr($command, -4) === ".php") {
 				Debug::log("init command: ".$command);
 				$class = substr($command, 0, strpos($command, '.'));
-				$called_class = $namespace.'\\'.$class;
+				$called_class = 'Phud\\'.$namespace.'\\'.$class;
 				$reflection = new ReflectionClass($called_class);
 				if(!$reflection->isAbstract()) {
 					new $called_class();

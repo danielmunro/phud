@@ -1,10 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Ability,
-	\Mechanics\Server,
-	\Mechanics\Command\User,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class Dungeon_Master extends User
 {

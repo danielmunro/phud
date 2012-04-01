@@ -1,13 +1,11 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Actor,
-	\Mechanics\Command\User as cUser,
-	\Living\User as lUser,
-	\Living\Shopkeeper as lShopkeeper;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\Actor,
+	Phud\Actors\User as lUser,
+	Phud\Actors\Shopkeeper as lShopkeeper;
 
-class CList extends cUser
+class CList extends User
 {
 	protected $alias = 'list';
 	protected $dispositions = [

@@ -1,10 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Door as mDoor,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Door as mDoor,
+	Phud\Commands\Command;
 
 class Open extends Command
 {

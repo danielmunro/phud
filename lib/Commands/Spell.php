@@ -1,11 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Ability\Spell as mSpell,
-	\Mechanics\Command\User,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Ability\Ability,
+	Phud\Actors\User as lUser;
 
 class Spell extends User
 {

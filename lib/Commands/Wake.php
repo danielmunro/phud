@@ -1,10 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server;
 
 class Wake extends Command
 {

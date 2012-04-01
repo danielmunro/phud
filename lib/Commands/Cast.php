@@ -1,14 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Command\Command,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Ability\Spell as mSpell,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Ability\Ability,
+	Phud\Ability\Spell as mSpell;
 
 class Cast extends Command
 {

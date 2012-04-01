@@ -1,15 +1,20 @@
 <?php
-namespace Mechanics;
-use \Mechanics\Ability\Ability,
-	\Mechanics\Ability\Skill,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Broadcaster,
-	\Mechanics\Event\Event,
-	\Living\User,
-	\Items\Corpse,
-	\Items\Food,
-	\Items\Furniture,
-	\Items\Equipment;
+namespace Phud\Actors;
+use Phud\Ability\Ability,
+	Phud\Ability\Skill,
+	Phud\Event\Subscriber,
+	Phud\Event\Broadcaster,
+	Phud\Event\Event,
+	Phud\Actors\User,
+	Phud\Affectable,
+	Phud\Inventory,
+	Phud\Usable,
+	Phud\EasyInit,
+	Phud\Identity,
+	Phud\Items\Corpse,
+	Phud\Items\Food,
+	Phud\Items\Furniture,
+	Phud\Items\Equipment;
 
 abstract class Actor
 {

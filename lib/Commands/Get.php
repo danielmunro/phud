@@ -1,10 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Container;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Container;
 
 class Get extends Command
 {

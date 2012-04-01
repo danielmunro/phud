@@ -1,10 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Room as mRoom,
-	\Mechanics\Command\Command,
-	\Mechanics\Event\Subscriber;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Room,
+	Phud\Event\Subscriber;
 
 class Flee extends Command
 {
@@ -32,7 +31,7 @@ class Flee extends Command
 								$directions,
 								function($d)
 								{
-									return $d instanceof mRoom;
+									return $d instanceof Room;
 								}
 							);
 		uasort(

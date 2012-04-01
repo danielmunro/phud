@@ -1,11 +1,10 @@
 <?php
-namespace Commands;
-use \Mechanics\Command\User as cUser,
-	\Living\Trainer,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+namespace Phud\Commands;
+use Phud\Actors\Trainer,
+	Phud\Actors\Actor,
+	Phud\Server;
 
-class Train extends cUser
+class Train extends User
 {
 	protected $alias = 'train';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];

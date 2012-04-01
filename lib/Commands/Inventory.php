@@ -1,9 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\User,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class Inventory extends User
 {

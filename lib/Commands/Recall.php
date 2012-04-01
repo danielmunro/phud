@@ -1,9 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Room as mRoom,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Room;
 
 class Recall extends Command
 {
@@ -13,7 +11,7 @@ class Recall extends Command
 
 	public function perform(Actor $actor, $args = [])
 	{
-		$actor->setRoom(mRoom::find(1));
+		$actor->setRoom(Room::find(1));
 	}
 }
 ?>

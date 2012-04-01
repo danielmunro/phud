@@ -1,7 +1,6 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor;
+namespace Phud\Commands;
+use Phud\Actors\Actor;
 
 class West extends Move_Direction
 {

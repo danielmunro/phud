@@ -1,7 +1,7 @@
 <?php
-namespace Mechanics;
-use \Items\Container,
-	\Items\Item;
+namespace Phud;
+use Phud\Items\Container,
+	Phud\Items\Item;
 
 trait Inventory
 {

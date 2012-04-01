@@ -1,11 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Server,
-	\Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Command\DM,
-	\Living\Mob as lMob,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class Slay extends DM
 {

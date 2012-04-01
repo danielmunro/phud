@@ -1,13 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Items\Item as mItem,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Corpse,
-	\Living\User as lUser,
-	\Living\Mob as lMob;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Items\Item as mItem,
+	Phud\Items\Corpse,
+	Phud\Server;
 
 class Sacrifice extends Command
 {

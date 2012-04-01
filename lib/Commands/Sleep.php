@@ -1,6 +1,6 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor;
+namespace Phud\Commands;
+use Phud\Actors\Actor;
 	
 class Sleep extends Change_Disposition
 {

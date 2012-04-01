@@ -1,9 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Actor,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\Actor;
 
 class Say extends Command
 {

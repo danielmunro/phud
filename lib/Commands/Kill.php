@@ -1,11 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Command\Command;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 class Kill extends Command
 {

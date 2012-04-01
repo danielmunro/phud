@@ -1,10 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Items\Item as mItem,
-	\Mechanics\Command\DM,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class AttSet extends DM
 {

@@ -1,11 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Container,
-	\Items\Item as mItem;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Container,
+	Phud\Items\Item as mItem;
 
 class Put extends Command
 {

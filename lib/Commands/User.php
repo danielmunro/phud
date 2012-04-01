@@ -1,6 +1,5 @@
 <?php
-namespace Mechanics\Command;
-use \Living\User as lUser;
+namespace Phud\Commands;
 
 abstract class User extends Command
 {

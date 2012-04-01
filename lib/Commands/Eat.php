@@ -1,13 +1,11 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\User as cUser,
-	\Items\Item as mItem,
-	\Items\Food;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\Actor,
+	Phud\Items\Item,
+	Phud\Items\Food;
 
-class Eat extends cUser
+class Eat extends User
 {
 	protected $alias = 'eat';
 	protected $dispositions = [

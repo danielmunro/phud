@@ -1,10 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\DM,
-	\Mechanics\Command\Command,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class Make extends DM
 {

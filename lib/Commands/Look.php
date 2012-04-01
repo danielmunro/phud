@@ -1,13 +1,11 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Affect,
-	\Mechanics\Actor,
-	\Mechanics\Command\User,
-	\Living\User as lUser,
-	\Mechanics\Door as mDoor,
-	\Mechanics\Room as mRoom;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Affect,
+	Phud\Actors\Actor,
+	Phud\Actors\User as lUser,
+	Phud\Door as mDoor,
+	Phud\Room as mRoom;
 
 class Look extends User
 {

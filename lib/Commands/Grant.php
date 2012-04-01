@@ -1,16 +1,14 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Server,
-	\Mechanics\Command\DM,
-	\Living\User;
+namespace Phud\Commands;
+use Phud\Ability\Ability,
+	Phud\Server,
+	Phud\Actors\User as aUser;
 
 class Grant extends DM
 {
 	protected $alias = 'grant';
 
-	public function perform(User $user, $args = array())
+	public function perform(aUser $user, $args = array())
 	{
 		$target = $user;//$actor->getRoom()->getActorByInput($args);
 		if($args[1] === 'admin') {

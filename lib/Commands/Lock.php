@@ -1,10 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Key;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Key;
 
 class Lock extends Command
 {

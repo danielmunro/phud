@@ -1,5 +1,5 @@
 <?php
-namespace Mechanics\Command;
+namespace Phud\Commands;
 
 abstract class DM extends User
 {

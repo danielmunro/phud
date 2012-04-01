@@ -1,15 +1,14 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Command\User as cUser,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Commands\User as cUser,
+	Phud\Actors\User as aUser;
 
 class Who extends cUser
 {
 	protected $alias = 'who';
 
-	public function perform(lUser $user, $args = array())
+	public function perform(aUser $user, $args = array())
 	{
 		$out = "Who list:\n";
 		$n = 0;

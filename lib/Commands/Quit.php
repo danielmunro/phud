@@ -1,10 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\User,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Actors\User as lUser;
+
 class Quit extends User
 {
 	protected $alias = 'quit';

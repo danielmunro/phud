@@ -1,11 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Server,
-	\Mechanics\Actor,
-	\Mechanics\Command\Command,
-	\Living\Shopkeeper as lShopkeeper,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\Actor;
 
 class Give extends Command
 {

@@ -1,10 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Mechanics\Door as mDoor;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Door;
 
 class Close extends Command
 {
@@ -22,11 +20,11 @@ class Close extends Command
 		
 		if($door) {
 			switch($door->getDisposition()) {
-				case mDoor::DISPOSITION_OPEN:
-					$door->setDisposition(mDoor::DISPOSITION_CLOSED);
+				case Door::DISPOSITION_OPEN:
+					$door->setDisposition(Door::DISPOSITION_CLOSED);
 					return Server::out($actor, 'You close '.$door.'.');
-				case mDoor::DISPOSITION_CLOSED:
-				case mDoor::DISPOSITION_LOCKED:
+				case Door::DISPOSITION_CLOSED:
+				case Door::DISPOSITION_LOCKED:
 					return Server::out($actor, ucfirst($door) . ' is already closed.');
 			}					
 		}

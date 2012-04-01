@@ -1,12 +1,9 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Quest\Instance as QuestInstance,
-	\Mechanics\Command\User,
-	\Living\Questmaster,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Actors\Questmaster,
+	Phud\Actors\User as lUser;
 
 class Quest extends User
 {

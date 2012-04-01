@@ -1,8 +1,7 @@
 <?php
-namespace Commands;
-use \Mechanics\Server,
-	\Mechanics\Command\User,
-	\Living\User as lUser;
+namespace Phud\Commands;
+use Phud\Server,
+	Phud\Actors\User as lUser;
 
 class Gossip extends User
 {

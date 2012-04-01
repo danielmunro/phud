@@ -1,12 +1,9 @@
 <?php
-namespace Commands;
-use \Items\Item as mItem,
-	\Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Ability,
-	\Mechanics\Command\Command,
-	\Living\Shopkeeper as lShopkeeper;
+namespace Phud\Commands;
+use Phud\Items\Item as mItem,
+	Phud\Actors\Actor,
+	Phud\Actors\Shopkeeper as lShopkeeper,
+	Phud\Server;
 
 class Buy extends Command
 {

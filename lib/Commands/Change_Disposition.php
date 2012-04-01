@@ -1,9 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Command\Command,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Items\Furniture;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Furniture;
 
 abstract class Change_Disposition extends Command
 {

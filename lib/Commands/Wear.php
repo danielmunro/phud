@@ -1,10 +1,8 @@
 <?php
-namespace Commands;
-use \Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Command\Command,
-	\Items\Equipment as iEquipment;
+namespace Phud\Commands;
+use Phud\Actors\Actor,
+	Phud\Server,
+	Phud\Items\Equipment as iEquipment;
 
 class Wear extends Command
 {
