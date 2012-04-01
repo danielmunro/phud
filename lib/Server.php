@@ -1,11 +1,9 @@
 <?php
 namespace Phud;
-use \Living\Mob,
-	Command\Command,
+use Phud\Actors\User,
 	Phud\Event\Event,
 	Phud\Event\Broadcaster,
 	Phud\Event\Subscriber,
-	\Living\User,
 	\Exception,
 	\stdClass;
 

@@ -1,19 +1,17 @@
 <?php
-namespace Living;
-use \Mechanics\Server,
-	\Mechanics\Dbr,
-	\Mechanics\Client,
-	\Mechanics\Actor,
-	\Mechanics\Alias,
-	\Mechanics\Room,
-	\Mechanics\Race,
-	\Mechanics\Quest\Quest,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Ability\Skill,
-	\Mechanics\Event\Broadcaster,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Quest\Log as QuestLog;
+namespace Phud\Actors;
+use Phud\Server,
+	Phud\Dbr,
+	Phud\Client,
+	Phud\Room,
+	Phud\Race,
+	Phud\Quest\Quest,
+	Phud\Ability\Ability,
+	Phud\Ability\Skill,
+	Phud\Event\Broadcaster,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Quest\Log as QuestLog;
 
 class User extends Actor
 {

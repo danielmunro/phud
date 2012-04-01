@@ -1,12 +1,12 @@
 <?php
-use Living\User,
-	Phud\Actor\Actor,
+use Phud\Actors\User,
+	Phud\Actors\Actor,
 	Phud\Dbr,
 	Phud\Server,
 	Phud\Race,
 	Phud\Room,
 	Phud\Debug,
-	Phud\Command\Command,
+	Phud\Commands\Command,
 	Phud\Event\Subscriber,
 	Phud\Event\Event;
 

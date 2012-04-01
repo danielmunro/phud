@@ -1,6 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Living\User,
+use Phud\Actors\User,
 	Phud\Debug,
 	Phud\Server,
 	\ReflectionClass,

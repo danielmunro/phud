@@ -53,7 +53,6 @@ function __autoload($class) {
 	global $global_path;
 	$class = str_replace(['Phud\\', '\\'], ['', '/'], $class); // hack for now
 	$path = $global_path.'/lib/'.$class.".php";
-	echo $path."\n";
 	if(file_exists($path)) {
 		require_once($path);
 	}

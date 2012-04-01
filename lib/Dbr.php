@@ -1,5 +1,6 @@
 <?php
-namespace Mechanics;
+namespace Phud;
+
 class Dbr extends \Redis
 {
 	private static $instance = null;

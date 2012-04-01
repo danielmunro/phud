@@ -1,11 +1,9 @@
 <?php
 namespace Phud;
-use \Mechanics\Command\Command,
-	\Living\User,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Event\Event,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Broadcaster;
+use Phud\Actors\User,
+	Phud\Event\Event,
+	Phud\Event\Subscriber,
+	Phud\Event\Broadcaster;
 
 class Client
 {
