@@ -227,8 +227,12 @@ class Server
 			}
 			foreach($deferred as $def) {
 				Debug::log("including deploy script: ".$def);
-				$anon = new Anonymous();
-				$anon->_require_once($d->path.'/'.$def);
+				call_user_func_array(
+					function($path) {
+						require_once($path);
+					},
+					[$d->path.'/'.$def]
+				);
 			}
 		} else {
 			throw new Exception('Invalid deploy directory defined: '.$start);
