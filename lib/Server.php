@@ -98,7 +98,7 @@ class Server
 		$this->readDeploy($deploy_dir.'/init/');
 		Debug::log("Initializing environment");
 		foreach([
-				'Phud\Command\Command',
+				'Phud\Commands\Command',
 				'Phud\Race',
 				'Phud\Ability\Ability'
 			] as $required) {
