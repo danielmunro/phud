@@ -1,8 +1,8 @@
 <?php
 namespace Mechanics\Command;
 use \Living\User,
-	\Mechanics\Debug,
-	\Mechanics\Server,
+	\Phud\Debug,
+	\Phud\Server,
 	\ReflectionClass,
 	\Exception,
 	\Mechanics\Alias,

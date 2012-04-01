@@ -1,6 +1,6 @@
 <?php
 namespace Mechanics\Event;
-use \Mechanics\Debug;
+use \Phud\Debug;
 
 trait Broadcaster
 {

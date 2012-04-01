@@ -1,6 +1,8 @@
 <?php
-namespace Mechanics;
+namespace Phud;
 use \Mechanics\Affect,
+	\Mechanics\Room,
+	\Mechanics\Door,
 	\Mechanics\Ability\Ability,
 	\Living\Mob;
 

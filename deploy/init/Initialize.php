@@ -2,10 +2,10 @@
 use Living\User,
 	Mechanics\Actor,
 	Mechanics\Dbr,
-	Mechanics\Server,
+	Phud\Server,
 	Mechanics\Race,
 	Mechanics\Room,
-	Mechanics\Debug,
+	Phud\Debug,
 	Mechanics\Command\Command,
 	Mechanics\Event\Subscriber,
 	Mechanics\Event\Event;

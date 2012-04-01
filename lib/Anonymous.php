@@ -1,5 +1,5 @@
 <?php
-namespace Mechanics;
+namespace Phud;
 
 /**
  * This class is used by the deploy routine in order to include 

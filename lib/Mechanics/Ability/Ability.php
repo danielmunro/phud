@@ -1,11 +1,11 @@
 <?php
 namespace Mechanics\Ability;
-use \Mechanics\Debug,
+use \Phud\Debug,
 	\Mechanics\Actor,
 	\Mechanics\Alias,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
-	\Mechanics\Server,
+	\Phud\Server,
 	\ReflectionClass,
 	\Exception;
 

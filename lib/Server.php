@@ -1,10 +1,11 @@
 <?php
-namespace Mechanics;
+namespace Phud;
 use \Living\Mob,
 	\Mechanics\Command\Command,
 	\Mechanics\Event\Event,
 	\Mechanics\Event\Broadcaster,
 	\Mechanics\Event\Subscriber,
+	\Mechanics\Room,
 	\Living\User,
 	\Exception,
 	\stdClass;
@@ -205,9 +206,10 @@ class Server
 
 	protected function readDeploy($start)
 	{
-		$relative_path = dirname(__FILE__).'/../../'.$start;
-		if(file_exists($relative_path)) {
-			$d = dir($relative_path);
+		global $global_path;
+		$path = $global_path.'/'.$start;
+		if(file_exists($path)) {
+			$d = dir($path);
 			$deferred = [];
 			while($cd = $d->read()) {
 				$pos = strpos($cd, '.');
@@ -220,7 +222,7 @@ class Server
 					$deferred[] = $cd;
 				} else if($ext === 'area') {
 					Debug::log("including deploy script: ".$cd);
-					new Area($relative_path.'/'.$cd);
+					new Area($path.'/'.$cd);
 				}
 			}
 			foreach($deferred as $def) {

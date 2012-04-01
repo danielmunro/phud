@@ -1,4 +1,5 @@
 <?php
+
 ///////////////////////////////////////////////////////
 // ADMIN CONFIG
 ///////////////////////////////////////////////////////
@@ -15,8 +16,7 @@ $global_path = dirname(__FILE__);
 date_default_timezone_set('America/Los_Angeles');
 gc_enable();
 set_time_limit(0);
-use \Mechanics\Debug;
-use \Mechanics\Server;
+use \Phud\Server;
 
 ///////////////////////////////////////////////////////
 // Set default arguments for starting phud, then parse
@@ -51,7 +51,8 @@ if($s->isInitialized()) {
 // autoloader
 function __autoload($class) {
 	global $global_path;
-	$path = $global_path.'/lib/'.str_replace("\\", "/", $class).".php";
+	$class = str_replace(['Phud\\', '\\'], ['', '/'], $class); // hack for now
+	$path = $global_path.'/lib/'.$class.".php";
 	if(file_exists($path)) {
 		require_once($path);
 	}

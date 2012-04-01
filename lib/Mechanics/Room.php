@@ -2,6 +2,7 @@
 namespace Mechanics;
 use \Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
+	\Phud\Debug,
 	\Exception;
 
 class Room

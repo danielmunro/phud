@@ -1,6 +1,7 @@
 <?php
 namespace Mechanics;
-use \Exception;
+use \Phud\Debug,
+	\Exception;
 
 trait EasyInit
 {

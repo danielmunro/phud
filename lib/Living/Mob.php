@@ -2,10 +2,10 @@
 namespace Living;
 use \Mechanics\Dbr,
 	\Mechanics\Room,
-	\Mechanics\Debug,
+	\Phud\Debug,
 	\Mechanics\Alias,
 	\Mechanics\Actor,
-	\Mechanics\Server,
+	\Phud\Server,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
 	\Mechanics\Command\Command,
