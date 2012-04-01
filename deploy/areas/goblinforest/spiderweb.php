@@ -1,6 +1,6 @@
 <?php
-use \Mechanics\Room,
-	\Living\Mob;
+use Phud\Room,
+	Phud\Actors\Mob;
 
 $area_den = 'spiderden';
 $id = 'goblinforestspiderweb';

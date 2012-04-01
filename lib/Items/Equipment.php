@@ -1,6 +1,6 @@
 <?php
-namespace Items;
-use \Mechanics\Equipped;
+namespace Phud\Items;
+use Phud\Equipped;
 
 class Equipment extends Item
 {

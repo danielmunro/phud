@@ -1,7 +1,7 @@
 <?php
-use \Mechanics\Room,
-	\Mechanics\Actor,
-	\Living\Mob;
+use Phud\Room,
+	Phud\Actors\Actor,
+	Phud\Actors\Mob;
 
 $p = [
 	'title' => 'Temple Arena',

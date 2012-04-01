@@ -1,9 +1,9 @@
 <?php
-namespace Mechanics\Quest;
-use \Living\User as User,
-	\Mechanics\Nouns,
-	\Mechanics\EasyInit,
-	\Mechanics\Identity;
+namespace Phud\Quest;
+use Phud\Actors\User,
+	Phud\Nouns,
+	Phud\EasyInit,
+	Phud\Identity;
 
 class Quest
 {

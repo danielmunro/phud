@@ -1,9 +1,10 @@
 <?php
-namespace Items;
-use \Mechanics\Affectable,
-	\Mechanics\EasyInit,
-	\Mechanics\Attributes,
-	\Mechanics\Nouns;
+namespace Phud\Items;
+use Phud\Affectable,
+	Phud\EasyInit,
+	Phud\Attributes,
+	Phud\Nouns;
+
 class Item
 {
 	use Affectable, EasyInit, Nouns;

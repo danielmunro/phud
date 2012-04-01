@@ -2,10 +2,10 @@
 namespace Skills;
 use Phud\Ability\Ability,
 	Phud\Ability\Skill,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Actors\Actor,
+	Phud\Server;
 
 class Enhanced_Damage extends Skill
 {

@@ -2,9 +2,9 @@
 namespace Phud;
 use \Living\Mob,
 	Command\Command,
-	Event\Event,
+	Phud\Event\Event,
 	Phud\Event\Broadcaster,
-	Event\Subscriber,
+	Phud\Event\Subscriber,
 	\Living\User,
 	\Exception,
 	\stdClass;

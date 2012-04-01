@@ -1,8 +1,8 @@
 <?php
-use \Living\Questmaster,
-	\Mechanics\Quest\Quest,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event;
+use Phud\Actors\Questmaster,
+	Phud\Quest\Quest,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 $adept = Questmaster::getByID(1);
 

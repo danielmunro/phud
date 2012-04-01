@@ -1,5 +1,6 @@
 <?php
-namespace Mechanics;
+namespace Phud;
+
 class Attributes
 {
 	protected $str = 0;

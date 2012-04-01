@@ -1,6 +1,6 @@
 <?php
-namespace Items;
-use \Mechanics\Actor;
+namespace Phud\Items;
+use Phud\Actors\Actor;
 
 class Furniture extends Item
 {

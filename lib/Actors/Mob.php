@@ -1,17 +1,15 @@
 <?php
-namespace Living;
-use \Mechanics\Dbr,
-	\Mechanics\Room,
-	\Phud\Debug,
-	\Mechanics\Alias,
-	\Mechanics\Actor,
-	\Phud\Server,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Command\Command,
-	\Mechanics\Nouns,
-	\Items\Corpse,
-	\Items\Item;
+namespace Phud\Actors;
+use Phud\Dbr,
+	Phud\Room,
+	Phud\Debug,
+	Phud\Server,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Command\Command,
+	Phud\Nouns,
+	Phud\Items\Corpse,
+	Phud\Items\Item;
 
 class Mob extends Actor
 {

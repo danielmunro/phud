@@ -2,10 +2,9 @@
 namespace Skills;
 use Phud\Ability\Skill,
 	Phud\Ability\Ability,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Server,
-	\Mechanics\Actor;
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Actors\Actor;
 
 class Haggle extends Skill
 {

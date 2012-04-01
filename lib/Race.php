@@ -81,8 +81,9 @@ abstract class Race
 	
 	public function runInstantiation()
 	{
+		global $global_path;
 		$namespace = 'Races';
-		$d = dir(dirname(__FILE__) . '/../../deploy/init/'.$namespace);
+		$d = dir($global_path.'/deploy/init/'.$namespace);
 		while($race = $d->read())
 			if(substr($race, -4) === ".php")
 			{

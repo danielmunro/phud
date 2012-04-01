@@ -1,6 +1,7 @@
 <?php
-namespace Mechanics;
-use \Items\Equipment;
+namespace Phud;
+use Phud\Items\Equipment,
+	Phud\Actors\Actor;
 
 class Equipped
 {

@@ -1,6 +1,6 @@
 <?php
 
-use \Mechanics\Room;
+use Phud\Room;
 
 Room::setStartRoom(1);
 

@@ -1,5 +1,5 @@
 <?php
-namespace Items;
+namespace Phud\Items;
 
 class Food extends Item
 {

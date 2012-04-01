@@ -1,11 +1,7 @@
 <?php
 namespace Phud\Ability;
-use \Living\User,
-	\Mechanics\Actor,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Server,
-	\Exception;
+use Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 abstract class Skill extends Ability
 {

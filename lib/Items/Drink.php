@@ -1,7 +1,7 @@
 <?php
-namespace Items;
-use	\Mechanics\Server,
-	\Mechanics\Actor;
+namespace Phud\Items;
+use	Phud\Server,
+	Phud\Actors\Actor;
 
 class Drink extends Item
 {

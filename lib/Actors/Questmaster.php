@@ -1,6 +1,6 @@
 <?php
-namespace Living;
-use \Mechanics\Quest\Log as QuestLog;
+namespace Phud\Actors;
+use Phud\Quest\Log as QuestLog;
 
 class Questmaster extends Mob
 {

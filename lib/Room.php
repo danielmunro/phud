@@ -1,8 +1,8 @@
 <?php
-namespace Mechanics;
-use \Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Phud\Debug,
+namespace Phud;
+use Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Actors\Actor,
 	\Exception;
 
 class Room

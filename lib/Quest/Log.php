@@ -1,6 +1,6 @@
 <?php
-namespace Mechanics\Quest;
-use \Mechanics\Usable;
+namespace Phud\Quest;
+use Phud\Usable;
 
 trait Log
 {

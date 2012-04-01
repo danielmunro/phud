@@ -1,9 +1,10 @@
 <?php
 namespace Phud\Ability;
-use \Mechanics\Actor,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
+use Phud\Actors\Actor,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
 	Phud\Alias,
+	Phud\Debug,
 	\ReflectionClass,
 	\Exception;
 
@@ -47,9 +48,10 @@ abstract class Ability
 	
 	public static function runInstantiation()
 	{
+		global $global_path;
 		$namespaces = ['Skills', 'Spells'];
 		foreach($namespaces as $namespace) {
-			$d = dir(dirname(__FILE__) . '/../../../deploy/init/'.$namespace);
+			$d = dir($global_path.'/deploy/init/'.$namespace);
 			while($ability = $d->read()) {
 				if(substr($ability, -4) === ".php") {
 					Debug::log("init ability: ".$ability);

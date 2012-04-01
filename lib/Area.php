@@ -1,10 +1,10 @@
 <?php
 namespace Phud;
-use \Mechanics\Affect,
-	\Mechanics\Room,
-	\Mechanics\Door,
-	\Mechanics\Ability\Ability,
-	\Living\Mob;
+use Phud\Affect,
+	Phud\Room,
+	Phud\Door,
+	Phud\Ability\Ability,
+	Phud\Actors\Mob;
 
 class Area
 {
@@ -84,7 +84,7 @@ class Area
 	protected function loadItem($class)
 	{
 		$p = $this->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']);
-		$class = 'Items\\'.$class;
+		$class = 'Phud\\Items\\'.$class;
 		$this->last_added = new $class($p);
 		$this->last_first_class->addItem($this->last_added);
 		if($this->last_first_class instanceof Mob) {
@@ -122,7 +122,7 @@ class Area
 			$additional = ['properties', 'attributes'];
 		}
 		$p = $this->loadRequired($required_properties, $additional);
-		$class = 'Living\\'.$class;
+		$class = 'Phud\\Actors\\'.$class;
 		$this->last_added = $this->last_first_class = new $class($p);
 		$this->last_added->setRoom($this->last_room);
 	}

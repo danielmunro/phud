@@ -1,10 +1,8 @@
 <?php
-namespace Living;
-use \Mechanics\Actor;
-use \Mechanics\Dbr;
+namespace Phud\Actors;
+
 class Shopkeeper extends Mob
 {
-
 	protected $alias = 'a shopkeeper';
 	protected $long = 'a shopkeeper stands here.';
 	protected $list_item_message = "Here's what I have in stock now.";
