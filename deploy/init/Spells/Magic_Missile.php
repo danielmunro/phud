@@ -1,8 +1,8 @@
 <?php
 namespace Spells;
-use \Mechanics\Ability\Spell,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+use Phud\Ability\Spell,
+	Phud\Actor\Actor,
+	Phud\Server;
 
 class Magic_Missile extends Spell
 {

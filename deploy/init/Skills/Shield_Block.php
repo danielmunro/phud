@@ -1,8 +1,7 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Server,
-	\Mechanics\Actor;
+use Phud\Ability\Skill,
+	Phud\Actor\Actor;
 
 class Shield_Block extends Skill
 {

@@ -1,12 +1,12 @@
 <?php
-namespace Mechanics\Command;
-use \Living\User,
-	\Phud\Debug,
-	\Phud\Server,
+namespace Phud\Command;
+use Living\User,
+	Phud\Debug,
+	Phud\Server,
 	\ReflectionClass,
 	\Exception,
-	\Mechanics\Alias,
-	\Mechanics\Actor;
+	Phud\Alias,
+	Phud\Actor\Actor;
 
 abstract class Command
 {
@@ -29,8 +29,9 @@ abstract class Command
 	
 	public static function runInstantiation()
 	{
+		global $global_path;
 		$namespace = 'Commands';
-		$d = dir(dirname(__FILE__) . '/../../'.$namespace);
+		$d = dir($global_path.'/lib/'.$namespace);
 		while($command = $d->read()) {
 			if(substr($command, -4) === ".php") {
 				Debug::log("init command: ".$command);

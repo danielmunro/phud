@@ -1,5 +1,5 @@
 <?php
-namespace Mechanics\Ability;
+namespace Phud\Ability;
 use \Living\User,
 	\Mechanics\Actor,
 	\Mechanics\Event\Subscriber,

@@ -1,7 +1,6 @@
 <?php
-namespace Mechanics;
-use \Phud\Debug,
-	\Exception;
+namespace Phud;
+use \Exception;
 
 abstract class Race
 {

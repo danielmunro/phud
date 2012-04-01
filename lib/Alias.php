@@ -1,5 +1,6 @@
 <?php
-namespace Mechanics;
+namespace Phud;
+
 trait Alias
 {
 	protected static $aliases = [];

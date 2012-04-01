@@ -1,9 +1,7 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+use Phud\Ability\Skill,
+	Phud\Actor\Actor;
 
 class Backstab extends Skill
 {

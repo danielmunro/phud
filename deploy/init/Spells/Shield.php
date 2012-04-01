@@ -1,10 +1,10 @@
 <?php
 namespace Spells;
-use \Mechanics\Ability\Spell,
-	\Mechanics\Alias,
-	\Mechanics\Actor,
-	\Mechanics\Affect,
-	\Mechanics\Server;
+use Phud\Ability\Spell,
+	Phud\Alias,
+	Phud\Actor\Actor,
+	Phud\Affect,
+	Phud\Server;
 
 class Shield extends Spell
 {

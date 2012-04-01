@@ -1,5 +1,5 @@
 <?php
-namespace Mechanics;
+namespace Phud;
 use \Mechanics\Command\Command,
 	\Living\User,
 	\Mechanics\Ability\Ability,

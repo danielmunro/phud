@@ -1,10 +1,9 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Attributes;
+use Phud\Race,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Attributes;
 
 class Human extends Race
 {

@@ -1,7 +1,7 @@
 <?php
-namespace Mechanics\Ability;
-use \Mechanics\Actor,
-	\Mechanics\Server;
+namespace Phud\Ability;
+use Phud\Actor\Actor,
+	Phud\Server;
 
 abstract class Spell extends Ability
 {

@@ -1,14 +1,14 @@
 <?php
 use Living\User,
-	Mechanics\Actor,
-	Mechanics\Dbr,
+	Phud\Actor\Actor,
+	Phud\Dbr,
 	Phud\Server,
-	Mechanics\Race,
-	Mechanics\Room,
+	Phud\Race,
+	Phud\Room,
 	Phud\Debug,
-	Mechanics\Command\Command,
-	Mechanics\Event\Subscriber,
-	Mechanics\Event\Event;
+	Phud\Command\Command,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 $server = Server::instance();
 $server->addSubscriber(

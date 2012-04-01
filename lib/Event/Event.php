@@ -1,5 +1,5 @@
 <?php
-namespace Mechanics\Event;
+namespace Phud\Event;
 
 class Event
 {

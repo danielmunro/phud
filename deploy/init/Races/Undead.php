@@ -1,10 +1,9 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Attributes,
-	\Mechanics\Event\Event,
-	\Mechanics\Event\Subscriber;
+use Phud\Race,
+	Phud\Attributes,
+	Phud\Event\Event,
+	Phud\Event\Subscriber;
 
 class Undead extends Race
 {

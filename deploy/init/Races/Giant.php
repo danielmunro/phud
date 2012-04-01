@@ -1,13 +1,12 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Effect,
-	\Mechanics\Damage,
-	\Mechanics\Attributes,
-	\Mechanics\Server,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event;
+use Phud\Race,
+	Phud\Effect,
+	Phud\Damage,
+	Phud\Attributes,
+	Phud\Server,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 class Giant extends Race
 {

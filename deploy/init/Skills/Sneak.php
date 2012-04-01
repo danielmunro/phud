@@ -1,6 +1,6 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
+use \Phud\Ability\Skill,
 	\Mechanics\Actor,
 	\Mechanics\Server,
 	\Mechanics\Affect;

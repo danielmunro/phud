@@ -1,8 +1,8 @@
 <?php
-namespace Mechanics;
-use \Living\User,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event;
+namespace Phud;
+use Living\User,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 class Affect
 {

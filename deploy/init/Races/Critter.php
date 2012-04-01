@@ -1,8 +1,7 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Attributes;
+use Phud\Race,
+	Phud\Attributes;
 
 class Critter extends Race
 {

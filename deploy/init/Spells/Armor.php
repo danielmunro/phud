@@ -1,9 +1,9 @@
 <?php
 namespace Spells;
-use \Mechanics\Ability\Spell,
-	\Mechanics\Affect,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+use Phud\Ability\Spell,
+	Phud\Affect,
+	Phud\Actor\Actor,
+	Phud\Server;
 
 class Armor extends Spell
 {

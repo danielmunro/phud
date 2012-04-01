@@ -1,11 +1,9 @@
 <?php
-namespace Mechanics\Ability;
-use \Phud\Debug,
-	\Mechanics\Actor,
-	\Mechanics\Alias,
+namespace Phud\Ability;
+use \Mechanics\Actor,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
-	\Phud\Server,
+	Phud\Alias,
 	\ReflectionClass,
 	\Exception;
 

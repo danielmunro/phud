@@ -1,12 +1,11 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Items\Item,
-	\Mechanics\Server,
-	\Mechanics\Attributes;
+use Phud\Race,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Items\Item,
+	Phud\Server,
+	Phud\Attributes;
 
 class Gnome extends Race
 {

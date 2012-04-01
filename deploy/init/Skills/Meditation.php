@@ -1,11 +1,9 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Ability\Ability,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event,
-	\Mechanics\Server,
-	\Mechanics\Actor;
+use Phud\Ability\Skill,
+	Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\Actor;
 
 class Meditation extends Skill
 {

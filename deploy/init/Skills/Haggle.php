@@ -1,7 +1,7 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Ability\Ability,
+use Phud\Ability\Skill,
+	Phud\Ability\Ability,
 	\Mechanics\Event\Subscriber,
 	\Mechanics\Event\Event,
 	\Mechanics\Server,

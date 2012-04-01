@@ -1,9 +1,9 @@
 <?php
 namespace Spells;
-use \Mechanics\Ability\Spell,
-	\Mechanics\Actor,
-	\Mechanics\Affect,
-	\Mechanics\Server;
+use Phud\Ability\Spell,
+	Phud\Actor\Actor,
+	Phud\Affect,
+	Phud\Server;
 
 class Sleep extends Spell
 {

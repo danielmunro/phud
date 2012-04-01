@@ -1,9 +1,7 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Server,
-	\Mechanics\Actor,
-	\Mechanics\Damage;
+use Phud\Ability\Skill,
+	Phud\Actor\Actor;
 
 class Kick extends Skill
 {

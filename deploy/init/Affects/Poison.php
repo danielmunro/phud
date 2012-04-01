@@ -1,9 +1,9 @@
 <?php
 namespace Affects;
-use \Mechanics\Affect,
-	\Mechanics\Server,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Event\Event;
+use Phud\Affect,
+	Phud\Server,
+	Phud\Event\Subscriber,
+	Phud\Event\Event;
 
 class Poison extends Affect
 {

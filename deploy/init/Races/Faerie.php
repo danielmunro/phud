@@ -1,8 +1,8 @@
 <?php
 namespace Races;
-use \Mechanics\Alias,
-	\Mechanics\Race,
-	\Mechanics\Attributes;
+use Phud\Alias,
+	Phud\Race,
+	Phud\Attributes;
 
 class Faerie extends Race
 {

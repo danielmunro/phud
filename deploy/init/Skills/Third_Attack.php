@@ -1,9 +1,7 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Ability,
-	\Mechanics\Ability\Skill,
-	\Mechanics\Actor,
-	\Mechanics\Server;
+use Phud\Ability\Skill,
+	Phud\Actor\Actor;
 
 class Third_Attack extends Skill
 {

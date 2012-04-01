@@ -1,6 +1,6 @@
 <?php
-namespace Mechanics\Event;
-use \Mechanics\Debug,
+namespace Phud\Event;
+use Phud\Debug,
 	\Closure;
 
 class Subscriber

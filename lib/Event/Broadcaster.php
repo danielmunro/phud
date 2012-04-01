@@ -1,6 +1,5 @@
 <?php
-namespace Mechanics\Event;
-use \Phud\Debug;
+namespace Phud\Event;
 
 trait Broadcaster
 {

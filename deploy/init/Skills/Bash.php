@@ -1,10 +1,9 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Skill,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Event\Event,
-	\Mechanics\Affect;
+use Phud\Ability\Skill,
+	Phud\Actor\Actor,
+	Phud\Event\Event,
+	Phud\Affect;
 
 class Bash extends Skill
 {

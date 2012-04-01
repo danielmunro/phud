@@ -1,11 +1,10 @@
 <?php
 namespace Phud;
 use \Living\Mob,
-	\Mechanics\Command\Command,
-	\Mechanics\Event\Event,
-	\Mechanics\Event\Broadcaster,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Room,
+	Command\Command,
+	Event\Event,
+	Phud\Event\Broadcaster,
+	Event\Subscriber,
 	\Living\User,
 	\Exception,
 	\stdClass;
@@ -99,9 +98,9 @@ class Server
 		$this->readDeploy($deploy_dir.'/init/');
 		Debug::log("Initializing environment");
 		foreach([
-				'\Mechanics\Command\Command',
-				'\Mechanics\Race',
-				'\Mechanics\Ability\Ability'
+				'Phud\Command\Command',
+				'Phud\Race',
+				'Phud\Ability\Ability'
 			] as $required) {
 			Debug::log("initializing ".$required);
 			$required::runInstantiation();

@@ -1,11 +1,9 @@
 <?php
 namespace Skills;
-use \Mechanics\Ability\Ability,
-	\Mechanics\Ability\Skill,
-	\Mechanics\Actor,
+use Phud\Ability\Skill,
+	Phud\Actor\Actor,
 	\Mechanics\Server,
-	\Mechanics\Affect,
-	\Mechanics\Race;
+	\Mechanics\Affect;
 
 class Fear extends Skill
 {

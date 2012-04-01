@@ -1,8 +1,9 @@
 <?php
 namespace Races;
-use \Mechanics\Alias;
-use \Mechanics\Attributes;
-class Rat extends \Mechanics\Race
+use Phud\Race,
+	Phud\Attributes;
+
+class Rat extends Race
 {
 	protected $alias = 'rat';
 
@@ -15,14 +16,12 @@ class Rat extends \Mechanics\Race
 
 	public function getSubscribers()
 	{
-		return [
-		];
+		return [];
 	}
 
 	public function getAbilities()
 	{
-		return [
-		];
+		return [];
 	}
 }
 ?>
