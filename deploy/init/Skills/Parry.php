@@ -1,13 +1,10 @@
 <?php
-namespace Skills;
-use Phud\Ability\Skill,
-	Phud\Ability\Ability,
-	\Mechanics\Event\Event,
-	\Mechanics\Event\Subscriber,
-	\Mechanics\Actor,
-	\Mechanics\Equipped,
-	\Mechanics\Race,
-	\Mechanics\Server;
+namespace Phud\Abilities;
+use Phud\Event\Event,
+	Phud\Event\Subscriber,
+	Phud\Actors\Actor,
+	Phud\Equipped,
+	Phud\Race;
 
 class Parry extends Skill
 {

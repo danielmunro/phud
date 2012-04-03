@@ -1,8 +1,7 @@
 <?php
-namespace Spells;
-use Phud\Ability\Spell,
-	Phud\Alias,
-	Phud\Actor\Actor;
+namespace Phud\Abilities;
+use Phud\Server,
+	Phud\Actors\Actor;
 
 class Cure_Critical extends Spell
 {

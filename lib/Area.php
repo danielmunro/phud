@@ -3,7 +3,7 @@ namespace Phud;
 use Phud\Affect,
 	Phud\Room,
 	Phud\Door,
-	Phud\Ability\Ability,
+	Phud\Abilities\Ability,
 	Phud\Actors\Mob;
 
 class Area

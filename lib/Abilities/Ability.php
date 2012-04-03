@@ -1,5 +1,5 @@
 <?php
-namespace Phud\Ability;
+namespace Phud\Abilities;
 use Phud\Actors\Actor,
 	Phud\Event\Subscriber,
 	Phud\Event\Event,
@@ -56,7 +56,7 @@ abstract class Ability
 				if(substr($ability, -4) === ".php") {
 					Debug::log("init ability: ".$ability);
 					$class = substr($ability, 0, strpos($ability, '.'));
-					$called_class = $namespace.'\\'.$class;
+					$called_class = 'Phud\\Abilities\\'.$class;
 					$reflection = new ReflectionClass($called_class);
 					new $called_class();
 				}

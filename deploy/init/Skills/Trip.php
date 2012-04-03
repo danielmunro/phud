@@ -1,9 +1,8 @@
 <?php
-namespace Skills;
-use Phud\Ability\Skill,
-	Phud\Affect,
+namespace Phud\Abilities;
+use Phud\Affect,
 	Phud\Server,
-	Phud\Actor\Actor;
+	Phud\Actors\Actor;
 
 class Trip extends Skill
 {

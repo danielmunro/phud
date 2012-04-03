@@ -1,10 +1,9 @@
 <?php
-namespace Skills;
-use Phud\Ability\Ability,
-	Phud\Ability\Skill,
-	\Mechanics\Actor,
-	\Mechanics\Server,
-	\Mechanics\Race;
+namespace Phud\Abilities;
+use Phud\Actors\Actor,
+	Phud\Race,
+	Phud\Event\Event,
+	Phud\Event\Subscriber;
 
 class Dodge extends Skill
 {
@@ -15,7 +14,7 @@ class Dodge extends Skill
 
 	public function getSubscriber()
 	{
-		return new Subscription(
+		return new Subscriber(
 			Event::EVENT_MELEE_ATTACKED,
 			$this,
 			function($subscriber, $fighter, $ability, $attack_event) {

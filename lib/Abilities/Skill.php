@@ -1,5 +1,5 @@
 <?php
-namespace Phud\Ability;
+namespace Phud\Abilities;
 use Phud\Event\Subscriber,
 	Phud\Event\Event;
 

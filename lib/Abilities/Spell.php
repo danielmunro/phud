@@ -1,6 +1,6 @@
 <?php
-namespace Phud\Ability;
-use Phud\Actor\Actor,
+namespace Phud\Abilities;
+use Phud\Actors\Actor,
 	Phud\Server;
 
 abstract class Spell extends Ability

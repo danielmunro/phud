@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Actors;
-use Phud\Ability\Ability,
-	Phud\Ability\Skill,
+use Phud\Abilities\Ability,
+	Phud\Abilities\Skill,
 	Phud\Event\Subscriber,
 	Phud\Event\Broadcaster,
 	Phud\Event\Event,

@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Server,
-	Phud\Ability\Ability,
+	Phud\Abilities\Ability,
 	Phud\Actors\User as lUser;
 
 class Spell extends User

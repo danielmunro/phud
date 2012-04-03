@@ -98,7 +98,7 @@ class Server
 		foreach([
 				'Phud\Commands\Command',
 				'Phud\Race',
-				'Phud\Ability\Ability'
+				'Phud\Abilities\Ability'
 			] as $required) {
 			Debug::log("initializing ".$required);
 			$required::runInstantiation();

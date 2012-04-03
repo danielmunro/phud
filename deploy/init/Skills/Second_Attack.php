@@ -1,7 +1,8 @@
 <?php
-namespace Skills;
-use Phud\Ability\Skill,
-	Phud\Actor;
+namespace Phud\Abilities;
+use Phud\Event\Event,
+	Phud\Event\Subscriber,
+	Phud\Actors\Actor;
 
 class Second_Attack extends Skill
 {

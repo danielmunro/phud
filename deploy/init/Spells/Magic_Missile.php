@@ -1,7 +1,6 @@
 <?php
-namespace Spells;
-use Phud\Ability\Spell,
-	Phud\Actor\Actor,
+namespace Phud\Abilities;
+use Phud\Actors\Actor,
 	Phud\Server;
 
 class Magic_Missile extends Spell

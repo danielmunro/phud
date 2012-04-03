@@ -1,8 +1,6 @@
 <?php
-namespace Skills;
-use Phud\Ability\Ability,
-	Phud\Ability\Skill,
-	Phud\Event\Subscriber,
+namespace Phud\Abilities;
+use Phud\Event\Subscriber,
 	Phud\Event\Event,
 	Phud\Actors\Actor,
 	Phud\Server;
