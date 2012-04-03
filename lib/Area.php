@@ -60,7 +60,7 @@ class Area
 
 	protected function loadAffect($affect)
 	{
-		$affect = 'Affects\\'.$affect;
+		$affect = 'Phud\\Affects\\'.$affect;
 		$p = $this->loadRequired([], ['properties']);
 		$this->last_added->addAffect(new $affect($p));
 	}

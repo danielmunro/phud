@@ -1,5 +1,5 @@
 <?php
-namespace Phud;
+namespace Phud\Affects;
 
 trait Affectable
 {

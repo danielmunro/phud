@@ -1,7 +1,6 @@
 <?php
-namespace Affects;
-use Phud\Affect,
-	Phud\Server,
+namespace Phud\Affects;
+use Phud\Server,
 	Phud\Event\Subscriber,
 	Phud\Event\Event;
 

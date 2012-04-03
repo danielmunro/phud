@@ -1,8 +1,11 @@
 <?php
-namespace Phud;
-use Living\User,
-	Phud\Event\Subscriber,
-	Phud\Event\Event;
+namespace Phud\Affects;
+use Phud\Event\Subscriber,
+	Phud\Event\Event,
+	Phud\EasyInit,
+	Phud\Debug,
+	Phud\Server,
+	Phud\Attributes;
 
 class Affect
 {

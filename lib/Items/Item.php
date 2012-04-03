@@ -1,6 +1,6 @@
 <?php
 namespace Phud\Items;
-use Phud\Affectable,
+use Phud\Affects\Affectable,
 	Phud\EasyInit,
 	Phud\Attributes,
 	Phud\Nouns;

@@ -1,6 +1,5 @@
 <?php
-namespace Affects;
-use Phud\Affect;
+namespace Phud\Affects;
 
 class Glow extends Affect
 {
