@@ -1,7 +1,6 @@
 <?php
-namespace Races;
-use Phud\Race,
-	Phud\Event\Subscriber,
+namespace Phud\Races;
+use Phud\Event\Subscriber,
 	Phud\Event\Event,
 	Phud\Items\Item,
 	Phud\Server,

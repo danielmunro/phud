@@ -1,7 +1,6 @@
 <?php
-namespace Races;
+namespace Phud\Races;
 use Phud\Alias,
-	Phud\Race,
 	Phud\Attributes;
 
 class Faerie extends Race

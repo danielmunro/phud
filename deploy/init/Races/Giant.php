@@ -1,7 +1,6 @@
 <?php
-namespace Races;
-use Phud\Race,
-	Phud\Effect,
+namespace Phud\Races;
+use Phud\Effect,
 	Phud\Damage,
 	Phud\Attributes,
 	Phud\Server,

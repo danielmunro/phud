@@ -1,6 +1,8 @@
 <?php
-namespace Phud;
-use \Exception;
+namespace Phud\Races;
+use \Exception,
+	Phud\Alias,
+	Phud\Debug;
 
 abstract class Race
 {
@@ -82,14 +84,13 @@ abstract class Race
 	public function runInstantiation()
 	{
 		global $global_path;
-		$namespace = 'Races';
-		$d = dir($global_path.'/deploy/init/'.$namespace);
+		$d = dir($global_path.'/deploy/init/Races');
 		while($race = $d->read())
 			if(substr($race, -4) === ".php")
 			{
 				Debug::log("init race: ".$race);
 				$class = substr($race, 0, strpos($race, '.'));
-				$called_class = $namespace.'\\'.$class;
+				$called_class = 'Phud\\Races\\'.$class;
 				new $called_class();
 			}
 	}

@@ -97,7 +97,7 @@ class Server
 		Debug::log("Initializing environment");
 		foreach([
 				'Phud\Commands\Command',
-				'Phud\Race',
+				'Phud\Races\Race',
 				'Phud\Abilities\Ability'
 			] as $required) {
 			Debug::log("initializing ".$required);
