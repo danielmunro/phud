@@ -2,29 +2,25 @@
 namespace Phud\Quest;
 use Phud\Actors\User,
 	Phud\Nouns,
-	Phud\EasyInit,
 	Phud\Identity;
 
 class Quest
 {
-	use Nouns, EasyInit, Identity;
+	use Nouns, Identity;
 
 	protected $short = '';
 	protected $long = '';
 	protected $requirements_to_accept = null;
 	protected $subscribers = [];
 	protected $reward = null;
-	protected $initializing_properties = [];
 	protected $status = 'initialized';
 
 	const STATUS_INITIALIZED = 'initialized';
 	const STATUS_COMPLETED = 'completed';
 	const STATUS_CLOSED = 'closed';
 	
-	public function __construct($properties = [])
+	public function __construct()
 	{
-		$this->initializing_properties = $properties;
-		$this->initializeProperties($properties);
 		if(!is_callable($this->requirements_to_accept) || !is_callable($this->reward)) {
 			throw new Exception('quest not configured correctly');
 		}

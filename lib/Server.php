@@ -211,7 +211,7 @@ class Server
 			while($cd = $d->read()) {
 				$pos = strpos($cd, '.');
 				if($pos === false) {
-					$this->readDeploy($start.$cd);
+					$this->readDeploy($start.$cd.'/');
 					continue;
 				}
 				$ext = substr($cd, $pos+1);

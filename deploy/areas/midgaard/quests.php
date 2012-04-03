@@ -11,7 +11,7 @@ $adept->addQuest(
 		'id' => 1,
 		'short' => 'explore Adelwine manor',
 		'long' => 'There are reports of ghosts in Adelwine manor. Investigate this claim and report back to the acolyte.',
-		'requirements_to_accept' => function($user) {
+		'requirements_to_accept' => function() {
 			return true;
 		},
 		'reward' => function($user) {
