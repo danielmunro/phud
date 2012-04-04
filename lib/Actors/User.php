@@ -5,17 +5,17 @@ use Phud\Server,
 	Phud\Client,
 	Phud\Room,
 	Phud\Races\Race,
-	Phud\Quest\Quest,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
 	Phud\Event\Broadcaster,
 	Phud\Event\Subscriber,
 	Phud\Event\Event,
-	Phud\Quest\Log as QuestLog;
+	Phud\Quests\Quest,
+	Phud\Quests\Log;
 
 class User extends Actor
 {
-	use QuestLog;
+	use Log;
 
 	protected $hunger = 0;
 	protected $thirst = 0;

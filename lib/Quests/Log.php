@@ -1,5 +1,5 @@
 <?php
-namespace Phud\Quest;
+namespace Phud\Quests;
 use Phud\Usable;
 
 trait Log
@@ -10,24 +10,20 @@ trait Log
 
 	public function addQuest(Quest $quest)
 	{
-		$this->quests[$quest->getID()] = new Quest($quest->getInitializingProperties());
+		$this->quests[get_class($quest)] = $quest;
 	}
 	
 	public function removeQuest(Quest $quest)
 	{
-		if(isset($this->quests[$quest->getID()])) {
-			unset($this->quests[$quest->getID()]);
+		$i = get_class($quest);
+		if(isset($this->quests[$i])) {
+			unset($this->quests[$i]);
 		}
 	}
 
 	public function getQuests()
 	{
 		return $this->quests;
-	}
-
-	public function getQuestByID($id)
-	{
-		return isset($this->quests[$id]) ? $this->quests[$id] : null;
 	}
 
 	public function getQuestByInput($input)

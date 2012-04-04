@@ -49,16 +49,6 @@ abstract class Command
 	{
 		return $this->dispositions;
 	}
-	
-	public function hasArgCount(Actor $actor, $args, $count)
-	{
-		if(sizeof($args) < $count)
-		{
-			Server::out($actor, "Not enough args.");
-			return false;
-		}
-		return true;
-	}
 
 	public function tryPerform(User $user, $args = [], $command_subscriber)
 	{

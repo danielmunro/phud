@@ -623,7 +623,7 @@ abstract class Actor
 
 	public function setRace($race)
 	{
-		if(is_object($this->race['lookup'])) {
+		if(isset($this->race['lookup']) && is_object($this->race['lookup'])) {
 			// Undo all previous racial subscribers/abilities/stats/proficiencies
 			foreach($this->_subscribers_race as $subscriber) {
 				$this->removeSubscriber($subscriber);

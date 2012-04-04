@@ -11,7 +11,7 @@ id 32, s 20, n 33~
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~
-movement 3~
+movement 3, race human~
 hp 10, level 8~
 trip~
 
@@ -42,7 +42,7 @@ can_own false~
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~
-movement 3~
+movement 3, race human~
 hp 10, level 8~
 ~
 
@@ -67,7 +67,7 @@ material leather, regen .2~
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~
-movement 3~
+movement 3, race human~
 hp 10, level 8~
 ~
 
@@ -92,7 +92,7 @@ can_own false, material leather~
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~
-movement 3~
+movement 3, race human~
 hp 10, level 8~
 ~
 
@@ -114,7 +114,7 @@ timeout 3~
 mob
 a ghost of a servant boy
 A ghost of a servant boy is here, looking for something useful to do.~
-movement 3~
+movement 3, race human~
 hp 10, level 8~
 ~
 
@@ -131,7 +131,7 @@ id 40, d 39, n 41~
 mob
 a ghost of Adelwine manor
 A ghost of Adelwine manor is here, wandering the halls in the attic.~
-movement 3~
+movement 3, race human~
 hp 25, level 12~
 ~
 

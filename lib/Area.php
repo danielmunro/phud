@@ -3,6 +3,7 @@ namespace Phud;
 use Phud\Affect,
 	Phud\Room,
 	Phud\Door,
+	Phud\Quests\Quest,
 	Phud\Abilities\Ability,
 	Phud\Actors\Mob;
 
@@ -48,6 +49,22 @@ class Area
 					break 1;
 				case 'door':
 					$this->loadDoor();
+					break 1;
+				case 'quest':
+					$this->loadQuest();
+					break 1;
+			}
+		}
+	}
+
+	protected function loadQuest()
+	{
+		while($id = $this->readLine()) {
+			$quest = Quest::getByID($id);
+			if($quest) {
+				$this->last_added->addQuest($quest);
+			} else {
+				Debug::log('Quest not found: '.$alias);
 			}
 		}
 	}

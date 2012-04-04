@@ -1,10 +1,10 @@
 <?php
 namespace Phud\Actors;
-use Phud\Quest\Log as QuestLog;
+use Phud\Quests\Log;
 
 class Questmaster extends Mob
 {
-	use QuestLog;
+	use Log;
 
 	protected $list_message = 'Here are my quests:';
 	
