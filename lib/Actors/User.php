@@ -216,11 +216,12 @@ class User extends Actor
 
 	public function finishQuest(Quest $quest)
 	{
-		if(isset($this->quests[$quest->getID()])) {
-			$q = $this->quests[$quest->getID()];
+		$i = get_class($quest);
+		if(isset($this->quests[$i])) {
+			$q = $this->quests[$i];
 			$q->reward($this);
-			$this->quests_completed[$q->getID()] = $q;
-			unset($this->quests[$quest->getID()]);
+			$this->quests_completed[$i] = $q;
+			unset($this->quests[$i]);
 		}
 	}
 
@@ -284,7 +285,9 @@ class User extends Actor
 			}
 		}
 		foreach($this->quests as $quest) {
-			$quest->applySubscribers($this);
+			foreach($quest->getSubscribers() as $subscriber) {
+				$this->addSubscriber($subscriber);
+			}
 		}
 		Server::instance()->addSubscriber($this->getSubscriberTick());
 	}

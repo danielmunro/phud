@@ -28,15 +28,13 @@ class Quest extends User
 
 	private function listCurrentQuests(lUser $user)
 	{
-		$quests = "Active Quests:\n\n";
+		$msg = ['initialized' => '', 'completed' => '', 'closed' => ''];
 		foreach($user->getQuests() as $quest) {
-			$quests .= '['.$quest->getStatus().'] '.$quest."\n";
+			$msg[$quest->getStatus()] .= '['.$quest->getStatus().'] '.$quest."\n";
 		}
-		$quests .= "\nCompleted Quests:\n\n";
-		foreach($user->getQuests() as $quest) {
-			$quests .= $quest."\n";
-		}
-		Server::out($user, $quests);
+
+		Server::out($user, "Active Quests:\n\n".$msg['initialized'].
+			"\nCompleted Quests:\n\n".$msg['completed']);
 	}
 
 	private function doFinish(lUser $user, $args = [])

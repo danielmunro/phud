@@ -10,23 +10,20 @@ class Adelwine extends Quest
 	protected $short = 'explore Adelwine manor';
 	protected $long = 'There are reports of ghosts in Adelwine manor. Investigate this claim and report back to the acolyte.';
 	
-	public function __construct()
+	public function getSubscribers()
 	{
 		$quest = $this;
-		$this->subscribers = [
+		return [
 			new Subscriber(
 				Event::EVENT_MOVED,
 				function($subscriber, $user, $movement_cost, $room) use ($quest) {
 					if($user->getRoom()->getID() === 40) {
-						//$quest = $user->getQuestByInput('adelwine');
-						//$quest->setStatus(Quest::STATUS_COMPLETED);
-						$quests->setStatus(Quest::STATUS_COMPLETED);
+						$quest->setStatus(Quest::STATUS_COMPLETED);
 						$subscriber->kill();
 					}
 				}
 			)
 		];
-		parent::__construct();
 	}
 
 	public function canAccept(User $user)
