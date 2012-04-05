@@ -30,13 +30,12 @@ abstract class Command
 	public static function runInstantiation()
 	{
 		global $global_path;
-		$namespace = 'Commands';
-		$d = dir($global_path.'/lib/'.$namespace);
+		$d = dir($global_path.'/deploy/init/Commands');
 		while($command = $d->read()) {
 			if(substr($command, -4) === ".php") {
 				Debug::log("init command: ".$command);
 				$class = substr($command, 0, strpos($command, '.'));
-				$called_class = 'Phud\\'.$namespace.'\\'.$class;
+				$called_class = 'Phud\\Commands\\'.$class;
 				$reflection = new ReflectionClass($called_class);
 				if(!$reflection->isAbstract()) {
 					new $called_class();
