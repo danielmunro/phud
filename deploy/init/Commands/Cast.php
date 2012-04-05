@@ -2,8 +2,8 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Server,
-	Phud\Ability\Ability,
-	Phud\Ability\Spell as mSpell;
+	Phud\Abilities\Ability,
+	Phud\Abilities\Spell as aSpell;
 
 class Cast extends Command
 {
@@ -20,7 +20,7 @@ class Cast extends Command
 		}
 
 		// Check if the spell exists
-		if(empty($arg_spell_casting) || !($arg_spell_casting['lookup'] instanceof mSpell)) {
+		if(empty($arg_spell_casting) || !($arg_spell_casting['lookup'] instanceof aSpell)) {
 			return Server::out($actor, "That spell does not exist in this realm.");
 		}
 
