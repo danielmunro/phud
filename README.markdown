@@ -27,7 +27,7 @@ and port to an open, unused port, such as 9000.
 Running
 -------
 
-	./game.php &
+	php game.php &
 	telnet <address> <port>
 
 If everything was successful, you should see a prompt, 'By what name do you wish to be known?'
