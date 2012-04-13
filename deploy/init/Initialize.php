@@ -12,15 +12,15 @@ use Phud\Actors\User,
 
 $server = Server::instance();
 $server->on(
-	'connected',
-	function($server, $client) {
+	'connect',
+	function($event, $server, $client) {
 		Server::out($client, 'By what name do you wish to be known? ', false);
 		$progress = ['alias' => false];
 		$unverified_user = null;
 		$user_properties = [];
 		$client->on(
 			'input',
-			function($client, $args) use (&$progress, &$unverified_user, &$user_properties) {
+			function($event, $client, $args) use (&$progress, &$unverified_user, &$user_properties) {
 				$racesAvailable = function($client) {
 					$races = Race::getAliases();
 					Server::out($client, 'The following races are available: ');
@@ -60,7 +60,6 @@ $server->on(
 					if($unverified_user->getPassword() === $pw_hash) {
 						$unverified_user->setClient($client);
 						$client->setUser($unverified_user);
-						$client->addSubscriber($input_subscriber);
 						$unverified_user->getRoom()->actorAdd($unverified_user);
 						$command = Command::lookup('look');
 						$command['lookup']->perform($unverified_user);
@@ -69,7 +68,7 @@ $server->on(
 						Server::out($client, 'Wrong password.');
 						Server::instance()->disconnectClient($client);
 					}
-					$subscriber->kill();
+					$event->kill();
 					return;
 				}
 
@@ -162,7 +161,6 @@ $server->on(
 				if(isset($progress['finish']) && $progress['finish'] === false)
 				{
 					$user = new User($user_properties);
-					$client->addSubscriber($input_subscriber);
 					$user->modifyCurrency('copper', 20);
 					$user->setPassword(sha1($user.$user->getDateCreated().$user_properties['password']));
 					$user->setRoom(Room::find(Room::getStartRoom()));
@@ -172,7 +170,7 @@ $server->on(
 					$command = Command::lookup('look');
 					$command['lookup']->perform($user);
 					Debug::log("New user account for ".$user);
-					$subscriber->kill();
+					$event->kill();
 				}
 			}
 		);

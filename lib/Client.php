@@ -69,7 +69,8 @@ class Client
 			
 			// Break down client input into separate arguments and evaluate
 			$args = explode(' ', trim($input));
-			$satisfied = $this->user->fire('input', $args);
+			$fire_from = empty($this->user) ? $this : $this->user;
+			$satisfied = $fire_from->fire('input', $args);
 			if(!$satisfied) {
 				Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 			}

@@ -56,10 +56,10 @@ class Server
 	public function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->on(Event::EVENT_GAME_CYCLE, function() use ($client) {
+		$this->on('cycle', function($event) use ($client) {
 			$client->checkCommandBuffer();
 			if(!is_resource($client->getSocket())) {
-				return 'kill';
+				$event->kill();
 			}
 		});
 	}
@@ -72,10 +72,10 @@ class Server
 			if($user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
 			}
-			$this->unlisten(Event::TICK, $user->getTickListener());
+			$this->unlisten('tick', $user->getTickListener());
 		}
 
-		$this->unlisten(Event::INPUT, $client->getInputListener());
+		$this->unlisten('input', $client->getInputListener());
 		
 		// clean out the client
 		socket_close($client->getSocket());
@@ -98,10 +98,10 @@ class Server
 		$this->readDeploy($deploy_dir.'/init/');
 		Debug::log("Initializing environment");
 		foreach([
-				'Phud\Commands\Command',
+				//'Phud\Commands\Command',
 				'Phud\Races\Race',
-				'Phud\Abilities\Ability',
-				'Phud\Quests\Quest'
+				//'Phud\Abilities\Ability',
+				//'Phud\Quests\Quest'
 			] as $required) {
 			Debug::log("initializing ".$required);
 			$required::runInstantiation();
@@ -113,56 +113,53 @@ class Server
 	
 	public function run()
 	{
-		$this->addSubscriber(
-			new Subscriber(
-				Event::CONNECTED,
-				function($subscriber, $server, $client) {
-					$server->addClient($client);
-				}
-			)
+		$this->on(
+			'connect',
+			function($event, $server, $client) {
+				$server->addClient($client);
+			}
 		);
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_GAME_CYCLE,
-				function($subscriber, $server) {
-					$server->scanNewConnections();
-				}
-			)
+
+		$this->on(
+			'cycle',
+			function($event, $server) {
+				$server->scanNewConnections();
+			}
 		);
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_PULSE,
-				function($subscriber, $server) {
-					array_walk(
-						$server->getClients(),
-						function($c) {
-							if($c->getUser()) {
-								$u = $c->getUser();
-								$target = $u->getTarget();
-								if($target) {
-									Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
-									Server::out($u, $u->prompt(), false);
-								}
+
+		$this->on(
+			'pulse',
+			function($event, $server) {
+				array_walk(
+					$server->getClients(),
+					function($c) {
+						if($c->getUser()) {
+							$u = $c->getUser();
+							$target = $u->getTarget();
+							if($target) {
+								Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
+								Server::out($u, $u->prompt(), false);
 							}
 						}
-					);
-				},
-				Subscriber::DEFERRED
-			)
+					}
+				);
+			},
+			'end'
 		);
+
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));
 		while(1) {
 			$new_pulse = intval(date('U'));
 			if($pulse + 1 === $new_pulse) {
-				$this->fire(Event::PULSE);
+				$this->fire('pulse');
 				$pulse = $new_pulse;
 			}
 			if($pulse === $next_tick) {
-				$this->fire(Event::TICK);
+				$this->fire('tick');
 				$next_tick = $pulse + intval(round(rand(30, 40)));
 			}
-			$this->fire(Event::GAME_CYCLE);
+			$this->fire('cycle');
 		}
 	}
 
@@ -200,7 +197,7 @@ class Server
 		$s = [$this->socket];
 		$new_connection = socket_select($s, $n, $n, 0, 0);
 		if($new_connection) {
-			$this->fire(Event::CONNECTED, new Client(socket_accept($this->socket)));
+			$this->fire('connect', new Client(socket_accept($this->socket)));
 		}
 	}
 

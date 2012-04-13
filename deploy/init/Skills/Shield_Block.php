@@ -10,15 +10,8 @@ class Shield_Block extends Skill
 	protected $required_proficiency = 25;
 	protected $normal_modifier = ['dex'];
 	protected $hard_modifier = ['str'];
-	protected $event = Event::MELEE_ATTACKED;
+	protected $event = 'attacked';
 	
-	protected function initializeListener()
-	{
-		$this->listener = function($target) {
-			return $ability->perform($target) ? 'satisfy' : '';
-		};
-	}
-
 	protected function applyCost(Actor $actor)
 	{
 		if($actor->getAttribute('movement') >= 2) {
@@ -30,8 +23,6 @@ class Shield_Block extends Skill
 
 	protected function success(Actor $actor, Actor $target, $args)
 	{
-		$args[0]->suppress();
-		$args[1]->satisfyBroadcast();
 		$sexes = [Actor::SEX_MALE => 'his', Actor::SEX_FEMALE => 'her', Actor::SEX_NEUTRAL => 'its'];
 		$s = $actor->getDisplaySex($sexes);
 		$actor->getRoom()->announce2([

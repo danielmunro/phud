@@ -298,7 +298,7 @@ abstract class Actor
 			$fighter = $this;
 			Server::instance()->on(
 				'pulse',
-				function($server) use ($fighter, $target) {
+				function($event, $server) use ($fighter, $target) {
 					if(empty($target) || !$fighter->isAlive()) {
 						return 'kill';
 					}

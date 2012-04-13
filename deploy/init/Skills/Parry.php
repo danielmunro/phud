@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Event,
-	Phud\Event\Subscriber,
-	Phud\Actors\Actor,
+use Phud\Actors\Actor,
 	Phud\Equipped,
 	Phud\Race;
 
@@ -12,7 +10,7 @@ class Parry extends Skill
 	protected $proficiency = 'evasive';
 	protected $required_proficiency = 25;
 	protected $hard_modifier = ['dex'];
-	protected $event = 'melee attacked';
+	protected $event = 'attacked';
 
 	public function initializeListener()
 	{
@@ -31,10 +29,8 @@ class Parry extends Skill
 		return ($actor->getSize() - Race::SIZE_NORMAL) * 10;
 	}
 
-	protected function success(Actor $actor, Actor $target, $args)
+	protected function success(Actor $actor, Actor $target)
 	{
-		$args[0]->suppress();
-		$args[1]->satisfyBroadcast();
 		$actor->getRoom()->announce2([
 			['actor' => $actor, 'message' => "You parry ".$actor->getTarget()."'s attack!"],
 			['actor' => $actor->getTarget(), 'message' => ucfirst($actor)." parries your attack!"],

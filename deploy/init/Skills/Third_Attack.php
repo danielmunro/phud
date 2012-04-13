@@ -10,18 +10,7 @@ class Third_Attack extends Skill
 	protected $required_proficiency = 40;
 	protected $normal_modifier = ['str'];
 	protected $hard_modifier = ['dex'];
-	protected $event = Event::MELEE_ATTACK;
-
-	protected function initializeListener()
-	{
-		$this->listener = function($fighter) {
-			$target = $fighter->getTarget();
-			if($target && $target->fire(Event::MELEE_ATTACKED) === 'satisfy') {
-				return;
-			}
-			$ability->perform($fighter);
-		};
-	}
+	protected $event = 'attack';
 
 	protected function applyCost(Actor $actor) {}
 

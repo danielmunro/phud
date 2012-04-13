@@ -9,32 +9,42 @@ abstract class Skill extends Ability
 
 	public function __construct()
 	{
-		$this->initializeListener();
-		parent::__construct();
-	}
-
-	protected function getInputListener()
-	{
-		if(empty($this->input_listener)) {
-			$skill = $this;
-			$this->input_listener = function($actor, $args) use ($skill) {
-				if(strpos($skill->getAlias(), $args[0]) === 0) {
-					if($skill->perform($actor, $args)) {
-						$actor->incrementDelay($skill->getDelay());
+		$skill = $this;
+		switch($this->event) {
+			case 'input':
+				$this->listener = function($event, $actor, $args) use ($skill) {
+					if(strpos($skill->getAlias(), $args[0]) === 0) {
+						if($skill->perform($actor, $args)) {
+							$actor->incrementDelay($skill->getDelay());
+						}
+						$event->satisfy();
 					}
-					return 'satisfy';
-				}
-			};
+				};
+				break;
+			case 'attacked':
+				$this->listener = function($event, $target) {
+					if($skill->perform($target)) {
+						$event->satisfy();
+					}
+				};
+				break;
+			case 'attack':
+				$this->listener = function($attacker) {
+					$target = $attacker->getTarget();
+					if($target->fire(Event::MELEE_ATTACKED)) {
+						return;
+					}
+					$ability->perform($fighter);
+				};
+				break;
 		}
-		return $this->input_listener;
+		parent::__construct();
 	}
 
 	protected function determineTarget(Actor $actor, $args)
 	{
 		return $actor->reconcileTarget($args);
 	}
-
-	abstract protected function initializeListener();
 
 	public function applyListener(Actor $actor)
 	{
