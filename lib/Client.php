@@ -1,40 +1,21 @@
 <?php
 namespace Phud;
-use Phud\Actors\User,
-	Phud\Event\Event,
-	Phud\Event\Subscriber,
-	Phud\Event\Broadcaster;
+use Phud\Actors\User;
 
 class Client
 {
-	use Broadcaster;
+	use Listener;
 
 	private $user = null;
 	private $unverified_user = null;
 	private $socket = null;
 	private $command_buffer = array();
 	private $login = array('alias' => false);
-	protected $input_subscriber = null;
 	protected $last_input = '';
 	
 	public function __construct($socket)
 	{
 		$this->socket = $socket;
-		$this->input_subscriber = new Subscriber(
-			Event::EVENT_GAME_CYCLE,
-			$this,
-			function($subscriber, $server, $client) {
-				$client->checkCommandBuffer();
-				if(!is_resource($client->getSocket())) {
-					$subscriber->kill();
-				}
-			}
-		);
-	}
-
-	public function getInputSubscriber()
-	{
-		return $this->input_subscriber;
 	}
 	
 	public function getUser()
@@ -88,7 +69,7 @@ class Client
 			
 			// Break down client input into separate arguments and evaluate
 			$args = explode(' ', trim($input));
-			$satisfied = $this->fire(Event::EVENT_INPUT, $args);
+			$satisfied = $this->user->fire('input', $args);
 			if(!$satisfied) {
 				Server::out($this, "\nHuh?"); // No subscriber could make sense of input
 			}

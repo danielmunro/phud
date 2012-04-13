@@ -1,36 +1,49 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Subscriber,
-	Phud\Event\Event;
+use Phud\Actors\Actor;
 
 abstract class Skill extends Ability
 {
-	protected function getInputSubscriber($alias = '')
+	protected $event = '';
+	protected $listener = null;
+
+	public function __construct()
 	{
-		if(empty($alias)) {
-			$alias = $this->alias;
-		}
-		return new Subscriber(
-			Event::EVENT_INPUT,
-			$this,
-			function($subscriber, $client, $skill, $args) use ($alias) {
-				if(!$subscriber->isBroadcastSatisfied() && strpos($alias, $args[0]) === 0) {
-					$user = $client->getUser();
-					if($skill->perform($user, $args)) {
-						$user->incrementDelay($skill->getDelay());
+		$this->initializeListener();
+		parent::__construct();
+	}
+
+	protected function getInputListener()
+	{
+		if(empty($this->input_listener)) {
+			$skill = $this;
+			$this->input_listener = function($actor, $args) use ($skill) {
+				if(strpos($skill->getAlias(), $args[0]) === 0) {
+					if($skill->perform($actor, $args)) {
+						$actor->incrementDelay($skill->getDelay());
 					}
-					$subscriber->satisfyBroadcast();
+					return 'satisfy';
 				}
-			},
-			true
-		);
+			};
+		}
+		return $this->input_listener;
 	}
 
 	protected function determineTarget(Actor $actor, $args)
 	{
 		return $actor->reconcileTarget($args);
 	}
-	
-	abstract public function getSubscriber();
+
+	abstract protected function initializeListener();
+
+	public function applyListener(Actor $actor)
+	{
+		$actor->on($this->event, $this->listener);
+	}
+
+	public function removeListener(Actor $actor)
+	{
+		$actor->unlisten($this->event, $this->listener);
+	}
 }
 ?>

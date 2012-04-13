@@ -11,10 +11,11 @@ class Backstab extends Skill
 	protected $needs_target = true;
 	protected $is_offensive = true;
 	protected $delay = 2;
+	protected $event = 'input';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return $this->getInputSubscriber();
+		$this->listener = $this->getInputListener();
 	}
 
 	protected function applyCost(Actor $actor)

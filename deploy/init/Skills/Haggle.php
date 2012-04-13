@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Haggle extends Skill
 {
@@ -10,15 +8,12 @@ class Haggle extends Skill
 	protected $proficiency = 'speech';
 	protected $required_proficiency = 20;
 	protected $easy_modifier = ['cha'];
+	protected $event = 'buy';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_BUY,
-			function($subscriber, $haggle, $buy_event) {
-				//aw fuck I'm at a loss
-			}
-		);
+		$this->listener = function($haggle, $buyer, $seller, $item, &$cost) {
+		};
 	}
 
 	protected function applyCost(Actor $actor)

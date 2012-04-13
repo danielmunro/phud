@@ -1,8 +1,6 @@
 <?php
 namespace Phud;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Actors\Actor,
+use Phud\Actors\Actor,
 	\Exception;
 
 class Room
@@ -21,7 +19,6 @@ class Room
 	protected $area = '';
 	protected $visibility = 1;
 	protected $movement_cost = 0;
-	protected $_subscriber_movement = null;
 	protected $actors = [];
 	protected $doors = [];
 	protected static $start_room = 0;
@@ -30,13 +27,6 @@ class Room
 
 	public function __construct($properties = [])
 	{
-		$this->_subscriber_movement = new Subscriber(
-			Event::EVENT_MOVED,
-			$this,
-			function($subscriber, $broadcaster, $room, &$movement_cost) {
-				$movement_cost += $room->getMovementCost();
-			}
-		);
 		$this->initializeProperties($properties, [
 			'actors' => function($room, $property, $value) {
 				foreach($value as $actor) {
@@ -145,7 +135,11 @@ class Room
 	{
 		Debug::log($actor.' is arriving to '.$this.' ('.$this->getID().')');
 		$this->actors[] = $actor;
-		$actor->addSubscriber($this->_subscriber_movement);
+		$actor->on('moved', function($actor, $room, &$mvcost) {
+			$mvcost += $room->getMovementCost();
+			return 'kill';
+		}
+);
 	}
 
 	public function actorRemove(Actor $actor)
@@ -156,7 +150,6 @@ class Room
 			Debug::log($actor.' is not here');
 			return;
 		}
-		$actor->removeSubscriber($this->_subscriber_movement);
 		unset($this->actors[$key]);
 	}
 

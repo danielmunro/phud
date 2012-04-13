@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Event\Subscriber,
-	Phud\Event\Event,
+	Phud\Event,
 	Phud\Alias,
 	Phud\Debug,
 	\ReflectionClass,

@@ -2,9 +2,6 @@
 namespace Phud\Actors;
 use Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
-	Phud\Event\Subscriber,
-	Phud\Event\Broadcaster,
-	Phud\Event\Event,
 	Phud\Affects\Affectable,
 	Phud\Inventory,
 	Phud\Usable,
@@ -13,6 +10,7 @@ use Phud\Abilities\Ability,
 	Phud\Equipped,
 	Phud\Attributes,
 	Phud\EasyInit,
+	Phud\Listener,
 	Phud\Identity,
 	Phud\Items\Corpse,
 	Phud\Items\Food,
@@ -21,7 +19,7 @@ use Phud\Abilities\Ability,
 
 abstract class Actor
 {
-	use Affectable, Broadcaster, Inventory, Usable, EasyInit, Identity;
+	use Affectable, Listener, Inventory, Usable, EasyInit, Identity;
 
 	const MAX_LEVEL = 51;
 	
@@ -56,7 +54,7 @@ abstract class Actor
 	protected $furniture = null;
 	protected $_subscriber_delay = null;
 	protected $_subscribers_race = [];
-	protected $_subscriber_tick = null;
+	protected $tick_listener = null;
 	protected $proficiencies = [
 		'stealth' => 15,
 		'healing' => 15,
@@ -145,7 +143,7 @@ abstract class Actor
 		$this->abilities[] = $ability['alias'];
 		if($ability['lookup'] instanceof Skill) {
 			// Apply the subscriber to trigger the ability at the right time
-			$this->addSubscriber($ability['lookup']->getSubscriber());
+			$ability['lookup']->applyListener($this);
 		}
 	}
 
@@ -155,7 +153,7 @@ abstract class Actor
 		if(isset($this->ability[$alias])) {
 			unset($this->ability[$alias]);
 			if($ability['lookup'] instanceof Skill) {
-				$this->removeSubscriber($ability['lookup']->getSubscriber());
+				$ability['lookup']->removeListener($this);
 			}
 		}
 	}
@@ -207,30 +205,26 @@ abstract class Actor
 	// Tick functions
 	///////////////////////////////////////////////////////////////////
 
-	public function getSubscriberTick()
+	public function getTickListener()
 	{
-		if(!$this->_subscriber_tick) {
-			$this->_subscriber_tick = new Subscriber(
-				Event::EVENT_TICK,
-				$this,
-				function($subscriber, $broadcaster, $actor) {
-					$actor->tick();
-				}
-			);
+		if(!$this->tick_listener) {
+			$actor = $this;
+			$this->tick_listener = function($server) use ($actor) {
+				$actor->tick();
+			};
 		}
-		return $this->_subscriber_tick;
+		return $this->tick_listener;
 	}
 
 	public function tick()
 	{
 		if($this->isAlive()) {
+			$amount = rand(0.05, 0.1);
+			$modifier = 1;
+			$this->fire(Event::TICK, $amount, $modifier);
+			$amount *= $modifier;
 			foreach(['hp', 'mana', 'movement'] as $att) {
-				$max = $this->getMaxAttribute($att);
-				$amount = round(rand($max * 0.05, $max * 0.1));
-				$modifier = 1;
-				$this->fire(Event::EVENT_TICK_ATTRIBUTE_MODIFIER, $this, $att, $modifier);
-				$amount *= $modifier;
-				$this->modifyAttribute($att, $amount);
+				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
 			}
 		}
 	}
@@ -301,7 +295,22 @@ abstract class Actor
 	{
 		$this->target = $target;
 		if($this->target) {
-			Server::instance()->addSubscriber($this->getAttackSubscriber());
+			Server::instance()->on(
+				Event::PULSE,
+				function($server, $fighter) {
+					$target = $fighter->getTarget();
+					if(empty($target) || !$fighter->isAlive()) {
+						return 'kill';
+					}
+					$response = $target->fire(Event::MELEE_ATTACKED);
+					if($response === 'kill') {
+						return;
+					} else if(!$response === 'satisfy') {
+						$fighter->attack('Reg');
+					}
+					$fighter->fire(Event::MELEE_ATTACK);
+				}
+			);
 		}
 	}
 
@@ -328,28 +337,6 @@ abstract class Actor
 			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
 		}
 		return $this->target;
-	}
-
-	public function getAttackSubscriber()
-	{
-		return new Subscriber(
-			Event::EVENT_PULSE,
-			$this,
-			function($subscriber, $broadcaster, $fighter) {
-				$target = $fighter->getTarget();
-				if(empty($target) || !$fighter->isAlive()) {
-					$subscriber->kill();
-					return;
-				}
-				$fighter->fire(Event::EVENT_MELEE_ATTACK);
-				$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
-				if($subscriber->isSuppressed()) {
-					$subscriber->suppress(false);
-				} else {
-					$fighter->attack('Reg');
-				}
-			}
-		);
 	}
 
 	public function attack($attack_name = '', $verb = '')
@@ -415,8 +402,8 @@ abstract class Actor
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 
 			$modifier = 1;
-			$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
-			$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
+			$this->fire('damage modifier', $victim, $modifier, $dam_roll, $attacking_weapon);
+			$victim->fire('defense modifier', $this, $modifier, $dam_roll, $attacking_weapon);
 			$dam_roll *= $modifier;
 			$dam_roll = _range(0, 200, $dam_roll);
 			$victim->modifyAttribute('hp', -($dam_roll));

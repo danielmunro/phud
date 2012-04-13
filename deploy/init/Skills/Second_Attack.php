@@ -10,18 +10,17 @@ class Second_Attack extends Skill
 	protected $proficiency = 'melee';
 	protected $required_proficiency = 30;
 	protected $normal_modifier = ['dex', 'str'];
+	protected $event = Event::MELEE_ATTACK;
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACK,
-			$this,
-			function($attack_subscriber, $fighter, $ability) {
-				if(!$attack_subscriber->isSuppressed()) {
-					$ability->perform($fighter);
-				}
+		$this->listener = function($fighter) {
+			$target = $fighter->getTarget();
+			if($target && $target->fire(Event::MELEE_ATTACKED) === 'satisfy') {
+				return;
 			}
-		);
+			$ability->perform($fighter);
+		};
 	}
 
 	protected function applyCost(Actor $actor) {}

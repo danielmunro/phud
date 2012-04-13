@@ -289,7 +289,7 @@ class User extends Actor
 				$this->addSubscriber($subscriber);
 			}
 		}
-		Server::instance()->addSubscriber($this->getSubscriberTick());
+		Server::instance()->on(Event::TICK, $this->getTickListener());
 	}
 }
 ?>

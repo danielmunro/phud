@@ -14,9 +14,9 @@ class Trip extends Skill
 	protected $is_offensive = true;
 	protected $delay = 1;
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return $this->getInputSubscriber();
+		$this->listener = $this->getInputListener();
 	}
 
 	protected function applyCost(Actor $actor)

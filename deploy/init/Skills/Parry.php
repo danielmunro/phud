@@ -12,16 +12,14 @@ class Parry extends Skill
 	protected $proficiency = 'evasive';
 	protected $required_proficiency = 25;
 	protected $hard_modifier = ['dex'];
+	protected $event = 'melee attacked';
 
-	public function getSubscriber()
+	public function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACKED,
-			$this,
-			function($subscriber, $fighter, $ability, $attack_event) {
-				$ability->perform($fighter, [$attack_event, $subscriber]);
+		$this->listener = function($fighter) {
+			if($ability->perform($fighter)) {
 			}
-		);
+		};
 	}
 	
 	protected function modifyRoll(Actor $actor)

@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Event\Event,
 	Phud\Affect;
 
 class Bash extends Skill
@@ -12,10 +11,11 @@ class Bash extends Skill
 	protected $easy_modifier = ['str'];
 	protected $needs_target = true;
 	protected $is_offensive = true;
+	protected $event = 'input';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return $this->getInputSubscriber();
+		$this->listener = $this->getInputListener();
 	}
 
 	protected function applyCost(Actor $actor)
@@ -32,7 +32,7 @@ class Bash extends Skill
 		$roll = 0;
 		$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
 		$roll += $actor->getTarget()->getRace()['lookup']->getSize();
-		$actor->getTarget()->fire(Event::EVENT_BASHED, $actor->getTarget(), $roll);
+		$actor->getTarget()->fire('bash', $actor->getTarget(), $roll);
 		return $roll;
 	}
 

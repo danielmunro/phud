@@ -1,9 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Race,
-	Phud\Event\Event,
-	Phud\Event\Subscriber;
+	Phud\Race;
 
 class Dodge extends Skill
 {
@@ -11,16 +9,16 @@ class Dodge extends Skill
 	protected $proficiency = 'evasive';
 	protected $required_proficiency = 25;
 	protected $easy_modifier = ['dex'];
+	protected $event = 'melee attacked';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACKED,
-			$this,
-			function($subscriber, $fighter, $ability, $attack_event) {
-				$ability->perform($fighter, [$attack_event, $subscriber]);
+		$skill = $this;
+		$this->listener = function($fighter) {
+			if($skill->perform($fighter)) {
+				return 'satisfy';
 			}
-		);
+		};
 	}
 
 	public function modifyRoll(Actor $actor)

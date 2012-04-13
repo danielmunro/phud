@@ -1,9 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Actors\Actor,
-	Phud\Server;
+use Phud\Actors\Actor;
 
 class Enhanced_Damage extends Skill
 {
@@ -11,29 +8,22 @@ class Enhanced_Damage extends Skill
 	protected $proficiency = 'melee';
 	protected $required_proficiency = 35;
 	protected $hard_modifier = ['str'];
+	protected $event = 'damage modifier';
 
-	public function getSubscriber()
+	public function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_DAMAGE_MODIFIER_ATTACKING,
-			$this,
-			function($subscriber, $fighter, $enh, $target, &$modifier, &$dam_roll) {
-				$modifier += $this->perform($fighter);
+		$this->listener = function($attacker, $victim, &$modifier) {
+			if($this->perform($fighter)) {
+				$v1 = $attacker->getAttribute('str') / 100;
+				$modifier += rand($v1 / 2, $v1 * 1.25);
 			}
-		);
+		};
 	}
 
 	protected function applyCost(Actor $actor) {}
 
-	protected function fail(Actor $actor)
-	{
-		return 0;
-	}
+	protected function fail(Actor $actor) {}
 
-	protected function success(Actor $actor)
-	{
-		$v1 = $actor->getAttribute('str') / 100;
-		return rand($v1 / 2, $v1 * 1.25);
-	}
+	protected function success(Actor $actor) {}
 }
 ?>

@@ -11,12 +11,13 @@ class Sneak extends Skill
 	protected $required_proficiency = 30;
 	protected $normal_modifier = ['dex'];
 	protected $delay = 1;
+	protected $event = 'input';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return $this->getInputSubscriber();
+		$this->listener = $this->getInputListener();
 	}
-	
+
 	protected function applyCost(Actor $actor)
 	{
 		$m = $actor->getAttribute('movement');

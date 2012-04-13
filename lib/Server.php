@@ -1,15 +1,12 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
-	Phud\Event\Event,
-	Phud\Event\Broadcaster,
-	Phud\Event\Subscriber,
 	\Exception,
 	\stdClass;
 
 class Server
 {
-	use Broadcaster;
+	use Listener;
 	
 	protected $address = '';
 	protected $port = 0;
@@ -59,7 +56,12 @@ class Server
 	public function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->addSubscriber($client->getInputSubscriber());
+		$this->on(Event::EVENT_GAME_CYCLE, function() use ($client) {
+			$client->checkCommandBuffer();
+			if(!is_resource($client->getSocket())) {
+				return 'kill';
+			}
+		});
 	}
 	
 	public function disconnectClient(Client $client)
@@ -70,10 +72,10 @@ class Server
 			if($user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
 			}
-			$this->removeSubscriber($user->getSubscriberTick());
+			$this->unlisten(Event::TICK, $user->getTickListener());
 		}
 
-		$this->removeSubscriber($client->getInputSubscriber());
+		$this->unlisten(Event::INPUT, $client->getInputListener());
 		
 		// clean out the client
 		socket_close($client->getSocket());
@@ -113,7 +115,7 @@ class Server
 	{
 		$this->addSubscriber(
 			new Subscriber(
-				Event::EVENT_CONNECTED,
+				Event::CONNECTED,
 				function($subscriber, $server, $client) {
 					$server->addClient($client);
 				}
@@ -153,14 +155,14 @@ class Server
 		while(1) {
 			$new_pulse = intval(date('U'));
 			if($pulse + 1 === $new_pulse) {
-				$this->fire(Event::EVENT_PULSE);
+				$this->fire(Event::PULSE);
 				$pulse = $new_pulse;
 			}
 			if($pulse === $next_tick) {
-				$this->fire(Event::EVENT_TICK);
+				$this->fire(Event::TICK);
 				$next_tick = $pulse + intval(round(rand(30, 40)));
 			}
-			$this->fire(Event::EVENT_GAME_CYCLE);
+			$this->fire(Event::GAME_CYCLE);
 		}
 	}
 
@@ -198,7 +200,7 @@ class Server
 		$s = [$this->socket];
 		$new_connection = socket_select($s, $n, $n, 0, 0);
 		if($new_connection) {
-			$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
+			$this->fire(Event::CONNECTED, new Client(socket_accept($this->socket)));
 		}
 	}
 

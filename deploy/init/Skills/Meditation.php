@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Actor;
+use Phud\Event,
+	Phud\Actors\Actor;
 
 class Meditation extends Skill
 {
@@ -10,27 +9,23 @@ class Meditation extends Skill
 	protected $proficiency = 'healing';
 	protected $required_proficiency = 20;
 	protected $easy_modifier = ['wis'];
+	protected $event = 'tick';
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_TICK,
-			function($subscription, $meditation, $actor) {
-				$meditation->perform($actor);
-			}
-		);
+		$skill = $this;
+		$this->listener = function($actor, &$amount, &$modifier) use ($skill) {
+			$skill->perform($actor, [$amount, $modifier]);
+		};
 	}
 
 	protected function applyCost(Actor $actor)
 	{
 	}
 
-	protected function success(Actor $actor)
+	protected function success(Actor $actor, &$args)
 	{
-		$amount = $actor->getProficiencyIn($this->proficiency) / 100;
-		$actor->modifyAttribute('hp', $actor->getMaxAttribute('hp') * $amount);
-		$actor->modifyAttribute('mana', $actor->getMaxAttribute('mana') * $amount);
-		$actor->modifyAttribute('movement', $actor->getMaxAttribute('movement') * $amount);
+		$args[0] += $this->getProficiencyIn($this->proficiency) / 200;
 	}
 
 	protected function fail(Actor $actor)

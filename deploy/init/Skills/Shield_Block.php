@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Event,
-	Phud\Event\Subscriber,
+use Phud\Event,
 	Phud\Actors\Actor;
 
 class Shield_Block extends Skill
@@ -11,16 +10,13 @@ class Shield_Block extends Skill
 	protected $required_proficiency = 25;
 	protected $normal_modifier = ['dex'];
 	protected $hard_modifier = ['str'];
+	protected $event = Event::MELEE_ATTACKED;
 	
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACKED,
-			$this,
-			function($subscriber, $fighter, $ability, $attack_subscriber) {
-				$ability->perform($fighter, [$attack_subscriber, $subscriber]);
-			}
-		);
+		$this->listener = function($target) {
+			return $ability->perform($target) ? 'satisfy' : '';
+		};
 	}
 
 	protected function applyCost(Actor $actor)

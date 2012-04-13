@@ -1,28 +1,26 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Event\Event,
-	Phud\Event\Subscriber;
+	Phud\Event;
 
 class Third_Attack extends Skill
 {
 	protected $alias = 'third attack';
 	protected $proficiency = 'melee';
 	protected $required_proficiency = 40;
+	protected $normal_modifier = ['str'];
 	protected $hard_modifier = ['dex'];
+	protected $event = Event::MELEE_ATTACK;
 
-	public function getSubscriber()
+	protected function initializeListener()
 	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACK,
-			$this,
-			function($attack_subscriber, $fighter, $ability) {
-				$fighter->getTarget()->fire(Event::EVENT_MELEE_ATTACKED, $attack_subscriber);
-				if(!$attack_subscriber->isSuppressed()) {
-					$ability->perform($fighter);
-				}
+		$this->listener = function($fighter) {
+			$target = $fighter->getTarget();
+			if($target && $target->fire(Event::MELEE_ATTACKED) === 'satisfy') {
+				return;
 			}
-		);
+			$ability->perform($fighter);
+		};
 	}
 
 	protected function applyCost(Actor $actor) {}
