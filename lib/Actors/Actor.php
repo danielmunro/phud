@@ -221,7 +221,7 @@ abstract class Actor
 		if($this->isAlive()) {
 			$amount = rand(0.05, 0.1);
 			$modifier = 1;
-			$this->fire(Event::TICK, $amount, $modifier);
+			$this->fire('tick', $amount, $modifier);
 			$amount *= $modifier;
 			foreach(['hp', 'mana', 'movement'] as $att) {
 				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
@@ -295,20 +295,21 @@ abstract class Actor
 	{
 		$this->target = $target;
 		if($this->target) {
+			$fighter = $this;
 			Server::instance()->on(
-				Event::PULSE,
-				function($server, $fighter) {
-					$target = $fighter->getTarget();
+				'pulse',
+				function($server) use ($fighter, $target) {
 					if(empty($target) || !$fighter->isAlive()) {
 						return 'kill';
 					}
-					$response = $target->fire(Event::MELEE_ATTACKED);
+					$response = $target->fire('attacked');
 					if($response === 'kill') {
 						return;
-					} else if(!$response === 'satisfy') {
+					}
+					if($response !== 'satisfy') {
 						$fighter->attack('Reg');
 					}
-					$fighter->fire(Event::MELEE_ATTACK);
+					$fighter->fire('attack');
 				}
 			);
 		}
