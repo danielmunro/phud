@@ -54,7 +54,7 @@ abstract class Quest
 		return $this->short;
 	}
 
-	abstract public function getSubscribers();
+	abstract public function getListeners();
 
 	abstract public function reward(User $user);
 

@@ -7,9 +7,6 @@ use Phud\Server,
 	Phud\Races\Race,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
-	Phud\Event\Broadcaster,
-	Phud\Event\Subscriber,
-	Phud\Event\Event,
 	Phud\Quests\Quest,
 	Phud\Quests\Log;
 
