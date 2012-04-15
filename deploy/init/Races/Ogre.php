@@ -3,9 +3,7 @@ namespace Phud\Races;
 use Phud\Effect,
 	Phud\Damage,
 	Phud\Attributes,
-	Phud\Server,
-	Phud\Event\Subscriber,
-	Phud\Event\Event;
+	Phud\Server;
 
 class Ogre extends Race
 {
@@ -44,33 +42,29 @@ class Ogre extends Race
 		parent::__construct();
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
 			// Small chance at an extra attack
-			new Subscriber(
-				Event::EVENT_MELEE_ATTACK,
-				function($subscriber, $attacker) {
-					if(chance() < 5) {
-						$attacker->attack('Ogr');
-					}
+			['attack',
+			function($event, $attacker) {
+				if(chance() < 2.5) {
+					$attacker->attack('Ogr');
 				}
-			),
+			}],
 			// Resist fire/frost, vuln magic/mental
-			new Subscriber(
-				Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
-				function($subscriber, $attacker, $victim, &$modifier, &$dam_roll, $attacking) {
-					if($attacking && method_exists($attacking, 'getDamageType')) {
-						$d = $attacking->getDamageType();
-						if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
-							$modifier -= 0.15;
-						}
-						if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
-							$modifier += 0.10;
-						}
+			['damage modifier',
+			function($event, $attacker, $victim, &$modifier, &$dam_roll, $weapon) {
+				if($weapon) {
+					$d = $weapon->getDamageType();
+					if($d === Damage::TYPE_FIRE || $d === Damage::TYPE_FROST) {
+						$modifier -= 0.15;
+					}
+					if($d === Damage::TYPE_MAGIC || $d === Damage::TYPE_MENTAL) {
+						$modifier += 0.10;
 					}
 				}
-			)
+			}]
 		];
 	}
 

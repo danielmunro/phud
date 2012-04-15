@@ -36,39 +36,32 @@ class Elf extends Race
 		parent::__construct();
 	}
 	
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
-				function($subscriber, $broadcaster, $victim, &$modifier, &$dam_roll, $attacking_weapon) {
-					if($attacking_weapon instanceof Item && $attacking_weapon->getMaterial() === Item::MATERIAL_IRON) {
-						$modifier += 0.15;
-					}
+			['defense modifier',
+			function($event, $elf, $attacker, &$modifier, &$dam, &$weapon) {
+				if($weapon && $weapon->getMaterial() === 'iron') {
+					$modifier += 0.15;
 				}
-			),
-			new Subscriber(
-				Event::EVENT_CASTED_AT,
-				function($subscriber, $broadcaster, $target, $spell, &$modifier, &$saves) {
-					if($spell['lookup']->getProficiency() === 'beguiling') {
+			}],
+			['casted on',
+			function($event, $elf, $caster, $spell, &$modifier) {
+				if($spell['lookup']->getProficiency() === 'beguiling') {
+					$modifier -= 0.25;
+					if($spell['alias'] === 'sleep') {
 						$modifier -= 0.25;
-						if($spell['alias'] === 'sleep') {
-							$modifier -= 0.25;
-						}
 					}
 				}
-			),
-			new Subscriber(
-				Event::EVENT_MELEE_ATTACKED,
-				function($subscriber, $target, $attack_subscriber) {
-					if(chance() < 5) {
-						$attack_subscriber->suppress();
-						Server::out($target, "Your quick reflexes evade ".$target->getTarget()."'s attack!");
-						$target->getRoom()->announce($target, ucfirst($target)." evades ".$target->getTarget()."'s attack!");
-						$attack_subscriber->satisfyBroadcast();
-					}
+			}],
+			['attacked',
+			function($event, $elf, $attacker) {
+				if(chance() < 5) {
+					$event->suppress();
+					Server::out($elf, "Your quick reflexes evade ".$attacker."'s attack!");
+					$target->getRoom()->announce($elf, ucfirst($elf)." evades ".$attacker."'s attack!");
 				}
-			)
+			}]
 		];
 	}
 

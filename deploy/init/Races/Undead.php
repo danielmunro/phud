@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Races;
-use Phud\Attributes,
-	Phud\Event\Event,
-	Phud\Event\Subscriber;
+use Phud\Attributes;
 
 class Undead extends Race
 {
@@ -38,27 +36,23 @@ class Undead extends Race
 		parent::__construct();
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_CASTING,
-				function($subscriber, $caster, $target, $spell, &$modifier, &$saves) {
-					$p = $spell->getProficiency();
-					if($p === 'sorcery' || $p === 'maladictions') {
-						$modifier += 0.10;
-					}
+			['casting',
+			function($event, $undead, $target, $spell, &$modifier) {
+				$p = $spell->getProficiency();
+				if($p === 'sorcery' || $p === 'maladictions') {
+					$modifier += 0.10;
 				}
-			),
-			new Subscriber(
-				Event::EVENT_CASTED_AT,
-				function($subscriber, $target, $caster, $spell, &$modifier, &$saves) {
-					$p = $spell->getProficiency();
-					if($p === 'sorcery' || $p === 'maladictions') {
-						$modifier -= 0.10;
-					}
+			}],
+			['casted on',
+			function($event, $undead, $caster, $spell, &$modifier) {
+				$p = $spell->getProficiency();
+				if($p === 'sorcery' || $p === 'maladictions') {
+					$modifier -= 0.10;
 				}
-			)
+			}]
 		];
 	}
 

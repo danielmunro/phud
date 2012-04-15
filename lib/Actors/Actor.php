@@ -42,6 +42,7 @@ abstract class Actor
 	protected $sex = self::SEX_NEUTRAL;
 	protected $disposition = self::DISPOSITION_STANDING;
 	protected $race = 'critter';
+	protected $race_listeners = [];
 	protected $room = null;
 	protected $equipped = null;
 	protected $alignment = 0;
@@ -53,7 +54,6 @@ abstract class Actor
 	protected $experience_per_level = 0;
 	protected $furniture = null;
 	protected $_subscriber_delay = null;
-	protected $_subscribers_race = [];
 	protected $tick_listener = null;
 	protected $proficiencies = [
 		'stealth' => 15,
@@ -627,9 +627,9 @@ abstract class Actor
 
 		// Assign all racial subscribers/abilities/stats/proficiencies
 		$this->race = $race;
-		$this->_subscribers_race = $race['lookup']->getSubscribers();
-		foreach($this->_subscribers_race as $subscriber) {
-			$this->addSubscriber($subscriber);
+		$this->race_listeners = $race['lookup']->getListeners();
+		foreach($this->race_listeners as $listener) {
+			$this->on($listener[0], $listener[1]);
 		}
 		$profs = $race['lookup']->getProficiencies();
 		foreach($profs as $name => $value) {

@@ -64,7 +64,7 @@ class Area
 			if($quest) {
 				$this->last_added->addQuest($quest);
 			} else {
-				Debug::log('Quest not found: '.$alias);
+				Debug::log('Quest not found: '.$id);
 			}
 		}
 	}

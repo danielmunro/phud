@@ -77,7 +77,7 @@ abstract class Race
 		return $this->hunger;
 	}
 	
-	abstract public function getSubscribers();
+	abstract public function getListeners();
 
 	abstract public function getAbilities();
 	

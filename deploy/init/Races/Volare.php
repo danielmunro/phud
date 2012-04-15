@@ -1,10 +1,6 @@
 <?php
 namespace Phud\Races;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Items\Item,
-	Phud\Server,
-	Phud\Attributes;
+use Phud\Attributes;
 
 class Volare extends Race
 {
@@ -39,15 +35,15 @@ class Volare extends Race
 		$this->addParts(['wings']);
 	}
 	
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_HEALING,
-				function($subscriber, $caster, $target, $spell, $modifier, $saves) {
-					$modifier += 0.10;
+			['casting',
+			function($event, $volare, $target, $spell, &$modifier) {
+				if($spell->getProficiency() === 'healing') {
+					$modifier += 0.1;
 				}
-			)
+			}]
 		];
 	}
 

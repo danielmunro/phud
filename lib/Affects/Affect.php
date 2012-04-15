@@ -19,9 +19,10 @@ class Affect
 	protected $message_start = '';
 	protected $message_end = '';
 	protected $timeout = 0;
+	protected $level = 1;
 	protected $args = [];
 	protected $attributes = null;
-	protected $subscribers = [];
+	protected $listeners = [];
 	
 	public function __construct($properties = [])
 	{
@@ -36,9 +37,11 @@ class Affect
 				$affect->apply($value);
 			}
 		]);
-		$this->initSubscribers();
+		$this->initListeners();
 	}
 	
+	protected function initListeners() {}
+
 	public function getAttribute($key)
 	{
 		return $this->attributes->getAttribute($key);
@@ -47,6 +50,11 @@ class Affect
 	public function getAffect()
 	{
 		return $this->affect;
+	}
+
+	public function getLevel()
+	{
+		return $this->level;
 	}
 	
 	public function getMessageAffect()
@@ -69,9 +77,9 @@ class Affect
 		return $this->timeout;
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
-		return $this->subscribers;
+		return $this->listeners;
 	}
 
 	public function decreaseTimeout()
@@ -86,38 +94,32 @@ class Affect
 		if($this->getMessageStart()) {
 			Server::out($affectable, $this->getMessageStart());
 		}
-		$affectable->fire(Event::EVENT_APPLY_AFFECT, $this);
+		$affectable->fire('affecting', $this);
 		$affectable->addAffect($this);
-		$this->applyTimeoutSubscriber($affectable);
+		$this->applyTimeoutListener($affectable);
 	}
 
-	public function applyTimeoutSubscriber($affectable)
+	public function applyTimeoutListener($affectable)
 	{
-		foreach($this->subscribers as $subscriber) {
-			$affectable->addSubscriber($subscriber);
+		foreach($this->listeners as $listener) {
+			$affectable->on($listener[0], $listener[1]);
 		}
-		Server::instance()->addSubscriber(
-			new Subscriber(
-				Event::EVENT_TICK,
-				$this,
-				function($subscriber, $server, $affect) use ($affectable) {
-					if($affect->decreaseTimeout()) {
-						$affectable->removeAffect($affect);
-						if($affect->getMessageEnd() && $affectable instanceof User) {
-							Server::out($affectable, $affect->getMessageEnd());
-						}
-						foreach($affect->getSubscribers() as $s) {
-							$s->kill();
-						}
-						$subscriber->kill();
+		$affect = $this;
+		$affectable->on(
+			'tick',
+			function($event, $affectable) use ($affect) {
+				if($affect->decreaseTimeout()) {
+					$affectable->removeAffect($affect);
+					if($affect->getMessageEnd()) {
+						Server::out($affectable, $affect->getMessageEnd());
 					}
+					foreach($affect->getListeners() as $listener) {
+						$affectable->unlisten($listener[0], $listener[1]);
+					}
+					$event->kill();
 				}
-			)
+			}
 		);
-	}
-
-	protected function initSubscribers()
-	{
 	}
 
 	public function __toString()

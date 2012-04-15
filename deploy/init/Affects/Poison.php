@@ -11,19 +11,16 @@ class Poison extends Affect
 	protected $message_start = 'You suddenly feel ill';
 	protected $message_end = 'Your illness passes';
 
-	protected function initSubscribers()
+	protected function initListeners()
 	{
-		$this->subscribers = [
-			new Subscriber(
-				Event::EVENT_TICK_ATTRIBUTE_MODIFIER,
-				function($subscriber, $affectable, $poison, $attribute, &$modifier) {
-					if($attribute === 'hp') {
-						$modifier = -1;
-						$subscriber->suppress();
-						Server::out($affectable, "You feel poison coursing through your blood.");
-					}
-				}
-			)
+		$affect = $this;
+		$this->listeners = [
+			['tick',
+			function($event, $poisoned, &$amount, &$modifier) use ($affect) {
+				$amount = -($affect->getLevel() * 2);
+				Server::out($poisoned, "You feel poison coursing through your blood.");
+				$event->satisfy();
+			}]
 		];
 	}
 }

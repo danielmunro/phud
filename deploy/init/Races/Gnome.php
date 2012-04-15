@@ -1,10 +1,6 @@
 <?php
 namespace Phud\Races;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Items\Item,
-	Phud\Server,
-	Phud\Attributes;
+use Phud\Attributes;
 
 class Gnome extends Race
 {
@@ -36,15 +32,13 @@ class Gnome extends Race
 		parent::__construct();
 	}
 	
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_BASHED,
-				function($subscriber, $target, $roll) {
-					$roll -= 10;
-				}
-			)
+			['bash',
+			function($event, $target, &$roll) {
+				$roll -= 10;
+			}]
 		];
 	}
 

@@ -44,6 +44,11 @@ abstract class Ability
 	{
 		return $this->proficiency;
 	}
+
+	public function isOffensive()
+	{
+		return $this->is_offensive;
+	}
 	
 	public static function runInstantiation()
 	{

@@ -28,7 +28,7 @@ class Human extends Race
 		parent::__construct();
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
 		];
