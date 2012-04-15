@@ -139,11 +139,10 @@ abstract class Actor
 
 	public function addAbility($ability)
 	{
-		// Remember what abilities the fighter has
 		$this->abilities[] = $ability['alias'];
 		if($ability['lookup'] instanceof Skill) {
-			// Apply the subscriber to trigger the ability at the right time
-			$ability['lookup']->applyListener($this);
+			$listener = $ability['lookup']->getListener();
+			$this->on($listener[0], $listener[1]);
 		}
 	}
 

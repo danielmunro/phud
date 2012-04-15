@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Event,
-	Phud\Event\Subscriber,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Second_Attack extends Skill
 {
@@ -10,13 +8,13 @@ class Second_Attack extends Skill
 	protected $proficiency = 'melee';
 	protected $required_proficiency = 30;
 	protected $normal_modifier = ['dex', 'str'];
-	protected $event = Event::MELEE_ATTACK;
+	protected $event = 'attack';
 
 	protected function initializeListener()
 	{
 		$this->listener = function($fighter) {
 			$target = $fighter->getTarget();
-			if($target && $target->fire(Event::MELEE_ATTACKED) === 'satisfy') {
+			if($target && $target->fire('attacked') === 'satisfy') {
 				return;
 			}
 			$ability->perform($fighter);

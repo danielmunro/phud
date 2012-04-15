@@ -135,11 +135,12 @@ class Room
 	{
 		Debug::log($actor.' is arriving to '.$this.' ('.$this->getID().')');
 		$this->actors[] = $actor;
-		$actor->on('moved', function($actor, $room, &$mvcost) {
-			$mvcost += $room->getMovementCost();
-			return 'kill';
-		}
-);
+		$actor->on(
+			'moved',
+			function($event, $actor, &$mvcost, $room) {
+				$mvcost += $room->getMovementCost();
+			}
+		);
 	}
 
 	public function actorRemove(Actor $actor)

@@ -268,25 +268,26 @@ class User extends Actor
 	{
 		$this->room = Room::find($this->room->getId());
 		$this->race = Race::lookup($this->race['alias']);
-		$this->_subscribers_race = $this->race['lookup']->getSubscribers();
-		foreach($this->_subscribers_race as $subscriber) {
-			$this->addSubscriber($subscriber);
+		$this->race_listeners = $this->race['lookup']->getListeners();
+		foreach($this->race_listeners as $listener) {
+			$this->on($listener[0], $listener[1]);
 		}
 		foreach($this->affects as $affect) {
-			$affect->applyTimeoutSubscriber($this);
+			$affect->applyTimeoutListener($this);
 		}
 		foreach($this->abilities as $user_ab) {
 			$ability = Ability::lookup($user_ab);
 			if($ability['lookup'] instanceof Skill) {
-				$this->addSubscriber($ability['lookup']->getSubscriber());
+				$listener = $ability['lookup']->getListener();
+				$this->on($listener[0], $listener[1], 'end');
 			}
 		}
 		foreach($this->quests as $quest) {
-			foreach($quest->getSubscribers() as $subscriber) {
-				$this->addSubscriber($subscriber);
+			foreach($quest->getListeners() as $listener) {
+				$this->on($listener[0], $listener[1]);
 			}
 		}
-		Server::instance()->on(Event::TICK, $this->getTickListener());
+		Server::instance()->on('tick', $this->getTickListener());
 	}
 }
 ?>

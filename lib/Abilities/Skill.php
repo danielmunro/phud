@@ -46,9 +46,9 @@ abstract class Skill extends Ability
 		return $actor->reconcileTarget($args);
 	}
 
-	public function applyListener(Actor $actor)
+	public function getListener()
 	{
-		$actor->on($this->event, $this->listener);
+		return [$this->event, $this->listener];
 	}
 
 	public function removeListener(Actor $actor)

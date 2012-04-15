@@ -1,6 +1,7 @@
 <?php
 namespace Phud;
-use Phud\Actors\User;
+use Phud\Actors\User,
+	Phud\Commands\Command;
 
 class Client
 {
@@ -26,6 +27,16 @@ class Client
 	public function setUser(User $user)
 	{
 		$this->user = $user;
+		$user->on(
+			'input',
+			function($event, $user, $args) {
+				$command = Command::lookup($args[0]);
+				if($command) {
+					$command['lookup']->tryPerform($user, $args);
+					$event->satisfy();
+				}
+			}
+		);
 	}
 
 	public function getSocket()

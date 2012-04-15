@@ -40,6 +40,11 @@ abstract class Ability
 		return $this->delay;
 	}
 
+	public function getAlias()
+	{
+		return $this->alias;
+	}
+
 	public function getProficiency()
 	{
 		return $this->proficiency;
@@ -101,6 +106,7 @@ abstract class Ability
 			$roll -= $this->getEasyAttributeModifier($target->getAttribute($m));
 		}
 		$roll += $this->modifyRoll($actor);
+		$actor->fire('casting', $target, $spell, $modifier);
 		if($roll > chance()) {
 			$this->success($actor, $target, $args);
 			return true;

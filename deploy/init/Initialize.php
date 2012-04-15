@@ -21,6 +21,7 @@ $server->on(
 		$client->on(
 			'input',
 			function($event, $client, $args) use (&$progress, &$unverified_user, &$user_properties) {
+				$event->satisfy();
 				$racesAvailable = function($client) {
 					$races = Race::getAliases();
 					Server::out($client, 'The following races are available: ');

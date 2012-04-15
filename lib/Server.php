@@ -56,12 +56,15 @@ class Server
 	public function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->on('cycle', function($event) use ($client) {
-			$client->checkCommandBuffer();
-			if(!is_resource($client->getSocket())) {
-				$event->kill();
-			}
-		});
+		$this->on(
+			'cycle',
+			function($event) use ($client) {
+				$client->checkCommandBuffer();
+				if(!is_resource($client->getSocket())) {
+					$event->kill();
+				}
+			},
+			'end');
 	}
 	
 	public function disconnectClient(Client $client)
@@ -75,8 +78,6 @@ class Server
 			$this->unlisten('tick', $user->getTickListener());
 		}
 
-		$this->unlisten('input', $client->getInputListener());
-		
 		// clean out the client
 		socket_close($client->getSocket());
 		$key = array_search($client, $this->clients);
@@ -98,10 +99,10 @@ class Server
 		$this->readDeploy($deploy_dir.'/init/');
 		Debug::log("Initializing environment");
 		foreach([
-				//'Phud\Commands\Command',
+				'Phud\Commands\Command',
 				'Phud\Races\Race',
-				//'Phud\Abilities\Ability',
-				//'Phud\Quests\Quest'
+				'Phud\Abilities\Ability',
+				'Phud\Quests\Quest'
 			] as $required) {
 			Debug::log("initializing ".$required);
 			$required::runInstantiation();

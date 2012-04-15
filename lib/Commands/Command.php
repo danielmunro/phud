@@ -49,7 +49,7 @@ abstract class Command
 		return $this->dispositions;
 	}
 
-	public function tryPerform(User $user, $args = [], $command_subscriber)
+	public function tryPerform(User $user, $args = [])
 	{
 		if($this instanceof DM && !$user->isDM())
 			return Server::out($user, "You cannot do that.");
@@ -60,7 +60,7 @@ abstract class Command
 				return Server::out($user, "You are asleep!");
 		}
 		
-		$this->perform($user, $args, $command_subscriber);
+		$this->perform($user, $args);
 	}
 }
 ?>

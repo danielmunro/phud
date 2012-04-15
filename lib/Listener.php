@@ -24,7 +24,7 @@ trait Listener
 		if(!isset($this->listeners[$event])) {
 			$this->listeners[$event] = [];
 		}
-		$i = array_search($this->listeners[$event], $callback);
+		$i = array_search($callback, $this->listeners[$event]);
 		if($i !== false) {
 			unset($this->listeners[$event][$i]);
 		}
@@ -37,9 +37,10 @@ trait Listener
 			foreach($this->listeners[$event] as $i => $listener) {
 				$instance = new Event($this, $listener, $a1, $a2, $a3, $a4);
 				$status = $instance->getStatus();
-				if($status === 'kill') {
+				if($status === 'satisfied') {
+					return true;
+				} else if($status === 'killed') {
 					unset($this->events[$event][$i], $response);
-				} else if($status === 'satisfy') {
 					return true;
 				}
 			}
