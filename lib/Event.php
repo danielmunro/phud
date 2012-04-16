@@ -3,9 +3,9 @@ namespace Phud;
 
 class Event
 {
-	protected $status = '';
+	protected $status = 'on';
 
-	public function __construct($trigger, $closure, &$a1, &$a2, &$a3, &$a4)
+	public function evaluate($trigger, $closure, &$a1, &$a2, &$a3, &$a4)
 	{
 		$closure($this, $trigger, $a1, $a2, $a3, $a4);
 	}

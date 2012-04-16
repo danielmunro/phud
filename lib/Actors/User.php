@@ -287,7 +287,16 @@ class User extends Actor
 				$this->on($listener[0], $listener[1]);
 			}
 		}
+
 		Server::instance()->on('tick', $this->getTickListener());
+
+		// set default attack event
+		$this->on(
+			'attack',
+			function($event, $fighter) {
+				$fighter->attack('Reg');
+			}
+		);
 	}
 }
 ?>

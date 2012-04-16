@@ -4,6 +4,7 @@ use Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
 	Phud\Affects\Affectable,
 	Phud\Inventory,
+	Phud\Server,
 	Phud\Usable,
 	Phud\Races\Race,
 	Phud\Room,
@@ -12,6 +13,8 @@ use Phud\Abilities\Ability,
 	Phud\EasyInit,
 	Phud\Listener,
 	Phud\Identity,
+	Phud\Damage,
+	Phud\Debug,
 	Phud\Items\Corpse,
 	Phud\Items\Food,
 	Phud\Items\Furniture,
@@ -80,6 +83,7 @@ abstract class Actor
 	
 	public function __construct($properties = [])
 	{
+		// set generic attribute values
 		$this->attributes = new Attributes([
 			'str' => 15,
 			'int' => 15,
@@ -98,6 +102,8 @@ abstract class Actor
 			'dam' => 1,
 			'saves' => 100
 		]);
+
+		// do the EasyInit initializer
 		$this->initializeProperties($properties, [
 			'attributes' => function($actor, $property, $value) {
 				foreach($value as $attr => $attr_value) {
@@ -110,6 +116,8 @@ abstract class Actor
 				}
 			}
 		]);
+
+		// set the max attributes based on the existing attributes
 		$this->max_attributes = new Attributes([
 			'str' => $this->attributes->getAttribute('str') + 4,
 			'int' => $this->attributes->getAttribute('int') + 4,
@@ -121,11 +129,25 @@ abstract class Actor
 			'mana' => $this->attributes->getAttribute('mana'),
 			'movement' => $this->attributes->getAttribute('movement')
 		]);
+
+		// apply any racial modifiers
 		$this->setRace(Race::lookup($this->race));
+
+		// create equipment object
 		$this->equipped = new Equipped($this);
+
+		// initialized identity
 		if($this->id) {
 			self::$identities[$this->id] = $this;
 		}
+
+		// set default attack event
+		$this->on(
+			'attack',
+			function($event, $fighter) {
+				$fighter->attack('Reg');
+			}
+		);
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -299,14 +321,15 @@ abstract class Actor
 				'pulse',
 				function($event, $server) use ($fighter, $target) {
 					if(empty($target) || !$fighter->isAlive()) {
-						return 'kill';
-					}
-					$response = $target->fire('attacked');
-					if($response === 'kill') {
+						$event->kill();
 						return;
 					}
-					if($response !== 'satisfy') {
-						$fighter->attack('Reg');
+					$attacked_event = $target->fire('attacked');
+					if($attacked_event->getStatus() === 'satisfied') {
+						return;
+					} else if($attacked_event->getStatus() === 'killed') {
+						$event->kill();
+						return;
 					}
 					$fighter->fire('attack');
 				}

@@ -41,7 +41,7 @@ class Elf extends Race
 		return [
 			['defense modifier',
 			function($event, $elf, $attacker, &$modifier, &$dam, &$weapon) {
-				if($weapon && $weapon->getMaterial() === 'iron') {
+				if(!empty($weapon['equipped']) && $weapon->getMaterial() === 'iron') {
 					$modifier += 0.15;
 				}
 			}],
@@ -55,11 +55,15 @@ class Elf extends Race
 				}
 			}],
 			['attacked',
-			function($event, $elf, $attacker) {
+			function($event, $elf) {
 				if(chance() < 5) {
-					$event->suppress();
-					Server::out($elf, "Your quick reflexes evade ".$attacker."'s attack!");
-					$target->getRoom()->announce($elf, ucfirst($elf)." evades ".$attacker."'s attack!");
+					$event->satisfy();
+					$attacker = $elf->getTarget();
+					$elf->getRoom()->announce([
+						['actor' => $elf, 'message' => "Your quick reflexes evade ".$attacker."'s attack!"],
+						['actor' => $attacker, 'message' => ucfirst($elf)." evades your attack!"],
+						['actor' => '*', 'message' => ucfirst($elf)." evades ".$attacker."'s attack!"]
+					]);
 				}
 			}]
 		];

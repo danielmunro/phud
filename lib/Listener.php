@@ -30,21 +30,23 @@ trait Listener
 		}
 	}
 
-	public function fire($event, &$a1 = null, &$a2 = null, &$a3 = null, &$a4 = null)
+	public function fire($event_type, &$a1 = null, &$a2 = null, &$a3 = null, &$a4 = null)
 	{
 		$response = '';
-		if(isset($this->listeners[$event])) {
-			foreach($this->listeners[$event] as $i => $listener) {
-				$instance = new Event($this, $listener, $a1, $a2, $a3, $a4);
-				$status = $instance->getStatus();
+		$event = new Event();
+		if(isset($this->listeners[$event_type])) {
+			foreach($this->listeners[$event_type] as $i => $listener) {
+				$event->evaluate($this, $listener, $a1, $a2, $a3, $a4);
+				$status = $event->getStatus();
 				if($status === 'satisfied') {
-					return true;
+					return $event;
 				} else if($status === 'killed') {
-					unset($this->events[$event][$i], $response);
-					return true;
+					unset($this->listeners[$event_type][$i], $response);
+					return $event;
 				}
 			}
 		}
+		return $event;
 	}
 }
 ?>

@@ -13,23 +13,16 @@ class Second_Attack extends Skill
 	protected function initializeListener()
 	{
 		$this->listener = function($fighter) {
-			$target = $fighter->getTarget();
-			if($target && $target->fire('attacked') === 'satisfy') {
-				return;
-			}
 			$ability->perform($fighter);
 		};
 	}
 
-	protected function applyCost(Actor $actor) {}
-
 	protected function success(Actor $actor)
 	{
-		$actor->attack('2nd');
-	}
-
-	protected function fail(Actor $actor)
-	{
+		$event = $actor->getTarget()->fire('attacked');
+		if($event->getStatus() === 'on') {
+			$actor->attack('2nd');
+		}
 	}
 }
 

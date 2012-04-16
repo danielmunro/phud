@@ -12,15 +12,19 @@ class Third_Attack extends Skill
 	protected $hard_modifier = ['dex'];
 	protected $event = 'attack';
 
-	protected function applyCost(Actor $actor) {}
+	protected function initializeListener()
+	{
+		$this->listener = function($fighter) {
+			$ability->perform($fighter);
+		};
+	}
 
 	protected function success(Actor $actor)
 	{
-		$actor->attack('3rd');
-	}
-
-	protected function fail(Actor $actor)
-	{
+		$event = $actor->getTarget()->fire('attacked');
+		if($event->getStatus() === 'on') {
+			$actor->attack('3rd');
+		}
 	}
 }
 ?>

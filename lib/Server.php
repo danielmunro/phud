@@ -131,19 +131,13 @@ class Server
 		$this->on(
 			'pulse',
 			function($event, $server) {
-				array_walk(
-					$server->getClients(),
-					function($c) {
-						if($c->getUser()) {
-							$u = $c->getUser();
-							$target = $u->getTarget();
-							if($target) {
-								Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
-								Server::out($u, $u->prompt(), false);
-							}
-						}
+				foreach($server->getClients() as $c) {
+					$u = $c->getUser();
+					if($u && $u->getTarget()) {
+						Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n");
+						Server::out($u, $u->prompt(), false);
 					}
-				);
+				}
 			},
 			'end'
 		);
