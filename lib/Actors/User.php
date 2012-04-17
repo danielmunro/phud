@@ -48,7 +48,8 @@ class User extends Actor
 			Server::instance()->on(
 				'pulse',
 				function($event) use ($user) {
-					if(!$user->decrementDelay()) {
+					$user->decrementDelay();
+					if($user->getDelay() === 0) {
 						$event->kill();
 					}
 				}
@@ -61,9 +62,7 @@ class User extends Actor
 	{
 		if($this->delay > 0) {
 			$this->delay--;
-			return true;
 		} 
-		return false;
 	}
 
 	public function getDelay()
@@ -252,7 +251,6 @@ class User extends Actor
 			'attributes',
 			'max_attributes',
 			'abilities',
-			'delay',
 			'proficiencies',
 			'items',
 			'affects',
