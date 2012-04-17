@@ -43,20 +43,18 @@ class User extends Actor
 	}
 	
 	public function incrementDelay($delay) {
-		$this->delay += $delay;
-		if(empty($this->_subscriber_delay)) {
-			$this->_subscriber_delay = new Subscriber(
-				Event::EVENT_PULSE,
-				$this,
-				function($subscriber, $server, $fighter) {
-					if(!$fighter->decrementDelay()) {
-						$subscriber->kill();
+		if($this->delay === 0 && $delay) {
+			$user = $this;
+			Server::instance()->on(
+				'pulse',
+				function($event) use ($user) {
+					if(!$user->decrementDelay()) {
+						$event->kill();
 					}
 				}
 			);
-			Server::instance()->addSubscriber($this->_subscriber_delay);
 		}
-
+		$this->delay += $delay;
 	}
 
 	public function decrementDelay()
@@ -65,7 +63,6 @@ class User extends Actor
 			$this->delay--;
 			return true;
 		} 
-		unset($this->_subscriber_delay);
 		return false;
 	}
 

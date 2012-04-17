@@ -31,10 +31,10 @@ abstract class Skill extends Ability
 			case 'attack':
 				$this->listener = function($attacker) {
 					$target = $attacker->getTarget();
-					if($target->fire(Event::MELEE_ATTACKED)) {
-						return;
+					$event = $target->fire('attacked');
+					if($event->getStatus() === 'on') {
+						$ability->perform($fighter);
 					}
-					$ability->perform($fighter);
 				};
 				break;
 		}

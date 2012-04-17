@@ -1,6 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Ability\Ability,
+use Phud\Abilities\Ability,
 	Phud\Server,
 	Phud\Actors\User as aUser;
 

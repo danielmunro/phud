@@ -83,14 +83,14 @@ abstract class Ability
 		if(!$target) {
 			$target = $actor;
 		}
-		if($this->is_offensive && $actor != $target) {
+		if($this->is_offensive && !$actor->getTarget() && $actor != $target) {
 			$actor->setTarget($target);
-			$target->setTarget($actor);
 		}
 		// check if actor satisfies requirements as far as mana, mv, etc
 		if($this->applyCost($actor) === false) {
 			return false;
 		}
+		$actor->incrementDelay($this->delay);
 		// do a proficiency roll to determine success or failure
 		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
 		foreach($this->hard_modifier as $m) {
@@ -106,7 +106,6 @@ abstract class Ability
 			$roll -= $this->getEasyAttributeModifier($target->getAttribute($m));
 		}
 		$roll += $this->modifyRoll($actor);
-		$actor->fire('casting', $target, $spell, $modifier);
 		if($roll > chance()) {
 			$this->success($actor, $target, $args);
 			return true;
