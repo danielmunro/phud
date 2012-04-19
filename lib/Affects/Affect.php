@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Affects;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\EasyInit,
+use Phud\EasyInit,
 	Phud\Debug,
 	Phud\Server,
 	Phud\Attributes;
@@ -142,7 +140,7 @@ class Affect
 
 	public function __wakeup()
 	{
-		$this->initSubscribers();
+		$this->initListeners();
 	}
 }
 ?>

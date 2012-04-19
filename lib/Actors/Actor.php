@@ -633,9 +633,9 @@ abstract class Actor
 	public function setRace($race)
 	{
 		if(isset($this->race['lookup']) && is_object($this->race['lookup'])) {
-			// Undo all previous racial subscribers/abilities/stats/proficiencies
-			foreach($this->_subscribers_race as $subscriber) {
-				$this->removeSubscriber($subscriber);
+			// Undo all previous racial listeners/abilities/stats/proficiencies
+			foreach($this->race_listeners as $listener) {
+				$this->unlisten($listener[0], $listener[1]);
 			}
 			foreach($this->race['lookup']->getProficiencies() as $proficiency => $amount) {
 				$this->proficiencies[$proficiency] -= $amount;
@@ -646,7 +646,7 @@ abstract class Actor
 			}
 		}
 
-		// Assign all racial subscribers/abilities/stats/proficiencies
+		// Assign all racial listeners/abilities/stats/proficiencies
 		$this->race = $race;
 		$this->race_listeners = $race['lookup']->getListeners();
 		foreach($this->race_listeners as $listener) {

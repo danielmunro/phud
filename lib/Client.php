@@ -83,7 +83,7 @@ class Client
 			$fire_from = empty($this->user) ? $this : $this->user;
 			$satisfied = $fire_from->fire('input', $args);
 			if(!$satisfied) {
-				Server::out($this, "\nHuh?"); // No subscriber could make sense of input
+				Server::out($this, "\nHuh?"); // No listener could make sense of input
 			}
 			if($this->user) {
 				Server::out($this, "\n".$this->user->prompt(), false);

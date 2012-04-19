@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Quests;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Actors\User;
+use Phud\Actors\User;
 
 class Adelwine extends Quest
 {

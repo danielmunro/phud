@@ -1,9 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
-	Phud\Room,
-	Phud\Event\Subscriber;
+	Phud\Server;
 
 class Flee extends Command
 {

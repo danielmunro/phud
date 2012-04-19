@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Affects;
-use Phud\Server,
-	Phud\Event\Subscriber,
-	Phud\Event\Event;
+use Phud\Server;
 
 class Poison extends Affect
 {
