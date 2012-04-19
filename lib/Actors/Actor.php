@@ -56,7 +56,6 @@ abstract class Actor
 	protected $experience = 0;
 	protected $experience_per_level = 0;
 	protected $furniture = null;
-	protected $_subscriber_delay = null;
 	protected $tick_listener = null;
 	protected $proficiencies = [
 		'stealth' => 15,
@@ -660,15 +659,6 @@ abstract class Actor
 		foreach($race['lookup']->getAbilities() as $ability_alias) {
 			$ability = Ability::lookup($ability_alias);
 			$this->addAbility($ability);
-		}
-	}
-
-	public function setLevel($level)
-	{
-		while($this->level < $level)
-		{
-			$this->experience += $this->getExperiencePerLevel() - ($this->experience - ($this->level*$this->getExperiencePerLevel()));
-			$this->levelUp(false);
 		}
 	}
 
