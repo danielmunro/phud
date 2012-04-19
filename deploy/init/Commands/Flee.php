@@ -10,44 +10,43 @@ class Flee extends Command
 	protected $alias = 'flee';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $fighter, $args = [], Subscriber $command_subscriber)
+	public function perform(Actor $fighter, $args = [])
 	{
 		$target = $fighter->getTarget();
+		
+		// sanity check
 		if(!$target) {
 			return Server::out($fighter, "Flee from who?");
 		}
+
+		// remove targets
 		$target->setTarget(null);
 		$fighter->setTarget(null);
 		
-		$directions = array(
-						'north' => $fighter->getRoom()->getNorth(),
-						'south' => $fighter->getRoom()->getSouth(),
-						'east' => $fighter->getRoom()->getEast(),
-						'west' => $fighter->getRoom()->getWest(),
-						'up' => $fighter->getRoom()->getUp(),
-						'down' => $fighter->getRoom()->getDown());
-		$direction = rand(0, sizeof($directions)-1);
-		$directions = array_filter(
-								$directions,
-								function($d)
-								{
-									return $d instanceof Room;
-								}
-							);
-		uasort(
-			$directions,
-			function($i)
-			{
-				return rand(0, 1);
+		// build a list of directions and randomize it
+		$r = $fighter->getRoom();
+		$directions = [
+			['north', $r->getNorth()],
+			['south', $r->getSouth()],
+			['east', $r->getEast()],
+			['west', $r->getWest()],
+			['up', $r->getUp()],
+			['down', $r->getDown()]
+		];
+		shuffle($directions);
+
+		// attempt to flee in a direction at random
+		foreach($directions as $direction) {
+			if($direction[1]) {
+				$command = Command::lookup($direction[0]);
+				$command['lookup']->perform($fighter);
+				Server::out($fighter, "You run scared!");
+				return;
 			}
-		);
-		foreach($directions as $dir => $id)
-		{
-			$command = Command::lookup($dir);
-			$command['lookup']->perform($fighter);
-			Server::out($fighter, "You run scared!");
-			return;
 		}
+
+		// an exitless room
+		Server::out($fighter, "You don't see anywhere to flee!");
 	}
 }
 ?>
