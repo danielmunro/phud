@@ -4,8 +4,6 @@ use Phud\Dbr,
 	Phud\Room,
 	Phud\Debug,
 	Phud\Server,
-	Phud\Event\Subscriber,
-	Phud\Event\Event,
 	Phud\Command\Command,
 	Phud\Nouns,
 	Phud\Items\Corpse,
@@ -41,7 +39,12 @@ class Mob extends Actor
 		parent::__construct($properties);
 		if($this->movement) {
 			$this->movement_timeout = $this->movement;
-			Server::instance()->addSubscriber($this->getMovementSubscriber());
+			$this->on(
+				'tick',
+				function($event, $mob) {
+					$mob->evaluateMove();
+				}
+			);
 		}
 	}
 	
@@ -92,17 +95,6 @@ class Mob extends Actor
 	public function resetPath()
 	{
 		$this->path = [];
-	}
-
-	public function getMovementSubscriber()
-	{
-		return new Subscriber(
-			Event::EVENT_TICK,
-			$this,
-			function($subscriber, $broadcaster, $mob) {
-				$mob->evaluateMove();
-			}
-		);
 	}
 
 	public function evaluateMove()
@@ -196,17 +188,14 @@ class Mob extends Actor
 		$this->setAttribute('hp', -1);
 		$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
 		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - ($this->respawn_ticks / 2), $this->respawn_ticks + ($this->respawn_ticks / 2)));
-		Server::instance()->addSubscriber(
-			new Subscriber(
-				Event::EVENT_TICK,
-				$this,
-				function($subscriber, $server, $mob) {
-					$mob->evaluateRespawn();
-					if($mob->isAlive()) {
-						$subscriber->kill();
-					}
+		$this->on(
+			'tick',
+			function($event, $server, $mob) {
+				$mob->evaluateRespawn();
+				if($mob->isAlive()) {
+					$event->kill();
 				}
-			)
+			}
 		);
 	}
 

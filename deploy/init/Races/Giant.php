@@ -3,9 +3,7 @@ namespace Phud\Races;
 use Phud\Effect,
 	Phud\Damage,
 	Phud\Attributes,
-	Phud\Server,
-	Phud\Event\Subscriber,
-	Phud\Event\Event;
+	Phud\Server;
 
 class Giant extends Race
 {
@@ -41,32 +39,28 @@ class Giant extends Race
 		parent::__construct();
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_MOVED,
-				function($subscriber, $actor, $movement_cost, $room) {
-					$t = $room->getTerrainType();
-					if($t === Room::TERRAIN_HILLS ||
-						$t === Room::TERRAIN_MOUNTAINS ||
-						$t === Room::TERRAIN_GRASSLANDS) {
-						$movement_cost /= 2;
-					}
+			['moved',
+			function($event, $actor, &$movement_cost, $room) {
+				$t = $room->getTerrainType();
+				if($t === Room::TERRAIN_HILLS ||
+					$t === Room::TERRAIN_MOUNTAINS ||
+					$t === Room::TERRAIN_GRASSLANDS) {
+					$movement_cost /= 2;
 				}
-			),
-			new Subscriber(
-				Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
-				function($subscriber, $victim, $attacker, $modifier, $dam_roll) {
-					$modifier -= 0.05;
-				}
-			),
-			new Subscriber(
-				Event::EVENT_CASTED_AT,
-				function($subscriber, $target, $caster, $spell, $modifier, $saves) {
+			}],
+			['defense modifier',
+			function($event, $giant, $attacker, &$modifier) {
+				$modifier -= 0.05;
+			}],
+			['casted on',
+			function($event, $giant, $caster, $spell, &$modifier) {
+				if($spell->isOffensive()) {
 					$modifier += 0.08;
 				}
-			)
+			}]
 		];
 	}
 

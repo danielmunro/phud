@@ -1,8 +1,6 @@
 <?php
 namespace Phud\Races;
-use Phud\Event\Subscriber,
-	Phud\Event\Event,
-	Phud\Attributes;
+use Phud\Attributes;
 
 class Human extends Race
 {
@@ -28,7 +26,7 @@ class Human extends Race
 		parent::__construct();
 	}
 
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
 		];

@@ -7,9 +7,6 @@ use Phud\Server,
 	Phud\Races\Race,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
-	Phud\Event\Broadcaster,
-	Phud\Event\Subscriber,
-	Phud\Event\Event,
 	Phud\Quests\Quest,
 	Phud\Quests\Log;
 
@@ -46,30 +43,26 @@ class User extends Actor
 	}
 	
 	public function incrementDelay($delay) {
-		$this->delay += $delay;
-		if(empty($this->_subscriber_delay)) {
-			$this->_subscriber_delay = new Subscriber(
-				Event::EVENT_PULSE,
-				$this,
-				function($subscriber, $server, $fighter) {
-					if(!$fighter->decrementDelay()) {
-						$subscriber->kill();
+		if($this->delay === 0 && $delay) {
+			$user = $this;
+			Server::instance()->on(
+				'pulse',
+				function($event) use ($user) {
+					$user->decrementDelay();
+					if($user->getDelay() === 0) {
+						$event->kill();
 					}
 				}
 			);
-			Server::instance()->addSubscriber($this->_subscriber_delay);
 		}
-
+		$this->delay += $delay;
 	}
 
 	public function decrementDelay()
 	{
 		if($this->delay > 0) {
 			$this->delay--;
-			return true;
 		} 
-		unset($this->_subscriber_delay);
-		return false;
 	}
 
 	public function getDelay()
@@ -258,7 +251,6 @@ class User extends Actor
 			'attributes',
 			'max_attributes',
 			'abilities',
-			'delay',
 			'proficiencies',
 			'items',
 			'affects',
@@ -271,25 +263,35 @@ class User extends Actor
 	{
 		$this->room = Room::find($this->room->getId());
 		$this->race = Race::lookup($this->race['alias']);
-		$this->_subscribers_race = $this->race['lookup']->getSubscribers();
-		foreach($this->_subscribers_race as $subscriber) {
-			$this->addSubscriber($subscriber);
+		$this->race_listeners = $this->race['lookup']->getListeners();
+		foreach($this->race_listeners as $listener) {
+			$this->on($listener[0], $listener[1]);
 		}
 		foreach($this->affects as $affect) {
-			$affect->applyTimeoutSubscriber($this);
+			$affect->applyTimeoutListener($this);
 		}
 		foreach($this->abilities as $user_ab) {
 			$ability = Ability::lookup($user_ab);
 			if($ability['lookup'] instanceof Skill) {
-				$this->addSubscriber($ability['lookup']->getSubscriber());
+				$listener = $ability['lookup']->getListener();
+				$this->on($listener[0], $listener[1], 'end');
 			}
 		}
 		foreach($this->quests as $quest) {
-			foreach($quest->getSubscribers() as $subscriber) {
-				$this->addSubscriber($subscriber);
+			foreach($quest->getListeners() as $listener) {
+				$this->on($listener[0], $listener[1]);
 			}
 		}
-		Server::instance()->addSubscriber($this->getSubscriberTick());
+
+		Server::instance()->on('tick', $this->getTickListener());
+
+		// set default attack event
+		$this->on(
+			'attack',
+			function($event, $fighter) {
+				$fighter->attack('Reg');
+			}
+		);
 	}
 }
 ?>

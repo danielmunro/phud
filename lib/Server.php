@@ -1,15 +1,12 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
-	Phud\Event\Event,
-	Phud\Event\Broadcaster,
-	Phud\Event\Subscriber,
 	\Exception,
 	\stdClass;
 
 class Server
 {
-	use Broadcaster;
+	use Listener;
 	
 	protected $address = '';
 	protected $port = 0;
@@ -59,7 +56,15 @@ class Server
 	public function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->addSubscriber($client->getInputSubscriber());
+		$this->on(
+			'cycle',
+			function($event) use ($client) {
+				$client->checkCommandBuffer();
+				if(!is_resource($client->getSocket())) {
+					$event->kill();
+				}
+			},
+			'end');
 	}
 	
 	public function disconnectClient(Client $client)
@@ -70,11 +75,9 @@ class Server
 			if($user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
 			}
-			$this->removeSubscriber($user->getSubscriberTick());
+			$this->unlisten('tick', $user->getTickListener());
 		}
 
-		$this->removeSubscriber($client->getInputSubscriber());
-		
 		// clean out the client
 		socket_close($client->getSocket());
 		$key = array_search($client, $this->clients);
@@ -111,56 +114,47 @@ class Server
 	
 	public function run()
 	{
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_CONNECTED,
-				function($subscriber, $server, $client) {
-					$server->addClient($client);
+		$this->on(
+			'connect',
+			function($event, $server, $client) {
+				$server->addClient($client);
+			}
+		);
+
+		$this->on(
+			'cycle',
+			function($event, $server) {
+				$server->scanNewConnections();
+			}
+		);
+
+		$this->on(
+			'pulse',
+			function($event, $server) {
+				foreach($server->getClients() as $c) {
+					$u = $c->getUser();
+					if($u && $u->getTarget()) {
+						Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n");
+						Server::out($u, $u->prompt(), false);
+					}
 				}
-			)
+			},
+			'end'
 		);
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_GAME_CYCLE,
-				function($subscriber, $server) {
-					$server->scanNewConnections();
-				}
-			)
-		);
-		$this->addSubscriber(
-			new Subscriber(
-				Event::EVENT_PULSE,
-				function($subscriber, $server) {
-					array_walk(
-						$server->getClients(),
-						function($c) {
-							if($c->getUser()) {
-								$u = $c->getUser();
-								$target = $u->getTarget();
-								if($target) {
-									Server::out($u, ucfirst($target).' '.$target->getStatus().".\n");
-									Server::out($u, $u->prompt(), false);
-								}
-							}
-						}
-					);
-				},
-				Subscriber::DEFERRED
-			)
-		);
+
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));
 		while(1) {
 			$new_pulse = intval(date('U'));
 			if($pulse + 1 === $new_pulse) {
-				$this->fire(Event::EVENT_PULSE);
+				$this->fire('pulse');
 				$pulse = $new_pulse;
 			}
 			if($pulse === $next_tick) {
-				$this->fire(Event::EVENT_TICK);
+				$this->fire('tick');
 				$next_tick = $pulse + intval(round(rand(30, 40)));
 			}
-			$this->fire(Event::EVENT_GAME_CYCLE);
+			$this->fire('cycle');
 		}
 	}
 
@@ -198,7 +192,7 @@ class Server
 		$s = [$this->socket];
 		$new_connection = socket_select($s, $n, $n, 0, 0);
 		if($new_connection) {
-			$this->fire(Event::EVENT_CONNECTED, new Client(socket_accept($this->socket)));
+			$this->fire('connect', new Client(socket_accept($this->socket)));
 		}
 	}
 

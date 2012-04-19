@@ -5,8 +5,6 @@ use Phud\Actors\Actor,
 	Phud\Server,
 	Phud\Room as mRoom,
 	Phud\Door as mDoor,
-	Phud\Event\Event,
-	Phud\Event\Subscriber,
 	Phud\Commands\Command;
 
 abstract class Move_Direction extends Command
@@ -27,7 +25,7 @@ abstract class Move_Direction extends Command
 				return Server::out($actor, ucfirst($doors[$direction]).' is not open.');
 			}
 			$movement_cost = 1;
-			$actor->fire(Event::EVENT_MOVED, $movement_cost, $room);
+			$actor->fire('moved', $movement_cost, $room);
 			if($actor->getAttribute('movement') >= $movement_cost) {
 				$actor->modifyAttribute('movement', -($movement_cost));
 				$actor->getRoom()->announce($actor, ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb().' '.$args[1].'.');

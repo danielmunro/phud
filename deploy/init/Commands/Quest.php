@@ -44,6 +44,9 @@ class Quest extends User
 			$quest = $questmaster->getQuestByInput(array_pop($args));
 			if($quest) {
 				$user->finishQuest($quest);
+				foreach($quest->getListeners() as $listener) {
+					$user->unlisten($listener[0], $listener[1]);
+				}
 				return Server::out($user, "You have finished the quest ".$quest.".");
 			}
 		}
@@ -74,6 +77,9 @@ class Quest extends User
 			$quest = $questmaster->getQuestByInput(array_pop($args));
 			if($quest) {
 				$user->addQuest($quest);
+				foreach($quest->getListeners() as $listener) {
+					$user->on($listener[0], $listener[1]);
+				}
 				return Server::out($user, "You accept the quest ".$quest.".");
 			}
 		}

@@ -2,18 +2,19 @@
 namespace Phud\Actors;
 use Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
-	Phud\Event\Subscriber,
-	Phud\Event\Broadcaster,
-	Phud\Event\Event,
 	Phud\Affects\Affectable,
 	Phud\Inventory,
+	Phud\Server,
 	Phud\Usable,
 	Phud\Races\Race,
 	Phud\Room,
 	Phud\Equipped,
 	Phud\Attributes,
 	Phud\EasyInit,
+	Phud\Listener,
 	Phud\Identity,
+	Phud\Damage,
+	Phud\Debug,
 	Phud\Items\Corpse,
 	Phud\Items\Food,
 	Phud\Items\Furniture,
@@ -21,7 +22,7 @@ use Phud\Abilities\Ability,
 
 abstract class Actor
 {
-	use Affectable, Broadcaster, Inventory, Usable, EasyInit, Identity;
+	use Affectable, Listener, Inventory, Usable, EasyInit, Identity;
 
 	const MAX_LEVEL = 51;
 	
@@ -44,6 +45,7 @@ abstract class Actor
 	protected $sex = self::SEX_NEUTRAL;
 	protected $disposition = self::DISPOSITION_STANDING;
 	protected $race = 'critter';
+	protected $race_listeners = [];
 	protected $room = null;
 	protected $equipped = null;
 	protected $alignment = 0;
@@ -54,9 +56,7 @@ abstract class Actor
 	protected $experience = 0;
 	protected $experience_per_level = 0;
 	protected $furniture = null;
-	protected $_subscriber_delay = null;
-	protected $_subscribers_race = [];
-	protected $_subscriber_tick = null;
+	protected $tick_listener = null;
 	protected $proficiencies = [
 		'stealth' => 15,
 		'healing' => 15,
@@ -82,6 +82,7 @@ abstract class Actor
 	
 	public function __construct($properties = [])
 	{
+		// set generic attribute values
 		$this->attributes = new Attributes([
 			'str' => 15,
 			'int' => 15,
@@ -100,6 +101,8 @@ abstract class Actor
 			'dam' => 1,
 			'saves' => 100
 		]);
+
+		// do the EasyInit initializer
 		$this->initializeProperties($properties, [
 			'attributes' => function($actor, $property, $value) {
 				foreach($value as $attr => $attr_value) {
@@ -112,6 +115,8 @@ abstract class Actor
 				}
 			}
 		]);
+
+		// set the max attributes based on the existing attributes
 		$this->max_attributes = new Attributes([
 			'str' => $this->attributes->getAttribute('str') + 4,
 			'int' => $this->attributes->getAttribute('int') + 4,
@@ -123,11 +128,25 @@ abstract class Actor
 			'mana' => $this->attributes->getAttribute('mana'),
 			'movement' => $this->attributes->getAttribute('movement')
 		]);
+
+		// apply any racial modifiers
 		$this->setRace(Race::lookup($this->race));
+
+		// create equipment object
 		$this->equipped = new Equipped($this);
+
+		// initialized identity
 		if($this->id) {
 			self::$identities[$this->id] = $this;
 		}
+
+		// set default attack event
+		$this->on(
+			'attack',
+			function($event, $fighter) {
+				$fighter->attack('Reg');
+			}
+		);
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -141,11 +160,10 @@ abstract class Actor
 
 	public function addAbility($ability)
 	{
-		// Remember what abilities the fighter has
 		$this->abilities[] = $ability['alias'];
 		if($ability['lookup'] instanceof Skill) {
-			// Apply the subscriber to trigger the ability at the right time
-			$this->addSubscriber($ability['lookup']->getSubscriber());
+			$listener = $ability['lookup']->getListener();
+			$this->on($listener[0], $listener[1]);
 		}
 	}
 
@@ -155,7 +173,7 @@ abstract class Actor
 		if(isset($this->ability[$alias])) {
 			unset($this->ability[$alias]);
 			if($ability['lookup'] instanceof Skill) {
-				$this->removeSubscriber($ability['lookup']->getSubscriber());
+				$ability['lookup']->removeListener($this);
 			}
 		}
 	}
@@ -207,30 +225,26 @@ abstract class Actor
 	// Tick functions
 	///////////////////////////////////////////////////////////////////
 
-	public function getSubscriberTick()
+	public function getTickListener()
 	{
-		if(!$this->_subscriber_tick) {
-			$this->_subscriber_tick = new Subscriber(
-				Event::EVENT_TICK,
-				$this,
-				function($subscriber, $broadcaster, $actor) {
-					$actor->tick();
-				}
-			);
+		if(!$this->tick_listener) {
+			$actor = $this;
+			$this->tick_listener = function($server) use ($actor) {
+				$actor->tick();
+			};
 		}
-		return $this->_subscriber_tick;
+		return $this->tick_listener;
 	}
 
 	public function tick()
 	{
 		if($this->isAlive()) {
+			$amount = rand(0.05, 0.1);
+			$modifier = 1;
+			$this->fire('tick', $amount, $modifier);
+			$amount *= $modifier;
 			foreach(['hp', 'mana', 'movement'] as $att) {
-				$max = $this->getMaxAttribute($att);
-				$amount = round(rand($max * 0.05, $max * 0.1));
-				$modifier = 1;
-				$this->fire(Event::EVENT_TICK_ATTRIBUTE_MODIFIER, $this, $att, $modifier);
-				$amount *= $modifier;
-				$this->modifyAttribute($att, $amount);
+				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
 			}
 		}
 	}
@@ -301,7 +315,24 @@ abstract class Actor
 	{
 		$this->target = $target;
 		if($this->target) {
-			Server::instance()->addSubscriber($this->getAttackSubscriber());
+			$fighter = $this;
+			Server::instance()->on(
+				'pulse',
+				function($event, $server) use ($fighter, $target) {
+					if(empty($target) || !$fighter->isAlive()) {
+						$event->kill();
+						return;
+					}
+					$attacked_event = $target->fire('attacked');
+					if($attacked_event->getStatus() === 'satisfied') {
+						return;
+					} else if($attacked_event->getStatus() === 'killed') {
+						$event->kill();
+						return;
+					}
+					$fighter->fire('attack');
+				}
+			);
 		}
 	}
 
@@ -328,28 +359,6 @@ abstract class Actor
 			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
 		}
 		return $this->target;
-	}
-
-	public function getAttackSubscriber()
-	{
-		return new Subscriber(
-			Event::EVENT_PULSE,
-			$this,
-			function($subscriber, $broadcaster, $fighter) {
-				$target = $fighter->getTarget();
-				if(empty($target) || !$fighter->isAlive()) {
-					$subscriber->kill();
-					return;
-				}
-				$fighter->fire(Event::EVENT_MELEE_ATTACK);
-				$target->fire(Event::EVENT_MELEE_ATTACKED, $subscriber);
-				if($subscriber->isSuppressed()) {
-					$subscriber->suppress(false);
-				} else {
-					$fighter->attack('Reg');
-				}
-			}
-		);
 	}
 
 	public function attack($attack_name = '', $verb = '')
@@ -415,8 +424,8 @@ abstract class Actor
 			//((Dexterity*2) + (Total Armor Defense*(Armor Skill * .03)) + (Shield Armor * (shield skill * .03)) + ((Primary Weapon Skill + Secondary Weapon Skill)/2)) * (1. Stance Modification)
 
 			$modifier = 1;
-			$this->fire(Event::EVENT_DAMAGE_MODIFIER_ATTACKING, $victim, $modifier, $dam_roll, $attacking_weapon);
-			$victim->fire(Event::EVENT_DAMAGE_MODIFIER_DEFENDING, $this, $modifier, $dam_roll, $attacking_weapon);
+			$this->fire('damage modifier', $victim, $modifier, $dam_roll, $attacking_weapon);
+			$victim->fire('defense modifier', $this, $modifier, $dam_roll, $attacking_weapon);
 			$dam_roll *= $modifier;
 			$dam_roll = _range(0, 200, $dam_roll);
 			$victim->modifyAttribute('hp', -($dam_roll));
@@ -624,9 +633,9 @@ abstract class Actor
 	public function setRace($race)
 	{
 		if(isset($this->race['lookup']) && is_object($this->race['lookup'])) {
-			// Undo all previous racial subscribers/abilities/stats/proficiencies
-			foreach($this->_subscribers_race as $subscriber) {
-				$this->removeSubscriber($subscriber);
+			// Undo all previous racial listeners/abilities/stats/proficiencies
+			foreach($this->race_listeners as $listener) {
+				$this->unlisten($listener[0], $listener[1]);
 			}
 			foreach($this->race['lookup']->getProficiencies() as $proficiency => $amount) {
 				$this->proficiencies[$proficiency] -= $amount;
@@ -637,11 +646,11 @@ abstract class Actor
 			}
 		}
 
-		// Assign all racial subscribers/abilities/stats/proficiencies
+		// Assign all racial listeners/abilities/stats/proficiencies
 		$this->race = $race;
-		$this->_subscribers_race = $race['lookup']->getSubscribers();
-		foreach($this->_subscribers_race as $subscriber) {
-			$this->addSubscriber($subscriber);
+		$this->race_listeners = $race['lookup']->getListeners();
+		foreach($this->race_listeners as $listener) {
+			$this->on($listener[0], $listener[1]);
 		}
 		$profs = $race['lookup']->getProficiencies();
 		foreach($profs as $name => $value) {
@@ -650,15 +659,6 @@ abstract class Actor
 		foreach($race['lookup']->getAbilities() as $ability_alias) {
 			$ability = Ability::lookup($ability_alias);
 			$this->addAbility($ability);
-		}
-	}
-
-	public function setLevel($level)
-	{
-		while($this->level < $level)
-		{
-			$this->experience += $this->getExperiencePerLevel() - ($this->experience - ($this->level*$this->getExperiencePerLevel()));
-			$this->levelUp(false);
 		}
 	}
 

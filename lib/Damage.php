@@ -1,5 +1,6 @@
 <?php
-namespace Mechanics;
+namespace Phud;
+
 class Damage
 {
 	const TYPE_HIT = 'hit';

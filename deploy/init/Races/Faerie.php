@@ -46,27 +46,20 @@ class Faerie extends Race
 		$this->addParts(['wings']);
 	}
 	
-	public function getSubscribers()
+	public function getListeners()
 	{
 		return [
-			new Subscriber(
-				Event::EVENT_CASTING,
-				function($subscriber, $caster, $target, $spell, &$modifier, &$saves) {
-					$plus_mod = rand(0.01, 0.08);
-					$plus_saves = rand(1, 8);
-					$modifier += $plus_mod;
-					$saves += $plus_saves;
+			['casting',
+			function($event, $caster, $target, $spell, &$modifier) {
+				$modifier += rand(0.01, 0.08);
+			}],
+			['defense modifier',
+			function($event, $faerie, $attacker, &$modifier, &$dam, $weapon) {
+				$modifier += 0.05;
+				if($weapon->getDamageType() === Damage::TYPE_POUND) {
+					$modifier += 0.1;
 				}
-			),
-			new Subscriber(
-				Event::EVENT_DAMAGE_MODIFIER_DEFENDING,
-				function($subscriber, $victim, $attacker, &$modifier, &$dam_roll, $attacking) {
-					$modifier += 0.05;
-					if($attacking->getDamageType() === Damage::TYPE_POUND) {
-						$modifier += 0.10;
-					}
-				}
-			)
+			}]
 		];
 	}
 

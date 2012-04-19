@@ -1,40 +1,22 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
-	Phud\Event\Event,
-	Phud\Event\Subscriber,
-	Phud\Event\Broadcaster;
+	Phud\Commands\Command;
 
 class Client
 {
-	use Broadcaster;
+	use Listener;
 
 	private $user = null;
 	private $unverified_user = null;
 	private $socket = null;
 	private $command_buffer = array();
 	private $login = array('alias' => false);
-	protected $input_subscriber = null;
 	protected $last_input = '';
 	
 	public function __construct($socket)
 	{
 		$this->socket = $socket;
-		$this->input_subscriber = new Subscriber(
-			Event::EVENT_GAME_CYCLE,
-			$this,
-			function($subscriber, $server, $client) {
-				$client->checkCommandBuffer();
-				if(!is_resource($client->getSocket())) {
-					$subscriber->kill();
-				}
-			}
-		);
-	}
-
-	public function getInputSubscriber()
-	{
-		return $this->input_subscriber;
 	}
 	
 	public function getUser()
@@ -45,6 +27,16 @@ class Client
 	public function setUser(User $user)
 	{
 		$this->user = $user;
+		$user->on(
+			'input',
+			function($event, $user, $args) {
+				$command = Command::lookup($args[0]);
+				if($command) {
+					$command['lookup']->tryPerform($user, $args);
+					$event->satisfy();
+				}
+			}
+		);
 	}
 
 	public function getSocket()
@@ -88,9 +80,10 @@ class Client
 			
 			// Break down client input into separate arguments and evaluate
 			$args = explode(' ', trim($input));
-			$satisfied = $this->fire(Event::EVENT_INPUT, $args);
+			$fire_from = empty($this->user) ? $this : $this->user;
+			$satisfied = $fire_from->fire('input', $args);
 			if(!$satisfied) {
-				Server::out($this, "\nHuh?"); // No subscriber could make sense of input
+				Server::out($this, "\nHuh?"); // No listener could make sense of input
 			}
 			if($this->user) {
 				Server::out($this, "\n".$this->user->prompt(), false);

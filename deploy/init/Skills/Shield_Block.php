@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event\Event,
-	Phud\Event\Subscriber,
+use Phud\Event,
 	Phud\Actors\Actor;
 
 class Shield_Block extends Skill
@@ -11,18 +10,8 @@ class Shield_Block extends Skill
 	protected $required_proficiency = 25;
 	protected $normal_modifier = ['dex'];
 	protected $hard_modifier = ['str'];
+	protected $event = 'attacked';
 	
-	public function getSubscriber()
-	{
-		return new Subscriber(
-			Event::EVENT_MELEE_ATTACKED,
-			$this,
-			function($subscriber, $fighter, $ability, $attack_subscriber) {
-				$ability->perform($fighter, [$attack_subscriber, $subscriber]);
-			}
-		);
-	}
-
 	protected function applyCost(Actor $actor)
 	{
 		if($actor->getAttribute('movement') >= 2) {
@@ -34,8 +23,6 @@ class Shield_Block extends Skill
 
 	protected function success(Actor $actor, Actor $target, $args)
 	{
-		$args[0]->suppress();
-		$args[1]->satisfyBroadcast();
 		$sexes = [Actor::SEX_MALE => 'his', Actor::SEX_FEMALE => 'her', Actor::SEX_NEUTRAL => 'its'];
 		$s = $actor->getDisplaySex($sexes);
 		$actor->getRoom()->announce2([

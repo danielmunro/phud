@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Event\Subscriber,
-	Phud\Event\Event,
+	Phud\Event,
 	Phud\Alias,
 	Phud\Debug,
 	\ReflectionClass,
@@ -41,9 +40,19 @@ abstract class Ability
 		return $this->delay;
 	}
 
+	public function getAlias()
+	{
+		return $this->alias;
+	}
+
 	public function getProficiency()
 	{
 		return $this->proficiency;
+	}
+
+	public function isOffensive()
+	{
+		return $this->is_offensive;
 	}
 	
 	public static function runInstantiation()
@@ -74,14 +83,14 @@ abstract class Ability
 		if(!$target) {
 			$target = $actor;
 		}
-		if($this->is_offensive && $actor != $target) {
+		if($this->is_offensive && !$actor->getTarget() && $actor != $target) {
 			$actor->setTarget($target);
-			$target->setTarget($actor);
 		}
 		// check if actor satisfies requirements as far as mana, mv, etc
 		if($this->applyCost($actor) === false) {
 			return false;
 		}
+		$actor->incrementDelay($this->delay);
 		// do a proficiency roll to determine success or failure
 		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
 		foreach($this->hard_modifier as $m) {

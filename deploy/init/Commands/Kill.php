@@ -1,23 +1,21 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
-	Phud\Event\Subscriber,
-	Phud\Event\Event;
+	Phud\Server;
 
 class Kill extends Command
 {
 	protected $alias = 'kill';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = [], Subscriber $command_subscriber)
+	public function perform(Actor $actor, $args = [])
 	{
 		if(!$actor->reconcileTarget($args)) {
 			return;
 		}
 
-		$actor->getTarget()->fire(Event::EVENT_ATTACKED, $actor, $command_subscriber);
-		if(!$command_subscriber->isSuppressed()) {
+		$event = $actor->getTarget()->fire('attacked', $actor);
+		if($event && $event->getStatus() === 'on') {
 			Server::out($actor, "You scream and attack!");
 		}
 	}
