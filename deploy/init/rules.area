@@ -1,0 +1,107 @@
+alias
+key furniture container equipment food drink item
+
+alias
+glow poison affect
+
+def
+affect
+<?php
+return function($area, $class) {
+	$affect = 'Phud\\Affects\\'.$class;
+	$area->getLastAdded()->addAffect(new $affect($area->loadRequired([], ['properties'])));
+};
+?>~
+
+def
+door
+<?php
+return function($area) {
+	$area->setLastAdded(new Phud\Door($area->loadRequired(['short', 'long'], ['properties'])));
+};
+?>~
+
+def
+quest
+<?php
+return function($area) {
+	while($id = $area->readLine()) {
+		$quest = Phud\Quests\Quest::getByID($id);
+		if($quest) {
+			$area->getLastAdded()->addQuest($quest);
+		} else {
+			Debug::log('Quest not found: '.$id);
+		}
+	}
+};
+?>~
+
+def
+room
+<?php
+return function($area) {
+	$room = new Phud\Room($area->loadRequired(
+		['title', 'description' => 'block', 'area'], 
+		['properties' => function(&$p, $property, $value) {
+			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
+			foreach($long as $l) {
+				if(strpos($l, $property) === 0) {
+					$p[$l] = $value;
+					return true;
+				}
+			}
+	}]));
+	$area->setLastRoom($room);
+};
+?>~
+
+def
+item
+<?php
+return function($area, $class) {
+	$class = 'Phud\\Items\\'.$class;
+	$item = new $class($area->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']));
+	$area->setLastAdded($item);
+	$area->getLastFirstClass()->addItem($item);
+};
+?>~
+
+def
+mob
+<?php
+return function($area) {
+	$mob = new Phud\Actors\Mob($area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']));
+	$mob->setRoom($area->getLastRoom());
+	if(!$mob->getArea()) {
+		$mob->setArea($area->getLastRoom()->getArea());
+	}
+	$area->setLastFirstClass($mob);
+};
+?>~
+
+def
+shopkeeper
+<?php
+return function($area) {
+	$keeper = new Phud\Actors\Shopkeeper($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
+	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
+	$keeper->setRoom($area->getLastRoom());
+	if(!$keeper->getArea()) {
+		$keeper->setArea($area->getLastRoom()->getArea());
+	}
+	$area->setLastFirstClass($keeper);
+};
+?>~
+
+def
+questmaster
+<?php
+return function($area) {
+	$master = new Phud\Actors\Questmaster($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
+	$master->setRoom($area->getLastRoom());
+	if(!$master->getArea()) {
+		$master->setArea($area->getLastRoom()->getArea());
+	}
+	$area->setLastFirstClass($master);
+};
+?>~

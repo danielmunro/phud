@@ -16,135 +16,86 @@ class Area
 	protected $last_property = [];
 	protected $break = false;
 	protected $buffer = [];
+	protected static $aliases = [];
+	protected static $defs = [];
 
 	public function __construct($area)
 	{
 		$this->fp = fopen($area, 'r');
 		while($line = $this->readLine()) {
-			switch($line) {
-				case 'room':
-					$this->loadRoom();
-					break 1;
-				case 'item':
-				case 'drink':
-				case 'food':
-				case 'equipment':
-				case 'container':
-				case 'furniture':
-				case 'key':
-					$this->loadItem(ucfirst($line));
-					break 1;
-				case 'mob':
-					$this->loadMob();
-					break 1;
-				case 'shopkeeper':
-					$this->loadShopkeeper();
-					break 1;
-				case 'questmaster':
-					$this->loadQuestmaster();
-					break 1;
-				case 'glow':
-				case 'poison':
-					$this->loadAffect(ucfirst($line));
-					break 1;
-				case 'door':
-					$this->loadDoor();
-					break 1;
-				case 'quest':
-					$this->loadQuest();
-					break 1;
-			}
-		}
-	}
-
-	protected function loadQuest()
-	{
-		while($id = $this->readLine()) {
-			$quest = Quest::getByID($id);
-			if($quest) {
-				$this->last_added->addQuest($quest);
-			} else {
-				Debug::log('Quest not found: '.$id);
-			}
-		}
-	}
-
-	protected function loadDoor()
-	{
-		$p = $this->loadRequired(['short', 'long'], ['properties']);
-		$this->last_added = new Door($p);
-	}
-
-	protected function loadAffect($affect)
-	{
-		$affect = 'Phud\\Affects\\'.$affect;
-		$p = $this->loadRequired([], ['properties']);
-		$this->last_added->addAffect(new $affect($p));
-	}
-
-	protected function loadRoom()
-	{
-		$p = $this->loadRequired(
-			['title', 'description' => 'block', 'area'], 
-			['properties' => function(&$p, $property, $value) {
-				$long = ['north', 'south', 'east', 'west', 'up', 'down'];
-				foreach($long as $l) {
-					if(strpos($l, $property) === 0) {
-						$p[$l] = $value;
-						return true;
-					}
+			$method = $this->getMethod($line);
+			if($method && method_exists($this, $method)) {
+				$class = ucfirst($line);
+				$this->$method($class);
+			} else if(isset(self::$defs[$method])) {
+				if(!is_callable(self::$defs[$method])) {
+					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
+					die;
 				}
-		}]);
-		$this->last_added = $this->last_first_class = $this->last_room = new Room($p);
-	}
+				call_user_func_array(self::$defs[$method], [$this, ucfirst($line)]);
+			} else {
+				Debug::log('Area method: "'.$method.'" does not exist.');
+			}
 
-	protected function loadItem($class)
-	{
-		$p = $this->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']);
-		$class = 'Phud\\Items\\'.$class;
-		$this->last_added = new $class($p);
-		$this->last_first_class->addItem($this->last_added);
-		if($this->last_first_class instanceof Mob) {
-			$this->last_first_class->setRepopItemProperties();
 		}
 	}
 
-	protected function loadMob()
+	public function getLastAdded()
 	{
-		$this->loadActor('Mob', [], ['properties', 'attributes', 'abilities']);
-		if(!$this->last_added->getArea()) {
-			// Game rule: every mob needs a default area. If one is not assigned, set
-			// it to the area where they first pop.
-			$this->last_added->setArea($this->last_room->getArea());
+		return $this->last_added;
+	}
+
+	public function setLastAdded($last_added)
+	{
+		$this->last_added = $last_added;
+	}
+
+	public function getLastFirstClass()
+	{
+		return $this->last_first_class;
+	}
+
+	public function setLastFirstClass($last_first_class)
+	{
+		$this->last_added = $this->last_first_class = $last_first_class;
+	}
+	
+	public function getLastRoom()
+	{
+		return $this->last_room;
+	}
+
+	public function setLastRoom($last_room)
+	{
+		$this->last_room = $this->last_first_class = $this->last_added = $last_room;
+	}
+
+	protected function def()
+	{
+		$def = $this->readLine();
+		$p = str_replace(['<?php', '?>'], '', $this->readBlock());
+		$func = eval($p);
+		self::$defs[$def] = $func;
+	}
+
+	protected function alias()
+	{
+		$aliases = explode(' ', $this->readLine());
+		$object = array_pop($aliases);
+		foreach($aliases as $alias) {
+			self::$aliases[$alias] = $object;
 		}
 	}
 
-	protected function loadShopkeeper()
+	protected function getMethod($line)
 	{
-		$this->loadActor('Shopkeeper', [], ['properties']);
-		$this->last_added->addAbility(Ability::lookup('haggle')); // All shopkeepers get haggle. It's part of the trade
-	}
-
-	protected function loadQuestmaster()
-	{
-		$this->loadActor('Questmaster', [], ['properties']);
-	}
-
-	protected function loadActor($class, $required_properties = [], $additional = [])
-	{
-		if(empty($required_properties)) {
-			$required_properties = ['alias', 'long' => 'block'];
+		if(isset(self::$aliases[$line])) {
+			return self::$aliases[$line];
 		}
-		if(empty($additional)) {
-			$additional = ['properties', 'attributes'];
-		}
-		$p = $this->loadRequired($required_properties, $additional);
-		$class = 'Phud\\Actors\\'.$class;
-		$this->last_added = $this->last_first_class = new $class($p);
-		$this->last_added->setRoom($this->last_room);
+		return $line;
 	}
 
-	protected function loadRequired($properties, $additional = [])
+	public function loadRequired($properties, $additional = [])
 	{
 		$types = ['line' => 'readLine', 'block' => 'readBlock'];
 		$p = [];
@@ -246,7 +197,7 @@ class Area
 		$this->last_property = [$property, $value];
 	}
 
-	private function readLine($properties = [])
+	public function readLine($properties = [])
 	{
 		if($this->_break()) {
 			return false;

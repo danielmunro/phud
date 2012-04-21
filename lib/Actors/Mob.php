@@ -57,8 +57,9 @@ class Mob extends Actor
 		}
 	}
 
-	public function setRepopItemProperties()
+	public function addItem(Item $item)
 	{
+		parent::addItem($item);
 		$this->repop_item_properties = [];
 		foreach($this->items as $item) {
 			$this->repop_item_properties[] = $item->getInitializingProperties();
