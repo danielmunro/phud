@@ -5,7 +5,7 @@ alias
 glow poison affect
 
 def
-affect
+affect Phud\Affects
 <?php
 return function($area, $affect) {
 	$area->getLastAdded()->addAffect(new $affect($area->loadRequired([], ['properties'])));
@@ -13,7 +13,7 @@ return function($area, $affect) {
 ?>~
 
 def
-door
+door Phud
 <?php
 return function($area, $door) {
 	$area->setLastAdded(new $door($area->loadRequired(['short', 'long'], ['properties'])));
@@ -21,7 +21,7 @@ return function($area, $door) {
 ?>~
 
 def
-quest
+quest Phud\Quests
 <?php
 return function($area, $quest) {
 	while($id = $area->readLine()) {
@@ -36,7 +36,7 @@ return function($area, $quest) {
 ?>~
 
 def
-room
+room Phud
 <?php
 return function($area, $room) {
 	$room = new $room($area->loadRequired(
@@ -55,10 +55,9 @@ return function($area, $room) {
 ?>~
 
 def
-item
+item Phud\Items
 <?php
 return function($area, $class) {
-	$class = 'Phud\\Items\\'.$class;
 	$item = new $class($area->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']));
 	$area->setLastAdded($item);
 	$area->getLastFirstClass()->addItem($item);
@@ -66,10 +65,10 @@ return function($area, $class) {
 ?>~
 
 def
-mob
+mob Phud\Actors
 <?php
-return function($area) {
-	$mob = new Phud\Actors\Mob($area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']));
+return function($area, $mob) {
+	$mob = new $mob($area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']));
 	$mob->setRoom($area->getLastRoom());
 	if(!$mob->getArea()) {
 		$mob->setArea($area->getLastRoom()->getArea());
@@ -79,10 +78,10 @@ return function($area) {
 ?>~
 
 def
-shopkeeper
+shopkeeper Phud\Actors
 <?php
-return function($area) {
-	$keeper = new Phud\Actors\Shopkeeper($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
+return function($area, $shopkeeper) {
+	$keeper = new $shopkeeper($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
 	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
 	$keeper->setRoom($area->getLastRoom());
 	if(!$keeper->getArea()) {
@@ -93,10 +92,10 @@ return function($area) {
 ?>~
 
 def
-questmaster
+questmaster Phud\Actors
 <?php
-return function($area) {
-	$master = new Phud\Actors\Questmaster($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
+return function($area, $questmaster) {
+	$master = new $questmaster($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
 	$master->setRoom($area->getLastRoom());
 	if(!$master->getArea()) {
 		$master->setArea($area->getLastRoom()->getArea());

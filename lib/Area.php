@@ -1,5 +1,6 @@
 <?php
 namespace Phud;
+use Phud\Abilities\Ability;
 
 class Area
 {
@@ -18,15 +19,15 @@ class Area
 		$this->fp = fopen($area, 'r');
 		while($line = $this->readLine()) {
 			$method = $this->getMethod($line);
+			$class = ucfirst($line);
 			if($method && method_exists($this, $method)) {
-				$class = ucfirst($line);
 				$this->$method($class);
 			} else if(isset(self::$defs[$method])) {
 				if(!is_callable(self::$defs[$method][1])) {
 					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
 					die;
 				}
-				call_user_func_array(self::$defs[$method], [$this, self::$defs[$method][0]]);
+				call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
 			} else {
 				Debug::log('Area method: "'.$method.'" does not exist.');
 			}
