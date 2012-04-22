@@ -1,11 +1,5 @@
 <?php
 namespace Phud;
-use Phud\Affect,
-	Phud\Room,
-	Phud\Door,
-	Phud\Quests\Quest,
-	Phud\Abilities\Ability,
-	Phud\Actors\Mob;
 
 class Area
 {
@@ -28,11 +22,11 @@ class Area
 				$class = ucfirst($line);
 				$this->$method($class);
 			} else if(isset(self::$defs[$method])) {
-				if(!is_callable(self::$defs[$method])) {
+				if(!is_callable(self::$defs[$method][1])) {
 					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
 					die;
 				}
-				call_user_func_array(self::$defs[$method], [$this, ucfirst($line)]);
+				call_user_func_array(self::$defs[$method], [$this, self::$defs[$method][0]]);
 			} else {
 				Debug::log('Area method: "'.$method.'" does not exist.');
 			}
@@ -72,10 +66,10 @@ class Area
 
 	protected function def()
 	{
-		$def = $this->readLine();
+		list($def, $full_class) = explode(' ', $this->readLine());
 		$p = str_replace(['<?php', '?>'], '', $this->readBlock());
 		$func = eval($p);
-		self::$defs[$def] = $func;
+		self::$defs[$def] = [$full_class, $func];
 	}
 
 	protected function alias()

@@ -7,8 +7,7 @@ glow poison affect
 def
 affect
 <?php
-return function($area, $class) {
-	$affect = 'Phud\\Affects\\'.$class;
+return function($area, $affect) {
 	$area->getLastAdded()->addAffect(new $affect($area->loadRequired([], ['properties'])));
 };
 ?>~
@@ -16,21 +15,21 @@ return function($area, $class) {
 def
 door
 <?php
-return function($area) {
-	$area->setLastAdded(new Phud\Door($area->loadRequired(['short', 'long'], ['properties'])));
+return function($area, $door) {
+	$area->setLastAdded(new $door($area->loadRequired(['short', 'long'], ['properties'])));
 };
 ?>~
 
 def
 quest
 <?php
-return function($area) {
+return function($area, $quest) {
 	while($id = $area->readLine()) {
-		$quest = Phud\Quests\Quest::getByID($id);
+		$quest = $quest::getByID($id);
 		if($quest) {
 			$area->getLastAdded()->addQuest($quest);
 		} else {
-			Debug::log('Quest not found: '.$id);
+			Phud\Debug::log('Quest not found: '.$id);
 		}
 	}
 };
@@ -39,8 +38,8 @@ return function($area) {
 def
 room
 <?php
-return function($area) {
-	$room = new Phud\Room($area->loadRequired(
+return function($area, $room) {
+	$room = new $room($area->loadRequired(
 		['title', 'description' => 'block', 'area'], 
 		['properties' => function(&$p, $property, $value) {
 			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
