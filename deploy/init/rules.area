@@ -4,6 +4,9 @@ key furniture container equipment food drink item
 alias
 glow poison affect
 
+alias
+dungeon room
+
 def
 affect Phud\Affects
 <?php

@@ -100,7 +100,7 @@ room
 A small pantry
 The pantry is loaded with food that has long gone bad. A stairway leads to the attic.~
 adelwine
-id 39, e 34, u 40~
+id 39, e 34, u 40, d 44~
 
 food
 a molded mushroom
@@ -157,3 +157,9 @@ A Small Room in the Back of the Attic
 A small room in the back of Adelwine manor attic is here.~
 adelwine
 id 43, e 42, door e 1~
+
+dungeon
+Adelwine Cellar
+An old wooden staircase leads down a narrow passage. The slate gray rock walls are cool to the touch.~
+adelwine_cellar
+id 44, u 39, rooms 20~
