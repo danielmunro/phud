@@ -183,7 +183,11 @@ class Area
 		} else if($value === 'false') {
 			$value = false;
 		} else if(is_numeric($value)) {
-			$value = intval($value);
+			if(strpos($value, '.') === false) {
+				$value = intval($value);
+			} else {
+				$value = floatval($value);
+			}
 		}
 		if($callback && $callback($p, $property, $value)) {
 		} else {
