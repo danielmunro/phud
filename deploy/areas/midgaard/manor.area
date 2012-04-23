@@ -158,8 +158,20 @@ A small room in the back of Adelwine manor attic is here.~
 adelwine
 id 43, e 42, door e 1~
 
-dungeon
+room
 Adelwine Cellar
 An old wooden staircase leads down a narrow passage. The slate gray rock walls are cool to the touch.~
 adelwine_cellar
-id 44, u 39, rooms 20~
+id 44, u 39, d 45~
+
+room
+Treasure Room of the Midgaard Catacombs
+A room has been cut out of the rock walls and in the middle is a chest.~
+midgaard_catacombs
+id 46~
+
+dungeon
+Midgaard Catacombs
+The subterranean catacombs wind under the city of Midgaard, where many adventurers have met their fate.~
+midgaard_catacombs
+id 45, u 44, rooms 20, exit 46~
