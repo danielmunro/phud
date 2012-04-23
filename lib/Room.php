@@ -38,14 +38,15 @@ class Room
 				$room->setDoor(Room::getFullDirectionAlias($direction), Door::getByID($door_id));
 			}
 		]);
-		if(empty($this->id) || isset(self::$instances[$this->id])) {
-			$room = self::$instances[$this->id];
-			if($room) {
-				echo "Room already exists for ID (".$this->id.") -> ".$room->getTitle();
-			} else {
-				echo "Room ID is empty for: \n\n";
-				var_dump($properties);
+		if(empty($this->id)) {
+			$i = rand();
+			while(isset(self::$identities[$i])) {
+				$i = rand();
 			}
+			$this->id = $i;
+		}
+		if(isset(self::$identities[$this->id])) {
+			echo "Room already exists: ".$this->id."\n";
 			die;
 		}
 		self::$identities[$this->id] = $this;
@@ -64,6 +65,11 @@ class Room
 	public function setDoor($direction, Door $door)
 	{
 		$this->doors[$direction] = $door;
+	}
+
+	public function setDirection($direction, $value)
+	{
+		$this->$direction = $value;
 	}
 
 	public function getDoors()
