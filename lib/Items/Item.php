@@ -18,7 +18,6 @@ class Item
 	protected $level = 0;
 	protected $material = 'generic';
 	protected $initializing_properties = [];
-	protected $repop = 100;
 	
 	const MATERIAL_ADAMANTITE = 'adamantite';
 	const MATERIAL_ALLOY = 'alloy';
@@ -102,11 +101,6 @@ class Item
 		return $this->initializing_properties;
 	}
 
-	public function getRepop()
-	{
-		return $this->repop;
-	}
-	
 	public function getShort()
 	{
 		return $this->short;
