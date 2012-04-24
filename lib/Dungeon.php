@@ -3,6 +3,8 @@ namespace Phud;
 
 class Dungeon extends Room
 {
+	protected static $rooms = [];
+
 	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
 	{
 		if(isset($properties['rooms'])) {
@@ -29,6 +31,7 @@ class Dungeon extends Room
 			$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
 			$exit = null;
 		}
+		static::$rooms[$this->area][] = $this;
 	}
 
 	public function buildOut(&$rooms_left, $depth, &$exit)
@@ -51,6 +54,13 @@ class Dungeon extends Room
 				$r->buildOut($rooms_left, $depth, $exit);
 			}
 		}
+	}
+
+	public static function getRandomByArea($area)
+	{
+		$s = sizeof(static::$rooms[$area]);
+		$i = rand(0, $s);
+		return static::$rooms[$area][$i];
 	}
 }
 ?>

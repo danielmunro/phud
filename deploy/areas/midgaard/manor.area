@@ -175,3 +175,10 @@ Midgaard Catacombs
 The subterranean catacombs wind under the city of Midgaard, where many adventurers have met their fate.~
 midgaard_catacombs
 id 45, u 44, rooms 20, exit 46~
+
+mob
+an ugly kobold
+An ugly kobold saunters around. He is hairy and smells like wet mushrooms.~
+movement 2, race kobold, count 5~
+hp 35, level 15~
+dodge, second attack~

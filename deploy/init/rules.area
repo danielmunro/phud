@@ -71,12 +71,25 @@ def
 mob Phud\Actors
 <?php
 return function($area, $mob) {
-	$mob = new $mob($area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']));
-	$mob->setRoom($area->getLastRoom());
-	if(!$mob->getArea()) {
-		$mob->setArea($area->getLastRoom()->getArea());
+	$p = $area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
+	if(isset($p['count'])) {
+		$count = $p['count'];
+		unset($p['count']);
+	} else {
+		$count = 1;
 	}
-	$area->setLastFirstClass($mob);
+	for($i = 0; $i < $count; $i++) {
+		$mob = new $mob($p);
+		$room = $area->getLastRoom();
+		if($room instanceof Phud\Dungeon) {
+			$room = Phud\Dungeon::getRandomByArea($room->getArea());
+		}
+		$mob->setRoom($room);
+		if(!$mob->getArea()) {
+			$mob->setArea($area->getLastRoom()->getArea());
+		}
+		$area->setLastFirstClass($mob);
+	}
 };
 ?>~
 
