@@ -72,6 +72,9 @@ mob Phud\Actors
 <?php
 return function($area, $mob) {
 	$p = $area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
+
+	// count is for adding more than one copy of the actor to a room. Useful
+	// for populating dungeons.
 	if(isset($p['count'])) {
 		$count = $p['count'];
 		unset($p['count']);
