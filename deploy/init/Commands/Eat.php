@@ -18,7 +18,7 @@ class Eat extends User
 		
 		$item = $actor->getItemByInput(implode(' ', array_slice($args, 1)));
 		
-		if(!($item instanceof mItem))
+		if(!($item instanceof Item))
 			return Server::out($actor, "Nothing like that is here.");
 		
 		if(!($item instanceof Food))
