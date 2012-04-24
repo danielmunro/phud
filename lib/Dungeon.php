@@ -15,10 +15,19 @@ class Dungeon extends Room
 		}
 		parent::__construct($properties);
 		if($rooms_left > 0) {
-			$this->buildOut($rooms_left, $depth, $exit);
 			while($depth === 0 && $rooms_left > 0) {
 				$this->buildOut($rooms_left, $depth, $exit);
 			}
+		} else if(!is_null($exit)) {
+			$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
+			$rand_dir = rand(0, 5);
+			while($this->$dirs[$rand_dir] > 0) {
+				$rand_dir = rand(0, 5);
+			}
+			$exit_room = Room::getByID($exit);
+			$this->$dirs[$rand_dir] = $exit;
+			$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
+			$exit = null;
 		}
 	}
 
@@ -30,25 +39,16 @@ class Dungeon extends Room
 			if($rooms_left <= 0) {
 				return;
 			}
+			$r = null;
 			if($this->$dir) {
 				$r = Room::getByID($this->$dir);
-				if($r instanceof static) {
-					$r->buildOut($rooms_left, $depth, $exit);
-				}
 			} else if(chance() < 50) {
 				$rooms_left--;
-				$room = new static([Room::getReverseDirection($dir) => $this->id, 'title' => $this->title, 'description' => $this->description, 'area' => $this->area], $rooms_left, $depth+1, $exit);
-				$this->$dir = $room->getID();
-				if($rooms_left === 0 && !is_null($exit)) {
-					$rand_dir = rand(0, 5);
-					while($room->$dirs[$rand_dir] > 0) {
-						$rand_dir = rand(0, 5);
-					}
-					$exit_room = Room::getByID($exit);
-					$room->setDirection($dirs[$rand_dir], $exit);
-					$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $room->getID());
-					$exit = null;
-				}
+				$r = new static([Room::getReverseDirection($dir) => $this->id, 'title' => $this->title, 'description' => $this->description, 'area' => $this->area], $rooms_left, $depth+1, $exit);
+				$this->$dir = $r->getID();
+			}
+			if($r instanceof static) {
+				$r->buildOut($rooms_left, $depth, $exit);
 			}
 		}
 	}
