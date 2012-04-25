@@ -1,7 +1,9 @@
+area
+alias goblin forest, terrain forest, location outside~
+
 room
 Entrance to the goblin forest
 Trees begin to envelop you as you travel further into the woods.~
-goblin forest
 id 200, e 24, w 204, s 201~
 
 item
@@ -14,29 +16,24 @@ material wood, can_own false~
 room
 The goblin forest
 A small path leads you through a dark forest.~
-goblin forest
 id 201, n 200, e 202~
 
 room
 The goblin forest
 A small path leads you through a dark forest. Cobwebs line the trees and bushes.~
-goblin forest
 id 202, w 201, e 203~
 
 room
 A large spider web in the goblin forest
 A small path leads you through a dark forest. Cobwebs line the trees and bushes.~
-goblin forest
 id 203, w 202, u 300~
 
 room
 The goblin forest
 An ill-kept path is lined with thick woods.~
-goblin forest
 id 204, e 200, w 205~
 
 room
 Deeper in the goblin forest
 Trees begin to block out light all around you.~
-goblin forest
 id 205, e 204~

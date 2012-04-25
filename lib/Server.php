@@ -214,8 +214,7 @@ class Server
 					$deferred[] = $cd;
 				} else if($ext === 'area') {
 					Debug::log("including deploy script: ".$cd);
-					$area = new Area();
-					$area->parse($path.'/'.$cd);
+					new Parser($path.'/'.$cd);
 				}
 			}
 			foreach($deferred as $def) {

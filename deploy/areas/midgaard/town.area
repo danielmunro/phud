@@ -1,7 +1,9 @@
+area
+alias midgaard, terrain city, location outside~
+
 room
 Temple of Midgaard
 A large temple surrounds you, with sculptures of gods adorning the walls.~
-midgaard
 id 1, s 2~
 
 mob
@@ -14,7 +16,6 @@ berserk, bash, kick, dirt kick, heal~
 room
 Temple Garden
 A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.~
-midgaard
 id 2, n 1, s 3, w midgaard_arena5,3~
 
 drink
@@ -41,7 +42,6 @@ adelwine~
 room
 Midgaard Market Square
 Cobblestone paths from all directions converge here, with shops lining a massive square.~
-midgaard
 id 3, n 2, w 4, e 7, s 18~
 
 mob
@@ -54,13 +54,11 @@ bash, kick~
 room
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 4, e 3, w 6, n 10, s 11~
 
 room
 Blue Moon Bakery
 You enter a small but brightly lit room. All along the walls are shelves lined with baked goods.~
-midgaard
 id 10, s 4~
 
 shopkeeper
@@ -83,7 +81,6 @@ nourishment 2, value 8~
 room
 Midgaard Armory
 A hallway is lined with implements of destruction on one side, and pieces of various types of armor on the other.~
-midgaard
 id 11, n 4~
 
 shopkeeper
@@ -124,25 +121,21 @@ ac_slash -5, ac_bash -5, ac_pierce -5~
 room
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 6, e 4, w 13, n 17, s 26~
 
 room
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 7, e 9, w 3, n 12, s 16~
 
 room
 Market Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 9, w 7, e 14, n 15, s 27~
 
 room
 Midgaard General Store
 You are standing in an empty room. On the far end is a small desk with a gnomish man behind it.~
-midgaard
 id 12, s 7~
 
 shopkeeper
@@ -173,7 +166,6 @@ level 3, material leather, value 15~
 room
 Midgaard Alchemy Shop
 A dizzying array of herbs and potions line the walls, with a slightly mad looking wizard cataloging each and every one.~
-midgaard
 id 15, s 9~
 
 shopkeeper
@@ -184,7 +176,6 @@ race human, sex male, level 10~
 room
 Midgaard Bank
 ~
-midgaard
 id 16, n 7~
 
 shopkeeper
@@ -195,7 +186,6 @@ race gnome, sex female, level 10~
 room
 Midgaard Wand Shop
 ~
-midgaard
 id 17, s 6~
 
 shopkeeper
@@ -206,67 +196,56 @@ race volare, sex female, level 10~
 room
 Entrance to the Mage's Guild
 A stone wall with a wooden door is here, above the wooden door are markings in a strange language.~
-midgaard
 id 26, n 6~
 
 room
 Entrance to the Warrior's Guild
 Two battle axes hang over a mural of a lion next to the entrance.~
-midgaard
 id 27, n 9~
 
 room
 West Gate of Midgaard
 A stone gate to the west marks the end of Midgaard. Cobblestone paths lead in all directions.~
-midgaard
 id 13, e 6, w 23~
 
 room
 East Gate of Midgaard
 A stone gate to the east marks the end of Midgaard. Cobblestone paths lead in all directions.~
-midgaard
 id 14, w 9~
 
 room
 Common Square
 ~
-midgaard
 id 18, n 3, w 19, e 21~
 
 room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 19, e 18, w 20, n 30, s 31~
 
 room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 20, e 19, n 32~
 
 room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 21, e 22, w 18, s 28, n 29~
 
 room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-midgaard
 id 22, w 21~
 
 room
 Entrance to the Thieves Guild
 ~
-midgaard
 id 28, n 21~
 
 room
 Midgaard Tavern
 ~
-midgaard
 id 29, s 21~
 
 shopkeeper
@@ -283,23 +262,19 @@ contents cocktail, uses 3~
 room
 Midgaard Map Shop
 Large maps adorn the walls of this old and mostly empty building.~
-midgaard
 id 30, s 19~
 
 room
 Midgaard Inn
 A wooden den greets you with a small counter on one end. A set of stairs lead up to the rest of the inn.~
-midgaard
 id 31, n 19~
 
 room
 Outside the West Gate of Midgaard
 You are in a vast, open field, which gives way to an ominously dark forest in the west. To the east is a large gate to Midgaard.~
-outside_midgaard
 id 23, e 13, w 24~
 
 room
 A path leading towards the woods
 A meandering path leads from fields to the east into a dark forest to the west.~
-outside_midgaard
 id 24, e 23, w 200~

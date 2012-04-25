@@ -3,17 +3,16 @@ namespace Phud;
 
 class Area
 {
+	use EasyInit;
+
 	protected $alias = '';
+	protected $terrain = '';
+	protected $location = '';
 	protected $status = 'new';
 
-	public function __construct()
+	public function __construct($initializing_properties)
 	{
-	}
-
-	public function parse($area_file)
-	{
-		new Parser($area_file);
-		$this->status = 'initialized';
+		$this->initializeProperties($initializing_properties);
 	}
 
 	public function getStatus()

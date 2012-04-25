@@ -11,12 +11,13 @@ class Parser
 	protected $last_property = [];
 	protected $break = false;
 	protected $buffer = [];
+	protected $area = null;
 	protected static $aliases = [];
 	protected static $defs = [];
 
-	public function __construct($area)
+	public function __construct($area_file)
 	{
-		$this->fp = fopen($area, 'r');
+		$this->fp = fopen($area_file, 'r');
 		while($line = $this->readLine()) {
 			$method = $this->getMethod($line);
 			$class = ucfirst($line);
@@ -33,6 +34,16 @@ class Parser
 			}
 
 		}
+	}
+
+	public function getArea()
+	{
+		return $this->area;
+	}
+
+	public function setArea(Area $area)
+	{
+		$this->area = $area;
 	}
 
 	public function getLastAdded()
@@ -53,6 +64,7 @@ class Parser
 	public function setLastFirstClass($last_first_class)
 	{
 		$this->last_added = $this->last_first_class = $last_first_class;
+		$last_first_class->setArea($this->area);
 	}
 	
 	public function getLastRoom()

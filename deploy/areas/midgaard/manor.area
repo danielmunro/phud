@@ -1,3 +1,6 @@
+area
+alias Adelwine Manor, terrain city, location indoors~
+
 #########################
 # Main floor
 #########################
@@ -5,7 +8,6 @@
 room
 Adelwine Manor Foyer
 Large windows in the arching foyer of the Adelwine manor let in some of the only light in the abandoned building. From here you can see a hall leading north, and it looks like there is movement but it's impossible to see anything.~
-adelwine
 id 32, s 20, n 33~
 
 mob
@@ -24,13 +26,11 @@ level 3, door_id 1~
 room
 Adelwine Manor Sitting Room
 Portraits of the previous owners of Adelwine Manor hang on the wall. Badly aged and decayed, their condition is a stark reminder of the age of the manor. The hallway has opened up to a sitting room, with a staircase leading up, presumably to the bedrooms.~
-adelwine
 id 33, s 32, n 36, w 34, e 35~
 
 room
 Sitting Room
 A record player is set against crumblinging walls in this part of the room. It looks like there is a small pantry to the west.~
-adelwine
 id 34, e 33, n 37, w 39~
 
 item
@@ -49,13 +49,11 @@ hp 10, level 8~
 room
 Sitting Room
 This part of the room is too dark to make out any details.~
-adelwine
 id 35, w 33, n 38~
 
 room 
 Sitting Room
 You are greeted by an empty room, with a window on the wall and a single chair in it. The chair is covered in a cloth.~
-adelwine
 id 36, s 33, w 37, e 38~
 
 furniture
@@ -74,13 +72,11 @@ hp 10, level 8~
 room
 Sitting Room
 A boarded up window allows just enough light through to see severe damage to the flooring and walls.~
-adelwine
 id 37, s 34, e 36~
 
 room
 Sitting Room
 This part of the room is empty except for a couch with a linen sheet over it.~
-adelwine
 id 38, w 36, s 35~
 
 furniture
@@ -99,7 +95,6 @@ hp 10, level 8~
 room
 A small pantry
 The pantry is loaded with food that has long gone bad. A stairway leads to the attic.~
-adelwine
 id 39, e 34, u 40, d 44~
 
 food
@@ -125,7 +120,6 @@ hp 10, level 8~
 room
 Attic of Adelwine Manor
 A narrow and dark hallway is here. It's hard to discern any details.~
-adelwine
 id 40, d 39, n 41~
 
 mob
@@ -138,7 +132,6 @@ hp 25, level 12~
 room
 Attic of Adelwine Manor
 You are surrounded by a narrow and dark hallway.~
-adelwine
 id 41, s 40, w 42~
 
 door
@@ -149,31 +142,26 @@ id 1, disposition locked~
 room
 Attic of Adelwine Manor
 A narrow dark hallway is here.~
-adelwine
 id 42, e 41, w 43, door w 1~
 
 room
 A Small Room in the Back of the Attic
 A small room in the back of Adelwine manor attic is here.~
-adelwine
 id 43, e 42, door e 1~
 
 room
 Adelwine Cellar
 An old wooden staircase leads down a narrow passage. The slate gray rock walls are cool to the touch.~
-adelwine_cellar
 id 44, u 39, d 45~
 
 room
 Treasure Room of the Midgaard Catacombs
 A room has been cut out of the rock walls and in the middle is a chest.~
-midgaard_catacombs
 id 46~
 
 dungeon
 Midgaard Catacombs
 The subterranean catacombs wind under the city of Midgaard, where many adventurers have met their fate.~
-midgaard_catacombs
 id 45, u 44, rooms 20, exit 46~
 
 mob
