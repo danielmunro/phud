@@ -10,27 +10,27 @@ dungeon room
 def
 affect Phud\Affects
 <?php
-return function($area, $affect) {
-	$area->getLastAdded()->addAffect(new $affect($area->loadRequired([], ['properties'])));
+return function($parser, $affect) {
+	$parser->getLastAdded()->addAffect(new $affect($parser->loadRequired([], ['properties'])));
 };
 ?>~
 
 def
 door Phud
 <?php
-return function($area, $door) {
-	$area->setLastAdded(new $door($area->loadRequired(['short', 'long'], ['properties'])));
+return function($parser, $door) {
+	$parser->setLastAdded(new $door($parser->loadRequired(['short', 'long'], ['properties'])));
 };
 ?>~
 
 def
 quest Phud\Quests
 <?php
-return function($area, $quest) {
-	while($id = $area->readLine()) {
+return function($parser, $quest) {
+	while($id = $parser->readLine()) {
 		$quest = $quest::getByID($id);
 		if($quest) {
-			$area->getLastAdded()->addQuest($quest);
+			$parser->getLastAdded()->addQuest($quest);
 		} else {
 			Phud\Debug::log('Quest not found: '.$id);
 		}
@@ -41,9 +41,9 @@ return function($area, $quest) {
 def
 room Phud
 <?php
-return function($area, $room) {
-	$room = new $room($area->loadRequired(
-		['title', 'description' => 'block', 'area'], 
+return function($parser, $room) {
+	$room = new $room($parser->loadRequired(
+		['title', 'description' => 'block', 'parser'], 
 		['properties' => function(&$p, $property, $value) {
 			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
 			foreach($long as $l) {
@@ -53,25 +53,25 @@ return function($area, $room) {
 				}
 			}
 	}]));
-	$area->setLastRoom($room);
+	$parser->setLastRoom($room);
 };
 ?>~
 
 def
 item Phud\Items
 <?php
-return function($area, $class) {
-	$item = new $class($area->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']));
-	$area->setLastAdded($item);
-	$area->getLastFirstClass()->addItem($item);
+return function($parser, $class) {
+	$item = new $class($parser->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']));
+	$parser->setLastAdded($item);
+	$parser->getLastFirstClass()->addItem($item);
 };
 ?>~
 
 def
 mob Phud\Actors
 <?php
-return function($area, $mob) {
-	$p = $area->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
+return function($parser, $mob) {
+	$p = $parser->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
 
 	// count is for adding more than one copy of the actor to a room. Useful
 	// for populating dungeons.
@@ -83,15 +83,15 @@ return function($area, $mob) {
 	}
 	for($i = 0; $i < $count; $i++) {
 		$mob = new $mob($p);
-		$room = $area->getLastRoom();
+		$room = $parser->getLastRoom();
 		if($room instanceof Phud\Dungeon) {
 			$room = Phud\Dungeon::getRandomByArea($room->getArea());
 		}
 		$mob->setRoom($room);
 		if(!$mob->getArea()) {
-			$mob->setArea($area->getLastRoom()->getArea());
+			$mob->setArea($parser->getLastRoom()->getArea());
 		}
-		$area->setLastFirstClass($mob);
+		$parser->setLastFirstClass($mob);
 	}
 };
 ?>~
@@ -99,26 +99,26 @@ return function($area, $mob) {
 def
 shopkeeper Phud\Actors
 <?php
-return function($area, $shopkeeper) {
-	$keeper = new $shopkeeper($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
+return function($parser, $shopkeeper) {
+	$keeper = new $shopkeeper($parser->loadRequired(['alias', 'long' => 'block'], ['properties']));
 	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
-	$keeper->setRoom($area->getLastRoom());
+	$keeper->setRoom($parser->getLastRoom());
 	if(!$keeper->getArea()) {
-		$keeper->setArea($area->getLastRoom()->getArea());
+		$keeper->setArea($parser->getLastRoom()->getArea());
 	}
-	$area->setLastFirstClass($keeper);
+	$parser->setLastFirstClass($keeper);
 };
 ?>~
 
 def
 questmaster Phud\Actors
 <?php
-return function($area, $questmaster) {
-	$master = new $questmaster($area->loadRequired(['alias', 'long' => 'block'], ['properties']));
-	$master->setRoom($area->getLastRoom());
+return function($parser, $questmaster) {
+	$master = new $questmaster($parser->loadRequired(['alias', 'long' => 'block'], ['properties']));
+	$master->setRoom($parser->getLastRoom());
 	if(!$master->getArea()) {
-		$master->setArea($area->getLastRoom()->getArea());
+		$master->setArea($parser->getLastRoom()->getArea());
 	}
-	$area->setLastFirstClass($master);
+	$parser->setLastFirstClass($master);
 };
 ?>~
