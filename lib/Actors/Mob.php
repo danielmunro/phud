@@ -59,10 +59,14 @@ class Mob extends Actor
 
 	public function addItem(Item $item)
 	{
-		parent::addItem($item);
-		$this->repop_item_properties = [];
-		foreach($this->items as $item) {
+		if($this->area->getStatus() === 'new') {
 			$this->repop_item_properties[] = $item->getInitializingProperties();
+			$repop = isset($item->getInitializingProperties()['repop']) ? $item->getInitializingProperties()['repop'] : 100;
+			if($repop > chance()) {
+				parent::addItem($item);
+			}
+		} else {
+			parent::addItem($item);
 		}
 	}
 

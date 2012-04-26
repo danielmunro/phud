@@ -18,6 +18,7 @@ class Parser
 	public function __construct($area_file)
 	{
 		$this->fp = fopen($area_file, 'r');
+		$end_hooks = [];
 		while($line = $this->readLine()) {
 			$method = $this->getMethod($line);
 			$class = ucfirst($line);
@@ -28,11 +29,23 @@ class Parser
 					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
 					die;
 				}
-				call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
+				$end_hook = call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
+				if($end_hook) {
+					if(is_array($end_hook)) {
+						$end_hooks = array_merge($end_hooks, $end_hook);
+					} else {
+						$end_hooks[] = $end_hook;
+					}
+				}
 			} else {
 				Debug::log('Area method: "'.$method.'" does not exist.');
 			}
-
+		}
+		if($this->area) {
+			$this->area->setStatus('initialized');
+			foreach($end_hooks as $end_hook) {
+				$end_hook();
+			}
 		}
 	}
 
@@ -75,6 +88,7 @@ class Parser
 	public function setLastRoom($last_room)
 	{
 		$this->last_room = $this->last_first_class = $this->last_added = $last_room;
+		$last_room->setArea($this->area);
 	}
 
 	protected function def()

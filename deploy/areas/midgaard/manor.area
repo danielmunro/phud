@@ -153,20 +153,3 @@ room
 Adelwine Cellar
 An old wooden staircase leads down a narrow passage. The slate gray rock walls are cool to the touch.~
 id 44, u 39, d 45~
-
-room
-Treasure Room of the Midgaard Catacombs
-A room has been cut out of the rock walls and in the middle is a chest.~
-id 46~
-
-dungeon
-Midgaard Catacombs
-The subterranean catacombs wind under the city of Midgaard, where many adventurers have met their fate.~
-id 45, u 44, rooms 20, exit 46~
-
-mob
-an ugly kobold
-An ugly kobold saunters around. He is hairy and smells like wet mushrooms.~
-movement 2, race kobold, count 5~
-hp 35, level 15~
-dodge, second attack~

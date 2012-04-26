@@ -62,6 +62,11 @@ return function($parser, $room) {
 			}
 	}]));
 	$parser->setLastRoom($room);
+	if($room instanceof Phud\Dungeon) {
+		return function() use ($room) {
+			$room->setup();
+		};
+	}
 };
 ?>~
 
@@ -89,15 +94,21 @@ return function($parser, $mob) {
 	} else {
 		$count = 1;
 	}
+	$end_hooks = [];
 	for($i = 0; $i < $count; $i++) {
 		$mob = new $mob($p);
 		$room = $parser->getLastRoom();
-		if($room instanceof Phud\Dungeon) {
-			$room = Phud\Dungeon::getRandomByArea($room->getArea());
-		}
-		$mob->setRoom($room);
 		$parser->setLastFirstClass($mob);
+		if($room instanceof Phud\Dungeon) {
+			$end_hooks[] = function() use ($room, $mob) {
+				$room = Phud\Dungeon::getRandomByArea($room->getArea());
+				$mob->setRoom($room);
+			};
+		} else {
+			$mob->setRoom($room);
+		}
 	}
+	return $end_hooks;
 };
 ?>~
 

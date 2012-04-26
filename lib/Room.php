@@ -16,7 +16,7 @@ class Room
 	protected $west = '';
 	protected $up = '';
 	protected $down = '';
-	protected $area = '';
+	protected $area = null;
 	protected $visibility = 1;
 	protected $movement_cost = 0;
 	protected $actors = [];
@@ -135,6 +135,11 @@ class Room
 	public function getArea()
 	{
 		return $this->area;
+	}
+
+	public function setArea(Area $area)
+	{
+		$this->area = $area;
 	}
 
 	public function actorAdd(Actor $actor)

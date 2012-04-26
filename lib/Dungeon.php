@@ -4,34 +4,38 @@ namespace Phud;
 class Dungeon extends Room
 {
 	protected static $rooms = [];
+	protected $rooms_left = 0;
+	protected $depth = 0;
+	protected $exit = 0;
 
 	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
 	{
 		if(isset($properties['rooms'])) {
-			$rooms_left = $properties['rooms'];
+			$this->rooms_left = $properties['rooms'];
 			unset($properties['rooms']);
 		}
 		if(isset($properties['exit'])) {
-			$exit = $properties['exit'];
+			$this->exit = $properties['exit'];
 			unset($properties['exit']);
 		}
 		parent::__construct($properties);
-		if($rooms_left > 0) {
-			while($depth === 0 && $rooms_left > 0) {
-				$this->buildOut($rooms_left, $depth, $exit);
-			}
-		} else if(!is_null($exit)) {
-			$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
-			$rand_dir = rand(0, 5);
-			while($this->$dirs[$rand_dir] > 0) {
-				$rand_dir = rand(0, 5);
-			}
-			$exit_room = Room::getByID($exit);
-			$this->$dirs[$rand_dir] = $exit;
-			$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
-			$exit = null;
+	}
+
+	public function setup()
+	{
+		static::$rooms[$this->area->getAlias()][] = $this;
+		while($this->rooms_left > 0) {
+			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
-		static::$rooms[$this->area][] = $this;
+		$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
+		$rand_dir = rand(0, 5);
+		while($this->$dirs[$rand_dir] > 0) {
+			$rand_dir = rand(0, 5);
+		}
+		$exit_room = Room::getByID($this->exit);
+		$this->$dirs[$rand_dir] = $this->exit;
+		$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
+		$this->exit = null;
 	}
 
 	public function buildOut(&$rooms_left, $depth, &$exit)
@@ -49,6 +53,7 @@ class Dungeon extends Room
 				$rooms_left--;
 				$r = new static([Room::getReverseDirection($dir) => $this->id, 'title' => $this->title, 'description' => $this->description, 'area' => $this->area], $rooms_left, $depth+1, $exit);
 				$this->$dir = $r->getID();
+				static::$rooms[$this->area->getAlias()][] = $this;
 			}
 			if($r instanceof static) {
 				$r->buildOut($rooms_left, $depth, $exit);
@@ -56,11 +61,10 @@ class Dungeon extends Room
 		}
 	}
 
-	public static function getRandomByArea($area)
+	public static function getRandomByArea(Area $area)
 	{
-		$s = sizeof(static::$rooms[$area]);
-		$i = rand(0, $s);
-		return static::$rooms[$area][$i];
+		$i = array_rand(static::$rooms[$area->getAlias()]);
+		return static::$rooms[$area->getAlias()][$i];
 	}
 }
 ?>
