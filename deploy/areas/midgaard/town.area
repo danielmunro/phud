@@ -7,9 +7,9 @@ A large temple surrounds you, with sculptures of gods adorning the walls.~
 id 1, s 2~
 
 mob
-Hassan
+Hassan stands here, waiting to dispense some justice
 Standing at over 12 feet tall, with an earth-like consistency, Hassan has an intimidating appearance even for a giant.~
-race giant, level 41~
+race giant, level 41, alias Hassan~
 hp 10000, movement 500, hit 4, dam 20, saves -10~
 berserk, bash, kick, dirt kick, heal~
 
@@ -32,9 +32,9 @@ can_own false~
 ~
 
 questmaster
-an adept of Mojo
+an adept of Mojo walks the garden
 An adept of Mojo is here, wearing a white linen robe and tending to the temple.~
-id 1, race volare~
+id 1, race volare, alias adept of Mojo~
 
 quest
 adelwine~
@@ -45,9 +45,9 @@ Cobblestone paths from all directions converge here, with shops lining a massive
 id 3, n 2, w 4, e 7, s 18~
 
 mob
-a Midgaard city guard
+a Midgaard city guard is here, patrolling the streets
 A tall guard stands here, patrolling the streets of Midgaard.~
-race human~
+race human, alias Midgaard city guard~
 hp 100, level 15~
 bash, kick~
 
@@ -62,9 +62,9 @@ You enter a small but brightly lit room. All along the walls are shelves lined w
 id 10, s 4~
 
 shopkeeper
-Anyan the baker
+Anyan the baker is here kneeding dough
 An old and wirey elf is here kneeding dough and running between ovens.~
-race elf, level 5~
+race elf, level 5, alias anyan the baker~
 
 food
 a baked apple pie
@@ -84,9 +84,9 @@ A hallway is lined with implements of destruction on one side, and pieces of var
 id 11, n 4~
 
 shopkeeper
-Halek the blacksmith
+Halek the blacksmith is here, admiring some recent craftwork
 A tall and lean blacksmith stands before you.~
-race human, level 5~
+race human, level 5, alias Halek the blacksmith~
 
 equipment
 ragged leather boots
@@ -139,9 +139,9 @@ You are standing in an empty room. On the far end is a small desk with a gnomish
 id 12, s 7~
 
 shopkeeper
-Mardwyn the grocer
+Mardwyn the grocer is stocking shelves
 A small gnomish man fidgets behind a desk in the corner of the general store.~
-race gnome, sex male, level 10~
+race gnome, sex male, level 10, alias Mardwyn~
 
 equipment
 a wooden torch
@@ -169,9 +169,9 @@ A dizzying array of herbs and potions line the walls, with a slightly mad lookin
 id 15, s 9~
 
 shopkeeper
-A mad looking wizard
+a mad looking wizard is reading up on scrolls
 Long, gray hair sticking out in all directions, unkempt beard, and mumbling to himself, this man seems a little crazy.~
-race human, sex male, level 10~
+race human, sex male, level 10, alias a mad wizard~
 
 room
 Midgaard Bank
@@ -179,9 +179,9 @@ Midgaard Bank
 id 16, n 7~
 
 shopkeeper
-a banker
+a banker is here, counting coins
 A banker is here.~
-race gnome, sex female, level 10~
+race gnome, sex female, level 10, alias a banker~
 
 room
 Midgaard Wand Shop
@@ -189,9 +189,9 @@ Midgaard Wand Shop
 id 17, s 6~
 
 shopkeeper
-an old witch
+an old witch is studying wands
 A wizened old witch sits at a desk before you with a large tome open. She appears to be researching a wand.~
-race volare, sex female, level 10~
+race volare, sex female, level 10, alias an old witch~
 
 room
 Entrance to the Mage's Guild
@@ -249,9 +249,9 @@ Midgaard Tavern
 id 29, s 21~
 
 shopkeeper
-a burly looking ogre
+a burly looking ogre is watching over the bar
 A burly looking ogre stands behind the counter, pouring beers and mopping up messes.~
-race ogre, level 5~
+race ogre, level 5, alias a burly ogre~
 
 drink
 a firebreather

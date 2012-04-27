@@ -130,7 +130,7 @@ class Parser
 				Debug::log('Error in area parser: '.$type.' is not a defined type');
 				continue;
 			}
-			$value = $this->$types[$type]();
+			$value = $this->$types[$type](['comma' => 'accept']);
 			if(substr($value, -1) === '~') {
 				$value = substr($value, 0, -1);
 				$p[$property] = $value;

@@ -37,6 +37,7 @@ abstract class Actor
 	const MAX_ATTRIBUTE = 25;
 	
 	protected $alias = '';
+	protected $short = '';
 	protected $long = '';
 	protected $level = 0;
 	protected $gold = 0;
@@ -551,6 +552,11 @@ abstract class Actor
 			$this->furniture->removeActor($this);
 		}
 		$this->furniture = $furniture;
+	}
+
+	public function getShort()
+	{
+		return $this->short;
 	}
 
 	public function getAlignment()

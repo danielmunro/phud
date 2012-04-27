@@ -54,7 +54,7 @@ class Look extends User
 					if($a instanceof lUser) {
 						$post = 'is '.$disposition.' here';
 					}
-					Server::out($user, ucfirst($a).$post.'.');
+					Server::out($user, ucfirst($a->getShort()).$post.'.');
 				}
 			}
 			return;

@@ -84,7 +84,7 @@ def
 mob Phud\Actors
 <?php
 return function($parser, $mob) {
-	$p = $parser->loadRequired(['alias', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
+	$p = $parser->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
 
 	// count is for adding more than one copy of the actor to a room. Useful
 	// for populating dungeons.
@@ -116,7 +116,7 @@ def
 shopkeeper Phud\Actors
 <?php
 return function($parser, $shopkeeper) {
-	$keeper = new $shopkeeper($parser->loadRequired(['alias', 'long' => 'block'], ['properties']));
+	$keeper = new $shopkeeper($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
 	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
 	$keeper->setRoom($parser->getLastRoom());
 	$parser->setLastFirstClass($keeper);
@@ -127,7 +127,7 @@ def
 questmaster Phud\Actors
 <?php
 return function($parser, $questmaster) {
-	$master = new $questmaster($parser->loadRequired(['alias', 'long' => 'block'], ['properties']));
+	$master = new $questmaster($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
 	$master->setRoom($parser->getLastRoom());
 	$parser->setLastFirstClass($master);
 };
