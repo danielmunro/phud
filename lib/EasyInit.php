@@ -4,8 +4,11 @@ use \Exception;
 
 trait EasyInit
 {
+	protected $initializing_properties = [];
+
 	protected function initializeProperties($properties, $exceptions = [])
 	{
+		$this->initializing_properties = $properties;
 		foreach($properties as $property => $value) {
 			if(isset($exceptions[$property])) {
 				$exceptions[$property]($this, $property, $value);
@@ -25,6 +28,11 @@ trait EasyInit
 		if(property_exists($this, 'nouns') && !$this->nouns) {
 			$this->assignNouns();
 		}
+	}
+
+	public function getInitializingProperties()
+	{
+		return $this->initializing_properties;
 	}
 }
 ?>
