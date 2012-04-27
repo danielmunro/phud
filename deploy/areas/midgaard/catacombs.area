@@ -4,19 +4,19 @@ alias Midgaard Catacombs, terrain city, location indoors, lighting dark~
 dungeon
 Midgaard Catacombs
 The subterranean catacombs wind under the city of Midgaard, where many adventurers have met their fate.~
-id 45, u 44, rooms 10, exit 46~
+id 45, u 44, rooms 10, u_prob 0, d_prob 75, exit 46~
+
+mob
+a kobold peon
+An ugly little kobold saunters around. He is hairy and smells like wet mold.~
+movement 2, race kobold, count 5~
+hp 35, level 15~
+dodge, second attack~
 
 dungeon
 Deep Within the Catacombs
 You follow a tunnel narrowly carved through rock and dirt as it winds further under Midgaard.~
-id 46, rooms 10, exit 47~
-
-mob
-an ugly kobold
-An ugly kobold saunters around. He is hairy and smells like wet mold.~
-movement 2, race kobold, count 5~
-hp 35, level 15~
-dodge, second attack~
+id 46, rooms 10, u_prob 0, d_prob 75, exit 47~
 
 mob
 a kobold driver

@@ -7,11 +7,17 @@ class Dungeon extends Room
 	protected $rooms_left = 0;
 	protected $depth = 0;
 	protected $exit = 0;
+	protected $n_prob = 50;
+	protected $s_prob = 50;
+	protected $e_prob = 50;
+	protected $w_prob = 50;
+	protected $u_prob = 50;
+	protected $d_prob = 50;
 
 	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
 	{
 		if(isset($properties['rooms'])) {
-			$this->rooms_left = $properties['rooms'];
+			$this->rooms_left = $properties['rooms']-1;
 			unset($properties['rooms']);
 		}
 		if(isset($properties['exit'])) {
@@ -23,37 +29,45 @@ class Dungeon extends Room
 
 	public function setup()
 	{
-		static::$rooms[$this->area->getAlias()][] = $this;
-		while($this->rooms_left > 0) {
+		static::$rooms[$this->title][] = $this;
+		while($this->rooms_left) {
 			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
 		$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
 		$rand_dir = rand(0, 5);
-		while($this->$dirs[$rand_dir] > 0) {
+		$connect_room = static::getRandom($this->title);
+		while($connect_room->getDirection($dirs[$rand_dir]) > 0) {
 			$rand_dir = rand(0, 5);
 		}
 		$exit_room = Room::getByID($this->exit);
-		$this->$dirs[$rand_dir] = $this->exit;
+		$connect_room->setDirection($dirs[$rand_dir], $this->exit);
 		$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
 		$this->exit = null;
 	}
 
 	public function buildOut(&$rooms_left, $depth, &$exit)
 	{
-		$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
-		shuffle($dirs);
-		foreach($dirs as $dir) {
+		$dirs = ['north' => $this->n_prob, 'south' => $this->s_prob, 'east' => $this->e_prob, 'west' => $this->w_prob, 'up' => $this->u_prob, 'down' => $this->d_prob];
+		uasort($dirs, function() { return round(rand(0, 1)); });
+		foreach($dirs as $dir => $probability) {
 			if($rooms_left <= 0) {
 				return;
 			}
 			$r = null;
 			if($this->$dir) {
 				$r = Room::getByID($this->$dir);
-			} else if(chance() < 50) {
+				if($r && !$r->memberOf($this)) {
+					$r = null;
+				}
+			} else if(chance() < _range(0, 85, $probability)) {
 				$rooms_left--;
-				$r = new static([Room::getReverseDirection($dir) => $this->id, 'title' => $this->title, 'description' => $this->description, 'area' => $this->area], $rooms_left, $depth+1, $exit);
+				$p = $this->initializing_properties;
+				unset($p['north'], $p['south'], $p['east'], $p['west'], $p['up'], $p['down'], $p['id']);
+				$p[Room::getReverseDirection($dir)] = $this->id;
+				$p['area'] = $this->area;
+				$r = new static($p, $rooms_left, $depth+1, $exit);
 				$this->$dir = $r->getID();
-				static::$rooms[$this->area->getAlias()][] = $this;
+				static::$rooms[$this->title][] = $r;
 			}
 			if($r instanceof static) {
 				$r->buildOut($rooms_left, $depth, $exit);
@@ -61,10 +75,15 @@ class Dungeon extends Room
 		}
 	}
 
-	public static function getRandomByArea(Area $area)
+	public function memberOf(self $dungeon)
 	{
-		$i = array_rand(static::$rooms[$area->getAlias()]);
-		return static::$rooms[$area->getAlias()][$i];
+		return $this->title === $dungeon->title;
+	}
+
+	public static function getRandom($title)
+	{
+		$i = array_rand(static::$rooms[$title]);
+		return static::$rooms[$title][$i];
 	}
 }
 ?>

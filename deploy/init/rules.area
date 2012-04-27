@@ -101,7 +101,7 @@ return function($parser, $mob) {
 		$parser->setLastFirstClass($mob);
 		if($room instanceof Phud\Dungeon) {
 			$end_hooks[] = function() use ($room, $mob) {
-				$room = Phud\Dungeon::getRandomByArea($room->getArea());
+				$room = Phud\Dungeon::getRandom($room->getTitle());
 				$mob->setRoom($room);
 			};
 		} else {
