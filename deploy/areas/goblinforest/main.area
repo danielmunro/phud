@@ -4,36 +4,53 @@ alias goblin forest, terrain forest, location outside~
 room
 Entrance to the goblin forest
 Trees begin to envelop you as you travel further into the woods.~
-id 200, e 24, w 204, s 201~
+id 200, e 24, w 202, s 201~
 
 item
 a wooden sign
 A wooden sign is on the side of the path. It reads,
-"Beware travellers, beyond this point is controlled by renegade goblins. Continue at your own risk."~
+"Beware travellers, beyond this point is controlled by renegade goblins. Continue at your own risk.
+
+To the south is lost to spiders,
+To the west, through the goblin forest, is Stone Hill"~
 material wood, can_own false~
 ~
 
-room
-The goblin forest
-A small path leads you through a dark forest.~
-id 201, n 200, e 202~
+dungeon
+A beaten trail
+A small path leads you through the goblin forest.~
+id 201, n 200, rooms 6, n_prob 0, u_prob 0, d_prob 5, s_prob 75, exit 203~
+
+mob
+a small green goblin
+A little green goblin is here, probably looking to cause trouble.~
+movement 1, race critter, count 2~
+hp 10, level 5~
+~
+
+mob
+a small yellow goblin
+A little yellow goblin is here, probably looking to cause trouble.~
+movement 1, race critter, count 2~
+hp 12, level 5~
+~
+
+dungeon
+A trail in the goblin forest
+You are following a dirt road through the goblin forest. Trees line the narrow and often trecherous path.~
+id 202, e 200, exit 204, rooms 8, e_prob 25, u_prob 0, d_prob 5, w_prob 85~
 
 room
-The goblin forest
-A small path leads you through a dark forest. Cobwebs line the trees and bushes.~
-id 202, w 201, e 203~
+A large tree filled with cobwebs
+The trail winds to a halt right below an enormous tree that has been covered in thick spider webs.~
+id 203, u 300~
 
 room
-A large spider web in the goblin forest
-A small path leads you through a dark forest. Cobwebs line the trees and bushes.~
-id 203, w 202, u 300~
+A trail in the goblin forest
+You are following a dirt road through the goblin forest. Trees line the narrow and often trecherous path.~
+id 204~
 
-room
-The goblin forest
-An ill-kept path is lined with thick woods.~
-id 204, e 200, w 205~
-
-room
-Deeper in the goblin forest
-Trees begin to block out light all around you.~
-id 205, e 204~
+item
+a sign posted to a tree
+A handmade wooden sign is posted to a tree on the side of the trail. It reads,
+"Follow the trail west to Stone Hill"~
