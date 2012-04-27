@@ -22,6 +22,7 @@ class Room
 	protected $actors = [];
 	protected $doors = [];
 	protected static $start_room = 0;
+	protected static $directions = ['north', 'south', 'east', 'west', 'up', 'down'];
 
 	const PURGATORY_ROOM_ID = 900;
 
@@ -69,7 +70,20 @@ class Room
 
 	public function setDirection($direction, $value)
 	{
-		$this->$direction = $value;
+		if(in_array($direction, self::$directions)) {
+			$this->$direction = $value;
+		} else {
+			Debug::log($direction.' is not a valid direction.');
+		}
+	}
+
+	public function getDirection($direction)
+	{
+		if(in_array($direction, self::$directions)) {
+			return $this->$direction;
+		} else {
+			Debug::log($direction.' is not a valid direction.');
+		}
 	}
 
 	public function getDoors()
