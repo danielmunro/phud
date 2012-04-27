@@ -17,7 +17,6 @@ class Item
 	protected $attributes = null;
 	protected $level = 0;
 	protected $material = 'generic';
-	protected $initializing_properties = [];
 	
 	const MATERIAL_ADAMANTITE = 'adamantite';
 	const MATERIAL_ALLOY = 'alloy';
@@ -50,7 +49,6 @@ class Item
 	
 	public function __construct($properties = [])
 	{
-		$this->initializing_properties = $properties;
 		$this->attributes = new Attributes();
 		$this->initializeProperties($properties, [
 			'attributes' => function($actor, $property, $value) {
@@ -94,11 +92,6 @@ class Item
 	public function setMaterial($material)
 	{
 		$this->material = $material;
-	}
-
-	public function getInitializingProperties()
-	{
-		return $this->initializing_properties;
 	}
 
 	public function getShort()
