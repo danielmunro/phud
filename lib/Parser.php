@@ -43,9 +43,9 @@ class Parser
 		}
 		if($this->area) {
 			$this->area->setStatus('initialized');
-			foreach($end_hooks as $end_hook) {
-				$end_hook();
-			}
+		}
+		foreach($end_hooks as $end_hook) {
+			$end_hook();
 		}
 	}
 
