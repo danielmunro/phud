@@ -36,12 +36,12 @@ class Dungeon extends Room
 		$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
 		$rand_dir = rand(0, 5);
 		$connect_room = static::getRandom($this->title);
-		while($connect_room->getDirection($dirs[$rand_dir]) > 0) {
+		$exit_room = Room::getByID($this->exit);
+		while($connect_room->getDirection($dirs[$rand_dir]) || $exit_room->getDirection($dirs[$rand_dir])) {
 			$rand_dir = rand(0, 5);
 		}
-		$exit_room = Room::getByID($this->exit);
 		$connect_room->setDirection($dirs[$rand_dir], $this->exit);
-		$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $this->id);
+		$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $connect_room->getID());
 		$this->exit = null;
 	}
 
@@ -56,7 +56,7 @@ class Dungeon extends Room
 			$r = null;
 			if($this->$dir) {
 				$r = Room::getByID($this->$dir);
-				if($r && !$r->memberOf($this)) {
+				if($r instanceof static && !$r->memberOf($this)) {
 					$r = null;
 				}
 			} else if(chance() < _range(0, 85, $probability)) {
