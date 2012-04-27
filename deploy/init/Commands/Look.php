@@ -50,7 +50,11 @@ class Look extends User
 			foreach($user->getRoom()->getActors() as $a) {
 				if($a !== $user) {
 					$disposition = $a->getDisposition() === Actor::DISPOSITION_STANDING ? '' : ' '.$a->getDisposition();
-					Server::out($user, ucfirst($a).' is'.$disposition.' here.');
+					$post = '';
+					if($a instanceof lUser) {
+						$post = 'is '.$disposition.' here';
+					}
+					Server::out($user, ucfirst($a).$post.'.');
 				}
 			}
 			return;
