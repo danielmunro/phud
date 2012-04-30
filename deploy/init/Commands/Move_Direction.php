@@ -4,17 +4,32 @@ use Phud\Actors\Actor,
 	Phud\Actors\User as aUser,
 	Phud\Server,
 	Phud\Room,
-	Phud\Door,
-	Phud\Commands\Command;
+	Phud\Door;
 
-abstract class Move_Direction extends Command
+class Move_Direction extends Command
 {
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
+	protected $alias = [
+		['north', 11],
+		['south', 11],
+		['east', 11],
+		['west', 11],
+		['up', 11],
+		['down', 11]
+	];
 
-	public function perform(Actor $actor, $direction)
+	public function perform(Actor $actor, $args)
 	{
 		if($actor->getTarget()) {
 			return Server::out($actor, 'You cannot leave a fight!');
+		}
+
+		$direction = '';
+		foreach(Room::getDirections() as $dir) {
+			if(strpos($dir, $args[0]) === 0) {
+				$direction = $dir;
+				break;
+			}
 		}
 
 		$room_id = $actor->getRoom()->getDirection($direction);

@@ -17,11 +17,22 @@ abstract class Command
 	
 	protected function __construct()
 	{
-		if(is_array($this->alias)) {
-			list($alias, $priority) = $this->alias;
-			self::addAlias($alias, $this, $priority);
-		} else if(is_string($this->alias)) {
-			self::addAlias($this->alias, $this);
+		$this->setupAliases($this->alias);
+	}
+
+	protected function setupAliases($alias)
+	{
+		if(is_array($alias)) {
+			if(is_numeric($alias[1])) {
+				list($alias, $priority) = $alias;
+				self::addAlias($alias, $this, $priority);
+			} else {
+				foreach($alias as $a) {
+					$this->setupAliases($a);
+				}
+			}
+		} else if(is_string($alias)) {
+			self::addAlias($alias, $this);
 		} else {
 			throw new Exception(get_class($this).' is not fully configured.');
 		}
