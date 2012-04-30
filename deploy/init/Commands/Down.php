@@ -8,7 +8,7 @@ class Down extends Move_Direction
 
 	public function perform(Actor $actor, $args = [])
 	{
-		parent::perform($actor, [$actor->getRoom()->getDown(), 'down']);
+		parent::perform($actor, 'down');
 	}
 }
 ?>

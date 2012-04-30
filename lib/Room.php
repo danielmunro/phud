@@ -86,6 +86,11 @@ class Room
 		}
 	}
 
+	public static function getDirections()
+	{
+		return self::$directions;
+	}
+
 	public function getDoors()
 	{
 		return $this->doors;
@@ -114,36 +119,6 @@ class Room
 	public function getMovementCost()
 	{
 		return $this->movement_cost;
-	}
-
-	public function getNorth()
-	{
-		return $this->north;
-	}
-
-	public function getSouth()
-	{
-		return $this->south;
-	}
-
-	public function getEast()
-	{
-		return $this->east;
-	}
-
-	public function getWest()
-	{
-		return $this->west;
-	}
-
-	public function getUp()
-	{
-		return $this->up;
-	}
-
-	public function getDown()
-	{
-		return $this->down;
 	}
 
 	public function getArea()
@@ -220,18 +195,12 @@ class Room
 	
 	public static function getReverseDirection($direction)
 	{
-		if(strpos('north', $direction) === 0)
-			return 'south';
-		if(strpos('south', $direction) === 0)
-			return 'north';
-		if(strpos('east', $direction) === 0)
-			return 'west';
-		if(strpos('west', $direction) === 0)
-			return 'east';
-		if(strpos('up', $direction) === 0)
-			return 'down';
-		if(strpos('down', $direction) === 0)
-			return 'up';
+		$i = array_search($direction, self::$directions);
+		if($i % 2 === 0) {
+			return self::$directions[$i+1];
+		} else {
+			return self::$directions[$i-1];
+		}
 	}
 
 	public function __toString()
@@ -246,7 +215,7 @@ class Room
 
 	public static function getFullDirectionAlias($dir)
 	{
-		foreach(['north', 'south', 'east', 'west', 'up', 'down'] as $direction) {
+		foreach(self::$directions as $direction) {
 			if(strpos($direction, $dir) === 0) {
 				return $direction;
 			}

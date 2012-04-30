@@ -115,18 +115,16 @@ class Mob extends Actor
 	
 	public function move()
 	{
-		if($this->getRoom()->getId() === Room::PURGATORY_ROOM_ID)
+		$r = $this->getRoom();
+		if($r->getID() === Room::PURGATORY_ROOM_ID)
 		{
 			return;
 		}
 
-		$directions = array(
-						'north' => $this->getRoom()->getNorth(),
-						'south' => $this->getRoom()->getSouth(),
-						'east' => $this->getRoom()->getEast(),
-						'west' => $this->getRoom()->getWest(),
-						'up' => $this->getRoom()->getUp(),
-						'down' => $this->getRoom()->getDown());
+		$directions = [];
+		foreach(Room::getDirections() as $direction) {
+			$directions[$direction] = $r->getDirection($direction);
+		}
 
 		if($this->path) {
 			if($this->path_index > $this->last_path_index) {

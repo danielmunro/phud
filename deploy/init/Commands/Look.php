@@ -4,8 +4,7 @@ use Phud\Server,
 	Phud\Affect,
 	Phud\Actors\Actor,
 	Phud\Actors\User as lUser,
-	Phud\Door as mDoor,
-	Phud\Room as mRoom;
+	Phud\Room;
 
 class Look extends User
 {
@@ -32,12 +31,12 @@ class Look extends User
 			}
 
 			$dir_str = '';
-			foreach(['north' => $r->getNorth(), 'south' => $r->getSouth(), 'east' => $r->getEast(), 'west' => $r->getWest(), 'up' => $r->getUp(), 'down' => $r->getDown()] as $dir => $room) {
-				if(isset($doors[$dir]) && $doors[$dir]->getDisposition() !== mDoor::DISPOSITION_OPEN) {
+			foreach(Room::getDirections() as $dir) {
+				if(isset($doors[$dir]) && $doors[$dir]->getDisposition() !== 'open') {
 					continue;
 				}
-				if($room) {
-					$dir_str .= ucfirst(substr($dir, 0, 1));
+				if($r->getDirection($dir)) {
+					$dir_str .= ucfirst($dir[0]);
 				}
 			}
 
@@ -74,41 +73,16 @@ class Look extends User
 			return Server::out($user, $target->getLong());
 		
 		// Direction
-		if(strpos($args[1], 'n') === 0)
-			return self::lookDirection($user, $user->getRoom()->getNorth(), 'north');
-		
-		if(strpos($args[1], 's') === 0)
-			return self::lookDirection($user, $user->getRoom()->getSouth(), 'south');
-		
-		if(strpos($args[1], 'e') === 0)
-			return self::lookDirection($user, $user->getRoom()->getEast(), 'east');
-		
-		if(strpos($args[1], 'w') === 0)
-			return self::lookDirection($user, $user->getRoom()->getWest(), 'west');
-		
-		if(strpos($args[1], 'u') === 0)
-			return self::lookDirection($user, $user->getRoom()->getUp(), 'up');
-		
-		if(strpos($args[1], 'd') === 0)
-			return self::lookDirection($user, $user->getRoom()->getDown(), 'down');
-		
+		foreach(Room::getDirections as $dir) {
+			if(strpos($dir, $args[1]) === 0) {
+				return self::lookDirection($user, $user->getRoom()->getDirection($dir), $dir);
+			}
+		}
 		Server::out($user, 'Nothing is there.');
 	}
 	
 	public static function lookDirection(&$user, $room, $direction)
 	{
-		/**
-		// Closed/locked door
-		$door = mDoor::findByRoomAndDirection($room, $direction);
-		if($door instanceof mDoor)
-		{
-			if($door->getHidden())
-				return Server::out($user, iItem::getInstance($door->getHiddenItemId())->getLong());
-			if($door->getDisposition() != mDoor::DISPOSITION_OPEN)
-				return Server::out($user, ucfirst($door->getLong($room)));
-		}
-		*/
-		
 		if(!($room instanceof mRoom))
 			return Server::out($user, 'You see nothing ' . $direction . '.');
 		else

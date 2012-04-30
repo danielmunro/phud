@@ -1,6 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
+	Phud\Room,
 	Phud\Server;
 
 class Flee extends Command
@@ -23,14 +24,10 @@ class Flee extends Command
 		
 		// build a list of directions and randomize it
 		$r = $fighter->getRoom();
-		$directions = [
-			['north', $r->getNorth()],
-			['south', $r->getSouth()],
-			['east', $r->getEast()],
-			['west', $r->getWest()],
-			['up', $r->getUp()],
-			['down', $r->getDown()]
-		];
+		$directions = [];
+		foreach(Room::getDirections() as $direction) {
+			$directions[] = [$direction, $r->getDirection($direction)];
+		}
 		shuffle($directions);
 
 		// attempt to flee in a direction at random

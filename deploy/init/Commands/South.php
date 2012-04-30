@@ -8,7 +8,7 @@ class South extends Move_Direction
 
 	public function perform(Actor $actor, $args = [])
 	{
-		parent::perform($actor, [$actor->getRoom()->getSouth(), 'south']);
+		parent::perform($actor, 'south');
 	}
 }
 ?>

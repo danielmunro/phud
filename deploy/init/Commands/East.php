@@ -8,7 +8,7 @@ class East extends Move_Direction
 
 	public function perform(Actor $actor, $args = [])
 	{
-		parent::perform($actor, [$actor->getRoom()->getEast(), 'east']);
+		parent::perform($actor, 'east');
 	}
 }
 ?>

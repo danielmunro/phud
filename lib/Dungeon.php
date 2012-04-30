@@ -33,7 +33,7 @@ class Dungeon extends Room
 		while($this->rooms_left) {
 			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
-		$dirs = ['north', 'south', 'east', 'west', 'up', 'down'];
+		$dirs = self::$directions;
 		$rand_dir = rand(0, 5);
 		$connect_room = static::getRandom($this->title);
 		$exit_room = Room::getByID($this->exit);
@@ -47,7 +47,10 @@ class Dungeon extends Room
 
 	public function buildOut(&$rooms_left, $depth, &$exit)
 	{
-		$dirs = ['north' => $this->n_prob, 'south' => $this->s_prob, 'east' => $this->e_prob, 'west' => $this->w_prob, 'up' => $this->u_prob, 'down' => $this->d_prob];
+		$dirs = [];
+		foreach(self::$directions as $dir) {
+			$dirs[$dir] = $this->{$dir[0].'_prob'};
+		}
 		uasort($dirs, function() { return round(rand(0, 1)); });
 		foreach($dirs as $dir => $probability) {
 			if($rooms_left <= 0) {
