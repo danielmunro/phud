@@ -5,11 +5,9 @@ use Phud\Actors\Actor,
 
 class Room
 {
-	use Usable, Inventory, EasyInit, Identity;
+	use Inventory, EasyInit, Identity, Interactive;
 
 	protected static $instances = [];
-	protected $title = 'Generic room';
-	protected $description = 'A nondescript room.';
 	protected $north = '';
 	protected $south = '';
 	protected $east = '';
@@ -106,16 +104,6 @@ class Room
 		return $this->visibility;
 	}
 	
-	public function getTitle()
-	{
-		return $this->title;
-	}
-	
-	public function getDescription()
-	{
-		return $this->description;
-	}
-
 	public function getMovementCost()
 	{
 		return $this->movement_cost;
@@ -185,14 +173,6 @@ class Room
 		return $this->getUsableByInput($this->actors, $input);
 	}
 	
-	public static function find($id)
-	{
-		$room = static::getByID($id);
-		if($room) {
-			return $room;
-		}
-	}
-	
 	public static function getReverseDirection($direction)
 	{
 		$i = array_search($direction, self::$directions);
@@ -205,12 +185,7 @@ class Room
 
 	public function __toString()
 	{
-		return $this->title;
-	}
-
-	public function __sleep()
-	{
-		return ['id'];
+		return $this->alias;
 	}
 
 	public static function getFullDirectionAlias($dir)

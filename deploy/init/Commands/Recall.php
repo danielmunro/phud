@@ -11,7 +11,7 @@ class Recall extends Command
 
 	public function perform(Actor $actor, $args = [])
 	{
-		$actor->setRoom(Room::find(1));
+		$actor->setRoom(Room::getByID(1));
 	}
 }
 ?>

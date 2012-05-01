@@ -5,7 +5,7 @@ use Phud\Items\Equipment,
 
 class Equipped
 {
-	use Inventory, Usable;
+	use Inventory;
 
 	private $actor = null;
 	private static $labels = [

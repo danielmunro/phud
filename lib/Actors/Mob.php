@@ -5,14 +5,11 @@ use Phud\Dbr,
 	Phud\Debug,
 	Phud\Server,
 	Phud\Command\Command,
-	Phud\Nouns,
 	Phud\Items\Corpse,
 	Phud\Items\Item;
 
 class Mob extends Actor
 {
-	use Nouns;
-
 	protected $movement = 0;
 	protected $movement_timeout = 0;
 	protected $respawn_ticks = 1;
@@ -21,11 +18,10 @@ class Mob extends Actor
 	protected $unique = false;
 	protected $default_respawn_ticks = 1;
 	protected $start_room_id = 0;
-	protected $area = '';
+	protected $area = null;
 	protected $gold_repop = 0;
 	protected $silver_repop = 0;
 	protected $copper_repop = 0;
-	protected $alias = 'a generic mob';
 	protected $path = [];
 	protected $is_recording_path = false;
 	protected $path_index = -1;
@@ -189,7 +185,7 @@ class Mob extends Actor
 	{
 		parent::handleDeath();
 		$this->setAttribute('hp', -1);
-		$this->setRoom(Room::find(Room::PURGATORY_ROOM_ID));
+		$this->setRoom(Room::getByID(Room::PURGATORY_ROOM_ID));
 		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - ($this->respawn_ticks / 2), $this->respawn_ticks + ($this->respawn_ticks / 2)));
 		$this->on(
 			'tick',
@@ -228,7 +224,7 @@ class Mob extends Actor
 	
 	public function getStartRoom()
 	{
-		return Room::find($this->start_room_id);
+		return Room::getByID($this->start_room_id);
 	}
 	
 	public function setStartRoom()
@@ -318,11 +314,6 @@ class Mob extends Actor
 	public function setCopperRepop($copper)
 	{
 		$this->copper_repop = $copper;
-	}
-
-	protected function getDefaultNouns()
-	{
-		return $this->alias;
 	}
 }
 ?>

@@ -2,17 +2,15 @@
 namespace Phud\Quests;
 use Phud\Actors\User,
 	Phud\Debug,
+	Phud\Interactive,
 	Phud\Identity,
-	Phud\Nouns,
 	\Exception,
 	\ReflectionClass;
 
 abstract class Quest
 {
-	use Nouns, Identity;
+	use Identity, Interactive;
 
-	protected $short = '';
-	protected $long = '';
 	protected $requirements_to_accept = null;
 	protected $reward = null;
 	protected $status = 'initialized';
@@ -27,7 +25,6 @@ abstract class Quest
 			throw new Exception('Quest error: '.$this.' needs an identifier');
 		}
 		self::$identities[$this->id] = $this;
-		$this->assignNouns();
 	}
 
 	public static function runInstantiation($path = '')
@@ -49,25 +46,11 @@ abstract class Quest
 		}
 	}
 
-	public function getDefaultNouns()
-	{
-		return $this->short;
-	}
-
 	abstract public function getListeners();
 
 	abstract public function reward(User $user);
 
 	abstract public function canAccept(User $user);
-
-	public function getShort()
-	{
-		return $this->short;
-	}
-	public function getLong()
-	{
-		return $this->long;
-	}
 
 	public function getStatus()
 	{

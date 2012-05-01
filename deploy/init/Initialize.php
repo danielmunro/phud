@@ -164,7 +164,7 @@ $server->on(
 					$user = new User($user_properties);
 					$user->modifyCurrency('copper', 20);
 					$user->setPassword(sha1($user.$user->getDateCreated().$user_properties['password']));
-					$user->setRoom(Room::find(Room::getStartRoom()));
+					$user->setRoom(Room::getByID(Room::getStartRoom()));
 					$user->setClient($client);
 					$client->setUser($user);
 					$user->save();

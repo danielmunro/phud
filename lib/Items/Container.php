@@ -1,15 +1,10 @@
 <?php
 namespace Phud\Items;
-use Phud\Inventory,
-	Phud\Usable;
+use Phud\Inventory;
 
 class Container extends Item
 {
-	use Inventory, Usable;
-
-	protected $short = 'a generic container';
-	protected $long = 'A generic container lays here';
-	private $inventory = null;
+	use Inventory;
 
 	public function getLong()
 	{

@@ -14,8 +14,8 @@ $spider = [
 
 new Room([
 	'id' => $id.'0',
-	'title' => 'Climbing a spider web',
-	'description' => 'A monstrous web has engulfed the trees around it. The main arterials are just strong enough to support your weight.',
+	'short' => 'Climbing a spider web',
+	'long' => 'A monstrous web has engulfed the trees around it. The main arterials are just strong enough to support your weight.',
 	'area' => $area_den,
 	'down' => 'goblinforest3',
 	'actors' => [

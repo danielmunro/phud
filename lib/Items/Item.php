@@ -3,14 +3,12 @@ namespace Phud\Items;
 use Phud\Affects\Affectable,
 	Phud\EasyInit,
 	Phud\Attributes,
-	Phud\Nouns;
+	Phud\Interactive;
 
 class Item
 {
-	use Affectable, EasyInit, Nouns;
+	use Affectable, EasyInit, Interactive;
 
-	protected $short = 'a generic item';
-	protected $long = 'A generic item lays here';
 	protected $value = 0;
 	protected $weight = 0.0;
 	protected $can_own = true;
@@ -59,16 +57,6 @@ class Item
 		]);
 	}
 	
-	public function setShort($short)
-	{
-		$this->short = $short;
-	}
-	
-	public function setLong($long)
-	{
-		$this->long = $long;
-	}
-	
 	public function setValue($value)
 	{
 		$this->value = $value;
@@ -94,16 +82,6 @@ class Item
 		$this->material = $material;
 	}
 
-	public function getShort()
-	{
-		return $this->short;
-	}
-	
-	public function getLong()
-	{
-		return $this->long;
-	}
-	
 	public function getCanOwn()
 	{
 		return $this->can_own;
@@ -213,11 +191,6 @@ class Item
 	}
 	
 	public function __toString()
-	{
-		return $this->short;
-	}
-
-	protected function getDefaultNouns()
 	{
 		return $this->short;
 	}

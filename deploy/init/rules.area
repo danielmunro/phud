@@ -51,7 +51,7 @@ room Phud
 <?php
 return function($parser, $room) {
 	$room = new $room($parser->loadRequired(
-		['title', 'description' => 'block'], 
+		['short', 'long' => 'block'], 
 		['properties' => function(&$p, $property, $value) {
 			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
 			foreach($long as $l) {
@@ -101,7 +101,7 @@ return function($parser, $mob) {
 		$parser->setLastFirstClass($mob);
 		if($room instanceof Phud\Dungeon) {
 			$end_hooks[] = function() use ($room, $mob) {
-				$room = Phud\Dungeon::getRandom($room->getTitle());
+				$room = Phud\Dungeon::getRandom($room->getShort());
 				$mob->setRoom($room);
 			};
 		} else {

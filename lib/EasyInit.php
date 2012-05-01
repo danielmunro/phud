@@ -25,9 +25,6 @@ trait EasyInit
 				throw new Exception('Property of '.$this.' ('.$property.') does not exist');
 			}
 		}
-		if(property_exists($this, 'nouns') && !$this->nouns) {
-			$this->assignNouns();
-		}
 	}
 
 	public function getInitializingProperties()

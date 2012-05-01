@@ -261,9 +261,9 @@ class User extends Actor
 
 	public function __wakeup()
 	{
-		$this->room = Room::find($this->room->getId());
+		$this->room = Room::getByID($this->room->getId());
 		if(!$this->room) {
-			$this->room = Room::find(1);
+			$this->room = Room::getByID(1);
 		}
 		$this->race = Race::lookup($this->race['alias']);
 		$this->race_listeners = $this->race['lookup']->getListeners();

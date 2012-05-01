@@ -5,7 +5,7 @@ use Phud\Abilities\Ability,
 	Phud\Affects\Affectable,
 	Phud\Inventory,
 	Phud\Server,
-	Phud\Usable,
+	Phud\Interactive,
 	Phud\Races\Race,
 	Phud\Room,
 	Phud\Equipped,
@@ -22,7 +22,7 @@ use Phud\Abilities\Ability,
 
 abstract class Actor
 {
-	use Affectable, Listener, Inventory, Usable, EasyInit, Identity;
+	use Affectable, Listener, Inventory, Interactive, EasyInit, Identity;
 
 	const MAX_LEVEL = 51;
 	
@@ -36,9 +36,6 @@ abstract class Actor
 
 	const MAX_ATTRIBUTE = 25;
 	
-	protected $alias = '';
-	protected $short = '';
-	protected $long = '';
 	protected $level = 0;
 	protected $gold = 0;
 	protected $silver = 0;
@@ -460,11 +457,6 @@ abstract class Actor
 		Server::out($killer, 'You have KILLED '.$this.'.');
 		$killer->applyExperienceFrom($this);
 
-		if($this instanceof User)
-			$nouns = $this->getAlias();
-		elseif($this instanceof Mob)
-			$nouns = $this->getNouns();
-
 		$gold = round($this->gold / 3);
 		$silver = round($this->silver / 3);
 		$copper = round($this->copper / 3);
@@ -503,7 +495,6 @@ abstract class Actor
 		$corpse = new Corpse([
 			'short' => 'a corpse of '.$this,
 			'long' => 'A corpse of '.$this.' lies here.',
-			'nouns' => 'corpse '.(property_exists($this, 'nouns') ? $this->nouns : $this),
 			'weight' => 100,
 			'copper' => $copper,
 			'silver' => $silver,
@@ -554,11 +545,6 @@ abstract class Actor
 		$this->furniture = $furniture;
 	}
 
-	public function getShort()
-	{
-		return $this->short;
-	}
-
 	public function getAlignment()
 	{
 		return $this->alignment;
@@ -577,11 +563,6 @@ abstract class Actor
 	public function setDisposition($disposition)
 	{
 		$this->disposition = $disposition;
-	}
-
-	public function getAlias()
-	{
-		return $this->alias;
 	}
 
 	public function getLong()

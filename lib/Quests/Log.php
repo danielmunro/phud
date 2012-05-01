@@ -1,10 +1,10 @@
 <?php
 namespace Phud\Quests;
-use Phud\Usable;
+use Phud\Interactive;
 
 trait Log
 {
-	use Usable;
+	use Interactive;
 
 	protected $quests = [];
 

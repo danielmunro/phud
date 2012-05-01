@@ -22,8 +22,7 @@ class Look extends User
 			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
 				return Server::out($user, "You can't see anything, it's so dark!");
 			
-			Server::out($user, $r->getTitle());
-			Server::out($user, $r->getDescription() . "\n");
+			Server::out($user, $r->getShort()."\n".$r->getLong()."\n");
 
 			$doors = $r->getDoors();
 			foreach($doors as $i => $door) {
@@ -73,7 +72,7 @@ class Look extends User
 			return Server::out($user, $target->getLong());
 		
 		// Direction
-		foreach(Room::getDirections as $dir) {
+		foreach(Room::getDirections() as $dir) {
 			if(strpos($dir, $args[1]) === 0) {
 				return self::lookDirection($user, $user->getRoom()->getDirection($dir), $dir);
 			}
@@ -87,7 +86,7 @@ class Look extends User
 			return Server::out($user, 'You see nothing ' . $direction . '.');
 		else
 			return Server::out($user, 'To the ' . $direction . ', you see: ' .
-				$room->getTitle() . '.');
+				$room->getShort() . '.');
 	}
 }
 ?>

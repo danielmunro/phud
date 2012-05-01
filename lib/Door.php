@@ -3,7 +3,7 @@ namespace Phud;
 
 class Door
 {
-	use EasyInit, Identity, Nouns;
+	use EasyInit, Identity;
 
 	protected $short = 'a door';
 	protected $long = 'a generic door is here.';
@@ -65,11 +65,6 @@ class Door
 	}
 	
 	public function __toString()
-	{
-		return $this->short;
-	}
-
-	protected function getDefaultNouns()
 	{
 		return $this->short;
 	}

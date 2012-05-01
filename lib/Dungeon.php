@@ -29,13 +29,13 @@ class Dungeon extends Room
 
 	public function setup()
 	{
-		static::$rooms[$this->title][] = $this;
+		static::$rooms[$this->short][] = $this;
 		while($this->rooms_left) {
 			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
 		$dirs = self::$directions;
 		$rand_dir = rand(0, 5);
-		$connect_room = static::getRandom($this->title);
+		$connect_room = static::getRandom($this->short);
 		$exit_room = Room::getByID($this->exit);
 		while($connect_room->getDirection($dirs[$rand_dir]) || $exit_room->getDirection($dirs[$rand_dir])) {
 			$rand_dir = rand(0, 5);
@@ -70,7 +70,7 @@ class Dungeon extends Room
 				$p['area'] = $this->area;
 				$r = new static($p, $rooms_left, $depth+1, $exit);
 				$this->$dir = $r->getID();
-				static::$rooms[$this->title][] = $r;
+				static::$rooms[$this->short][] = $r;
 			}
 			if($r instanceof static) {
 				$r->buildOut($rooms_left, $depth, $exit);
@@ -80,13 +80,13 @@ class Dungeon extends Room
 
 	public function memberOf(self $dungeon)
 	{
-		return $this->title === $dungeon->title;
+		return $this->short === $dungeon->short;
 	}
 
-	public static function getRandom($title)
+	public static function getRandom($short)
 	{
-		$i = array_rand(static::$rooms[$title]);
-		return static::$rooms[$title][$i];
+		$i = array_rand(static::$rooms[$short]);
+		return static::$rooms[$short][$i];
 	}
 }
 ?>

@@ -4,8 +4,8 @@ use Phud\Room,
 	Phud\Actors\Mob;
 
 $p = [
-	'title' => 'Temple Arena',
-	'description' => 'A dirt arena is here, stained with the blood of vanquished foes.',
+	'short' => 'Temple Arena',
+	'long' => 'A dirt arena is here, stained with the blood of vanquished foes.',
 	'area' => 'temple_arena'
 ];
 $id = 'midgaard_arena';
