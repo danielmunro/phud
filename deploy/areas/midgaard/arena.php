@@ -12,6 +12,7 @@ $id = 'midgaard_arena';
 
 $snail = [
 	'alias' => 'a snail',
+	'short' => 'a snail is here',
 	'long' => 'A little snail is trying to get out of the way!',
 	'level' => 5,
 	'race' => 'critter',
@@ -25,6 +26,7 @@ $snail = [
 
 $lizard = [
 	'alias' => 'a lizard',
+	'short' => 'a scaly lizard is sunbathing on a rock',
 	'long' => 'A little green lizard slithers across your path.',
 	'level' => 6,
 	'race' => 'critter',
@@ -42,6 +44,7 @@ $lizard = [
 
 $fox = [
 	'alias' => 'a fox',
+	'short' => 'a fox trots along the arena',
 	'long' => 'A small brown fox sneaks across path.',
 	'level' => 7,
 	'race' => 'critter',
@@ -59,6 +62,7 @@ $fox = [
 
 $bird = [
 	'alias' => 'a small gray bird',
+	'short' => 'a small gray bird tweets while looking for worms',
 	'long' => 'A small gray bird tweets as it flies over your shoulder.',
 	'level' => 3,
 	'race' => 'critter',

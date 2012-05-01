@@ -43,6 +43,12 @@ class Mob extends Actor
 			);
 		}
 	}
+
+	public function applyListeners()
+	{
+		parent::applyListeners();
+		$this->on('died', function($event, $mob) { $mob->handleDeath(); });
+	}
 	
 	public static function runInstantiation()
 	{
@@ -183,7 +189,6 @@ class Mob extends Actor
 	
 	public function handleDeath()
 	{
-		parent::handleDeath();
 		$this->setAttribute('hp', -1);
 		$this->setRoom(Room::getByID(Room::PURGATORY_ROOM_ID));
 		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - ($this->respawn_ticks / 2), $this->respawn_ticks + ($this->respawn_ticks / 2)));

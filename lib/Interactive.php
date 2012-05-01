@@ -43,7 +43,8 @@ trait Interactive
 		$use = $this->nouns;
 		if(empty($use)) {
 			$use = $this->short;
-		} else if(empty($use)) {
+		} 
+		if(empty($use)) {
 			$use = $this->alias;
 		}
 		$this->nouns = array_filter(explode(' ', strtolower($use)), function($noun) {

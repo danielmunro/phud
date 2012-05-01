@@ -8,7 +8,8 @@ use Phud\Server,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
 	Phud\Quests\Quest,
-	Phud\Quests\Log;
+	Phud\Quests\Log,
+	Phud\Commands\Command;
 
 class User extends Actor
 {
@@ -30,6 +31,16 @@ class User extends Actor
 	{
 		$this->date_created = date('Y-m-d H:i:s');
 		parent::__construct($properties);
+	}
+
+	public function applyListeners()
+	{
+		parent::applyListeners();
+		$this->on('died', function($event, $user) {
+			$user->setAttribute('hp', 1);
+			$command = Command::lookup('look');
+			$command['lookup']->perform($user);
+		});
 	}
 	
 	public function getClient()
@@ -173,14 +184,6 @@ class User extends Actor
 		return true;
 	}
 	
-	public function handleDeath()
-	{
-		parent::handleDeath();
-		$this->setAttribute('hp', 1);
-		$command = Command::lookup('look');
-		$command['lookup']->perform($this);
-	}
-	
 	public function addTrains($trains)
 	{
 		$this->trains += $trains;
@@ -238,6 +241,7 @@ class User extends Actor
 			'experience_per_level',
 			'alias',
 			'long',
+			'short',
 			'level',
 			'gold',
 			'silver',
@@ -288,13 +292,7 @@ class User extends Actor
 
 		Server::instance()->on('tick', $this->getTickListener());
 
-		// set default attack event
-		$this->on(
-			'attack',
-			function($event, $fighter) {
-				$fighter->attack('Reg');
-			}
-		);
+		$this->applyListeners();
 	}
 }
 ?>

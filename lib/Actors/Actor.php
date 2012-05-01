@@ -138,13 +138,7 @@ abstract class Actor
 			self::$identities[$this->id] = $this;
 		}
 
-		// set default attack event
-		$this->on(
-			'attack',
-			function($event, $fighter) {
-				$fighter->attack('Reg');
-			}
-		);
+		$this->applyListeners();
 	}
 
 	///////////////////////////////////////////////////////////////////
@@ -316,15 +310,16 @@ abstract class Actor
 			$fighter = $this;
 			Server::instance()->on(
 				'pulse',
-				function($event, $server) use ($fighter, $target) {
+				function($event, $server) use ($fighter) {
+					$target = $fighter->getTarget();
 					if(empty($target) || !$fighter->isAlive()) {
 						$event->kill();
 						return;
 					}
-					$attacked_event = $target->fire('attacked');
-					if($attacked_event->getStatus() === 'satisfied') {
+					$e = $target->fire('attacked');
+					if($e->getStatus() === 'satisfied') {
 						return;
-					} else if($attacked_event->getStatus() === 'killed') {
+					} else if($e->getStatus() === 'killed') {
 						$event->kill();
 						return;
 					}
@@ -500,27 +495,19 @@ abstract class Actor
 			'silver' => $silver,
 			'gold' => $gold
 		]);
-		$this->deathTransferItems($corpse);
+		foreach($this->items as $i) {
+			$this->removeItem($i);
+			$corpse->addItem($i);
+		}
 		$this->getRoom()->addItem($corpse);
 		if($killer instanceof User) {
 			Server::out($killer, "\n".$killer->prompt(), false);
 		}
 
-		$this->handleDeath();
-	}
-
-	protected function deathTransferItems(Corpse $corpse)
-	{
-		foreach($this->items as $i) {
-			$this->removeItem($i);
-			$corpse->addItem($i);
-		}
-	}
-
-	protected function handleDeath()
-	{
 		Debug::log(ucfirst($this).' died.');
 		Server::out($this, 'You have been KILLED!');
+
+		$this->fire('died');
 	}
 
 	public function getProficiencyIn($proficiency)
@@ -794,6 +781,17 @@ abstract class Actor
 				$aff->apply($this);
 			}
 		}
+	}
+
+	public function applyListeners()
+	{
+		// set default attack event
+		$this->on(
+			'attack',
+			function($event, $fighter) {
+				$fighter->attack('Reg');
+			}
+		);
 	}
 	
 	public function __toString()

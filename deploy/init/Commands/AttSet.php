@@ -7,7 +7,7 @@ class AttSet extends DM
 {
 	protected $alias = 'attset';
 	
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
 		$object = $user->getRoom()->getActorByInput($args[1]);
 		if(!$object) {

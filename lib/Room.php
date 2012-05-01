@@ -188,6 +188,11 @@ class Room
 		return $this->alias;
 	}
 
+	public function __sleep()
+	{
+		return ['id'];
+	}
+
 	public static function getFullDirectionAlias($dir)
 	{
 		foreach(self::$directions as $direction) {
