@@ -4,19 +4,23 @@
 // ADMIN CONFIG
 ///////////////////////////////////////////////////////
 
+// Server settings
 $address = '192.168.0.106';
 $port = 9000;
+
+// Misc
+date_default_timezone_set('America/Los_Angeles');
 
 ///////////////////////////////////////////////////////
 // END admin config - nothing below here needs changing
 // in order to run
 ///////////////////////////////////////////////////////
 
+// Define a relative project path for file inclusion
 $global_path = dirname(__FILE__);
-date_default_timezone_set('America/Los_Angeles');
-gc_enable();
+
+// Ensure that the script doesn't die from timeout
 set_time_limit(0);
-use \Phud\Server;
 
 ///////////////////////////////////////////////////////
 // Set default arguments for starting phud, then parse
@@ -40,7 +44,7 @@ foreach($argv as $i => $arg) {
 }
 
 // initiate and run the server
-$s = new Server($address, $port);
+$s = new Phud\Server($address, $port);
 if($s->isInitialized()) {
 	$s->deployEnvironment($deploy);
 	if(!$dry_run) {
