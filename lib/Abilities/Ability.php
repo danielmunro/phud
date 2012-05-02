@@ -1,6 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
+	Phud\Actors\User,
 	Phud\Event,
 	Phud\Alias,
 	Phud\Debug,
@@ -90,7 +91,9 @@ abstract class Ability
 		if($this->applyCost($actor) === false) {
 			return false;
 		}
-		$actor->incrementDelay($this->delay);
+		if($actor instanceof User) {
+			$actor->incrementDelay($this->delay);
+		}
 		// do a proficiency roll to determine success or failure
 		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2));
 		foreach($this->hard_modifier as $m) {

@@ -3,8 +3,6 @@ namespace Phud\Actors;
 
 class Shopkeeper extends Mob
 {
-	protected $alias = 'a shopkeeper';
-	protected $long = 'a shopkeeper stands here.';
 	protected $list_item_message = "Here's what I have in stock now.";
 	protected $no_item_message = "I'm not selling that.";
 	protected $not_enough_money_message = "Come back when you have more money.";

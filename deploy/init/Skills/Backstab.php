@@ -13,11 +13,6 @@ class Backstab extends Skill
 	protected $delay = 2;
 	protected $event = 'input';
 
-	protected function initializeListener()
-	{
-		$this->listener = $this->getInputListener();
-	}
-
 	protected function applyCost(Actor $actor)
 	{
 	}

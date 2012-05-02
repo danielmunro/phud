@@ -11,12 +11,7 @@ class Kick extends Skill
 	protected $needs_target = true;
 	protected $is_offensive = true;
 	protected $delay = 1;
-	protected $event = 'kick';
-
-	protected function initializeListener()
-	{
-		$this->listener = $this->getInputListener();
-	}
+	protected $event = 'input';
 
 	protected function applyCost(Actor $actor)
 	{

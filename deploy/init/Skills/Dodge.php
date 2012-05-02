@@ -9,7 +9,7 @@ class Dodge extends Skill
 	protected $proficiency = 'evasive';
 	protected $required_proficiency = 25;
 	protected $easy_modifier = ['dex'];
-	protected $event = 'melee attacked';
+	protected $event = 'attacked';
 
 	protected function initializeListener()
 	{

@@ -42,7 +42,7 @@ class User extends Actor
 			$command['lookup']->perform($user);
 		});
 	}
-	
+
 	public function getClient()
 	{
 		return $this->client;
@@ -120,25 +120,25 @@ class User extends Actor
 		$this->full = $r->getFull();
 	}
 	
-	public function tick($init = false)
+	public function tick($event)
 	{
-		parent::tick();
-		if(!$init)
-		{
-			$this->hunger > 0 ? $this->hunger-- : null;
-			$this->thirst > 0 ? $this->thirst-- : null;
-			$this->full -= 2;
-			if($this->full < 0) {
-				$this->full = 0;
-			}
-			if($this->hunger === 0) {
-				Server::out($this, "You are hungry.");
-			}
-			if($this->thirst === 0) {
-				Server::out($this, "You are thirsty.");
-			}
-			$this->save();
+		if(!is_resource($this->client->getSocket())) {
+			$event->kill();
 		}
+		parent::tick();
+		$this->hunger > 0 ? $this->hunger-- : null;
+		$this->thirst > 0 ? $this->thirst-- : null;
+		$this->full -= 2;
+		if($this->full < 0) {
+			$this->full = 0;
+		}
+		if($this->hunger === 0) {
+			Server::out($this, "You are hungry.");
+		}
+		if($this->thirst === 0) {
+			Server::out($this, "You are thirsty.");
+		}
+		$this->save();
 		Server::out($this, "\n" . $this->prompt(), false);
 	}
 	
@@ -289,9 +289,6 @@ class User extends Actor
 				$this->on($listener[0], $listener[1]);
 			}
 		}
-
-		Server::instance()->on('tick', $this->getTickListener());
-
 		$this->applyListeners();
 	}
 }

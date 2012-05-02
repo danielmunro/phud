@@ -37,6 +37,9 @@ abstract class Skill extends Ability
 					}
 				};
 				break;
+			default:
+				$this->initializeListener();
+				break;
 		}
 		parent::__construct();
 	}

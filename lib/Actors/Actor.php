@@ -54,7 +54,6 @@ abstract class Actor
 	protected $experience = 0;
 	protected $experience_per_level = 0;
 	protected $furniture = null;
-	protected $tick_listener = null;
 	protected $proficiencies = [
 		'stealth' => 15,
 		'healing' => 15,
@@ -216,17 +215,6 @@ abstract class Actor
 	///////////////////////////////////////////////////////////////////
 	// Tick functions
 	///////////////////////////////////////////////////////////////////
-
-	public function getTickListener()
-	{
-		if(!$this->tick_listener) {
-			$actor = $this;
-			$this->tick_listener = function($server) use ($actor) {
-				$actor->tick();
-			};
-		}
-		return $this->tick_listener;
-	}
 
 	public function tick()
 	{
@@ -786,12 +774,13 @@ abstract class Actor
 	public function applyListeners()
 	{
 		// set default attack event
-		$this->on(
-			'attack',
-			function($event, $fighter) {
-				$fighter->attack('Reg');
-			}
-		);
+		$this->on('attack', function($event, $fighter) {
+			$fighter->attack('Reg');
+		});
+		$actor = $this;
+		Server::instance()->on('tick', function($event, $server) use ($actor) {
+			$actor->tick($event);
+		});
 	}
 	
 	public function __toString()

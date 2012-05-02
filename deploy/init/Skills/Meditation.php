@@ -14,7 +14,7 @@ class Meditation extends Skill
 	protected function initializeListener()
 	{
 		$skill = $this;
-		$this->listener = function($actor, &$amount, &$modifier) use ($skill) {
+		$this->listener = function($event, $actor, &$amount, &$modifier) use ($skill) {
 			$skill->perform($actor, [$amount, $modifier]);
 		};
 	}
@@ -23,9 +23,9 @@ class Meditation extends Skill
 	{
 	}
 
-	protected function success(Actor $actor, &$args)
+	protected function success(Actor $actor, Actor $target, &$args)
 	{
-		$args[0] += $this->getProficiencyIn($this->proficiency) / 200;
+		$args[0] += $actor->getProficiencyIn($this->proficiency) / 200;
 	}
 
 	protected function fail(Actor $actor)
