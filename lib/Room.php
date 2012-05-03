@@ -121,7 +121,6 @@ class Room
 
 	public function actorAdd(Actor $actor)
 	{
-		Debug::log($actor.' is arriving to '.$this.' ('.$this->getID().')');
 		$this->actors[] = $actor;
 		$actor->on(
 			'moved',
@@ -133,7 +132,6 @@ class Room
 
 	public function actorRemove(Actor $actor)
 	{
-		Debug::log($actor.' is leaving '.$this.' ('.$this->getID().')');
 		$key = array_search($actor, $this->actors);
 		if($key === false) {
 			Debug::log($actor.' is not here');

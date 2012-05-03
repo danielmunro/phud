@@ -27,6 +27,7 @@ class Mob extends Actor
 	protected $path_index = -1;
 	protected $last_path_index = -2;
 	protected $repop_item_properties = [];
+	protected static $counter = 0;
 	
 	const FLEE_PERCENT = 10;
 	
@@ -42,6 +43,12 @@ class Mob extends Actor
 				}
 			);
 		}
+		self::$counter++;
+	}
+
+	public static function getCounter()
+	{
+		return self::$counter;
 	}
 
 	public function applyListeners()

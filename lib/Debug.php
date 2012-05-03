@@ -1,35 +1,38 @@
 <?php
 namespace Phud;
+use Phud\Actors\Actor,
+	Phud\Actors\Mob;
+
 class Debug
 {
 	
 	private static $enabled = true;
 
-	public static function clearLog()
+	public static function start()
 	{
 		if(!self::$enabled) {
 			return;
 		}
-		global $global_path;
-		
-		$fp = fopen($global_path.'/debug.log', 'w');
-		fwrite($fp, 'Truncated log, new log starting ' . date('Y-m-d H:i:s') . "\n");
-		fclose($fp);
+		Server::instance()->on('tick', function($event, $server) {
+			Debug::log(
+				"\ntick status update\n".
+				"==========================================\n".
+				"rooms                       ".sizeof(Room::getAll())."\n".
+				"mobs                        ".Mob::getCounter()."\n".
+				"clients                     ".sizeof($server->getClients())."\n".
+				"memory                      ".(memory_get_peak_usage(true)/1024)." kb\n".
+				"allocated                   ".(memory_get_usage(true)/1024)." kb");
+		});
 	}
-	
+
 	public static function log($msg)
 	{
 		if(!self::$enabled) {
 			return;
 		}
 		global $global_path;
-		
-		$n = 0;
-		if(Server::instance()) {
-			$n = sizeof(Server::instance()->getClients());
-		}
 		$fp = fopen($global_path.'/debug.log', 'a');
-		fwrite($fp, date('Y-m-d H:i:s')." ".$msg." [mem: ".(memory_get_usage(true)/1024)."kb, clients: ".$n."]\n");
+		fwrite($fp, date('Y-m-d H:i:s')." ".$msg."\n");
 		fclose($fp);
 	}
 }

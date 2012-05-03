@@ -75,7 +75,6 @@ class Server
 			if($user->getRoom()) {
 				$user->getRoom()->actorRemove($user);
 			}
-			$this->unlisten('tick', $user->getTickListener());
 		}
 
 		// clean out the client
@@ -141,6 +140,8 @@ class Server
 			},
 			'end'
 		);
+
+		Debug::start();
 
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));

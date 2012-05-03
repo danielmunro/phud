@@ -13,6 +13,11 @@ trait Identity
 		}
 	}
 
+	public static function getAll()
+	{
+		return static::$identities;
+	}
+
 	public function getID()
 	{
 		return $this->id;

@@ -33,16 +33,22 @@ class Dungeon extends Room
 		while($this->rooms_left) {
 			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
-		$dirs = self::$directions;
-		$rand_dir = rand(0, 5);
-		$connect_room = static::getRandom($this->short);
-		$exit_room = Room::getByID($this->exit);
-		while($connect_room->getDirection($dirs[$rand_dir]) || $exit_room->getDirection($dirs[$rand_dir])) {
-			$rand_dir = rand(0, 5);
+		if($this->exit) {
+			$dirs = self::$directions;
+			$i = rand(0, 5);
+			$rand_dir = $dirs[$i];
+			$rev_rand_dir = Room::getReverseDirection($rand_dir);
+			$connect_room = static::getRandom($this->short);
+			$exit_room = Room::getByID($this->exit);
+			while($connect_room->getDirection($rand_dir) || $exit_room->getDirection($rev_rand_dir)) {
+				$i = rand(0, 5);
+				$rand_dir = $dirs[$i];
+				$rev_rand_dir = Room::getReverseDirection($rand_dir);
+			}
+			$connect_room->setDirection($rand_dir, $this->exit);
+			$exit_room->setDirection($rev_rand_dir, $connect_room->getID());
+			$this->exit = null;
 		}
-		$connect_room->setDirection($dirs[$rand_dir], $this->exit);
-		$exit_room->setDirection(Room::getReverseDirection($dirs[$rand_dir]), $connect_room->getID());
-		$this->exit = null;
 	}
 
 	public function buildOut(&$rooms_left, $depth, &$exit)
