@@ -4,7 +4,8 @@ use Phud\Actors\Actor,
 	Phud\Actors\User as aUser,
 	Phud\Server,
 	Phud\Room,
-	Phud\Door;
+	Phud\Door,
+	Phud\Direction;
 
 class Move_Direction extends Command
 {
@@ -25,7 +26,7 @@ class Move_Direction extends Command
 		}
 
 		$direction = '';
-		foreach(Room::getDirections() as $dir) {
+		foreach(Direction::getDirections() as $dir) {
 			if(strpos($dir, $args[0]) === 0) {
 				$direction = $dir;
 				break;

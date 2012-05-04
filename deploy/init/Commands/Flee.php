@@ -2,7 +2,8 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Room,
-	Phud\Server;
+	Phud\Server,
+	Phud\Direction;
 
 class Flee extends Command
 {
@@ -25,7 +26,7 @@ class Flee extends Command
 		// build a list of directions and randomize it
 		$r = $fighter->getRoom();
 		$directions = [];
-		foreach(Room::getDirections() as $direction) {
+		foreach(Direction::getDirections() as $direction) {
 			$directions[] = [$direction, $r->getDirection($direction)];
 		}
 		shuffle($directions);

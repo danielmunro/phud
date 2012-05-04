@@ -4,7 +4,8 @@ use Phud\Server,
 	Phud\Affect,
 	Phud\Actors\Actor,
 	Phud\Actors\User as lUser,
-	Phud\Room;
+	Phud\Room,
+	Phud\Direction;
 
 class Look extends User
 {
@@ -30,7 +31,7 @@ class Look extends User
 			}
 
 			$dir_str = '';
-			foreach(Room::getDirections() as $dir) {
+			foreach(Direction::getDirections() as $dir) {
 				if(isset($doors[$dir]) && $doors[$dir]->getDisposition() !== 'open') {
 					continue;
 				}
@@ -72,7 +73,7 @@ class Look extends User
 			return Server::out($user, $target->getLong());
 		
 		// Direction
-		foreach(Room::getDirections() as $dir) {
+		foreach(Direction::getDirections() as $dir) {
 			if(strpos($dir, $args[1]) === 0) {
 				return self::lookDirection($user, $user->getRoom()->getDirection($dir), $dir);
 			}

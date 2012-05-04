@@ -53,8 +53,7 @@ return function($parser, $room) {
 	$room = new $room($parser->loadRequired(
 		['short', 'long' => 'block'], 
 		['properties' => function(&$p, $property, $value) {
-			$long = ['north', 'south', 'east', 'west', 'up', 'down'];
-			foreach($long as $l) {
+			foreach(Phud\Direction::getDirections() as $l) {
 				if(strpos($l, $property) === 0) {
 					$p[$l] = $value;
 					return true;

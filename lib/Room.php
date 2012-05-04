@@ -8,24 +8,22 @@ class Room
 	use Inventory, EasyInit, Identity, Interactive;
 
 	protected static $instances = [];
-	protected $north = '';
-	protected $south = '';
-	protected $east = '';
-	protected $west = '';
-	protected $up = '';
-	protected $down = '';
+	protected static $start_room = 0;
 	protected $area = null;
 	protected $visibility = 1;
 	protected $movement_cost = 0;
 	protected $actors = [];
 	protected $doors = [];
-	protected static $start_room = 0;
-	protected static $directions = ['north', 'south', 'east', 'west', 'up', 'down'];
+	protected $directions = [];
 
 	const PURGATORY_ROOM_ID = 900;
 
 	public function __construct($properties = [])
 	{
+		foreach(Direction::getDirections() as $d) {
+			$this->directions[$d] = isset($properties[$d]) ? $properties[$d] : null;
+			unset($properties[$d]);
+		}
 		$this->initializeProperties($properties, [
 			'actors' => function($room, $property, $value) {
 				foreach($value as $actor) {
@@ -34,7 +32,7 @@ class Room
 			},
 			'door' => function($room, $property, $value) {
 				list($direction, $door_id) = explode(' ', $value);
-				$room->setDoor(Room::getFullDirectionAlias($direction), Door::getByID($door_id));
+				$room->setDoor(Direction::getFullAlias($direction), Door::getByID($door_id));
 			}
 		]);
 		if(empty($this->id)) {
@@ -52,6 +50,21 @@ class Room
 		Debug::log("Creating room: ".$this->short." [".$this->id."]");
 	}
 
+	public static function startBuildDirections()
+	{
+		self::$start_room->buildDirections();
+	}
+
+	public function buildDirections()
+	{
+		foreach($this->directions as $direction => $room) {
+			if(is_numeric($room)) {
+				$this->directions[$direction] = self::getByID($room);
+				$this->directions[$direction]->buildDirections();
+			}
+		}
+	}
+
 	public static function setStartRoom($room_id)
 	{
 		self::$start_room = $room_id;
@@ -67,9 +80,9 @@ class Room
 		$this->doors[$direction] = $door;
 	}
 
-	public function setDirection($direction, $value)
+	public function setDirection($direction, self $value)
 	{
-		if(in_array($direction, self::$directions)) {
+		if(isset($this->directions[$direction])) {
 			$this->$direction = $value;
 		} else {
 			Debug::log($direction.' is not a valid direction.');
@@ -78,16 +91,11 @@ class Room
 
 	public function getDirection($direction)
 	{
-		if(in_array($direction, self::$directions)) {
-			return $this->$direction;
+		if(isset($this->directions[$direction])) {
+			return $this->directions[$direction];
 		} else {
 			Debug::log($direction.' is not a valid direction.');
 		}
-	}
-
-	public static function getDirections()
-	{
-		return self::$directions;
 	}
 
 	public function getDoors()
@@ -172,16 +180,6 @@ class Room
 		return $this->getUsableByInput($this->actors, $input);
 	}
 	
-	public static function getReverseDirection($direction)
-	{
-		$i = array_search($direction, self::$directions);
-		if($i % 2 === 0) {
-			return self::$directions[$i+1];
-		} else {
-			return self::$directions[$i-1];
-		}
-	}
-
 	public function __toString()
 	{
 		return $this->alias;
@@ -192,13 +190,5 @@ class Room
 		return ['id'];
 	}
 
-	public static function getFullDirectionAlias($dir)
-	{
-		foreach(self::$directions as $direction) {
-			if(strpos($direction, $dir) === 0) {
-				return $direction;
-			}
-		}
-	}
 }
 ?>

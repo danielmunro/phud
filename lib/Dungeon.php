@@ -34,19 +34,19 @@ class Dungeon extends Room
 			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
 		}
 		if($this->exit) {
-			$dirs = self::$directions;
+			$dirs = Direction::getDirections();
 			$i = rand(0, 5);
 			$rand_dir = $dirs[$i];
-			$rev_rand_dir = Room::getReverseDirection($rand_dir);
+			$rev_rand_dir = Direction::getReverse($rand_dir);
 			$connect_room = static::getRandom($this->short);
 			$exit_room = Room::getByID($this->exit);
 			while($connect_room->getDirection($rand_dir) || $exit_room->getDirection($rev_rand_dir)) {
 				$i = rand(0, 5);
 				$rand_dir = $dirs[$i];
-				$rev_rand_dir = Room::getReverseDirection($rand_dir);
+				$rev_rand_dir = Direction::getReverse($rand_dir);
 			}
-			$connect_room->setDirection($rand_dir, $this->exit);
-			$exit_room->setDirection($rev_rand_dir, $connect_room->getID());
+			$connect_room->setDirection($rand_dir, $exit_room);
+			$exit_room->setDirection($rev_rand_dir, $connect_room);
 			$this->exit = null;
 		}
 	}
@@ -54,7 +54,7 @@ class Dungeon extends Room
 	public function buildOut(&$rooms_left, $depth, &$exit)
 	{
 		$dirs = [];
-		foreach(self::$directions as $dir) {
+		foreach(Direction::getDirections() as $dir) {
 			$dirs[$dir] = $this->{$dir[0].'_prob'};
 		}
 		uasort($dirs, function() { return round(rand(0, 1)); });
@@ -63,19 +63,19 @@ class Dungeon extends Room
 				return;
 			}
 			$r = null;
-			if($this->$dir) {
-				$r = Room::getByID($this->$dir);
-				if($r instanceof static && !$r->memberOf($this)) {
+			if($this->directions[$dir]) {
+				$r = $this->directions[$dir];
+				if(is_numeric($r) || ($r instanceof static && !$r->memberOf($this))) {
 					$r = null;
 				}
 			} else if(chance() < _range(0, 85, $probability)) {
 				$rooms_left--;
 				$p = $this->initializing_properties;
 				unset($p['north'], $p['south'], $p['east'], $p['west'], $p['up'], $p['down'], $p['id']);
-				$p[Room::getReverseDirection($dir)] = $this->id;
+				$p[Direction::getReverse($dir)] = $this;
 				$p['area'] = $this->area;
 				$r = new static($p, $rooms_left, $depth+1, $exit);
-				$this->$dir = $r->getID();
+				$this->directions[$dir] = $r;
 				static::$rooms[$this->short][] = $r;
 			}
 			if($r instanceof static) {

@@ -2,6 +2,7 @@
 namespace Phud\Actors;
 use Phud\Dbr,
 	Phud\Room,
+	Phud\Direction,
 	Phud\Debug,
 	Phud\Server,
 	Phud\Command\Command,
@@ -131,7 +132,7 @@ class Mob extends Actor
 		}
 
 		$directions = [];
-		foreach(Room::getDirections() as $direction) {
+		foreach(Direction::getDirections() as $direction) {
 			$directions[$direction] = $r->getDirection($direction);
 		}
 
@@ -142,7 +143,7 @@ class Mob extends Actor
 				if($this->path_index > sizeof($this->path)-1) {
 					$this->path_index = sizeof($this->path)-1;
 					$this->last_path_index = sizeof($this->path);
-					$direction = Room::getReverseDirection($this->path[$this->path_index]);
+					$direction = Direction::getReverse($this->path[$this->path_index]);
 				} else {
 					$direction = $this->path[$this->path_index];
 				}
@@ -154,7 +155,7 @@ class Mob extends Actor
 					$this->last_path_index = -1;
 					$direction = $this->path[$this->path_index];
 				} else {
-					$direction = Room::getReverseDirection($this->path[$this->path_index]);
+					$direction = Direction::getReverse($this->path[$this->path_index]);
 				}
 			}
 			Debug::log($this.' is moving, path index: '.$this->path_index.', direction: '.$direction);

@@ -457,8 +457,8 @@ abstract class Actor
 			]));
 		}
 		$corpse = new Corpse([
-			'short' => 'a corpse of '.$this,
-			'long' => 'A corpse of '.$this.' lies here.',
+			'short' => 'the corpse of '.$this,
+			'long' => 'The corpse of '.$this.' lies here.',
 			'weight' => 100,
 			'copper' => $copper,
 			'silver' => $silver,
