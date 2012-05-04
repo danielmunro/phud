@@ -99,6 +99,7 @@ return function($parser, $mob) {
 		$mob = new $mob($p);
 		$room = $parser->getLastRoom();
 		$parser->setLastFirstClass($mob);
+		Phud\Debug::log("Adding ".$mob." to ".$room->getShort());
 		if($room instanceof Phud\Dungeon) {
 			$end_hooks[] = function() use ($room, $mob) {
 				$room = Phud\Dungeon::getRandom($room->getShort());
@@ -120,6 +121,7 @@ return function($parser, $shopkeeper) {
 	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
 	$keeper->setRoom($parser->getLastRoom());
 	$parser->setLastFirstClass($keeper);
+	Phud\Debug::log("Adding ".$keeper." to ".$parser->getLastRoom());
 };
 ?>~
 
@@ -130,5 +132,6 @@ return function($parser, $questmaster) {
 	$master = new $questmaster($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
 	$master->setRoom($parser->getLastRoom());
 	$parser->setLastFirstClass($master);
+	Phud\Debug::log("Adding ".$master." to ".$parser->getLastRoom());
 };
 ?>~

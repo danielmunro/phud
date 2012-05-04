@@ -212,23 +212,6 @@ abstract class Actor
 		return $this->attributes->setAttribute($key, $amount);
 	}
 
-	///////////////////////////////////////////////////////////////////
-	// Tick functions
-	///////////////////////////////////////////////////////////////////
-
-	public function tick()
-	{
-		if($this->isAlive()) {
-			$amount = rand(0.05, 0.1);
-			$modifier = 1;
-			$this->fire('tick', $amount, $modifier);
-			$amount *= $modifier;
-			foreach(['hp', 'mana', 'movement'] as $att) {
-				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
-			}
-		}
-	}
-
 	///////////////////////////////////////////////////////////////////////////
 	// Money functions
 	///////////////////////////////////////////////////////////////////////////
@@ -349,13 +332,10 @@ abstract class Actor
 			return;
 		}
 
+		$victim->fire('hit', $this);
+
 		if(!$attack_name) {
 			$attack_name = 'Reg';
-		}
-
-		$victim_target = $victim->getTarget();
-		if(!$victim_target) {
-			$victim->setTarget($this);
 		}
 
 		$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
@@ -383,6 +363,7 @@ abstract class Actor
 		// Size modifier
 		$def_roll += 5 - $victim->getRace()['lookup']->getSize();
 
+		$ac = 0;
 		if($dam_type === Damage::TYPE_BASH)
 			$ac = $victim->getAttribute('ac_bash');
 		else if($dam_type === Damage::TYPE_PIERCE)
@@ -496,6 +477,19 @@ abstract class Actor
 		Server::out($this, 'You have been KILLED!');
 
 		$this->fire('died');
+	}
+
+	public function tick()
+	{
+		if($this->isAlive()) {
+			$amount = rand(0.05, 0.1);
+			$modifier = 1;
+			$this->fire('tick', $amount, $modifier);
+			$amount *= $modifier;
+			foreach(['hp', 'mana', 'movement'] as $att) {
+				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
+			}
+		}
 	}
 
 	public function getProficiencyIn($proficiency)
@@ -685,7 +679,7 @@ abstract class Actor
 		}
 	}
 
-	public function getKillExperience(Actor $killer)
+	protected function getKillExperience(Actor $killer)
 	{
 		$level_diff = $this->level - $killer->getLevel();
 
@@ -773,10 +767,19 @@ abstract class Actor
 
 	public function applyListeners()
 	{
-		// set default attack event
+		// all actors get one attack per round to start
 		$this->on('attack', function($event, $fighter) {
 			$fighter->attack('Reg');
 		});
+
+		// return fire if attacked
+		$this->on('hit', function($event, $victim, $attacker) {
+			if(!$victim->getTarget()) {
+				$victim->setTarget($attacker);
+			}
+		});
+
+		// regen on tick
 		$actor = $this;
 		Server::instance()->on('tick', function($event, $server) use ($actor) {
 			$actor->tick($event);

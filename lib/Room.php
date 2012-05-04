@@ -49,6 +49,7 @@ class Room
 			die;
 		}
 		self::$identities[$this->id] = $this;
+		Debug::log("Creating room: ".$this->short." [".$this->id."]");
 	}
 
 	public static function setStartRoom($room_id)
