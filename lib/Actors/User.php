@@ -4,6 +4,7 @@ use Phud\Server,
 	Phud\Dbr,
 	Phud\Client,
 	Phud\Room,
+	Phud\Dungeon,
 	Phud\Races\Race,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
@@ -265,10 +266,7 @@ class User extends Actor
 
 	public function __wakeup()
 	{
-		$this->room = Room::getByID($this->room->getId());
-		if(!$this->room) {
-			$this->room = Room::getByID(1);
-		}
+		$this->room = Room::getByID($this->room instanceof Dungeon ? Room::getStartRoom() : $this->room->getID());
 		$this->race = Race::lookup($this->race['alias']);
 		$this->race_listeners = $this->race['lookup']->getListeners();
 		foreach($this->race_listeners as $listener) {

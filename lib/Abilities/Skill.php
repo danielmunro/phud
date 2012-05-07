@@ -22,18 +22,18 @@ abstract class Skill extends Ability
 				};
 				break;
 			case 'attacked':
-				$this->listener = function($event, $target) {
+				$this->listener = function($event, $target) use ($skill) {
 					if($skill->perform($target)) {
 						$event->satisfy();
 					}
 				};
 				break;
 			case 'attack':
-				$this->listener = function($attacker) {
+				$this->listener = function($event, $attacker) use ($skill) {
 					$target = $attacker->getTarget();
 					$event = $target->fire('attacked');
 					if($event->getStatus() === 'on') {
-						$ability->perform($fighter);
+						$skill->perform($attacker);
 					}
 				};
 				break;

@@ -52,7 +52,7 @@ class Room
 
 	public static function startBuildDirections()
 	{
-		self::$start_room->buildDirections();
+		self::getByID(self::$start_room)->buildDirections();
 	}
 
 	public function buildDirections()

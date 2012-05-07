@@ -11,7 +11,27 @@ a kobold peon is carrying mining equipment
 An ugly little kobold saunters around. He is hairy and smells like wet mold.~
 movement 2, race kobold, count 5, alias a kobold peon~
 hp 35, level 15~
-dodge, second attack~
+second attack~
+
+weapon
+a crude mining pick lays here
+A crude mining pick is here. It looks to be of kobold origin from the style and craftsmanship, or lack thereof.~
+value 4, weight 3, level 3, material metal, weapon_type flail, damage_type pierce, verb pierce, repop 50~
+hit 1~
+
+equipment
+a brass lantern
+A brass lantern that once belonged to a kobold lies here.~
+value 2, weight 1, level 1, material brass, position light, repop 10~
+~
+glow
+~
+
+item
+a tin trinket
+A small tin trinket is here.~
+value 5, weight 1, material tin, repop 10~
+~
 
 dungeon
 Deep Within the Catacombs
@@ -24,6 +44,12 @@ A kobold driver is belting orders to the peons. He is responsible for keeping th
 movement 2, race kobold, count 5, alias a kobold driver~
 hp 50, level 18~
 dodge, second attack~
+
+equipment
+a crude helmet
+A crude kobold helmet is here, a simple piece of metal shaped into a helmet.~
+position head, level 5, value 5, weight 6, material nickel~
+ac_slash -5, ac_bash -5, ac_pierce -5~
 
 room
 Treasure Room of the Midgaard Catacombs

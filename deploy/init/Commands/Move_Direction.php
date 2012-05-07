@@ -33,8 +33,7 @@ class Move_Direction extends Command
 			}
 		}
 
-		$room_id = $actor->getRoom()->getDirection($direction);
-		$room = Room::getByID($room_id);
+		$room = $actor->getRoom()->getDirection($direction);
 		if($room instanceof Room) {
 			$doors = $actor->getRoom()->getDoors();
 			if(isset($doors[$direction]) && $doors[$direction]->getDisposition() !== Door::DISPOSITION_OPEN) {

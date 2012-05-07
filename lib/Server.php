@@ -108,9 +108,8 @@ class Server
 		}
 		Debug::log("Including deploy area scripts");
 		$this->readDeploy($deploy_dir.'/areas/');
-		if($this->checkDeploySuccess()) {
-			Room::startBuildDirections();
-		}
+		$this->checkDeploySuccess();
+		Room::startBuildDirections();
 	}
 	
 	public function run()

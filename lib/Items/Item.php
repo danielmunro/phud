@@ -15,6 +15,7 @@ class Item
 	protected $attributes = null;
 	protected $level = 0;
 	protected $material = 'generic';
+	protected $repop = 100;
 	
 	const MATERIAL_ADAMANTITE = 'adamantite';
 	const MATERIAL_ALLOY = 'alloy';
@@ -100,6 +101,11 @@ class Item
 	public function getLevel()
 	{
 		return $this->level;
+	}
+
+	public function getRepop()
+	{
+		return $this->repop;
 	}
 	
 	public function getMaterial()

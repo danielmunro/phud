@@ -8,7 +8,7 @@ trait Identity
 
 	public static function getByID($id)
 	{
-		if(isset(static::$identities[$id]) && static::$identities[$id] instanceof static) {
+		if(isset(static::$identities[$id])) {
 			return static::$identities[$id];
 		}
 	}

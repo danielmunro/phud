@@ -1,5 +1,5 @@
 alias
-key furniture container equipment food drink item
+key furniture container equipment weapon food drink item
 
 alias
 glow poison affect

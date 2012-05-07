@@ -71,8 +71,7 @@ class Mob extends Actor
 	{
 		if($this->area->getStatus() === 'new') {
 			$this->repop_item_properties[] = $item->getInitializingProperties();
-			$repop = isset($item->getInitializingProperties()['repop']) ? $item->getInitializingProperties()['repop'] : 100;
-			if($repop > chance()) {
+			if($item->getRepop() > chance()) {
 				parent::addItem($item);
 			}
 		} else {

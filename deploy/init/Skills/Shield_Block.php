@@ -25,7 +25,7 @@ class Shield_Block extends Skill
 	{
 		$sexes = [Actor::SEX_MALE => 'his', Actor::SEX_FEMALE => 'her', Actor::SEX_NEUTRAL => 'its'];
 		$s = $actor->getDisplaySex($sexes);
-		$actor->getRoom()->announce2([
+		$actor->getRoom()->announce([
 			['actor' => $actor, 'message' => 'You block '.$target."'s attack with your shield!"],
 			['actor' => $target, 'message' => ucfirst($actor).' blocks your attack with '.$s.' shield!'],
 			['actor' => '*', 'message' => ucfirst($actor).' blocks '.$target."'s attack with ".$s." shield!"]
