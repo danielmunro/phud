@@ -5,7 +5,7 @@ use Phud\Dbr,
 	Phud\Direction,
 	Phud\Debug,
 	Phud\Server,
-	Phud\Command\Command,
+	Phud\Commands\Command,
 	Phud\Items\Corpse,
 	Phud\Items\Item;
 
