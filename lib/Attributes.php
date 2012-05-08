@@ -45,9 +45,7 @@ class Attributes
 	{
 		if(property_exists($this, $key)) {
 			$this->$key = $amount;
-			return true;
 		}
-		return false;
 	}
 	
 	public function getAttributeLabels()
