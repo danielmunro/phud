@@ -19,7 +19,7 @@ class Move_Direction extends Command
 		['down', 11]
 	];
 
-	public function perform(Actor $actor, $args)
+	public function perform(Actor $actor, $args = [])
 	{
 		if($actor->getTarget()) {
 			return Server::out($actor, 'You cannot leave a fight!');
