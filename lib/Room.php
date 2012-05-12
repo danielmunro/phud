@@ -141,12 +141,12 @@ class Room
 
 	public function actorRemove(Actor $actor)
 	{
-		$key = array_search($actor, $this->actors);
-		if($key === false) {
-			Debug::log($actor.' is not here');
-			return;
+		foreach($this->actors as $i => $a) {
+			if($actor === $a) {
+				unset($this->actors[$i]);
+				return;
+			}
 		}
-		unset($this->actors[$key]);
 	}
 
 	public function getActors()
@@ -182,7 +182,7 @@ class Room
 	
 	public function __toString()
 	{
-		return $this->alias;
+		return $this->short;
 	}
 
 	public function __sleep()
