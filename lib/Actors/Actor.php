@@ -54,6 +54,7 @@ abstract class Actor
 	protected $experience = 0;
 	protected $experience_per_level = 0;
 	protected $furniture = null;
+	protected $is_alive = true;
 	protected $proficiencies = [
 		'stealth' => 15,
 		'healing' => 15,
@@ -205,11 +206,13 @@ abstract class Actor
 	public function modifyAttribute($key, $amount)
 	{
 		$this->attributes->modifyAttribute($key, $amount);
+		$this->fire('mod_'.$key, $amount);
 	}
 
 	public function setAttribute($key, $amount)
 	{
-		return $this->attributes->setAttribute($key, $amount);
+		$this->attributes->setAttribute($key, $amount);
+		$this->fire('mod_'.$key, $amount);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -378,6 +381,20 @@ abstract class Actor
 		$roll['attack'] = rand(0, $hit_roll);
 		$roll['defense'] = rand(0, $def_roll) - $ac;
 
+		if($dam_roll < 5)
+			$descriptor = 'clumsy';
+		elseif($dam_roll < 10)
+			$descriptor = 'amateur';
+		elseif($dam_roll < 15)
+			$descriptor = 'competent';
+		else
+			$descriptor = 'skillful';
+
+		$actors = $this->getRoom()->getActors();
+		foreach($actors as $a) {
+			Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
+		}
+
 		// Lost the hit roll -- miss
 		if($roll['attack'] <= $roll['defense']) {
 			$dam_roll = 0;
@@ -393,102 +410,84 @@ abstract class Actor
 			$victim->modifyAttribute('hp', -($dam_roll));
 		}
 
-		if($dam_roll < 5)
-			$descriptor = 'clumsy';
-		elseif($dam_roll < 10)
-			$descriptor = 'amateur';
-		elseif($dam_roll < 15)
-			$descriptor = 'competent';
-		else
-			$descriptor = 'skillful';
+		if($victim->getAttribute('hp') < 1) {
+			$victim->setTarget(null);
+			$this->setTarget(null);
 
-		$actors = $this->getRoom()->getActors();
-		foreach($actors as $a) {
-			Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
-		}
+			Debug::log(ucfirst($this).' killed '.$victim.".");
+			Server::out($this, 'You have KILLED '.$victim.'.');
+			$this->applyExperienceFrom($victim);
 
-		if(!$victim->isAlive()) {
-			$victim->afterDeath($this);
+			$gold = round($victim->getCurrency('gold') / 2);
+			$silver = round($victim->getCurrency('silver') / 2);
+			$copper = round($victim->getCurrency('copper') / 2);
+
+			$victim->modifyCurrency('gold', -$gold);
+			$victim->modifyCurrency('silver', -$silver);
+			$victim->modifyCurrency('copper', -$copper);
+
+			$this->gold += $gold;
+			$this->silver += $silver;
+			$this->copper += $copper;
+
+			$this->getRoom()->announce($victim, "You hear ".$victim."'s death cry.");
+			if(chance() < 25) {
+				$s = $victim->getDisplaySex();
+				$parts = $victim->getRace()['lookup']->getParts();
+				$custom_message = [
+					['brains' => ucfirst($victim)."'s brains splash all over you!"],
+					['guts' => ucfirst($victim).' spills '.$s.' guts all over the floor.'],
+					['heart' => ucfirst($victim)."'s heart is torn from ".$s." chest."]
+				];
+				$k = array_rand($parts);
+				if(isset($custom_message[$parts[$k]])) {
+					$message = $custom_message[$parts[$k]];
+				} else {
+					$message = ucfirst($victim)."'s ".$parts[$k].' is sliced from '.$s.' body.';
+				}
+				$this->getRoom()->announce([
+					['actor' => '*', 'message' => $message]
+				]);
+				$this->getRoom()->addItem(new Food([
+					'short' => 'the '.$parts[$k].' of '.$victim,
+					'long' => 'The '.$parts[$k].' of '.$victim.' is here.',
+					'nourishment' => 5
+				]));
+			}
+			
+			if($this instanceof User) {
+				Server::out($this, "\n".$this->prompt(), false);
+			}
+
+			Debug::log(ucfirst($victim).' died.');
+			Server::out($victim, 'You have been KILLED!');
 		}
 	}
-
-	protected function afterDeath($killer)
+	
+	public function death()
 	{
-		$this->setTarget(null);
-		$killer->setTarget(null);
-
-		Debug::log(ucfirst($killer).' killed '.$this.".");
-		Server::out($killer, 'You have KILLED '.$this.'.');
-		$killer->applyExperienceFrom($this);
-
-		$gold = round($this->gold / 3);
-		$silver = round($this->silver / 3);
-		$copper = round($this->copper / 3);
-
-		$killer->modifyCurrency('gold', $gold);
-		$killer->modifyCurrency('silver', $silver);
-		$killer->modifyCurrency('copper', $copper);
-
-		$this->gold = $gold;
-		$this->silver = $silver;
-		$this->copper = $copper;
-
-		$this->getRoom()->announce($this, "You hear ".$this."'s death cry.");
-		if(chance() < 25) {
-			$parts = $this->race['lookup']->getParts();
-			$custom_message = [
-				['brains' => ucfirst($this)."'s brains splash all over you!"],
-				['guts' => ucfirst($this).' spills '.$this->getDisplaySex().' guts all over the floor.'],
-				['heart' => ucfirst($this)."'s heart is torn from ".$this->getDisplaySex(). " chest."]
-			];
-			$k = array_rand($parts);
-			if(isset($custom_message[$parts[$k]])) {
-				$message = $custom_message[$parts[$k]];
-			} else {
-				$message = ucfirst($this)."'s ".$parts[$k].' is sliced from '.$this->getDisplaySex().' body.';
-			}
-			$this->getRoom()->announce([
-				['actor' => '*', 'message' => $message]
-			]);
-			$this->getRoom()->addItem(new Food([
-				'short' => 'the '.$parts[$k].' of '.$this,
-				'long' => 'The '.$parts[$k].' of '.$this.' is here.',
-				'nourishment' => 5
-			]));
-		}
 		$corpse = new Corpse([
 			'short' => 'the corpse of '.$this,
 			'long' => 'The corpse of '.$this.' lies here.',
-			'weight' => 100,
-			'copper' => $copper,
-			'silver' => $silver,
-			'gold' => $gold
+			'weight' => 100
 		]);
 		foreach($this->items as $i) {
 			$this->removeItem($i);
 			$corpse->addItem($i);
 		}
 		$this->getRoom()->addItem($corpse);
-		if($killer instanceof User) {
-			Server::out($killer, "\n".$killer->prompt(), false);
-		}
-
-		Debug::log(ucfirst($this).' died.');
-		Server::out($this, 'You have been KILLED!');
-
+		$this->is_alive = false;
 		$this->fire('died');
 	}
 
 	public function tick()
 	{
-		if($this->isAlive()) {
-			$amount = rand(0.05, 0.1);
-			$modifier = 1;
-			$this->fire('tick', $amount, $modifier);
-			$amount *= $modifier;
-			foreach(['hp', 'mana', 'movement'] as $att) {
-				$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
-			}
+		$amount = rand(0.05, 0.1);
+		$modifier = 1;
+		$this->fire('tick', $amount, $modifier);
+		$amount *= $modifier;
+		foreach(['hp', 'mana', 'movement'] as $att) {
+			$this->modifyAttribute($att, round($amount * $this->getAttribute($att)));
 		}
 	}
 
@@ -658,10 +657,15 @@ abstract class Actor
 		return $descriptor;
 
 	}
+	
+	public function respawn()
+	{
+		$this->is_alive = true;
+	}
 
 	public function isAlive()
 	{
-		return $this->getAttribute('hp') > 0;
+		return $this->is_alive;
 	}
 
 	public function addExperience($experience)
@@ -776,6 +780,12 @@ abstract class Actor
 		$this->on('hit', function($event, $victim, $attacker) {
 			if(!$victim->getTarget()) {
 				$victim->setTarget($attacker);
+			}
+		});
+
+		$this->on('mod_hp', function($event, $actor) {
+			if($actor->isAlive() && $actor->getAttribute('hp') < 1) {
+				$actor->death();
 			}
 		});
 

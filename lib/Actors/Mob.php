@@ -13,11 +13,9 @@ class Mob extends Actor
 {
 	protected $movement = 0;
 	protected $movement_timeout = 0;
-	protected $respawn_ticks = 1;
-	protected $respawn_ticks_timeout = 1;
+	protected $respawn_ticks = 3;
 	protected $auto_flee = false;
 	protected $unique = false;
-	protected $default_respawn_ticks = 1;
 	protected $start_room_id = 0;
 	protected $area = null;
 	protected $gold_repop = 0;
@@ -55,22 +53,24 @@ class Mob extends Actor
 	public function applyListeners()
 	{
 		parent::applyListeners();
-		$this->on('died', function($event, $mob) { $mob->handleDeath(); });
-	}
-	
-	public static function runInstantiation()
-	{
-		$db = Dbr::instance();
-		$mob_ids = $db->sMembers('mobs');
-		foreach($mob_ids as $mob_id) {
-			unserialize($db->get($mob_id));
-		}
+		$this->on('died', function($event, $mob) {
+			$mob->setRoom(Room::getByID(Room::PURGATORY_ROOM_ID));
+			$t = $mob->getRespawnTicks();
+			$respawn_timeout = round(rand($t - ($t / 2), $t + ($t / 2)));
+			$mob->on('tick', function($event, $mob) use (&$respawn_timeout) {
+				$respawn_timeout--;
+				if($respawn_timeout < 1) {
+					$mob->respawn();
+					$event->kill();
+				}
+			});
+		});
 	}
 
 	public function addItem(Item $item)
 	{
 		if($this->area->getStatus() === 'new') {
-			$this->repop_item_properties[] = $item->getInitializingProperties();
+			$this->repop_item_properties[] = [get_class($item), $item->getInitializingProperties()];
 			if($item->getRepop() > chance()) {
 				parent::addItem($item);
 			}
@@ -117,7 +117,7 @@ class Mob extends Actor
 		if($this->movement_timeout < 0) {
 			$min = $this->movement * 0.5;
 			$max = $this->movement * 2;
-			$this->movement_timeout = round(rand($min, $max));
+			$this->movement_timeout = min(1, round(rand($min, $max)));
 			$this->move();
 		}
 	}
@@ -188,43 +188,29 @@ class Mob extends Actor
 			if($intersection)
 			{
 				$command = Command::lookup($dir);
-				$command['lookup']->perform($this);
+				$command['lookup']->perform($this, $dir);
 				return;
 			}
 		}
 	}
-	
-	public function handleDeath()
-	{
-		$this->setAttribute('hp', -1);
-		$this->setRoom(Room::getByID(Room::PURGATORY_ROOM_ID));
-		$this->respawn_ticks_timeout = round(rand($this->respawn_ticks - ($this->respawn_ticks / 2), $this->respawn_ticks + ($this->respawn_ticks / 2)));
-		$this->on(
-			'tick',
-			function($event, $server, $mob) {
-				$mob->evaluateRespawn();
-				if($mob->isAlive()) {
-					$event->kill();
-				}
-			}
-		);
-	}
 
-	public function evaluateRespawn()
+	public function respawn()
 	{
-		$this->respawn_ticks_timeout--;
-		if($this->respawn_ticks_timeout < 0) {
-			$this->setAttribute('hp', $this->getMaxAttribute('hp'));
-			$this->setAttribute('mana', $this->getMaxAttribute('mana'));
-			$this->setAttribute('movement', $this->getMaxAttribute('movement'));
-			$this->setRoom($this->getStartRoom());
-			$this->getRoom()->announce([
-				['actor' => '*', 'message' => ucfirst($this).' arrives in a puff of smoke.']
-			]);
-			foreach($this->repop_item_properties as $p) {
-				if($p['repop'] > chance()) {
-					$this->addItem(new Item($p));
-				}
+		parent::respawn();
+		$this->setAttribute('hp', $this->getMaxAttribute('hp'));
+		$this->setAttribute('mana', $this->getMaxAttribute('mana'));
+		$this->setAttribute('movement', $this->getMaxAttribute('movement'));
+		$this->setRoom($this->getStartRoom());
+		$this->getRoom()->announce([
+			['actor' => $this, 'message' => 'You arrive in a puff of smoke.'],
+			['actor' => '*', 'message' => ucfirst($this).' arrives in a puff of smoke.']
+		]);
+		foreach($this->repop_item_properties as $p) {
+			$class = $p[0];
+			$properties = $p[1];
+			$percent = isset($properties['repop']) ? $properties['repop'] : 100;
+			if($percent > chance()) {
+				$this->addItem(new $class($properties));
 			}
 		}
 	}
@@ -258,7 +244,7 @@ class Mob extends Actor
 	{
 		return $this->respawn_ticks;
 	}
-	
+
 	public function getAutoFlee()
 	{
 		return $this->auto_flee;

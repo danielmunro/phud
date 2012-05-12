@@ -39,6 +39,7 @@ class User extends Actor
 		parent::applyListeners();
 		$this->on('died', function($event, $user) {
 			$user->setAttribute('hp', 1);
+			$user->respawn();
 			$command = Command::lookup('look');
 			$command['lookup']->perform($user);
 		});
