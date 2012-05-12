@@ -35,5 +35,19 @@ class Debug
 		fwrite($fp, date('Y-m-d H:i:s')." ".$msg."\n");
 		fclose($fp);
 	}
+
+	public static function customTrace()
+	{
+		$trace = debug_backtrace();
+		foreach($trace as &$t) {
+			$t['object'] = get_class($t['object']);
+			foreach($t['args'] as &$arg) {
+				if(is_object($arg)) {
+					$arg = get_class($arg);
+				}
+			}
+		}
+		return $trace;
+	}
 }
 ?>
