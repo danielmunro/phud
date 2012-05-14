@@ -11,7 +11,6 @@ class Client
 	private $unverified_user = null;
 	private $socket = null;
 	private $command_buffer = array();
-	private $login = array('alias' => false);
 	protected $last_input = '';
 	
 	public function __construct($socket)
