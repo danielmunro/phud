@@ -12,7 +12,6 @@ use Phud\Dbr,
 class Mob extends Actor
 {
 	protected $movement = 0;
-	protected $movement_timeout = 0;
 	protected $respawn_ticks = 3;
 	protected $auto_flee = false;
 	protected $unique = false;
@@ -34,11 +33,17 @@ class Mob extends Actor
 	{
 		parent::__construct($properties);
 		if($this->movement) {
-			$this->movement_timeout = $this->movement;
+			$timeout = $this->movement;
 			$this->on(
 				'tick',
-				function($event, $mob) {
-					$mob->evaluateMove();
+				function($event, $mob) use (&$timeout) {
+					$timeout--;
+					if($timeout < 0) {
+						$min = $this->movement * 0.5;
+						$max = $this->movement * 2;
+						$timeout = min(1, round(rand($min, $max)));
+						$this->move();
+					}
 				}
 			);
 		}
@@ -111,22 +116,10 @@ class Mob extends Actor
 		$this->path = [];
 	}
 
-	public function evaluateMove()
-	{
-		$this->movement_timeout--;
-		if($this->movement_timeout < 0) {
-			$min = $this->movement * 0.5;
-			$max = $this->movement * 2;
-			$this->movement_timeout = min(1, round(rand($min, $max)));
-			$this->move();
-		}
-	}
-	
 	public function move()
 	{
 		$r = $this->getRoom();
-		if($r->getID() === Room::PURGATORY_ROOM_ID)
-		{
+		if(!$r->isAlive()) {
 			return;
 		}
 
@@ -215,11 +208,6 @@ class Mob extends Actor
 		}
 	}
 	
-	public function getExperiencePerLevel()
-	{
-		return $this->getExperiencePerLevelFromCP();
-	}
-	
 	public function getStartRoom()
 	{
 		return Room::getByID($this->start_room_id);
@@ -273,11 +261,6 @@ class Mob extends Actor
 	public function setArea($area)
 	{
 		$this->area = $area;
-	}
-	
-	public static function validateAlias($alias)
-	{
-		return preg_match('/^[A-Za-z ]{2,100}$/i', $alias);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
