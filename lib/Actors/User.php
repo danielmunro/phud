@@ -201,6 +201,21 @@ class User extends Actor
 		return $this->trains;
 	}
 	
+	public function addPractices($amount)
+	{
+		$this->practices += $amount;
+	}
+	
+	public function decreasePractices()
+	{
+		$this->practices--;
+	}
+	
+	public function getPractices()
+	{
+		return $this->practices;
+	}
+
 	public static function validateAlias($alias)
 	{
 		return preg_match('/^[A-Za-z]{2,12}$/i', $alias);
