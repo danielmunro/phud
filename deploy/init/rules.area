@@ -7,6 +7,9 @@ glow poison affect
 alias
 dungeon room
 
+alias
+shopkeeper questmaster trainer actor
+
 def
 area Phud
 <?php
@@ -113,24 +116,12 @@ return function($parser, $mob) {
 ?>~
 
 def
-shopkeeper Phud\Actors
+actor Phud\Actors
 <?php
-return function($parser, $shopkeeper) {
-	$keeper = new $shopkeeper($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
-	$keeper->addAbility(Phud\Abilities\Ability::lookup('haggle'));
-	$keeper->setRoom($parser->getLastRoom());
-	$parser->setLastFirstClass($keeper);
-	Phud\Debug::log("Adding ".$keeper." to ".$parser->getLastRoom());
-};
-?>~
-
-def
-questmaster Phud\Actors
-<?php
-return function($parser, $questmaster) {
-	$master = new $questmaster($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
-	$master->setRoom($parser->getLastRoom());
-	$parser->setLastFirstClass($master);
-	Phud\Debug::log("Adding ".$master." to ".$parser->getLastRoom());
+return function($parser, $actor) {
+	$a = new $actor($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
+	$a->setRoom($parser->getLastRoom());
+	$parser->setLastFirstClass($a);
+	Phud\Debug::log("Adding ".$a." to ".$parser->getLastRoom());
 };
 ?>~
