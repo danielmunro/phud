@@ -16,7 +16,7 @@ berserk, bash, kick, dirt kick, heal~
 room
 Temple Garden
 A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.~
-id 2, n 1, s 3, w midgaard_arena5,3~
+id 2, n 1, s 3, w midgaard_arena5,3, e 80~
 
 drink
 an ornate fountain
@@ -38,6 +38,11 @@ id 1, race volare, alias adept of Mojo~
 
 quest
 adelwine~
+
+room
+Entrance to the Cleric's Guild
+The foyer to the cleric's guild is a large room built out of heavy stone bricks. A bronze plaque hangs on the farthest wall, next to the door leading deeper further into the guild.~
+id 80, w 2~
 
 room
 Midgaard Market Square
@@ -236,7 +241,17 @@ id 21, e 22, w 18, s 28, n 29~
 room
 A Cobblestone Street
 A cobblestone path travels in a east-west direction with shops lining both sides.~
-id 22, w 21~
+id 22, w 21, s 81~
+
+room
+The shipyard
+You are standing on one of five hefty wooden docks that span a hundred feet into the sea. Each dock is lined with merchant ships exchanging goods in Midgaard before continuing their journey.~
+id 81, n 22~
+
+trainer
+A retired sailor stands here, ready to help you train
+An old man stands before you, grizzled with age and many seafaring years behind him. He may help you train to become stronger.~
+race human, alias a retired sailor~
 
 room
 Entrance to the Thieves Guild
