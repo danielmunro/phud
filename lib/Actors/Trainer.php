@@ -1,7 +1,6 @@
 <?php
-namespace Living;
-use \Living\User,
-	\Mechanics\Server;
+namespace Phud\Actors;
+use Phud\Server;
 
 class Trainer extends Mob
 {
