@@ -118,10 +118,11 @@ class Mob extends Actor
 
 	public function move()
 	{
-		$r = $this->getRoom();
-		if(!$r->isAlive()) {
+		if(!$this->is_alive) {
 			return;
 		}
+
+		$r = $this->getRoom();
 
 		$directions = [];
 		foreach(Direction::getDirections() as $direction) {
