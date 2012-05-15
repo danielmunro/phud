@@ -32,21 +32,6 @@ class Mob extends Actor
 	public function __construct($properties = [])
 	{
 		parent::__construct($properties);
-		if($this->movement) {
-			$timeout = $this->movement;
-			$this->on(
-				'tick',
-				function($event, $mob) use (&$timeout) {
-					$timeout--;
-					if($timeout < 0) {
-						$min = $this->movement * 0.5;
-						$max = $this->movement * 2;
-						$timeout = min(1, round(rand($min, $max)));
-						$this->move();
-					}
-				}
-			);
-		}
 		self::$counter++;
 	}
 
@@ -70,6 +55,21 @@ class Mob extends Actor
 				}
 			});
 		});
+		if($this->movement) {
+			$timeout = $this->movement;
+			$this->on(
+				'tick',
+				function($event, $mob) use (&$timeout) {
+					$timeout--;
+					if($timeout < 0) {
+						$min = $this->movement * 0.5;
+						$max = $this->movement * 2;
+						$timeout = max(1, round(rand($min, $max)));
+						$this->move();
+					}
+				}
+			);
+		}
 	}
 
 	public function addItem(Item $item)
