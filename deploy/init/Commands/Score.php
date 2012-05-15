@@ -9,13 +9,11 @@ class Score extends User
 
 	public function perform(lUser $user, $args = [])
 	{
-		$out_atts = '';
-		foreach(['str', 'int', 'wis', 'dex', 'con', 'cha'] as $att) {
-			$out_atts .= ucfirst($att).' '.$user->getAttribute($att).' ('.$user->getUnmodifiedAttribute($att).') ';
-		}
 		Server::out($user, "You are ".$user.", a ".$user->getRace()['alias']."\n".
 			"Attributes:\n".
-			$out_atts."\n".
+			implode(' ', array_map(function($v) use ($user) {
+				return ucfirst($v)." ".$user->getAttribute($v)." (".$user->getUnmodifiedAttribute($v).") ";
+			}, ['str', 'int', 'wis', 'dex', 'con', 'cha']))."\n".
 			"Hp: ".$user->getAttribute('hp')."/".$user->getMaxAttribute('hp').
 			" Mana: ".$user->getAttribute('mana')."/".$user->getMaxAttribute('mana').
 			" Movement: ".$user->getAttribute('movement')."/".$user->getMaxAttribute('movement')."\n".
