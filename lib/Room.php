@@ -35,16 +35,8 @@ class Room
 				$room->setDoor(Direction::getFullAlias($direction), Door::getByID($door_id));
 			}
 		]);
-		if(empty($this->id)) {
-			$i = rand();
-			while(isset(self::$identities[$i])) {
-				$i = rand();
-			}
-			$this->id = $i;
-		}
 		if(isset(self::$identities[$this->id])) {
-			echo "Room already exists: ".$this->id."\n";
-			die;
+			throw new Exception("Room already exists for ID: ".$this->id);
 		}
 		self::$identities[$this->id] = $this;
 		Debug::log("Creating room: ".$this->short." [".$this->id."]");

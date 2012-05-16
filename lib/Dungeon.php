@@ -24,6 +24,13 @@ class Dungeon extends Room
 			$this->exit = $properties['exit'];
 			unset($properties['exit']);
 		}
+		if(empty($this->id)) {
+			$i = rand();
+			while(isset(self::$identities[$i])) {
+				$i = rand();
+			}
+			$this->id = $i;
+		}
 		parent::__construct($properties);
 	}
 
