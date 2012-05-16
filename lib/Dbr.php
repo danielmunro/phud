@@ -7,18 +7,19 @@ class Dbr extends \Redis
 	
 	public function __construct()
 	{
+		if(self::$instance) {
+			throw new Exception('Redis db connection already exists');
+		}
+		if(!$this->connect('127.0.0.1')) {
+			throw new Exception('Could not connect to redis');
+		}
+		$this->select(1);
+		parent::__construct();
 	}
 	
 	public static function instance()
 	{
-		if(!isset(self::$instance))
-		{
-			self::$instance = new self();
-			if(!self::$instance->connect('127.0.0.1'))
-				throw new DB_Exception('Could not connect to redis', DB_Exception::CONNECTION_UNAVAILABLE);
-			self::$instance->select(1);
-		}
-		return self::$instance;
+		return self::$instance ? self::$instance : self::$instance = new self();
 	}
 }
 ?>
