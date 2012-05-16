@@ -50,11 +50,6 @@ class Equipped
 		$this->actor = $actor;
 	}
 	
-	public static function getLabelByPosition($position)
-	{
-		return self::$labels[$position];
-	}
-	
 	public function equip(Equipment $item, $display_message = true)
 	{
 		

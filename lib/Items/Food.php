@@ -16,16 +16,5 @@ class Food extends Item
 	{
 		$this->nourishment = $nourishment;
 	}
-	
-	public function getInformation()
-	{
-		return
-			"===================\n".
-			"==Food Attributes==\n".
-			"===================\n".
-			"nourishment:       ".$this->nourishment."\n".
-			parent::getInformation();
-	}
 }
-
 ?>

@@ -211,8 +211,8 @@ abstract class Actor
 
 	public function setAttribute($key, $amount)
 	{
-		$this->attributes->setAttribute($key, $amount);
 		$this->fire('mod_'.$key, $amount);
+		return $this->attributes->setAttribute($key, $amount);
 	}
 
 	///////////////////////////////////////////////////////////////////////////

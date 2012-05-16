@@ -38,18 +38,5 @@ class Weapon extends Equipment
 	{
 		return $this->verb;
 	}
-	
-	public function getInformation()
-	{
-		return
-			"=====================\n".
-			"==Weapon Attributes==\n".
-			"=====================\n".
-			"weapon type:         ".$this->getWeaponTypeLabel()."\n".
-			"verb:                ".$this->getVerb()."\n".
-			"damage type:         ".$this->damage_type."\n".
-			parent::getInformation();
-	}
 }
-
 ?>

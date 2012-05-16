@@ -62,17 +62,5 @@ class Drink extends Item
 	{
 		return $this->thirst;
 	}
-	
-	public function getInformation()
-	{
-		return
-			"==Drink Attributes==\n".
-			"====================\n".
-			"thirst:             ".$this->getThirst()."\n".
-			"amount:             ".$this->getAmount()."\n".
-			"contents:           ".$this->getContents()."\n".
-			parent::getInformation();
-	}
 }
-
 ?>

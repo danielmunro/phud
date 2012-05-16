@@ -175,27 +175,6 @@ class Item
 		return false;
 	}
 	
-	public function getInformation()
-	{
-		return 
-			"\n=====================\n".
-			"== Base Attributes ==\n".
-			"=====================\n".
-			"level:            ".$this->getLevel()."\n".
-			"nouns:            ".$this->getNouns()."\n".
-			"short:            ".$this->getShort()."\n".
-			"material:         ".$this->getMaterial()."\n".
-			"value:            ".$this->getValue()."\n".
-			"weight:           ".$this->getWeight()."\n".
-			"ownable:          ".$this->getCanOwn()."\n".
-			"long:\n".
-			$this->getLong()."\n".
-			"=====================\n".
-			"== Affects         ==\n".
-			"=====================\n".
-			$this->attributes->getAttributeLabels();
-	}
-	
 	public function __toString()
 	{
 		return $this->short;

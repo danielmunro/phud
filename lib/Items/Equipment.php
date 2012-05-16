@@ -83,18 +83,5 @@ class Equipment extends Item
 				return false;
 		}
 	}
-	
-	public function getInformation()
-	{
-		return 
-			"===========================\n".
-			"== Equipment Information ==\n".
-			"===========================\n".
-			"position:              ".Equipped::getLabelByPosition($this->position)."\n".
-			"condition:             ".$this->getCondition()."\n".
-			"size:                  ".$this->getSize().
-			parent::getInformation();
-	}
 }
-
 ?>
