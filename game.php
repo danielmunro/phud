@@ -4,9 +4,10 @@
 // ADMIN CONFIG
 ///////////////////////////////////////////////////////
 
-// Server settings
-$address = '192.168.0.106';
-$port = 9000;
+// Define a relative project path for file inclusion
+$global_path = dirname(__FILE__);
+
+require_once($global_path.'/config.php');
 
 // Misc
 date_default_timezone_set('America/Los_Angeles');
@@ -16,8 +17,6 @@ date_default_timezone_set('America/Los_Angeles');
 // in order to run
 ///////////////////////////////////////////////////////
 
-// Define a relative project path for file inclusion
-$global_path = dirname(__FILE__);
 
 // Ensure that the script doesn't die from timeout
 set_time_limit(0);
