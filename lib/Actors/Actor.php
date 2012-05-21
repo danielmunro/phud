@@ -33,8 +33,6 @@ abstract class Actor
 	const SEX_NEUTRAL = 1;
 	const SEX_FEMALE = 2;
 	const SEX_MALE = 3;
-
-	const MAX_ATTRIBUTE = 25;
 	
 	protected $level = 0;
 	protected $gold = 0;
@@ -358,10 +356,10 @@ abstract class Actor
 		// ATTACKING
 		$hit_roll = $this->getAttribute('hit');
 		$dam_roll = $this->getAttribute('dam');
-		$hit_roll += ($this->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
+		$hit_roll += ($this->getAttribute('dex') / Attributes::MAX_STAT) * 4;
 
 		// DEFENDING
-		$def_roll = ($victim->getAttribute('dex') / self::MAX_ATTRIBUTE) * 4;
+		$def_roll = ($victim->getAttribute('dex') / Attributes::MAX_STAT) * 4;
 
 		// Size modifier
 		$def_roll += 5 - $victim->getRace()['lookup']->getSize();
@@ -498,6 +496,15 @@ abstract class Actor
 			$this->proficiencies[$proficiency] = 15;
 		}
 		return $this->proficiencies[$proficiency];
+	}
+
+	public function improveProficiency($proficiency)
+	{
+		if(!isset($this->proficiencies[$proficiency])) {
+			Debug::log("Error, proficiency not defined: ".$proficiency);
+			$this->proficiencies[$proficiency] = 15;
+		}
+		$this->proficiencies[$proficiency]++;
 	}
 
 	public function getFurniture()

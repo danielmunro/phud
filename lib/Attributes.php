@@ -3,6 +3,8 @@ namespace Phud;
 
 class Attributes
 {
+	const MAX_STAT = 25;
+
 	protected $str = 0;
 	protected $int = 0;
 	protected $wis = 0;

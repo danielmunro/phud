@@ -8,7 +8,7 @@ alias
 dungeon room
 
 alias
-shopkeeper questmaster trainer actor
+shopkeeper questmaster trainer acolyte actor
 
 def
 area Phud
