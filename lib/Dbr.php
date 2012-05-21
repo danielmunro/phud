@@ -18,7 +18,6 @@ class Dbr
 		\Predis\Autoloader::register();
 		$this->connection = new \Predis\Client(array(
 			'host' => 'localhost',
-			'port' => 6379,
 			'connection_persistent' => true
 		));
 		$this->connection->select(1);
