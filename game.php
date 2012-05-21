@@ -7,7 +7,14 @@
 // Define a relative project path for file inclusion
 $global_path = dirname(__FILE__);
 
-require_once($global_path.'/config.php');
+// Server settings
+$address = '127.0.0.1';
+$port = 9000;
+
+$config = $global_path.'/config.php';
+if(file_exists($config)) {
+	require_once($config);
+}
 
 // Misc
 date_default_timezone_set('America/Los_Angeles');
