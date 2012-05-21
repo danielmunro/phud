@@ -1,25 +1,38 @@
 <?php
 namespace Phud;
 
-class Dbr extends \Redis
+class Dbr
 {
 	private static $instance = null;
+	private $connection = null;
 	
 	public function __construct()
 	{
 		if(self::$instance) {
 			throw new Exception('Redis db connection already exists');
 		}
-		if(!$this->connect('127.0.0.1')) {
-			throw new Exception('Could not connect to redis');
-		}
-		$this->select(1);
-		parent::__construct();
+
+		require_once('Predis/Autoloader.php');
+
+		// Set up redis
+		\Predis\Autoloader::register();
+		$this->connection = new \Predis\Client(array(
+			'host' => 'localhost',
+			'port' => 6379,
+			'connection_persistent' => true
+		));
+		$this->connection->select(1);
+	}
+
+	public function getConnection()
+	{
+		return $this->connection;
 	}
 	
 	public static function instance()
 	{
-		return self::$instance ? self::$instance : self::$instance = new self();
+		$i = self::$instance ? self::$instance : self::$instance = new self();
+		return $i->getConnection();
 	}
 }
 ?>
