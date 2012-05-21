@@ -6,7 +6,11 @@ class Acolyte extends Mob
 {
 	public function practice(User $user, $proficiency)
 	{
-		if($user->getProficiencyIn($proficiency) < $this->getProficiencyIn($proficiency)) {
+		$user_prof = $user->getProficiencyIn($proficiency);
+		if($user_prof === -1) {
+			return Server::out($user, "You cannot practice that.");
+		}
+		if($user_prof < $this->getProficiencyIn($proficiency)) {
 			return Server::out($user, $this." has taught you everything they know.");
 		}
 		if(!$user->getPractices()) {

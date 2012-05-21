@@ -489,11 +489,16 @@ abstract class Actor
 		}
 	}
 
+	public function getProficiencies()
+	{
+		return $this->proficiencies;
+	}
+
 	public function getProficiencyIn($proficiency)
 	{
 		if(!isset($this->proficiencies[$proficiency])) {
 			Debug::log("Error, proficiency not defined: ".$proficiency);
-			$this->proficiencies[$proficiency] = 15;
+			return -1;
 		}
 		return $this->proficiencies[$proficiency];
 	}
