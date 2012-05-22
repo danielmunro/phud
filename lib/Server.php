@@ -88,31 +88,6 @@ class Server
 		Debug::log($user." disconnected");
 	}
 
-	public function deployEnvironment($deploy_dir)
-	{
-		// Set the server instance so that the deploy scripts may reference it
-		self::$instance = $this;
-
-		// Include deploy scripts that will compose the races, skills, and spells.
-		// After that, run all the area generation scripts, and validate success.
-		Debug::log("Including deploy init scripts");
-		$this->readDeploy($deploy_dir.'/init/');
-		Debug::log("Initializing environment");
-		foreach([
-				'Phud\Commands\Command',
-				'Phud\Races\Race',
-				'Phud\Abilities\Ability',
-				'Phud\Quests\Quest'
-			] as $required) {
-			Debug::log("initializing ".$required);
-			$required::init();
-		}
-		Debug::log("Including deploy area scripts");
-		$this->readDeploy($deploy_dir.'/areas/');
-		$this->checkDeploySuccess();
-		Room::startBuildDirections();
-	}
-	
 	public function run()
 	{
 		$this->on(
@@ -199,6 +174,31 @@ class Server
 		}
 	}
 
+	public function deployEnvironment($deploy_dir)
+	{
+		// Set the server instance so that the deploy scripts may reference it
+		self::$instance = $this;
+
+		// Include deploy scripts that will compose the races, skills, and spells.
+		// After that, run all the area generation scripts, and validate success.
+		Debug::log("Including deploy init scripts");
+		$this->readDeploy($deploy_dir.'/init/');
+		Debug::log("Initializing environment");
+		foreach([
+				'Phud\Commands\Command',
+				'Phud\Races\Race',
+				'Phud\Abilities\Ability',
+				'Phud\Quests\Quest'
+			] as $required) {
+			Debug::log("initializing ".$required);
+			$required::init();
+		}
+		Debug::log("Including deploy area scripts");
+		$this->readDeploy($deploy_dir.'/areas/');
+		$this->checkDeploySuccess();
+		Room::startBuildDirections();
+	}
+	
 	protected function readDeploy($start)
 	{
 		global $global_path;
