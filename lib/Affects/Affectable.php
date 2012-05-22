@@ -22,5 +22,15 @@ trait Affectable
 	{
 		return $this->affects;
 	}
+
+	public function isAffectedBy($affect_alias)
+	{
+		foreach($this->affects as $affect) {
+			if($affect->getAlias() === $affect_alias) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 ?>
