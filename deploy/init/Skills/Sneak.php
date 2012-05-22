@@ -34,7 +34,7 @@ class Sneak extends Skill
 			'timeout' => min($actor->getAttribute('dex') * 2, $actor->getLevel()),
 			'apply' => $actor
 		]);
-		$actor->getRoom()->announce2([
+		$actor->getRoom()->announce([
 			['actor' => $actor, 'message' => 'You begin to move silently.'],
 			['actor' => '*', 'message' => $actor.' fades into the shadows.']
 		]);
