@@ -3,14 +3,14 @@ namespace Phud\Commands;
 use Phud\Actors\User,
 	Phud\Debug,
 	Phud\Server,
-	\ReflectionClass,
+	Phud\Instantiate,
 	\Exception,
 	Phud\Alias,
 	Phud\Actors\Actor;
 
 abstract class Command
 {
-	use Alias;
+	use Alias, Instantiate;
 
 	protected $alias = null;
 	protected $dispositions = [];
@@ -35,23 +35,6 @@ abstract class Command
 			self::addAlias($alias, $this);
 		} else {
 			throw new Exception(get_class($this).' is not fully configured.');
-		}
-	}
-	
-	public static function runInstantiation()
-	{
-		global $global_path;
-		$d = dir($global_path.'/deploy/init/Commands');
-		while($command = $d->read()) {
-			if(substr($command, -4) === ".php") {
-				Debug::log("init command: ".$command);
-				$class = substr($command, 0, strpos($command, '.'));
-				$called_class = 'Phud\\Commands\\'.$class;
-				$reflection = new ReflectionClass($called_class);
-				if(!$reflection->isAbstract()) {
-					new $called_class();
-				}
-			}
 		}
 	}
 

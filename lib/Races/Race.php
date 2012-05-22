@@ -2,11 +2,12 @@
 namespace Phud\Races;
 use \Exception,
 	Phud\Alias,
+	Phud\Instantiate,
 	Phud\Debug;
 
 abstract class Race
 {
-	use Alias;
+	use Alias, Instantiate;
 
 	const SIZE_TINY = 2;
 	const SIZE_SMALL = 3;
@@ -80,20 +81,6 @@ abstract class Race
 	abstract public function getListeners();
 
 	abstract public function getAbilities();
-	
-	public function runInstantiation()
-	{
-		global $global_path;
-		$d = dir($global_path.'/deploy/init/Races');
-		while($race = $d->read())
-			if(substr($race, -4) === ".php")
-			{
-				Debug::log("init race: ".$race);
-				$class = substr($race, 0, strpos($race, '.'));
-				$called_class = 'Phud\\Races\\'.$class;
-				new $called_class();
-			}
-	}
 	
 	public function getProficiencies()
 	{

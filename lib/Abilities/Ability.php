@@ -5,12 +5,13 @@ use Phud\Actors\Actor,
 	Phud\Event,
 	Phud\Alias,
 	Phud\Debug,
+	Phud\Instantiate,
 	\ReflectionClass,
 	\Exception;
 
 abstract class Ability
 {
-	use Alias;
+	use Alias, Instantiate;
 
 	protected $proficiency = '';
 	protected $required_proficiency = 0;
@@ -56,18 +57,16 @@ abstract class Ability
 		return $this->is_offensive;
 	}
 	
-	public static function runInstantiation()
+	public static function init()
 	{
 		global $global_path;
-		$namespaces = ['Skills', 'Spells'];
-		foreach($namespaces as $namespace) {
-			$d = dir($global_path.'/deploy/init/'.$namespace);
-			while($ability = $d->read()) {
-				if(substr($ability, -4) === ".php") {
-					Debug::log("init ability: ".$ability);
-					$class = substr($ability, 0, strpos($ability, '.'));
+		foreach(['Skills', 'Spells'] as $ability) {
+			$d = dir($global_path.'/deploy/init/'.$ability);
+			while($class = $d->read()) {
+				if(substr($class, -4) === ".php") {
+					Debug::log("init Ability: ".$class);
+					$class = substr($class, 0, strpos($class, '.'));
 					$called_class = 'Phud\\Abilities\\'.$class;
-					$reflection = new ReflectionClass($called_class);
 					new $called_class();
 				}
 			}

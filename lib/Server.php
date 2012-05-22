@@ -2,6 +2,7 @@
 namespace Phud;
 use Phud\Actors\User,
 	\Exception,
+	\ReflectionClass,
 	\stdClass;
 
 class Server
@@ -104,7 +105,7 @@ class Server
 				'Phud\Quests\Quest'
 			] as $required) {
 			Debug::log("initializing ".$required);
-			$required::runInstantiation();
+			$required::init();
 		}
 		Debug::log("Including deploy area scripts");
 		$this->readDeploy($deploy_dir.'/areas/');
@@ -206,27 +207,23 @@ class Server
 			$d = dir($path);
 			$deferred = [];
 			while($cd = $d->read()) {
-				$pos = strpos($cd, '.');
-				if($pos === false) {
+				if(strpos($cd, '.') === false) {
 					$this->readDeploy($start.$cd.'/');
 					continue;
 				}
-				$ext = substr($cd, $pos+1);
+				list($class, $ext) = explode('.', $cd);
 				if($ext === 'php') {
-					$deferred[] = $cd;
+					$deferred[] = $class;
 				} else if($ext === 'area') {
 					Debug::log("including deploy script: ".$cd);
 					new Parser($path.'/'.$cd);
 				}
 			}
-			foreach($deferred as $def) {
-				Debug::log("including deploy script: ".$def);
-				call_user_func_array(
-					function($path) {
-						require_once($path);
-					},
-					[$d->path.'/'.$def]
-				);
+			foreach($deferred as $class) {
+				Debug::log("including deploy script: ".$class.".php");
+				call_user_func(function() use ($d, $class) {
+					require_once($d->path.$class.'.php');
+				});
 			}
 		} else {
 			throw new Exception('Invalid deploy directory defined: '.$start);
