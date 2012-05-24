@@ -15,6 +15,7 @@ use Phud\Abilities\Ability,
 	Phud\Identity,
 	Phud\Damage,
 	Phud\Debug,
+	Phud\Proficiencies\Proficiency,
 	Phud\Items\Corpse,
 	Phud\Items\Food,
 	Phud\Items\Furniture,
@@ -53,31 +54,12 @@ abstract class Actor
 	protected $experience_per_level = 0;
 	protected $furniture = null;
 	protected $is_alive = true;
-	protected $proficiencies = [
-		'stealth' => 15,
-		'healing' => 15,
-		'one handed weapons' => 15,
-		'two handed weapons' => 15,
-		'leather armor' => 15,
-		'chain armor' => 15,
-		'plate armor' => 15,
-		'melee' => 15,
-		'evasive' => 15,
-		'archery' => 15,
-		'alchemy' => 15,
-		'elemental' => 15,
-		'illusion' => 15,
-		'transportation' => 15,
-		'sorcery' => 15,
-		'maladictions' => 15,
-		'benedictions' => 15,
-		'curative' => 15,
-		'beguiling' => 15,
-		'speech' => 15
-	];
 	
 	public function __construct($properties = [])
 	{
+		foreach(Proficiency::getProficiencies() as $p => $class) {
+			$this->proficiencies[$p] = new $class();
+		}
 		// set generic attribute values
 		$this->attributes = new Attributes([
 			'str' => 15,
@@ -619,10 +601,12 @@ abstract class Actor
 		foreach($this->race_listeners as $listener) {
 			$this->on($listener[0], $listener[1]);
 		}
+		/**
 		$profs = $race['lookup']->getProficiencies();
 		foreach($profs as $name => $value) {
 			$this->proficiencies[$name] += $value;
 		}
+		*/
 		foreach($race['lookup']->getAbilities() as $ability_alias) {
 			$ability = Ability::lookup($ability_alias);
 			$this->addAbility($ability);
@@ -800,6 +784,12 @@ abstract class Actor
 				$actor->death();
 			}
 		});
+
+		foreach($this->proficiencies as $p) {
+			foreach($p->getImprovementListeners() as $l) {
+				$this->on($l[0], $l[1]);
+			}
+		}
 
 		// regen on tick
 		$actor = $this;
