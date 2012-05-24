@@ -17,6 +17,7 @@ class Weapon extends Equipment
 	protected $weapon_type = '';
 	protected $verb = '';
 	protected $damage_type = 0;
+	protected $handed = 1;
 	
 	public function __construct($properties = [])
 	{
@@ -37,6 +38,11 @@ class Weapon extends Equipment
 	public function getVerb()
 	{
 		return $this->verb;
+	}
+
+	public function getHanded()
+	{
+		return $this->handed;
 	}
 }
 ?>
