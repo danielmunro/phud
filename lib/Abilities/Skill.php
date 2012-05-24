@@ -25,6 +25,7 @@ abstract class Skill extends Ability
 				$this->listener = function($event, $target) use ($skill) {
 					if($skill->perform($target)) {
 						$event->satisfy();
+						$target->fire('evaded');
 					}
 				};
 				break;
