@@ -1,5 +1,6 @@
 <?php
 namespace Phud\Proficiencies;
+use Phud\Actors\Actor;
 
 abstract class Proficiency
 {
@@ -11,8 +12,17 @@ abstract class Proficiency
 
 	abstract public function getImprovementListeners();
 
-	public function checkImprove()
+	public function getScore()
 	{
+		return $this->score;
+	}
+
+	public function checkImprove(Actor $actor)
+	{
+		if(chance() <= static::$base_improvement_chance && chance() < ($this->score / 100)) {
+			$this->score++;
+			Server::out($actor, "Your abilities in ".static::$name." have improved!");
+		}
 	}
 
 	public static function register($class)
@@ -27,7 +37,12 @@ abstract class Proficiency
 
 	public static function getName()
 	{
-		return self::$name;
+		return static::$name;
+	}
+
+	public function __toString()
+	{
+		return static::$name;
 	}
 }
 ?>

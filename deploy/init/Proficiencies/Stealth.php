@@ -13,7 +13,7 @@ class Stealth extends Proficiency
 		return [
 			['moved', function($event, $actor) use ($prof) {
 				if($actor->isAffectedBy('sneak')) {
-					$prof->checkImprove();
+					$prof->checkImprove($actor);
 				}
 			}]
 		];

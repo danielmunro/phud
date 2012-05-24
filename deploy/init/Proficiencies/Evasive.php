@@ -12,7 +12,7 @@ class Evasive extends Proficiency
 		$prof = $this;
 		return [
 			['evaded', function($event, $actor) use ($prof) {
-				$prof->checkImprove();
+				$prof->checkImprove($actor);
 			}]
 		];
 	}

@@ -14,7 +14,7 @@ class Two_Handed_Weapons extends Proficiency
 			['attack', function($event, $fighter) use ($prof) {
 				$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
 				if($attacking_weapon->getHanded() == 2) {
-					$prof->checkImprove();
+					$prof->checkImprove($fighter);
 				}
 			}]
 		];

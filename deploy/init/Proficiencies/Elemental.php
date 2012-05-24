@@ -13,7 +13,7 @@ class Elemental extends Proficiency
 		return [
 			['casting', function($event, $actor, $spell) use ($prof) {
 				if($spell->getProficiency() === $prof::getName()) {
-					$prof->checkImprove();
+					$prof->checkImprove($actor);
 				}
 			}]
 		];

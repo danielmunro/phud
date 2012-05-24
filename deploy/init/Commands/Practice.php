@@ -14,9 +14,9 @@ class Practice extends User
 		// Get a list of things to practice
 		if(!isset($args[1])) {
 			$out = '';
-			foreach($user->getProficiencies() as $proficiency_name => $score) {
-				$spacer = str_pad('', 30 - strlen($proficiency_name));
-				$out .= $proficiency_name.$spacer.$score."\n";
+			foreach($user->getProficiencies() as $proficiency) {
+				$spacer = str_pad('', 30 - strlen($proficiency));
+				$out .= $proficiency.$spacer.$proficiency->getScore()."\n";
 			}
 			return Server::out($user, "Practice list:\n".$out);
 		}
