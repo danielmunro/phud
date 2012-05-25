@@ -202,7 +202,7 @@ class Mob extends Actor
 		foreach($this->repop_item_properties as $p) {
 			$class = $p[0];
 			$properties = $p[1];
-			$percent = isset($properties['repop']) ? $properties['repop'] : 100;
+			$percent = isset($properties['repop']) ? $properties['repop'] : 1;
 			if($percent > chance()) {
 				$this->addItem(new $class($properties));
 			}

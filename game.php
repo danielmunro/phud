@@ -70,7 +70,7 @@ function __autoload($class) {
 	
 function chance()
 {
-	return rand(0, 10000) / 100;
+	return rand(0, 10000) / 10000;
 }
 
 function _range($min, $max, $n)

@@ -48,7 +48,7 @@ class Ogre extends Race
 			// Small chance at an extra attack
 			['attack',
 			function($event, $attacker) {
-				if(chance() < 2.5) {
+				if(chance() < 0.025) {
 					$attacker->attack('Ogr');
 				}
 			}],

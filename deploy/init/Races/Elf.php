@@ -54,7 +54,7 @@ class Elf extends Race
 			}],
 			['attacked',
 			function($event, $elf) {
-				if(chance() < 5) {
+				if(chance() < 0.01) {
 					$event->satisfy();
 					$attacker = $elf->getTarget();
 					$elf->getRoom()->announce([

@@ -75,7 +75,7 @@ class Dungeon extends Room
 				if(is_numeric($r) || ($r instanceof static && !$r->memberOf($this))) {
 					$r = null;
 				}
-			} else if(chance() < _range(0, 85, $probability)) {
+			} else if(chance() * 100 < _range(0, 85, $probability)) {
 				$rooms_left--;
 				$p = $this->initializing_properties;
 				unset($p['north'], $p['south'], $p['east'], $p['west'], $p['up'], $p['down'], $p['id']);

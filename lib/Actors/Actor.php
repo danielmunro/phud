@@ -411,7 +411,7 @@ abstract class Actor
 			$this->copper += $copper;
 
 			$this->getRoom()->announce($victim, "You hear ".$victim."'s death cry.");
-			if(chance() < 25) {
+			if(chance() < 0.25) {
 				$s = $victim->getDisplaySex();
 				$parts = $victim->getRace()['lookup']->getParts();
 				$custom_message = [
