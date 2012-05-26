@@ -74,8 +74,8 @@ class Room
 
 	public function setDirection($direction, self $value)
 	{
-		if(isset($this->directions[$direction])) {
-			$this->$direction = $value;
+		if(array_key_exists($direction, $this->directions)) {
+			$this->directions[$direction] = $value;
 		} else {
 			Debug::log($direction.' is not a valid direction.');
 		}

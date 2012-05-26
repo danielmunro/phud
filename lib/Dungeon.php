@@ -7,12 +7,12 @@ class Dungeon extends Room
 	protected $rooms_left = 0;
 	protected $depth = 0;
 	protected $exit = 0;
-	protected $n_prob = 50;
-	protected $s_prob = 50;
-	protected $e_prob = 50;
-	protected $w_prob = 50;
-	protected $u_prob = 50;
-	protected $d_prob = 50;
+	protected $n_prob = 0.5;
+	protected $s_prob = 0.5;
+	protected $e_prob = 0.5;
+	protected $w_prob = 0.5;
+	protected $u_prob = 0.5;
+	protected $d_prob = 0.5;
 
 	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
 	{
@@ -69,13 +69,10 @@ class Dungeon extends Room
 			if($rooms_left <= 0) {
 				return;
 			}
-			$r = null;
-			if($this->directions[$dir]) {
-				$r = $this->directions[$dir];
-				if(is_numeric($r) || ($r instanceof static && !$r->memberOf($this))) {
-					$r = null;
-				}
-			} else if(chance() * 100 < _range(0, 85, $probability)) {
+			$r = $this->directions[$dir];
+			if($r instanceof static && $r->memberOf($this)) {
+				$r->buildOut($rooms_left, $depth, $exit);
+			} else if(empty($r) && chance() < $probability) {
 				$rooms_left--;
 				$p = $this->initializing_properties;
 				unset($p['north'], $p['south'], $p['east'], $p['west'], $p['up'], $p['down'], $p['id']);
@@ -84,9 +81,6 @@ class Dungeon extends Room
 				$r = new static($p, $rooms_left, $depth+1, $exit);
 				$this->directions[$dir] = $r;
 				static::$rooms[$this->short][] = $r;
-			}
-			if($r instanceof static) {
-				$r->buildOut($rooms_left, $depth, $exit);
 			}
 		}
 	}

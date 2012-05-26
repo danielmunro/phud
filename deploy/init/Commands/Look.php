@@ -23,7 +23,7 @@ class Look extends User
 			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
 				return Server::out($user, "You can't see anything, it's so dark!");
 			
-			Server::out($user, $r->getShort()."\n".$r->getLong()."\n");
+			Server::out($user, $r->getShort().($user->isDM() ? " [".$r->getID()."]" : "")."\n".$r->getLong()."\n");
 
 			$doors = $r->getDoors();
 			foreach($doors as $i => $door) {

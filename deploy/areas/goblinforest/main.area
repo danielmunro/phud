@@ -19,7 +19,7 @@ material wood, can_own false~
 dungeon
 A beaten trail
 A small path leads you through the goblin forest.~
-id 201, n 200, rooms 6, n_prob 0, u_prob 0, d_prob 5, s_prob 75, exit 203~
+id 201, n 200, rooms 6, n_prob 0, u_prob 0, s_prob .75, exit 203~
 
 mob
 a small green goblin
@@ -38,7 +38,7 @@ hp 12, level 5~
 dungeon
 A trail in the goblin forest
 You are following a dirt road through the goblin forest. Trees line the narrow and often trecherous path.~
-id 202, e 200, exit 204, rooms 8, e_prob 25, u_prob 0, d_prob 5, w_prob 85~
+id 202, e 200, exit 204, rooms 8, e_prob .25, u_prob 0, w_prob .85~
 
 room
 A large tree filled with cobwebs
