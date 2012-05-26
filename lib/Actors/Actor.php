@@ -54,6 +54,7 @@ abstract class Actor
 	protected $experience_per_level = 0;
 	protected $furniture = null;
 	protected $is_alive = true;
+	protected $proficiencies = [];
 	
 	public function __construct($properties = [])
 	{

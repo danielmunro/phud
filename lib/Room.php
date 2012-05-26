@@ -151,11 +151,13 @@ class Room
 		$actors_announced = [];
 		$general_announcement = '';
 		foreach($announcements as $announcement) {
-			if($announcement['actor'] === '*') {
-				$general_announcement = $announcement['message'];
-			} else {
-				$actors_announced[] = $announcement['actor'];
-				Server::out($announcement['actor'], $announcement['message']);
+			if(isset($announcement['message'])) {
+				if($announcement['actor'] === '*') {
+					$general_announcement = $announcement['message'];
+				} else {
+					$actors_announced[] = $announcement['actor'];
+					Server::out($announcement['actor'], $announcement['message']);
+				}
 			}
 		}
 		if($general_announcement) {

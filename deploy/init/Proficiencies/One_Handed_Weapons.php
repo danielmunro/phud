@@ -1,5 +1,6 @@
 <?php
 namespace Phud\Proficiencies;
+use Phud\Items\Equipment;
 
 class One_Handed_Weapons extends Proficiency
 {
@@ -9,12 +10,11 @@ class One_Handed_Weapons extends Proficiency
 	
 	public function getImprovementListeners()
 	{
-		$prof = $this;
 		return [
-			['attack', function($event, $fighter) use ($prof) {
-				$attacking_weapon = $this->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
-				if($attacking_weapon->getHanded() == 1) {
-					$prof->checkImprove($fighter);
+			['attack', function($event, $fighter) {
+				$weapon = $fighter->getEquipped()->getEquipmentByPosition(Equipment::POSITION_WIELD);
+				if($weapon['equipped'] && $weapon['equipped']->getHanded() == 1) {
+					$this->checkImprove($fighter);
 				}
 			}]
 		];
