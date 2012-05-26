@@ -3,6 +3,7 @@ namespace Phud\Races;
 use \Exception,
 	Phud\Alias,
 	Phud\Instantiate,
+	Phud\Server,
 	Phud\Debug;
 
 abstract class Race
@@ -144,4 +145,8 @@ abstract class Race
 		return ['alias'];
 	}
 }
+
+Server::instance()->on('initialized', function($event) {
+	Race::init();
+});
 ?>

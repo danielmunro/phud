@@ -16,8 +16,10 @@ class Server
 	protected $initialized = false;
 	private static $instance = null;
 	
-	public function __construct($address, $port)
+	protected function __construct()
 	{
+		global $address, $port;
+
 		$this->address = $address;
 		$this->port = $port;
 
@@ -41,7 +43,7 @@ class Server
 
 	public static function instance()
 	{
-		return self::$instance;
+		return self::$instance ? self::$instance : self::$instance = new self();
 	}
 
 	public function isInitialized()
@@ -174,29 +176,28 @@ class Server
 		}
 	}
 
-	public function deployEnvironment($deploy_dir)
+	public function deployEnvironment($lib, $deploy)
 	{
 		// Set the server instance so that the deploy scripts may reference it
 		self::$instance = $this;
 
-		// Include deploy scripts that will compose the races, skills, and spells.
-		// After that, run all the area generation scripts, and validate success.
-		Debug::log("Including deploy init scripts");
-		$this->readDeploy($deploy_dir.'/init/');
-		Debug::log("Initializing environment");
-		foreach([
-				'Phud\Commands\Command',
-				'Phud\Races\Race',
-				'Phud\Abilities\Ability',
-				'Phud\Quests\Quest'
-			] as $required) {
-			Debug::log("initializing ".$required);
-			$required::init();
-		}
-		Debug::log("Including deploy area scripts");
-		$this->readDeploy($deploy_dir.'/areas/');
-		$this->checkDeploySuccess();
-		Room::startBuildDirections();
+		// phud framework classes
+		Debug::log("Including libs");
+		$this->readDeploy($lib.'/');
+
+		// all the game classes
+		Debug::log("Including deploy scripts");
+		$this->readDeploy($deploy.'/init/');
+
+		// game is initialized
+		$this->fire('initialized');
+
+		// area scripts
+		Debug::log("Including area scripts");
+		$this->readDeploy($deploy.'/areas/');
+
+		// finished deployment
+		$this->fire('deployed');
 	}
 	
 	protected function readDeploy($start)
@@ -227,13 +228,6 @@ class Server
 			}
 		} else {
 			throw new Exception('Invalid deploy directory defined: '.$start);
-		}
-	}
-
-	protected function checkDeploySuccess()
-	{
-		if(!Room::getStartRoom()) {
-			throw new Exception('Start room not set');
 		}
 	}
 }

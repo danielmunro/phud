@@ -183,6 +183,9 @@ class Room
 	{
 		return ['id'];
 	}
-
 }
+
+Server::instance()->on('deployed', function() {
+	Room::startBuildDirections();
+});
 ?>

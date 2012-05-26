@@ -1,7 +1,5 @@
 <?php
 
-use Phud\Room;
-
-Room::setStartRoom(1);
+Phud\Room::setStartRoom(1);
 
 ?>

@@ -5,6 +5,7 @@ use Phud\Actors\User,
 	Phud\Interactive,
 	Phud\Identity,
 	Phud\Instantiate,
+	Phud\Server,
 	\Exception,
 	\ReflectionClass;
 
@@ -49,4 +50,8 @@ abstract class Quest
 		return $this->short;
 	}
 }
+
+Server::instance()->on('initialized', function() {
+	Quest::init();
+});
 ?>

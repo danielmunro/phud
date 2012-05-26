@@ -6,6 +6,7 @@ use Phud\Actors\Actor,
 	Phud\Alias,
 	Phud\Debug,
 	Phud\Instantiate,
+	Phud\Server,
 	\ReflectionClass,
 	\Exception;
 
@@ -194,4 +195,8 @@ abstract class Ability
 		}
 	}
 }
+
+Server::instance()->on('initialized', function($event) {
+	Ability::init();
+});
 ?>

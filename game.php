@@ -36,6 +36,7 @@ set_time_limit(0);
 
 $dry_run = false;
 $deploy = 'deploy';
+$lib = 'lib';
 
 foreach($argv as $i => $arg) {
 	switch($arg) {
@@ -46,13 +47,17 @@ foreach($argv as $i => $arg) {
 			$deploy = $argv[$i+1];
 			array_splice($argv, $i+1, 1);
 			break;
+		case '--lib':
+			$lib = $argv[$i+1];
+			array_splice($argv, $i+1, 1);
+			break;
 	}
 }
 
 // initiate and run the server
-$s = new Phud\Server($address, $port);
+$s = Phud\Server::instance();
 if($s->isInitialized()) {
-	$s->deployEnvironment($deploy);
+	$s->deployEnvironment($lib, $deploy);
 	if(!$dry_run) {
 		$s->run();
 	}
