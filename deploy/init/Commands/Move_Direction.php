@@ -43,13 +43,19 @@ class Move_Direction extends Command
 			$actor->fire('moved', $movement_cost, $room);
 			if($actor->getAttribute('movement') >= $movement_cost) {
 				$actor->modifyAttribute('movement', -($movement_cost));
-				$actor->getRoom()->announce($actor, ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb().' '.$direction.'.');
+				$actor->getRoom()->announce($actor, [
+					['actor' => $actor, 'message' => ''],
+					['actor' => '*', 'message' => ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb().' '.$direction.'.']
+				]);
 				$actor->setRoom($room);
 				if($actor instanceof aUser) {
 					$look = Command::lookup('look');
 					$look['lookup']->perform($actor);
 				}
-				$actor->getRoom()->announce($actor, ucfirst($actor).' has arrived.');
+				$actor->getRoom()->announce($actor, [
+					['actor' => $actor, 'message' => ''],
+					['actor' => '*', 'message' => ucfirst($actor).' has arrived.']
+				]);
 				return;
 			}
 			Server::out($actor, 'You are too exhausted.');
