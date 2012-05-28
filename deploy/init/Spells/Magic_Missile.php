@@ -15,8 +15,8 @@ class Magic_Missile extends Spell
 	{
 		$proficiency = $actor->getProficiencyScore($this->proficiency);
 		$damage = -(round(rand($proficiency / 10, $proficiency / 5))); 
-		$target->modifyAttribute('hp', $damage);
 		Server::out($actor, "Your magic missile hits ".$target.'!');
+		$target->modifyAttribute('hp', $damage);
 	}
 }
 ?>

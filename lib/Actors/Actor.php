@@ -397,7 +397,6 @@ abstract class Actor
 
 			Debug::log(ucfirst($this).' killed '.$victim.".");
 			Server::out($this, 'You have KILLED '.$victim.'.');
-			$this->applyExperienceFrom($victim);
 
 			$gold = round($victim->getCurrency('gold') / 2);
 			$silver = round($victim->getCurrency('silver') / 2);
@@ -411,7 +410,10 @@ abstract class Actor
 			$this->silver += $silver;
 			$this->copper += $copper;
 
-			$this->getRoom()->announce($victim, "You hear ".$victim."'s death cry.");
+			$this->getRoom()->announce([
+				['actor' => $victim, 'message' => ''],
+				['actor' => '*', "You hear ".$victim."'s death cry."]
+			]);
 			if(chance() < 0.25) {
 				$s = $victim->getDisplaySex();
 				$parts = $victim->getRace()->getParts();
@@ -440,13 +442,13 @@ abstract class Actor
 				Server::out($this, "\n".$this->prompt(), false);
 			}
 
-			Debug::log(ucfirst($victim).' died.');
-			Server::out($victim, 'You have been KILLED!');
 		}
 	}
 	
 	public function death()
 	{
+		Debug::log(ucfirst($this).' died.');
+		Server::out($this, 'You have been KILLED!');
 		$corpse = new Corpse([
 			'short' => 'the corpse of '.$this,
 			'long' => 'The corpse of '.$this.' lies here.',
@@ -458,6 +460,7 @@ abstract class Actor
 		}
 		$this->getRoom()->addItem($corpse);
 		$this->is_alive = false;
+		$this->target->applyExperienceFrom($this);
 		$this->fire('died');
 	}
 
@@ -671,10 +674,10 @@ abstract class Actor
 	public function applyExperienceFrom(Actor $victim)
 	{
 		Debug::log("Applying experience from ".$victim." to ".$this.".");
+		$experience = $victim->getKillExperience($this);
+		Server::out($this, "You get ".$experience." experience for your kill.");
 		if($this->experience < $this->experience_per_level) {
-			$experience = $victim->getKillExperience($this);
 			$this->experience += $experience;
-			Server::out($this, "You get ".$experience." experience for your kill.");
 		}
 	}
 
