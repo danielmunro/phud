@@ -1,12 +1,13 @@
 <?php
 use Phud\Room,
+	Phud\Area,
 	Phud\Actors\Actor,
 	Phud\Actors\Mob;
 
 $p = [
 	'short' => 'Temple Arena',
 	'long' => 'A dirt arena is here, stained with the blood of vanquished foes.',
-	'area' => 'temple_arena'
+	'area' => new Area(['alias' => 'midgaard_arena'])
 ];
 $id = 'midgaard_arena';
 
@@ -17,7 +18,6 @@ $snail = [
 	'level' => 5,
 	'race' => 'critter',
 	'movement' => 5,
-	'area' => 'temple_arena',
 	'nouns' => 'snail',
 	'attributes' => [
 		'hp' => 5
@@ -31,7 +31,6 @@ $lizard = [
 	'level' => 6,
 	'race' => 'critter',
 	'movement' => 12,
-	'area' => 'temple_arena',
 	'nouns' => 'lizard',
 	'attributes' => [
 		'hp' => 8,
@@ -49,7 +48,6 @@ $fox = [
 	'level' => 7,
 	'race' => 'critter',
 	'movement' => 3,
-	'area' => 'temple_arena',
 	'nouns' => 'small brown fox',
 	'attributes' => [
 		'hp' => 10,
@@ -67,7 +65,6 @@ $bird = [
 	'level' => 3,
 	'race' => 'critter',
 	'movement' => 2,
-	'area' => 'temple_arena',
 	'nouns' => 'small gray bird',
 	'attributes' => [
 		'hp' => 4,

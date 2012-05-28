@@ -1,15 +1,15 @@
 <?php
 use Phud\Room,
+	Phud\Area,
 	Phud\Actors\Mob;
 
-$area_den = 'spiderden';
+$area_den = new Area(['alias' => 'spiderden']);
 $id = 'goblinforestspiderweb';
 
 $spider = [
 	'alias' => 'a small green spider',
 	'nouns' => 'green spider',
 	'long' => 'An unintimidating little green spider scurries across your path.',
-	'area' => $area_den
 ];
 
 new Room([
