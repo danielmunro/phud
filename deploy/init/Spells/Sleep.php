@@ -14,7 +14,7 @@ class Sleep extends Spell
 
 	protected function success(Actor $actor, Actor $target)
 	{
-		$proficiency = $actor->getProficiencyIn($this->proficiency);
+		$proficiency = $actor->getProficiencyScore($this->proficiency);
 		$timeout = round(1 + ($proficiency / 10));
 		$target->setDisposition(Actor::DISPOSITION_SLEEPING);
 		$a = new Affect([

@@ -9,7 +9,7 @@ class Score extends User
 
 	public function perform(lUser $user, $args = [])
 	{
-		Server::out($user, "You are ".$user.", a ".$user->getRace()['alias']."\n".
+		Server::out($user, "You are ".$user.", a ".$user->getRace()."\n".
 			"Attributes:\n".
 			implode(' ', array_map(function($v) use ($user) {
 				return ucfirst($v)." ".$user->getAttribute($v)." (".$user->getUnmodifiedAttribute($v).")";

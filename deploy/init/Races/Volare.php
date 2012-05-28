@@ -11,7 +11,7 @@ class Volare extends Race
 		'benedictions' => 10,
 		'curative' => 10,
 		'one handed weapons' => 5,
-		'leather armor' => 5,
+		'light armor' => 5,
 		'speech' => 5
 	];
 

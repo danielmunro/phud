@@ -16,7 +16,7 @@ abstract class Spell extends Ability
 
 	protected function applyCost(Actor $actor)
 	{
-		$mana_cost = $this->getManaCost($actor->getProficiencyIn($this->proficiency));
+		$mana_cost = $this->getManaCost($actor->getProficiencyScore($this->proficiency));
 		if($actor->getAttribute('mana') < $mana_cost) {
 			Server::out($actor, "You lack the mana to do that.");
 			return false;

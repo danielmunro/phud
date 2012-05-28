@@ -34,7 +34,7 @@ class Fear extends Skill
 		$mod = round(min(3, 3 * ($actor->getLevel()/Actor::MAX_LEVEL)));
 		new Affect([
 			'affect' => 'fear',
-			'timeout' => max(2, round($actor->getProficiencyIn($this->proficiency) / 10)),
+			'timeout' => max(2, round($actor->getProficiencyScore($this->proficiency) / 10)),
 			'message_affect' => 'Affect: fear. Decrease strength and constitution by '.$mod,
 			'message_end' => 'You are no longer fearful.',
 			'attributes' => [

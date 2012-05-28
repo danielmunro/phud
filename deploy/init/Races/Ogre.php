@@ -18,10 +18,9 @@ class Ogre extends Race
 	protected $proficiencies = [
 		'one handed weapons' => 10,
 		'two handed weapons' => 10,
-		'chain armor' => 5,
+		'chain armor' => 10,
 		'plate armor' => 5,
 		'melee' => 10,
-		'alchemy' => 5,
 		'curative' => 5,
 		'evasive' => 5
 	];

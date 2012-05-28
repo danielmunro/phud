@@ -25,7 +25,7 @@ class Meditation extends Skill
 
 	protected function success(Actor $actor, Actor $target, &$args)
 	{
-		$args[0] += $actor->getProficiencyIn($this->proficiency) / 200;
+		$args[0] += $actor->getProficiencyScore($this->proficiency) / 200;
 	}
 
 	protected function fail(Actor $actor)

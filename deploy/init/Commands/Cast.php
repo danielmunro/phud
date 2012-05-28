@@ -20,18 +20,18 @@ class Cast extends Command
 		}
 
 		// Check if the spell exists
-		if(empty($spell) || !($spell['lookup'] instanceof aSpell)) {
+		if(!($spell instanceof aSpell)) {
 			return Server::out($actor, "That spell does not exist in this realm.");
 		}
 
 		// Does the caster actually know the spell?
-		if(!in_array($spell['alias'], $actor->getAbilities())) {
+		if(!in_array($spell->getAlias(), $actor->getAbilities())) {
 			return Server::out($actor, "You do not know that spell.");
 		}
 
 		$actor->fire('casting', $spell);
 
-		$spell['lookup']->perform($actor, $args);
+		$spell->perform($actor, $args);
 	}
 }
 ?>

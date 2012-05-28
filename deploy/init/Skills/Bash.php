@@ -33,8 +33,8 @@ class Bash extends Skill
 	protected function modifyRoll(Actor $actor)
 	{
 		$roll = 0;
-		$roll -= $actor->getRace()['lookup']->getSize() * 1.25;
-		$roll += $actor->getTarget()->getRace()['lookup']->getSize();
+		$roll -= $actor->getRace()->getSize() * 1.25;
+		$roll += $actor->getTarget()->getRace()->getSize();
 		$actor->getTarget()->fire('bash', $actor->getTarget(), $roll);
 		return $roll;
 	}

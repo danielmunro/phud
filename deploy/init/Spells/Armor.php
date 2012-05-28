@@ -13,7 +13,7 @@ class Armor extends Spell
 
 	protected function success(Actor $actor, Actor $target)
 	{
-		$proficiency = $actor->getProficiencyIn($this->proficiency);
+		$proficiency = $actor->getProficiencyScore($this->proficiency);
 		$timeout = min(30, ceil($proficiency / 2));
 		$mod_ac = min(-(round($proficiency / 2)), -15);
 		

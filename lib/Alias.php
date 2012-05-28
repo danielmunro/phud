@@ -9,8 +9,8 @@ trait Alias
 	{
 		self::$aliases[$alias] = ['alias' => $alias, 'lookup' => $lookup, 'priority' => $priority];
 	}
-	
-	public static function lookup($alias)
+
+	public static function record($alias)
 	{
 		// Direct match
 		if(isset(self::$aliases[$alias])) {
@@ -31,6 +31,11 @@ trait Alias
 			});
 			return $possibilities[0];
 		}
+	}
+	
+	public static function lookup($alias)
+	{
+		return self::record($alias)['lookup'];
 	}
 	
 	public static function getAliases()

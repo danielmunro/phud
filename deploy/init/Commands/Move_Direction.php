@@ -45,12 +45,11 @@ class Move_Direction extends Command
 				$actor->modifyAttribute('movement', -($movement_cost));
 				$actor->getRoom()->announce($actor, [
 					['actor' => $actor, 'message' => ''],
-					['actor' => '*', 'message' => ucfirst($actor).' '.$actor->getRace()['lookup']->getMoveVerb().' '.$direction.'.']
+					['actor' => '*', 'message' => ucfirst($actor).' '.$actor->getRace()->getMoveVerb().' '.$direction.'.']
 				]);
 				$actor->setRoom($room);
 				if($actor instanceof aUser) {
-					$look = Command::lookup('look');
-					$look['lookup']->perform($actor);
+					Command::lookup('look')->perform($actor);
 				}
 				$actor->getRoom()->announce($actor, [
 					['actor' => $actor, 'message' => ''],

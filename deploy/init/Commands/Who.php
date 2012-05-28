@@ -15,7 +15,7 @@ class Who extends cUser
 		foreach(Server::instance()->getClients() as $c) {
 			if($c->getUser()) {
 				$u = $c->getUser();
-				$out .= '['.$u->getLevel().' '.$u->getRace()['alias'].'] '.$u."\n";
+				$out .= '['.$u->getLevel().' '.$u->getRace()->getAlias().'] '.$u."\n";
 				$n++;
 			}
 		}

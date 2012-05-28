@@ -19,7 +19,7 @@ class Skill extends User
 			$label = $s;
 			for($i = 0; $i < $pad; $i++)
 				$label .= ' ';
-			Server::out($user, $label.' '.$ability['lookup']->getProficiency());
+			Server::out($user, $label.' '.$ability->getProficiency());
 		}
 	}
 }

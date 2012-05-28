@@ -135,9 +135,7 @@ abstract class Race
 	
 	public function __toString()
 	{
-		if($this->alias)
-			return $this->alias->getAliasName();
-		return '';
+		return $this->alias;
 	}
 
 	public function __sleep()

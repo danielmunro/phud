@@ -131,22 +131,22 @@ abstract class Actor
 		return $this->abilities;
 	}
 
-	public function addAbility($ability)
+	public function addAbility(Ability $ability)
 	{
-		$this->abilities[] = $ability['alias'];
-		if($ability['lookup'] instanceof Skill) {
-			$listener = $ability['lookup']->getListener();
+		$this->abilities[] = $ability->getAlias();
+		if($ability instanceof Skill) {
+			$listener = $ability->getListener();
 			$this->on($listener[0], $listener[1]);
 		}
 	}
 
 	public function removeAbility($ability)
 	{
-		$alias = $ability['alias'];
+		$alias = $ability->getAlias();
 		if(isset($this->ability[$alias])) {
 			unset($this->ability[$alias]);
-			if($ability['lookup'] instanceof Skill) {
-				$ability['lookup']->removeListener($this);
+			if($ability instanceof Skill) {
+				$ability->removeListener($this);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ abstract class Actor
 				$n += $aff->getAttribute($key);
 			}
 		}
-		$n += $this->race['lookup']->getAttribute($key);
+		$n += $this->race->getAttribute($key);
 		$max = $this->max_attributes->getAttribute($key);
 		$n = round($n);
 		return $max > 0 ? min($n, $this->max_attributes->getAttribute($key)) : $n;
@@ -331,7 +331,7 @@ abstract class Actor
 			$dam_type = $attacking_weapon['equipped']->getDamageType();
 		} else {
 			if(!$verb) {
-				$verb = $this->getRace()['lookup']->getUnarmedVerb();
+				$verb = $this->getRace()->getUnarmedVerb();
 			}
 			$dam_type = Damage::TYPE_BASH;
 		}
@@ -345,7 +345,7 @@ abstract class Actor
 		$def_roll = ($victim->getAttribute('dex') / Attributes::MAX_STAT) * 4;
 
 		// Size modifier
-		$def_roll += 5 - $victim->getRace()['lookup']->getSize();
+		$def_roll += 5 - $victim->getRace()->getSize();
 
 		$ac = 0;
 		if($dam_type === Damage::TYPE_BASH)
@@ -414,7 +414,7 @@ abstract class Actor
 			$this->getRoom()->announce($victim, "You hear ".$victim."'s death cry.");
 			if(chance() < 0.25) {
 				$s = $victim->getDisplaySex();
-				$parts = $victim->getRace()['lookup']->getParts();
+				$parts = $victim->getRace()->getParts();
 				$custom_message = [
 					['brains' => ucfirst($victim)."'s brains splash all over you!"],
 					['guts' => ucfirst($victim).' spills '.$s.' guts all over the floor.'],
@@ -477,13 +477,13 @@ abstract class Actor
 		return $this->proficiencies;
 	}
 
-	public function getProficiencyIn($proficiency)
+	public function getProficiencyScore($proficiency)
 	{
 		if(!isset($this->proficiencies[$proficiency])) {
 			Debug::log("Error, proficiency not defined: ".$proficiency);
 			return -1;
 		}
-		return $this->proficiencies[$proficiency];
+		return $this->proficiencies[$proficiency]->getScore();
 	}
 
 	public function improveProficiency($proficiency)
@@ -580,17 +580,17 @@ abstract class Actor
 		return $this->race;
 	}
 
-	public function setRace($race)
+	public function setRace(Race $race)
 	{
-		if(isset($this->race['lookup']) && is_object($this->race['lookup'])) {
+		if(isset($this->race) && is_object($this->race)) {
 			// Undo all previous racial listeners/abilities/stats/proficiencies
 			foreach($this->race_listeners as $listener) {
 				$this->unlisten($listener[0], $listener[1]);
 			}
-			foreach($this->race['lookup']->getProficiencies() as $proficiency => $amount) {
-				$this->proficiencies[$proficiency] -= $amount;
+			foreach($this->race->getProficiencies() as $proficiency => $amount) {
+				$this->proficiencies[$proficiency]->modifyScore(-$amount);
 			}
-			foreach($this->race['lookup']->getAbilities() as $ability_alias) {
+			foreach($this->race->getAbilities() as $ability_alias) {
 				$ability = Ability::lookup($ability_alias);
 				$this->removeAbility($ability);
 			}
@@ -598,17 +598,15 @@ abstract class Actor
 
 		// Assign all racial listeners/abilities/stats/proficiencies
 		$this->race = $race;
-		$this->race_listeners = $race['lookup']->getListeners();
+		$this->race_listeners = $race->getListeners();
 		foreach($this->race_listeners as $listener) {
 			$this->on($listener[0], $listener[1]);
 		}
-		/**
-		$profs = $race['lookup']->getProficiencies();
+		$profs = $race->getProficiencies();
 		foreach($profs as $name => $value) {
-			$this->proficiencies[$name] += $value;
+			$this->proficiencies[$name]->modifyScore($value);
 		}
-		*/
-		foreach($race['lookup']->getAbilities() as $ability_alias) {
+		foreach($race->getAbilities() as $ability_alias) {
 			$ability = Ability::lookup($ability_alias);
 			$this->addAbility($ability);
 		}

@@ -7,12 +7,11 @@ class Human extends Race
 	protected $alias = 'human';
 	protected $playable = true;
 	protected $proficiencies = [
-		'alchemy' => 10,
-		'one handed weapons' => 5,
+		'one handed weapons' => 10,
 		'melee' => 5,
 		'evasive' => 5,
 		'speech' => 5,
-		'leather armor' => 5,
+		'light armor' => 10,
 		'elemental' => 5,
 		'benedictions' => 5,
 		'healing' => 5,

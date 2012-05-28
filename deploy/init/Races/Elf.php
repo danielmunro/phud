@@ -11,11 +11,10 @@ class Elf extends Race
 	protected $proficiencies = [
 		'stealth' => 10,
 		'one handed weapons' => 5,
-		'leather armor' => 5,
-		'archery' => 10,
+		'light armor' => 10,
 		'elemental' => 5,
 		'illusion' => 5,
-		'evasive' => 5,
+		'evasive' => 10,
 		'speech' => 5,
 		'beguiling' => 5
 	];
@@ -45,9 +44,9 @@ class Elf extends Race
 			}],
 			['casted on',
 			function($event, $elf, $caster, $spell, &$modifier) {
-				if($spell['lookup']->getProficiency() === 'beguiling') {
+				if($spell->getProficiency() === 'beguiling') {
 					$modifier -= 0.25;
-					if($spell['alias'] === 'sleep') {
+					if($spell->getAlias() === 'sleep') {
 						$modifier -= 0.25;
 					}
 				}

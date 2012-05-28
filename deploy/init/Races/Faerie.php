@@ -14,9 +14,8 @@ class Faerie extends Race
 	protected $full = 60;
 	protected $proficiencies = [
 		'healing' => 5,
-		'alchemy' => 5,
 		'elemental' => 10,
-		'illusion' => 5,
+		'illusion' => 10,
 		'transportation' => 5,
 		'sorcery' => 10,
 		'maladictions' => 5,

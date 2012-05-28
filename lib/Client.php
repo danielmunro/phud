@@ -31,7 +31,7 @@ class Client
 			function($event, $user, $args) {
 				$command = Command::lookup($args[0]);
 				if($command) {
-					$command['lookup']->tryPerform($user, $args);
+					$command->tryPerform($user, $args);
 					$event->satisfy();
 				}
 			}

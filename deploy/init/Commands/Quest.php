@@ -102,32 +102,5 @@ class Quest extends User
 		}
 		return $questmaster;
 	}
-	
-	/**
-	private function doAccept(QuestInstance $instance, User $user, $value, $args)
-	{
-		$say = Alias::lookup('say');
-		$questmaster = $instance->getUser();
-		if(!$instance->getQuest()->isQualifiedToAccept($user, $quest))
-			return $say->perform($questmaster, array($user, $questmaster->getNotQualifiedMessage()));
-		
-		if($instance)
-		{
-			$user->getQuestLog()->add(new QuestInstance($user, $instance->getQuest()));
-			return $say->perform($questmaster, array($user, $questmaster->getAcceptMessage($instance)));
-		}
-	}
-
-	private function doGive(QuestInstance $instance, User $user, $null, $args)
-	{
-		$target = $user->getRoom()->getUserByInput($args[3]);
-		if(!$target)
-			return Server::out($user, "They aren't here.");
-		$quest = $instance->getQuest();
-		$user->getQuestLog()->remove($quest);
-		$target->getQuestLog()->add($quest);
-		Server::out($user, "You give the quest called ".$quest->getShort()." to ".$target->getAlias().".");
-	}
-	*/
 }
 ?>

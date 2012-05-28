@@ -26,7 +26,7 @@ class Parry extends Skill
 		if(!$weapon) {
 			return -1;
 		}
-		return ($actor->getRace()['lookup']->getSize() - Race::SIZE_NORMAL) * 10;
+		return ($actor->getRace()->getSize() - Race::SIZE_NORMAL) * 10;
 	}
 
 	protected function success(Actor $actor, Actor $target)

@@ -40,8 +40,7 @@ class User extends Actor
 		$this->on('died', function($event, $user) {
 			$user->setAttribute('hp', 1);
 			$user->respawn();
-			$command = Command::lookup('look');
-			$command['lookup']->perform($user);
+			Command::lookup('look')->perform($user);
 		});
 	}
 
@@ -113,10 +112,10 @@ class User extends Actor
 		$this->is_dm = $is_dm;
 	}
 
-	public function setRace($race)
+	public function setRace(Race $race)
 	{
 		parent::setRace($race);
-		$r = $this->race['lookup'];
+		$r = $this->race;
 		$this->hunger = $r->getHunger();
 		$this->thirst = $r->getThirst();
 		$this->full = $r->getFull();
@@ -158,12 +157,12 @@ class User extends Actor
 	
 	public function increaseHunger($hunger)
 	{
-		if($this->full + 1 > $this->getRace()['lookup']->getFull()) {
+		if($this->full + 1 > $this->race->getFull()) {
 			return Server::out($this, "You are too full.");
 		}
 		$this->full++;
 		$this->hunger += $hunger;
-		$max = $this->getRace()['lookup']->getHunger();
+		$max = $this->race->getHunger();
 		if($this->hunger > $max) {
 			$this->hunger = $max;
 		}
@@ -172,7 +171,7 @@ class User extends Actor
 	
 	public function increaseThirst($thirst)
 	{
-		if($this->full + 1 > $this->getRace()['lookup']->getFull() || $this->thirst > $this->getRace()['lookup']->getThirst()) {
+		if($this->full + 1 > $this->race->getFull() || $this->thirst > $this->race->getThirst()) {
 			return Server::out($this, "You are too full.");
 		}
 		if($this->thirst < 0) {
@@ -283,8 +282,8 @@ class User extends Actor
 	public function __wakeup()
 	{
 		$this->room = Room::getByID($this->room instanceof Dungeon ? Room::getStartRoom() : $this->room->getID());
-		$this->race = Race::lookup($this->race['alias']);
-		$this->race_listeners = $this->race['lookup']->getListeners();
+		$this->race = Race::lookup($this->race->getAlias());
+		$this->race_listeners = $this->race->getListeners();
 		foreach($this->race_listeners as $listener) {
 			$this->on($listener[0], $listener[1]);
 		}
@@ -293,8 +292,8 @@ class User extends Actor
 		}
 		foreach($this->abilities as $user_ab) {
 			$ability = Ability::lookup($user_ab);
-			if($ability['lookup'] instanceof Skill) {
-				$listener = $ability['lookup']->getListener();
+			if($ability instanceof Skill) {
+				$listener = $ability->getListener();
 				$this->on($listener[0], $listener[1], 'end');
 			}
 		}

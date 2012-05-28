@@ -19,9 +19,9 @@ class Grant extends DM
 		if($ability) {
 			$target->addAbility($ability);
 			if($target !== $user) {
-				Server::out($target, ucfirst($user)." has bestowed the knowledge of ".$ability['alias']." on you.");
+				Server::out($target, ucfirst($user)." has bestowed the knowledge of ".$ability." on you.");
 			}
-			return Server::out($user, "You've granted ".$ability['alias']." to ".$target.".");
+			return Server::out($user, "You've granted ".$ability." to ".$target.".");
 		}
 		Server::out($user, "Ability not found.");
 	}

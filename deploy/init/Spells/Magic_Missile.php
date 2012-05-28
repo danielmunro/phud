@@ -13,7 +13,7 @@ class Magic_Missile extends Spell
 	
 	protected function success(Actor $actor, Actor $target)
 	{
-		$proficiency = $actor->getProficiencyIn($this->proficiency);
+		$proficiency = $actor->getProficiencyScore($this->proficiency);
 		$damage = -(round(rand($proficiency / 10, $proficiency / 5))); 
 		$target->modifyAttribute('hp', $damage);
 		Server::out($actor, "Your magic missile hits ".$target.'!');

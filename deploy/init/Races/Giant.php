@@ -18,9 +18,8 @@ class Giant extends Race
 	protected $proficiencies = [
 		'one handed weapons' => 10,
 		'two handed weapons' => 10,
-		'leather armor' => 5,
-		'melee' => 10,
-		'alchemy' => 10,
+		'light armor' => 10,
+		'melee' => 15,
 		'elemental' => 10
 	];
 

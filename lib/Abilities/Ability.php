@@ -57,7 +57,7 @@ abstract class Ability
 	{
 		return $this->is_offensive;
 	}
-	
+
 	public static function init()
 	{
 		global $global_path;
@@ -95,7 +95,7 @@ abstract class Ability
 			$actor->incrementDelay($this->delay);
 		}
 		// do a proficiency roll to determine success or failure
-		$roll = chance() + ($actor->getProficiencyIn($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyIn($this->proficiency))/2))/100;
+		$roll = chance() + ($actor->getProficiencyScore($this->proficiency) + $actor->getAttribute('saves') - (($target->getAttribute('saves') + $target->getProficiencyScore($this->proficiency))/2))/100;
 		foreach($this->hard_modifier as $m) {
 			$roll += $this->getHardAttributeModifier($actor->getAttribute($m));
 			$roll -= $this->getHardAttributeModifier($target->getAttribute($m));

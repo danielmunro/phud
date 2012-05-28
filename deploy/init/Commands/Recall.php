@@ -12,7 +12,7 @@ class Recall extends Command
 	public function perform(Actor $actor, $args = [])
 	{
 		$actor->setRoom(Room::getByID(1));
-		Command::lookup('look')['lookup']->perform($actor);
+		Command::lookup('look')->perform($actor);
 	}
 }
 ?>

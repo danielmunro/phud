@@ -18,7 +18,7 @@ class Dodge extends Skill
 
 	public function modifyRoll(Actor $actor)
 	{
-		return ($actor->getRace()['lookup']->getSize() - Race::SIZE_NORMAL) * 10;
+		return ($actor->getRace()->getSize() - Race::SIZE_NORMAL) * 10;
 	}
 
 	protected function success(Actor $actor, Actor $target, $args)

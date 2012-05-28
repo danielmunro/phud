@@ -9,10 +9,9 @@ class Gnome extends Race
 	protected $proficiencies = [
 		'stealth' => 15,
 		'one handed weapons' => 5,
-		'leather armor' => 5,
-		'alchemy' => 10,
+		'light armor' => 10,
 		'illusion' => 10,
-		'evasive' => 5,
+		'evasive' => 10,
 		'speech' => 10
 	];
 

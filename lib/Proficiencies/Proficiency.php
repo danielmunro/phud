@@ -1,6 +1,7 @@
 <?php
 namespace Phud\Proficiencies;
-use Phud\Actors\Actor;
+use Phud\Actors\Actor,
+	Phud\Server;
 
 abstract class Proficiency
 {
@@ -17,6 +18,15 @@ abstract class Proficiency
 		return $this->score;
 	}
 
+	public function modifyScore($score)
+	{
+		if(is_numeric($score)) {
+			$this->score += $score;
+		} else {
+			Debug::log('[error] Proficiency::modifyScore() expects a numeric score, got: '.$score);
+		}
+	}
+
 	public function checkImprove(Actor $actor)
 	{
 		if(chance() <= static::$base_improvement_chance && chance() < ($this->score / 100)) {
@@ -27,7 +37,8 @@ abstract class Proficiency
 
 	public static function register($class)
 	{
-		self::$proficiencies[$class] = 'Phud\\Proficiencies\\'.$class;
+		$qualified_class = 'Phud\\Proficiencies\\'.$class;
+		self::$proficiencies[$qualified_class::getName()] = $qualified_class;
 	}
 
 	public static function getProficiencies()
