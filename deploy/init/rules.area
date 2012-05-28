@@ -65,9 +65,9 @@ return function($parser, $room) {
 	}]));
 	$parser->setLastRoom($room);
 	if($room instanceof Phud\Dungeon) {
-		return function() use ($room) {
+		Phud\Server::instance()->on('deployed', function() use ($room) {
 			$room->setup();
-		};
+		});
 	}
 };
 ?>~
@@ -96,22 +96,21 @@ return function($parser, $mob) {
 	} else {
 		$count = 1;
 	}
-	$end_hooks = [];
 	for($i = 0; $i < $count; $i++) {
 		$mob = new $mob($p);
 		$room = $parser->getLastRoom();
 		$parser->setLastFirstClass($mob);
 		Phud\Debug::log("Adding ".$mob." to ".$room->getShort());
 		if($room instanceof Phud\Dungeon) {
-			$end_hooks[] = function() use ($room, $mob) {
+			Phud\Server::instance()->on('deployed', function() use ($room, $mob) {
 				$room = Phud\Dungeon::getRandom($room->getShort());
 				$mob->setRoom($room);
-			};
+			},
+			'end');
 		} else {
 			$mob->setRoom($room);
 		}
 	}
-	return $end_hooks;
 };
 ?>~
 

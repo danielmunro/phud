@@ -18,7 +18,6 @@ class Parser
 	public function __construct($area_file)
 	{
 		$this->fp = fopen($area_file, 'r');
-		$end_hooks = [];
 		while($line = $this->readLine()) {
 			$method = $this->getMethod($line);
 			$class = ucfirst($line);
@@ -29,23 +28,13 @@ class Parser
 					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
 					die;
 				}
-				$end_hook = call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
-				if($end_hook) {
-					if(is_array($end_hook)) {
-						$end_hooks = array_merge($end_hooks, $end_hook);
-					} else {
-						$end_hooks[] = $end_hook;
-					}
-				}
+				call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
 			} else {
 				Debug::log('Area method: "'.$method.'" does not exist.');
 			}
 		}
 		if($this->area) {
 			$this->area->setStatus('initialized');
-		}
-		foreach($end_hooks as $end_hook) {
-			$end_hook();
 		}
 	}
 
