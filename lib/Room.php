@@ -83,7 +83,7 @@ class Room
 
 	public function getDirection($direction)
 	{
-		if(isset($this->directions[$direction])) {
+		if(array_key_exists($direction, $this->directions)) {
 			return $this->directions[$direction];
 		} else {
 			Debug::log($direction.' is not a valid direction.');
