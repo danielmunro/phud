@@ -11,7 +11,7 @@ alias
 shopkeeper questmaster trainer acolyte actor
 
 def
-area Phud
+area Phud\Room
 <?php
 return function($parser, $class) {
 	$parser->setArea(new $class($parser->loadRequired([], ['properties'])));
@@ -27,10 +27,33 @@ return function($parser, $affect) {
 ?>~
 
 def
-door Phud
+door Phud\Room
 <?php
 return function($parser, $door) {
 	$parser->setLastAdded(new $door($parser->loadRequired(['short', 'long'], ['properties'])));
+};
+?>~
+
+def
+room Phud\Room
+<?php
+return function($parser, $room) {
+	$room = new $room($parser->loadRequired(
+		['short', 'long' => 'block'], 
+		['properties' => function(&$p, $property, $value) {
+			foreach(Phud\Room\Direction::getDirections() as $l) {
+				if(strpos($l, $property) === 0) {
+					$p[$l] = $value;
+					return true;
+				}
+			}
+	}]));
+	$parser->setLastRoom($room);
+	if($room instanceof Phud\Room\Dungeon) {
+		Phud\Server::instance()->on('deployed', function() use ($room) {
+			$room->setup();
+		});
+	}
 };
 ?>~
 
@@ -45,29 +68,6 @@ return function($parser, $quest) {
 		} else {
 			Phud\Debug::log('Quest not found: '.$id);
 		}
-	}
-};
-?>~
-
-def
-room Phud
-<?php
-return function($parser, $room) {
-	$room = new $room($parser->loadRequired(
-		['short', 'long' => 'block'], 
-		['properties' => function(&$p, $property, $value) {
-			foreach(Phud\Direction::getDirections() as $l) {
-				if(strpos($l, $property) === 0) {
-					$p[$l] = $value;
-					return true;
-				}
-			}
-	}]));
-	$parser->setLastRoom($room);
-	if($room instanceof Phud\Dungeon) {
-		Phud\Server::instance()->on('deployed', function() use ($room) {
-			$room->setup();
-		});
 	}
 };
 ?>~

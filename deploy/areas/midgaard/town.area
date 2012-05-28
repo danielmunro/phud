@@ -35,7 +35,7 @@ alias an acolyte of the temple~
 room
 Temple Garden
 A small fountain lies to the side of the cobblestone path, which dissects an impressive garden. The temple of Midgaard is to the north, with the market square to the south.~
-id 2, n 1, s 3, w midgaard_arena5,3, e 80~
+id 2, n 1, s 3, w 100, e 80~
 
 drink
 an ornate fountain

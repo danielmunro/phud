@@ -1,6 +1,8 @@
 <?php
 namespace Phud;
-use Phud\Abilities\Ability;
+use Phud\Abilities\Ability,
+	Phud\Room\Area,
+	Phud\Room\Room;
 
 class Parser
 {

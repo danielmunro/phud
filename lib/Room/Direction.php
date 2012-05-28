@@ -1,5 +1,5 @@
 <?php
-namespace Phud;
+namespace Phud\Room;
 
 class Direction
 {

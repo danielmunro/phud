@@ -1,6 +1,12 @@
 <?php
-namespace Phud;
+namespace Phud\Room;
 use Phud\Actors\Actor,
+	Phud\Inventory,
+	Phud\EasyInit,
+	Phud\Identity,
+	Phud\Interactive,
+	Phud\Server,
+	Phud\Debug,
 	\Exception;
 
 class Room

@@ -1,5 +1,7 @@
 <?php
-namespace Phud;
+namespace Phud\Room;
+use Phud\EasyInit,
+	Phud\Identity;
 
 class Door
 {

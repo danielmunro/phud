@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Actors;
 use Phud\Dbr,
-	Phud\Room,
+	Phud\Room\Room,
 	Phud\Direction,
 	Phud\Debug,
 	Phud\Server,

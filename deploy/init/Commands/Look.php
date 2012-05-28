@@ -4,8 +4,8 @@ use Phud\Server,
 	Phud\Affect,
 	Phud\Actors\Actor,
 	Phud\Actors\User as lUser,
-	Phud\Room,
-	Phud\Direction;
+	Phud\Room\Room,
+	Phud\Room\Direction;
 
 class Look extends User
 {

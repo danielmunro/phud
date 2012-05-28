@@ -1,6 +1,6 @@
 <?php
-use Phud\Room,
-	Phud\Area,
+use Phud\Room\Room,
+	Phud\Room\Area,
 	Phud\Actors\Mob;
 
 $area_den = new Area(['alias' => 'spiderden']);

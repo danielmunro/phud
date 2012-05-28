@@ -4,7 +4,7 @@ use Phud\Actors\User,
 	Phud\Dbr,
 	Phud\Server,
 	Phud\Races\Race,
-	Phud\Room,
+	Phud\Room\Room,
 	Phud\Debug,
 	Phud\Commands\Command;
 

@@ -1,4 +1,5 @@
 <?php
+/**
 use Phud\Room,
 	Phud\Area,
 	Phud\Actors\Actor,
@@ -319,4 +320,5 @@ new Room(array_merge($p, [
 	]
 ]));
 
+*/
 ?>

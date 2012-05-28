@@ -3,9 +3,9 @@ namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Actors\User as aUser,
 	Phud\Server,
-	Phud\Room,
-	Phud\Door,
-	Phud\Direction;
+	Phud\Room\Room,
+	Phud\Room\Door,
+	Phud\Room\Direction;
 
 class Move_Direction extends Command
 {

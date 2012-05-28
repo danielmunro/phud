@@ -1,5 +1,6 @@
 <?php
-namespace Phud;
+namespace Phud\Room;
+use Phud\EasyInit;
 
 class Area
 {
