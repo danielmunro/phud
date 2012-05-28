@@ -216,12 +216,10 @@ class Server
 				if($ext === 'php') {
 					$deferred[] = $class;
 				} else if($ext === 'area') {
-					Debug::log("including deploy script: ".$cd);
 					new Parser($path.'/'.$cd);
 				}
 			}
 			foreach($deferred as $class) {
-				Debug::log("including deploy script: ".$class.".php");
 				call_user_func(function() use ($d, $class) {
 					require_once($d->path.$class.'.php');
 				});
