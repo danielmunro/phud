@@ -791,9 +791,8 @@ abstract class Actor
 		}
 
 		// regen on tick
-		$actor = $this;
-		Server::instance()->on('tick', function($event, $server) use ($actor) {
-			$actor->tick($event);
+		Server::instance()->on('tick', function($event, $server) {
+			$this->tick($event);
 		});
 	}
 	
