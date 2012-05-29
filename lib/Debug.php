@@ -1,7 +1,8 @@
 <?php
 namespace Phud;
 use Phud\Actors\Actor,
-	Phud\Actors\Mob;
+	Phud\Actors\Mob,
+	Phud\Room\Room;
 
 class Debug
 {
