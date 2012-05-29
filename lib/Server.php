@@ -216,7 +216,8 @@ class Server
 				if($ext === 'php') {
 					$deferred[] = $class;
 				} else if($ext === 'area') {
-					new Parser($path.'/'.$cd);
+					Debug::log("[deploy area] ".$path.$cd);
+					new Parser($path.$cd);
 				}
 			}
 			foreach($deferred as $class) {

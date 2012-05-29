@@ -14,25 +14,22 @@ class Parser
 	protected $break = false;
 	protected $buffer = [];
 	protected $area = null;
-	protected static $aliases = [];
+	protected static $mappings = [];
 	protected static $defs = [];
 
 	public function __construct($area_file)
 	{
 		$this->fp = fopen($area_file, 'r');
-		while($line = $this->readLine()) {
-			$method = $this->getMethod($line);
-			$class = ucfirst($line);
-			if($method && method_exists($this, $method)) {
-				$this->$method($class);
-			} else if(isset(self::$defs[$method])) {
-				if(!is_callable(self::$defs[$method][1])) {
-					Debug::log('Misconfigured area def: '.$method.'. Halting executing.');
-					die;
-				}
-				call_user_func_array(self::$defs[$method][1], [$this, self::$defs[$method][0].'\\'.$class]);
+		while($calling = $this->readLine()) {
+			if($calling && method_exists($this, $calling)) {
+				$this->$calling();
+				continue;
+			}
+			if(array_key_exists($calling, self::$defs)) {
+				call_user_func_array(self::$defs[$calling][1], [$this, self::$defs[$calling][0]]);
 			} else {
-				Debug::log('Area method: "'.$method.'" does not exist.');
+				echo "Broken: ".$calling."\n";
+				die;
 			}
 		}
 		if($this->area) {
@@ -84,27 +81,29 @@ class Parser
 
 	protected function def()
 	{
-		list($def, $full_class) = explode(' ', $this->readLine());
+		$mappings = [];
+		while($line = $this->readLine()) {
+			$mappings[] = $line;
+		}
 		$p = str_replace(['<?php', '?>'], '', $this->readBlock());
 		$func = eval($p);
-		self::$defs[$def] = [$full_class, $func];
-	}
-
-	protected function alias()
-	{
-		$aliases = explode(' ', $this->readLine());
-		$object = array_pop($aliases);
-		foreach($aliases as $alias) {
-			self::$aliases[$alias] = $object;
+		foreach($mappings as $alias) {
+			self::$defs[$alias] = [self::$mappings[$alias], $func];
 		}
 	}
 
-	protected function getMethod($line)
+	protected function mapping()
 	{
-		if(isset(self::$aliases[$line])) {
-			return self::$aliases[$line];
+		$namespace = $this->readLine();
+		while($line = $this->readLine()) {
+			if(strpos($line, ' ') === false) {
+				$alias = $line;
+				$class = ucfirst($line);
+			} else {
+				list($alias, $class) = explode(' ', $line);
+			}
+			self::$mappings[$alias] = $namespace."\\".$class;
 		}
-		return $line;
 	}
 
 	public function loadRequired($properties, $additional = [])

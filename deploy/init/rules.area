@@ -1,25 +1,41 @@
-alias
-key furniture container equipment weapon food drink item
+mapping
+Phud\Items
+key, furniture, container, equipment, weapon, food, drink, item~
 
-alias
-glow poison affect
+mapping
+Phud\Affects
+glow, poison, affect~
 
-alias
-dungeon room
+mapping
+Phud\Actors
+shopkeeper, questmaster, trainer, acolyte, actor~
 
-alias
-shopkeeper questmaster trainer acolyte actor
+mapping
+Phud\Actors
+mob~
+
+mapping
+Phud\Room
+area~
+
+mapping
+Phud\Room
+door~
+
+mapping
+Phud\Room
+room~
+
+mapping
+Phud\Room\Dungeon
+dungeon, random_dungeon Random~
+
+mapping
+Phud\Quests
+quest~
 
 def
-area Phud\Room
-<?php
-return function($parser, $class) {
-	$parser->setArea(new $class($parser->loadRequired([], ['properties'])));
-};
-?>~
-
-def
-affect Phud\Affects
+glow, poison, affect~
 <?php
 return function($parser, $affect) {
 	$parser->getLastAdded()->addAffect(new $affect($parser->loadRequired([], ['properties'])));
@@ -27,7 +43,15 @@ return function($parser, $affect) {
 ?>~
 
 def
-door Phud\Room
+area~
+<?php
+return function($parser, $class) {
+	$parser->setArea(new $class($parser->loadRequired([], ['properties'])));
+};
+?>~
+
+def
+door~
 <?php
 return function($parser, $door) {
 	$parser->setLastAdded(new $door($parser->loadRequired(['short', 'long'], ['properties'])));
@@ -35,7 +59,7 @@ return function($parser, $door) {
 ?>~
 
 def
-room Phud\Room
+room~
 <?php
 return function($parser, $room) {
 	$room = new $room($parser->loadRequired(
@@ -49,7 +73,25 @@ return function($parser, $room) {
 			}
 	}]));
 	$parser->setLastRoom($room);
-	if($room instanceof Phud\Room\Dungeon) {
+};
+?>~
+
+def
+dungeon, random_dungeon~
+<?php
+return function($parser, $room) {
+	$room = new $room($parser->loadRequired(
+		['short', 'long' => 'block'], 
+		['properties' => function(&$p, $property, $value) {
+			foreach(Phud\Room\Direction::getDirections() as $l) {
+				if(strpos($l, $property) === 0) {
+					$p[$l] = $value;
+					return true;
+				}
+			}
+	}]));
+	$parser->setLastRoom($room);
+	if($room instanceof Phud\Room\Dungeon\Dungeon) {
 		Phud\Server::instance()->on('deployed', function() use ($room) {
 			$room->setup();
 		});
@@ -58,7 +100,7 @@ return function($parser, $room) {
 ?>~
 
 def
-quest Phud\Quests
+quest~
 <?php
 return function($parser, $quest) {
 	while($id = $parser->readLine()) {
@@ -73,7 +115,7 @@ return function($parser, $quest) {
 ?>~
 
 def
-item Phud\Items
+key, furniture, container, equipment, weapon, food, drink, item~
 <?php
 return function($parser, $class) {
 	$item = new $class($parser->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes']));
@@ -83,7 +125,7 @@ return function($parser, $class) {
 ?>~
 
 def
-mob Phud\Actors
+mob~
 <?php
 return function($parser, $mob) {
 	$p = $parser->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
@@ -101,9 +143,9 @@ return function($parser, $mob) {
 		$room = $parser->getLastRoom();
 		$parser->setLastFirstClass($mob);
 		Phud\Debug::log("Adding ".$mob." to ".$room->getShort());
-		if($room instanceof Phud\Dungeon) {
+		if($room instanceof Phud\Room\Dungeon\Dungeon) {
 			Phud\Server::instance()->on('deployed', function() use ($room, $mob) {
-				$room = Phud\Dungeon::getRandom($room->getShort());
+				$room = Phud\Room\Dungeon\Dungeon::getRandom($room->getShort());
 				$mob->setRoom($room);
 			},
 			'end');
@@ -115,7 +157,7 @@ return function($parser, $mob) {
 ?>~
 
 def
-actor Phud\Actors
+shopkeeper, questmaster, trainer, acolyte, actor~
 <?php
 return function($parser, $actor) {
 	$a = new $actor($parser->loadRequired(['short', 'long' => 'block'], ['properties']));

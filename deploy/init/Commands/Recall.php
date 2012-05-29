@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Room;
+	Phud\Room\Room;
 
 class Recall extends Command
 {
