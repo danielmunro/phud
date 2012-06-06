@@ -59,15 +59,12 @@ class Server
 	public function addClient(Client $client)
 	{
 		$this->clients[] = $client;
-		$this->on(
-			'cycle',
-			function($event) use ($client) {
-				$client->checkCommandBuffer();
-				if(!is_resource($client->getSocket())) {
-					$event->kill();
-				}
-			},
-			'end');
+		$this->on('cycle', function($event) use ($client) {
+			$client->checkCommandBuffer();
+			if(!is_resource($client->getSocket())) {
+				$event->kill();
+			}
+		}, 'end');
 	}
 	
 	public function disconnectClient(Client $client)

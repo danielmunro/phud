@@ -5,13 +5,15 @@ use Phud\Room\Room,
 
 abstract class Dungeon extends Room
 {
-	protected static $rooms = [];
-	protected $rooms_left = 0;
 	protected $depth = 0;
 	protected $exit = 0;
+	protected static $special_properties = [];
+	protected static $rooms = [];
+	protected static $inf = [];
 
 	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
 	{
+		$this->setSpecialProperties($properties);
 		if(isset($properties['rooms'])) {
 			$this->rooms_left = $properties['rooms']-1;
 			unset($properties['rooms']);
@@ -30,11 +32,22 @@ abstract class Dungeon extends Room
 		parent::__construct($properties);
 	}
 
+	protected function setSpecialProperties(&$properties)
+	{
+		$i = $properties['id'];
+		foreach(static::$special_properties as $special_property) {
+			if(array_key_exists($special_property, $properties)) {
+				static::$inf[$i][$special_property] = $properties[$special_property];
+				unset($properties[$special_property]);
+			}
+		}
+	}
+
 	public function setup()
 	{
 		static::$rooms[$this->short][] = $this;
-		while($this->rooms_left) {
-			$this->buildOut($this->rooms_left, $this->depth, $this->exit);
+		while($this->isStillBuilding(static::$inf[$this->id])) {
+			$this->buildOut(static::$inf[$this->id]);
 		}
 		if($this->exit) {
 			$dirs = Direction::getDirections();
@@ -55,6 +68,8 @@ abstract class Dungeon extends Room
 	}
 
 	abstract public function buildOut(&$rooms_left, $depth, &$exit);
+
+	abstract public function isStillBuilding($inf);
 
 	public function memberOf(self $dungeon)
 	{

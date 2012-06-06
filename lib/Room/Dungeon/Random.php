@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Room\Dungeon;
-use Phud\Room\Room,
-	Phud\Room\Direction;
+use Phud\Room\Direction;
 
 class Random extends Dungeon
 {
@@ -11,28 +10,9 @@ class Random extends Dungeon
 	protected $w_prob = 0.5;
 	protected $u_prob = 0.5;
 	protected $d_prob = 0.5;
+	protected static $special_properties = ['rooms', 'exit'];
 
-	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
-	{
-		if(isset($properties['rooms'])) {
-			$this->rooms_left = $properties['rooms']-1;
-			unset($properties['rooms']);
-		}
-		if(isset($properties['exit'])) {
-			$this->exit = $properties['exit'];
-			unset($properties['exit']);
-		}
-		if(empty($this->id)) {
-			$i = rand();
-			while(isset(self::$identities[$i])) {
-				$i = rand();
-			}
-			$this->id = $i;
-		}
-		parent::__construct($properties);
-	}
-
-	public function buildOut(&$rooms_left, $depth, &$exit)
+	public function buildOut(&$dungeon_inf, $depth = 0)
 	{
 		$dirs = [];
 		foreach(Direction::getDirections() as $dir) {
@@ -57,6 +37,11 @@ class Random extends Dungeon
 				static::$rooms[$this->short][] = $r;
 			}
 		}
+	}
+
+	public function isStillBuilding($inf)
+	{
+		return $inf['rooms'] > 0;
 	}
 
 	public function memberOf(self $dungeon)

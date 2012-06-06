@@ -28,7 +28,7 @@ room~
 
 mapping
 Phud\Room\Dungeon
-dungeon, random_dungeon Random~
+dungeon, random_dungeon Random, grid_dungeon Grid~
 
 mapping
 Phud\Quests
@@ -65,11 +65,11 @@ return function($parser, $room) {
 	$room = new $room($parser->loadRequired(
 		['short', 'long' => 'block'], 
 		['properties' => function(&$p, $property, $value) {
-			foreach(Phud\Room\Direction::getDirections() as $l) {
-				if(strpos($l, $property) === 0) {
-					$p[$l] = $value;
-					return true;
-				}
+			$v = Phud\Room\Direction::getFullAlias($property);
+			if($v) {
+				unset($p[$property]);
+				$p[$v] = $value;
+				return true;
 			}
 	}]));
 	$parser->setLastRoom($room);
@@ -77,25 +77,23 @@ return function($parser, $room) {
 ?>~
 
 def
-dungeon, random_dungeon~
+dungeon, random_dungeon, grid_dungeon~
 <?php
 return function($parser, $room) {
 	$room = new $room($parser->loadRequired(
 		['short', 'long' => 'block'], 
 		['properties' => function(&$p, $property, $value) {
-			foreach(Phud\Room\Direction::getDirections() as $l) {
-				if(strpos($l, $property) === 0) {
-					$p[$l] = $value;
-					return true;
-				}
+			$v = Phud\Room\Direction::getFullAlias($property);
+			if($v) {
+				unset($p[$property]);
+				$p[$v] = $value;
+				return true;
 			}
 	}]));
 	$parser->setLastRoom($room);
-	if($room instanceof Phud\Room\Dungeon\Dungeon) {
-		Phud\Server::instance()->on('deployed', function() use ($room) {
-			$room->setup();
-		});
-	}
+	Phud\Server::instance()->on('deployed', function() use ($room) {
+		$room->setup();
+	});
 };
 ?>~
 

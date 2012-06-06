@@ -238,16 +238,10 @@ class Equipped
 	
 	public function getEquipmentByPosition($position)
 	{
-		$eq = array_filter(
-						$this->equipment,
-						function($e) use ($position)
-						{
-							return $e['position'] === $position;
-						}
-					);
-		if(sizeof($eq))
-			return array_shift($eq);
-		return null;
+		$eq = array_filter($this->equipment, function($e) use ($position) {
+			return $e['position'] === $position;
+		});
+		return $eq ? $eq[0] : null;
 	}
 	
 	public function getEquipment()
