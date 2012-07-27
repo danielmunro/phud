@@ -17,7 +17,7 @@ class Grid extends Dungeon
 		parent::__construct($properties, $rooms_left, $depth, $exit);
 	}
 
-	public function buildOut(&$rooms_left, $depth, &$exit)
+	public function buildOut(&$inf, $depth = 0)
 	{
 		foreach($this->dir_count as $dir => $amount) {
 			if($amount) {
@@ -37,7 +37,7 @@ class Grid extends Dungeon
 		}
 	}
 
-	public function isStillBuilding()
+	public function isStillBuilding($inf)
 	{
 		foreach(Direction::getDirections() as $d) {
 			if($this->dir_count[$d] > 0) {

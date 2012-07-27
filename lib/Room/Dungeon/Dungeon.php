@@ -5,26 +5,16 @@ use Phud\Room\Room,
 
 abstract class Dungeon extends Room
 {
-	protected $depth = 0;
-	protected $exit = 0;
-	protected static $special_properties = [];
-	protected static $rooms = [];
+	protected static $special_properties = ['exit'];
 	protected static $inf = [];
+	protected static $rooms = [];
 
-	public function __construct($properties = [], &$rooms_left = 0, $depth = 0, &$exit = null)
+	public function __construct($properties = [])
 	{
 		$this->setSpecialProperties($properties);
-		if(isset($properties['rooms'])) {
-			$this->rooms_left = $properties['rooms']-1;
-			unset($properties['rooms']);
-		}
-		if(isset($properties['exit'])) {
-			$this->exit = $properties['exit'];
-			unset($properties['exit']);
-		}
 		if(empty($this->id)) {
 			$i = rand();
-			while(isset(self::$identities[$i])) {
+			while(array_key_exists($i, self::$identities)) {
 				$i = rand();
 			}
 			$this->id = $i;
@@ -34,8 +24,9 @@ abstract class Dungeon extends Room
 
 	protected function setSpecialProperties(&$properties)
 	{
-		$i = $properties['id'];
-		foreach(static::$special_properties as $special_property) {
+		$i = $properties['short'];
+		$special_properties = array_merge(self::$special_properties, static::$special_properties);
+		foreach($special_properties as $special_property) {
 			if(array_key_exists($special_property, $properties)) {
 				static::$inf[$i][$special_property] = $properties[$special_property];
 				unset($properties[$special_property]);
@@ -46,28 +37,28 @@ abstract class Dungeon extends Room
 	public function setup()
 	{
 		static::$rooms[$this->short][] = $this;
-		while($this->isStillBuilding(static::$inf[$this->id])) {
-			$this->buildOut(static::$inf[$this->id]);
+		while($this->isStillBuilding(static::$inf[$this->short])) {
+			$this->buildOut(static::$inf[$this->short]);
 		}
-		if($this->exit) {
+		if(array_key_exists('exit', static::$inf[$this->short])) {
 			$dirs = Direction::getDirections();
-			$i = rand(0, 5);
+			$dir_count = count($dirs)-1;
+			$i = rand(0, $dir_count);
 			$rand_dir = $dirs[$i];
 			$rev_rand_dir = Direction::getReverse($rand_dir);
 			$connect_room = static::getRandom($this->short);
-			$exit_room = Room::getByID($this->exit);
+			$exit_room = Room::getByID(static::$inf[$this->short]['exit']);
 			while($connect_room->getDirection($rand_dir) || $exit_room->getDirection($rev_rand_dir)) {
-				$i = rand(0, 5);
+				$i = rand(0, $dir_count);
 				$rand_dir = $dirs[$i];
 				$rev_rand_dir = Direction::getReverse($rand_dir);
 			}
 			$connect_room->setDirection($rand_dir, $exit_room);
 			$exit_room->setDirection($rev_rand_dir, $connect_room);
-			$this->exit = null;
 		}
 	}
 
-	abstract public function buildOut(&$rooms_left, $depth, &$exit);
+	abstract public function buildOut(&$inf, $depth = 0);
 
 	abstract public function isStillBuilding($inf);
 

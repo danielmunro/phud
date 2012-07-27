@@ -10,9 +10,9 @@ class Random extends Dungeon
 	protected $w_prob = 0.5;
 	protected $u_prob = 0.5;
 	protected $d_prob = 0.5;
-	protected static $special_properties = ['rooms', 'exit'];
+	protected static $special_properties = ['rooms'];
 
-	public function buildOut(&$dungeon_inf, $depth = 0)
+	public function buildOut(&$inf, $depth = 0)
 	{
 		$dirs = [];
 		foreach(Direction::getDirections() as $dir) {
@@ -20,19 +20,19 @@ class Random extends Dungeon
 		}
 		uasort($dirs, function() { return round(rand(0, 1)); });
 		foreach($dirs as $dir => $probability) {
-			if($rooms_left <= 0) {
+			if($inf['rooms'] <= 0) {
 				return;
 			}
 			$r = $this->directions[$dir];
 			if($r instanceof static && $r->memberOf($this)) {
-				$r->buildOut($rooms_left, $depth, $exit);
+				$r->buildOut($inf, $depth+1);
 			} else if(empty($r) && chance() < $probability) {
-				$rooms_left--;
+				$inf['rooms']--;
 				$p = $this->initializing_properties;
 				unset($p['north'], $p['south'], $p['east'], $p['west'], $p['up'], $p['down'], $p['id']);
 				$p[Direction::getReverse($dir)] = $this;
 				$p['area'] = $this->area;
-				$r = new static($p, $rooms_left, $depth+1, $exit);
+				$r = new static($p);
 				$this->directions[$dir] = $r;
 				static::$rooms[$this->short][] = $r;
 			}
@@ -42,17 +42,6 @@ class Random extends Dungeon
 	public function isStillBuilding($inf)
 	{
 		return $inf['rooms'] > 0;
-	}
-
-	public function memberOf(self $dungeon)
-	{
-		return $this->short === $dungeon->short;
-	}
-
-	public static function getRandom($short)
-	{
-		$i = array_rand(static::$rooms[$short]);
-		return static::$rooms[$short][$i];
 	}
 }
 ?>
