@@ -48,21 +48,6 @@ class Room
 		Debug::log("Creating room: ".$this->short." [".$this->id."]");
 	}
 
-	public static function startBuildDirections()
-	{
-		self::getByID(self::$start_room)->buildDirections();
-	}
-
-	public function buildDirections()
-	{
-		foreach($this->directions as $direction => $room) {
-			if(is_numeric($room)) {
-				$this->directions[$direction] = self::getByID($room);
-				$this->directions[$direction]->buildDirections();
-			}
-		}
-	}
-
 	public static function setStartRoom($room_id)
 	{
 		self::$start_room = $room_id;
@@ -89,8 +74,8 @@ class Room
 
 	public function getDirection($direction)
 	{
-		if(array_key_exists($direction, $this->directions)) {
-			return $this->directions[$direction];
+		if(isset($this->directions[$direction])) {
+			return $this->directions[$direction] instanceof Room ? $this->directions[$direction] : $this->directions[$direction] = self::getByID($this->directions[$direction]);
 		} else {
 			Debug::log($direction.' is not a valid direction.');
 		}
@@ -190,8 +175,3 @@ class Room
 		return ['id'];
 	}
 }
-
-Server::instance()->on('deployed', function() {
-	Room::startBuildDirections();
-});
-?>

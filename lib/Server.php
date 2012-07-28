@@ -7,27 +7,23 @@ class Server
 {
 	use Listener;
 	
-	protected $address = '';
+	protected $host = '';
 	protected $port = 0;
-	protected $socket = null;
+	protected $connection = null;
 	protected $clients = [];
-	protected $initialized = false;
-	private static $instance = null;
+	protected static $instance = null;
 	
-	protected function __construct()
+	public function __construct($config)
 	{
-		global $address, $port;
-
-		$this->address = $address;
-		$this->port = $port;
+		$this->host = $config['host'];
+		$this->port = $config['port'];
 
 		// open the socket
-		$this->socket = socket_create(AF_INET, SOCK_STREAM, 0);
-		socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 1);
-		$success = @socket_bind($this->socket, $this->address, $this->port);
+		$this->connection = socket_create(AF_INET, SOCK_STREAM, 0);
+		socket_set_option($this->connection, SOL_SOCKET, SO_REUSEADDR, 1);
+		$success = @socket_bind($this->connection, $this->host, $this->port);
 		if($success) {
-			socket_listen($this->socket);
-			$this->initialized = true;
+			socket_listen($this->connection);
 			Debug::log("Server is listening for incoming transmissions on (".$this.")");
 		}
 
@@ -54,23 +50,19 @@ class Server
 				"[allocated ".(memory_get_usage(true)/1024)." kb");
 		});
 
+		$this->deployEnvironment($config['lib'], $config['deploy']);
 	}
 	
 	public function __destruct()
 	{
-		if(is_resource($this->socket)) {
-			socket_close($this->socket);
+		if(is_resource($this->connection)) {
+			socket_close($this->connection);
 		}
 	}
 
 	public static function instance()
 	{
 		return self::$instance ? self::$instance : self::$instance = new self();
-	}
-
-	public function isInitialized()
-	{
-		return $this->initialized;
 	}
 
 	public function getClients()
@@ -150,7 +142,7 @@ class Server
 
 	public function __toString()
 	{
-		return $this->address.':'.$this->port;
+		return $this->host.':'.$this->port;
 	}
 
 	protected function scanNewConnections()
@@ -158,14 +150,14 @@ class Server
 		$n = null;
 
 		// check for new connections
-		$s = [$this->socket];
+		$s = [$this->connection];
 		$new_connection = socket_select($s, $n, $n, 0, 0);
 		if($new_connection) {
-			$this->fire('connect', new Client(socket_accept($this->socket)));
+			$this->fire('connect', new Client(socket_accept($this->connection)));
 		}
 	}
 
-	public function deployEnvironment($lib, $deploy)
+	protected function deployEnvironment($lib, $deploy)
 	{
 		// Set the server instance so that the deploy scripts may reference it
 		self::$instance = $this;

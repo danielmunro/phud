@@ -58,7 +58,6 @@ abstract class Command
 	}
 }
 
-Server::instance()->on('initialized', function() {
+$this->on('initialized', function() {
 	Command::init();
 });
-?>
