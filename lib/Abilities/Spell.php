@@ -1,10 +1,13 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
+	Phud\Instantiate,
 	Phud\Server;
 
 abstract class Spell extends Ability
 {
+	use Instantiate;
+
 	protected $initial_mana_cost = 50;
 	protected $min_mana_cost = 15;
 
@@ -44,4 +47,7 @@ abstract class Spell extends Ability
 		return null;
 	}
 }
-?>
+
+$this->on('initialized', function($event) {
+	Spell::init();
+});

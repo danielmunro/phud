@@ -1,9 +1,12 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Actors\Actor;
+use Phud\Actors\Actor,
+	Phud\Instantiate;
 
 abstract class Skill extends Ability
 {
+	use Instantiate;
+
 	protected $event = '';
 	protected $listener = null;
 
@@ -60,4 +63,7 @@ abstract class Skill extends Ability
 		$actor->unlisten($this->event, $this->listener);
 	}
 }
-?>
+
+$this->on('initialized', function($event) {
+	Skill::init();
+});

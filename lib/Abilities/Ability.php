@@ -5,14 +5,13 @@ use Phud\Actors\Actor,
 	Phud\Event,
 	Phud\Alias,
 	Phud\Debug,
-	Phud\Instantiate,
 	Phud\Server,
 	\ReflectionClass,
 	\Exception;
 
 abstract class Ability
 {
-	use Alias, Instantiate;
+	use Alias;
 
 	protected $proficiency = '';
 	protected $required_proficiency = 0;
@@ -56,22 +55,6 @@ abstract class Ability
 	public function isOffensive()
 	{
 		return $this->is_offensive;
-	}
-
-	public static function init()
-	{
-		global $global_path;
-		foreach(['Skills', 'Spells'] as $ability) {
-			$d = dir($global_path.'/deploy/init/'.$ability);
-			while($class = $d->read()) {
-				if(substr($class, -4) === ".php") {
-					Debug::log("init Ability: ".$class);
-					$class = substr($class, 0, strpos($class, '.'));
-					$called_class = 'Phud\\Abilities\\'.$class;
-					new $called_class();
-				}
-			}
-		}
 	}
 
 	public function perform(Actor $actor, $args = [])
@@ -195,8 +178,3 @@ abstract class Ability
 		}
 	}
 }
-
-Server::instance()->on('initialized', function($event) {
-	Ability::init();
-});
-?>
