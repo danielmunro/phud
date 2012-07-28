@@ -1,9 +1,7 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
-	\Exception,
-	\ReflectionClass,
-	\stdClass;
+	\Exception;
 
 class Server
 {
@@ -32,6 +30,30 @@ class Server
 			$this->initialized = true;
 			Debug::log("Server is listening for incoming transmissions on (".$this.")");
 		}
+
+		// set up server events
+		$this->on('connect', function($event, $server, $client) {
+			$server->addClient($client);
+		});
+
+		$this->on('cycle', function() {
+			$this->scanNewConnections();
+		});
+
+		$this->on('pulse', function($event, $server) {
+			foreach($server->getClients() as $c) {
+				$u = $c->getUser();
+				if($u && $u->getTarget()) {
+					Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n".$u->prompt(), false);
+				}
+			}
+		}, 'end');
+
+		$this->on('tick', function($event, $server) {
+			Debug::log("[memory ".(memory_get_peak_usage(true)/1024)." kb\n".
+				"[allocated ".(memory_get_usage(true)/1024)." kb");
+		});
+
 	}
 	
 	public function __destruct()
@@ -89,35 +111,6 @@ class Server
 
 	public function run()
 	{
-		$this->on('connect', function($event, $server, $client) {
-			$server->addClient($client);
-		});
-
-		$this->on('cycle', function($event, $server) {
-			$server->scanNewConnections();
-		});
-
-		$this->on('pulse', function($event, $server) {
-			foreach($server->getClients() as $c) {
-				$u = $c->getUser();
-				if($u && $u->getTarget()) {
-					Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n");
-					Server::out($u, $u->prompt(), false);
-				}
-			}
-		}, 'end');
-
-		$this->on('tick', function($event, $server) {
-			Debug::log(
-				"\ntick status update\n".
-				"==========================================\n".
-				"rooms                       ".sizeof(Room::getAll())."\n".
-				"mobs                        ".Mob::getCounter()."\n".
-				"clients                     ".sizeof($server->getClients())."\n".
-				"memory                      ".(memory_get_peak_usage(true)/1024)." kb\n".
-				"allocated                   ".(memory_get_usage(true)/1024)." kb");
-		});
-
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));
 		while(1) {
@@ -226,4 +219,3 @@ class Server
 		}
 	}
 }
-?>
