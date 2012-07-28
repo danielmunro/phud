@@ -26,16 +26,19 @@ class Client
 	public function setUser(User $user)
 	{
 		$this->user = $user;
-		$user->on(
-			'input',
-			function($event, $user, $args) {
-				$command = Command::lookup($args[0]);
-				if($command) {
-					$command->tryPerform($user, $args);
-					$event->satisfy();
-				}
+		$user->on('input', function($event, $user, $args) {
+			$command = Command::lookup($args[0]);
+			if($command) {
+				$command->tryPerform($user, $args);
+				$event->satisfy();
 			}
-		);
+		});
+		$this->on('pulse', function() {
+			$t = $this->user->getTarget();
+			if($t) {
+				Server::out($this, ucfirst($t).' '.$t->getStatus().".\n".$this->user->prompt(), false);
+			}
+		});
 	}
 
 	public function getSocket()

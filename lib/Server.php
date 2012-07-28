@@ -31,14 +31,6 @@ class Server
 		// set up server events
 		$this->on('cycle', function() { $this->scanNewConnections(); });
 		$this->on('tick', function() { $this->logStatus(); });
-		$this->on('pulse', function() {
-			foreach($this->clients as $c) {
-				$u = $c->getUser();
-				if($u && $u->getTarget()) {
-					Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n".$u->prompt(), false);
-				}
-			}
-		}, 'end');
 
 		(new Deploy($config['lib'], $config['deploy']))->deployEnvironment($this);
 	}
@@ -113,6 +105,9 @@ class Server
 			if(!is_resource($client->getSocket())) {
 				$event->kill();
 			}
+		}, 'end');
+		$this->on('pulse', function() use ($client) {
+			$client->fire('pulse');
 		}, 'end');
 		$client->on('quit', function() use ($client) {
 			$this->disconnectClient($client);
