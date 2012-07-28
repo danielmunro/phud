@@ -792,11 +792,6 @@ abstract class Actor
 				$this->on($l[0], $l[1]);
 			}
 		}
-
-		// regen on tick
-		Server::instance()->on('tick', function($event, $server) {
-			$this->tick($event);
-		});
 	}
 	
 	public function __toString()
@@ -804,4 +799,3 @@ abstract class Actor
 		return $this->alias;
 	}
 }
-?>

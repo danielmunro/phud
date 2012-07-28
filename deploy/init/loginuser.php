@@ -8,7 +8,7 @@ use Phud\Actors\User,
 	Phud\Debug,
 	Phud\Commands\Command;
 
-Server::instance()->on('connect', function($event, $server, $client) {
+$server->on('connect', function($event, $server, $client) {
 	Server::out($client, 'By what name do you wish to be known? ', false);
 	$progress = ['alias' => false];
 	$unverified_user = null;
@@ -54,7 +54,7 @@ Server::instance()->on('connect', function($event, $server, $client) {
 				Debug::log("User logged in: ".$unverified_user);
 			} else {
 				Server::out($client, 'Wrong password.');
-				Server::instance()->disconnectClient($client);
+				$client->fire('quit');
 			}
 			$event->kill();
 			return;

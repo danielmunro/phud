@@ -13,14 +13,13 @@ class Quit extends User
 		Actor::DISPOSITION_SLEEPING
 	];
 	
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
 		if(array_key_exists('sleep', $user->getAffects()))
 			return Server::out($user, "You need to be able to wake up first.");
 		
 		$user->save();
 		Server::out($user, "Good bye!\r\n");
-		Server::instance()->disconnectClient($user->getClient());
+		$user->getClient()->fire('quit');
 	}
 }
-?>

@@ -11,6 +11,7 @@ class Server
 	protected $port = 0;
 	protected $connection = null;
 	protected $clients = [];
+	protected $deploy = null;
 	protected static $instance = null;
 	
 	public function __construct($config)
@@ -28,16 +29,10 @@ class Server
 		}
 
 		// set up server events
-		$this->on('connect', function($event, $server, $client) {
-			$server->addClient($client);
-		});
-
-		$this->on('cycle', function() {
-			$this->scanNewConnections();
-		});
-
-		$this->on('pulse', function($event, $server) {
-			foreach($server->getClients() as $c) {
+		$this->on('cycle', function() { $this->scanNewConnections(); });
+		$this->on('tick', function() { $this->logStatus(); });
+		$this->on('pulse', function() {
+			foreach($this->clients as $c) {
 				$u = $c->getUser();
 				if($u && $u->getTarget()) {
 					Server::out($u, ucfirst($u->getTarget()).' '.$u->getTarget()->getStatus().".\n".$u->prompt(), false);
@@ -45,12 +40,7 @@ class Server
 			}
 		}, 'end');
 
-		$this->on('tick', function($event, $server) {
-			Debug::log("[memory ".(memory_get_peak_usage(true)/1024)." kb\n".
-				"[allocated ".(memory_get_usage(true)/1024)." kb");
-		});
-
-		$this->deployEnvironment($config['lib'], $config['deploy']);
+		(new Deploy($config['lib'], $config['deploy']))->deployEnvironment($this);
 	}
 	
 	public function __destruct()
@@ -62,47 +52,17 @@ class Server
 
 	public static function instance()
 	{
-		return self::$instance ? self::$instance : self::$instance = new self();
+		return self::$instance;
 	}
 
 	public function getClients()
 	{
 		return $this->clients;
 	}
-	
-	public function addClient(Client $client)
-	{
-		$this->clients[] = $client;
-		$this->on('cycle', function($event) use ($client) {
-			$client->checkCommandBuffer();
-			if(!is_resource($client->getSocket())) {
-				$event->kill();
-			}
-		}, 'end');
-	}
-	
-	public function disconnectClient(Client $client)
-	{
-		// Take the user out of its room
-		$user = $client->getUser();
-		if($user) {
-			if($user->getRoom()) {
-				$user->getRoom()->actorRemove($user);
-			}
-		}
-
-		// clean out the client
-		socket_close($client->getSocket());
-		$key = array_search($client, $this->clients);
-		unset($this->clients[$key]);
-
-		// reindex arrays
-		$this->clients = array_values($this->clients);
-		Debug::log($user." disconnected");
-	}
 
 	public function run()
 	{
+		self::$instance = $this;
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));
 		while(1) {
@@ -145,6 +105,41 @@ class Server
 		return $this->host.':'.$this->port;
 	}
 
+	protected function addClient(Client $client)
+	{
+		$this->clients[] = $client;
+		$this->on('cycle', function($event) use ($client) {
+			$client->checkCommandBuffer();
+			if(!is_resource($client->getSocket())) {
+				$event->kill();
+			}
+		}, 'end');
+		$client->on('quit', function() use ($client) {
+			$this->disconnectClient($client);
+		});
+		$this->fire('connect', $client);
+	}
+	
+	protected function disconnectClient(Client $client)
+	{
+		// Take the user out of its room
+		$user = $client->getUser();
+		if($user) {
+			if($user->getRoom()) {
+				$user->getRoom()->actorRemove($user);
+			}
+		}
+
+		// clean out the client
+		socket_close($client->getSocket());
+		$key = array_search($client, $this->clients);
+		unset($this->clients[$key]);
+
+		// reindex arrays
+		$this->clients = array_values($this->clients);
+		Debug::log($user." disconnected");
+	}
+	
 	protected function scanNewConnections()
 	{
 		$n = null;
@@ -153,64 +148,15 @@ class Server
 		$s = [$this->connection];
 		$new_connection = socket_select($s, $n, $n, 0, 0);
 		if($new_connection) {
-			$this->fire('connect', new Client(socket_accept($this->connection)));
+			$this->addClient(new Client(socket_accept($this->connection)));
 		}
-	}
-
-	protected function deployEnvironment($lib, $deploy)
-	{
-		// Set the server instance so that the deploy scripts may reference it
-		self::$instance = $this;
-
-		// phud framework classes
-		Debug::log("[init] including libs");
-		$this->readDeploy($lib.'/');
-
-		// all the game classes
-		Debug::log("[init] including deploy scripts");
-		$this->readDeploy($deploy.'/init/');
-
-		// instantiate any classes that are traits of Instantiate
-		Instantiate::initializeInstances();
-
-		// game is initialized
-		$this->fire('initialized');
-
-		// area scripts
-		Debug::log("[init] including area scripts");
-		$this->readDeploy($deploy.'/areas/');
-
-		// finished deployment
-		$this->fire('deployed');
 	}
 	
-	protected function readDeploy($start)
+	protected function logStatus()
 	{
-		global $global_path;
-		$path = $global_path.'/'.$start;
-		if(file_exists($path)) {
-			$d = dir($path);
-			$deferred = [];
-			while($cd = $d->read()) {
-				if(strpos($cd, '.') === false) {
-					$this->readDeploy($start.$cd.'/');
-					continue;
-				}
-				list($class, $ext) = explode('.', $cd);
-				if($ext === 'php') {
-					$deferred[] = $class;
-				} else if($ext === 'area') {
-					Debug::log("[init] deploy area ".$path.$cd);
-					new Parser($path.$cd);
-				}
-			}
-			foreach($deferred as $class) {
-				call_user_func(function() use ($d, $class) {
-					require_once($d->path.$class.'.php');
-				});
-			}
-		} else {
-			throw new Exception('Invalid deploy directory defined: '.$start);
-		}
+		Debug::log(
+			"[memory ".(memory_get_peak_usage(true)/1024)." kb\n".
+			"[allocated ".(memory_get_usage(true)/1024)." kb"
+		);
 	}
 }

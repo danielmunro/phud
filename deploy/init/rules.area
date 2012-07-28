@@ -79,7 +79,7 @@ return function($parser, $room) {
 def
 dungeon, random_dungeon, grid_dungeon~
 <?php
-return function($parser, $room) {
+return function($parser, $room) use ($server) {
 	$room = new $room($parser->loadRequired(
 		['short', 'long' => 'block'], 
 		['properties' => function(&$p, $property, $value) {
@@ -91,7 +91,7 @@ return function($parser, $room) {
 			}
 	}]));
 	$parser->setLastRoom($room);
-	Phud\Server::instance()->on('deployed', function() use ($room) {
+	$server->on('deployed', function() use ($room) {
 		$room->setup();
 	});
 };
@@ -125,7 +125,7 @@ return function($parser, $class) {
 def
 mob~
 <?php
-return function($parser, $mob) {
+return function($parser, $mob) use ($server) {
 	$p = $parser->loadRequired(['short', 'long' => 'block'], ['properties', 'attributes', 'abilities']);
 
 	// count is for adding more than one copy of the actor to a room. Useful
@@ -142,7 +142,7 @@ return function($parser, $mob) {
 		$parser->setLastFirstClass($mob);
 		Phud\Debug::log("Adding ".$mob." to ".$room->getShort());
 		if($room instanceof Phud\Room\Dungeon\Dungeon) {
-			Phud\Server::instance()->on('deployed', function() use ($room, $mob) {
+			$server->on('deployed', function() use ($room, $mob) {
 				$room = Phud\Room\Dungeon\Dungeon::getRandom($room->getShort());
 				$mob->setRoom($room);
 			},
@@ -150,6 +150,9 @@ return function($parser, $mob) {
 		} else {
 			$mob->setRoom($room);
 		}
+		$server->on('tick', function($event) use ($mob) {
+			$mob->tick($event);
+		});
 	}
 };
 ?>~

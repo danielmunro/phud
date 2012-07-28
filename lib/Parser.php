@@ -17,12 +17,12 @@ class Parser
 	protected static $mappings = [];
 	protected static $defs = [];
 
-	public function __construct($area_file)
+	public function __construct($server, $area_file)
 	{
 		$this->fp = fopen($area_file, 'r');
 		while($calling = $this->readLine()) {
 			if($calling && method_exists($this, $calling)) {
-				$this->$calling();
+				$this->$calling($server);
 				continue;
 			}
 			if(array_key_exists($calling, self::$defs)) {
@@ -79,7 +79,7 @@ class Parser
 		$last_room->setArea($this->area);
 	}
 
-	protected function def()
+	protected function def(Server $server)
 	{
 		$mappings = [];
 		while($line = $this->readLine()) {
