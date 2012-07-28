@@ -63,7 +63,3 @@ abstract class Skill extends Ability
 		$actor->unlisten($this->event, $this->listener);
 	}
 }
-
-$this->on('initialized', function($event) {
-	Skill::init();
-});

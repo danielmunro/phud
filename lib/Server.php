@@ -24,7 +24,7 @@ class Server
 		$success = @socket_bind($this->connection, $this->host, $this->port);
 		if($success) {
 			socket_listen($this->connection);
-			Debug::log("Server is listening for incoming transmissions on (".$this.")");
+			Debug::log("[init] server is listening for incoming transmissions on (".$this.")");
 		}
 
 		// set up server events
@@ -134,7 +134,7 @@ class Server
 			$bytes_written = socket_write($client->getSocket(), $data, strlen($data));
 
 			if($bytes_written === false) {
-				Debug::log("Socket write error, client link dead");
+				Debug::log("[warn] socket write error, client link dead");
 				return false;
 			}
 		}
@@ -163,18 +163,21 @@ class Server
 		self::$instance = $this;
 
 		// phud framework classes
-		Debug::log("Including libs");
+		Debug::log("[init] including libs");
 		$this->readDeploy($lib.'/');
 
 		// all the game classes
-		Debug::log("Including deploy scripts");
+		Debug::log("[init] including deploy scripts");
 		$this->readDeploy($deploy.'/init/');
+
+		// instantiate any classes that are traits of Instantiate
+		Instantiate::initializeInstances();
 
 		// game is initialized
 		$this->fire('initialized');
 
 		// area scripts
-		Debug::log("Including area scripts");
+		Debug::log("[init] including area scripts");
 		$this->readDeploy($deploy.'/areas/');
 
 		// finished deployment
@@ -197,7 +200,7 @@ class Server
 				if($ext === 'php') {
 					$deferred[] = $class;
 				} else if($ext === 'area') {
-					Debug::log("[deploy area] ".$path.$cd);
+					Debug::log("[init] deploy area ".$path.$cd);
 					new Parser($path.$cd);
 				}
 			}

@@ -47,7 +47,3 @@ abstract class Spell extends Ability
 		return null;
 	}
 }
-
-$this->on('initialized', function($event) {
-	Spell::init();
-});

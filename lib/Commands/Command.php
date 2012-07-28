@@ -57,7 +57,3 @@ abstract class Command
 		$this->perform($user, $args);
 	}
 }
-
-$this->on('initialized', function() {
-	Command::init();
-});

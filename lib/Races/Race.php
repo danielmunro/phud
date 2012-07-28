@@ -142,7 +142,3 @@ abstract class Race
 		return ['alias'];
 	}
 }
-
-$this->on('initialized', function($event) {
-	Race::init();
-});

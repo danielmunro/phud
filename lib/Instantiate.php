@@ -17,5 +17,16 @@ trait Instantiate
 			}
 		}
 	}
+
+	public static function initializeInstances()
+	{
+		foreach(get_declared_classes() as $class) {
+			if(strpos($class, 'Phud') !== false) {
+				$ref = new \ReflectionClass($class);
+				if(in_array('Phud\Instantiate', $ref->getTraitNames())) {
+					$class::init();
+				}
+			}
+		}
+	}
 }
-?>

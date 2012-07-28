@@ -49,7 +49,3 @@ abstract class Quest
 		return $this->short;
 	}
 }
-
-$this->on('initialized', function() {
-	Quest::init();
-});
