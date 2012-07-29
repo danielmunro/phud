@@ -153,6 +153,9 @@ return function($parser, $mob) use ($server) {
 		$server->on('tick', function($event) use ($mob) {
 			$mob->tick($event);
 		});
+		$server->on('pulse', function() use ($mob) {
+			$mob->fire('pulse');
+		});
 	}
 };
 ?>~

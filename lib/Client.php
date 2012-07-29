@@ -34,9 +34,13 @@ class Client
 			}
 		});
 		$this->on('pulse', function() {
+			$this->user->fire('pulse');
+			if($this->user->getDelay()) {
+				$this->user->decrementDelay();
+			}
 			$t = $this->user->getTarget();
 			if($t) {
-				Server::out($this, ucfirst($t).' '.$t->getStatus().".\n".$this->user->prompt(), false);
+				Server::out($this, ucfirst($t).' '.$t->getStatus().".\r\n\r\n".$this->user->prompt(), false);
 			}
 		});
 	}

@@ -54,15 +54,8 @@ class User extends Actor
 		$this->client = $client;
 	}
 	
-	public function incrementDelay($delay) {
-		if($this->delay === 0 && $delay) {
-			Server::instance()->on('pulse', function($event) {
-				$this->decrementDelay();
-				if($this->getDelay() === 0) {
-					$event->kill();
-				}
-			});
-		}
+	public function incrementDelay($delay)
+	{
 		$this->delay += $delay;
 	}
 

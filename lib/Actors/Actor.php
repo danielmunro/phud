@@ -262,25 +262,19 @@ abstract class Actor
 	{
 		$this->target = $target;
 		if($this->target) {
-			$fighter = $this;
-			Server::instance()->on(
-				'pulse',
-				function($event, $server) use ($fighter) {
-					$target = $fighter->getTarget();
-					if(empty($target) || !$fighter->isAlive()) {
-						$event->kill();
-						return;
-					}
-					$e = $target->fire('attacked');
-					if($e->getStatus() === 'satisfied') {
-						return;
-					} else if($e->getStatus() === 'killed') {
-						$event->kill();
-						return;
-					}
-					$fighter->fire('attack');
+			$this->on('pulse', function($event) {
+				$target = $this->getTarget();
+				if(empty($target) || !$this->isAlive()) {
+					return $event->kill();
 				}
-			);
+				$e = $target->fire('attacked');
+				if($e->getStatus() === 'satisfied') {
+					return;
+				} else if($e->getStatus() === 'killed') {
+					return $event->kill();
+				}
+				$this->fire('attack');
+			});
 		}
 	}
 
