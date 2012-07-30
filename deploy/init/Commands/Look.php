@@ -15,19 +15,21 @@ class Look extends User
 		Actor::DISPOSITION_SITTING
 	];
 	
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
+		$client = $user->getClient();
 		if(!$args || sizeof($args) == 1) // The user is looking
 		{
 			$r = $user->getRoom();
-			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW))
-				return Server::out($user, "You can't see anything, it's so dark!");
-			
-			Server::out($user, $r->getShort().($user->isDM() ? " [".$r->getID()."]" : "")."\n".$r->getLong()."\n");
+			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW)) {
+				return $client->write("You can't see anything, it's so dark!\r\n");
+			}
+
+			$message =  $r->getShort().($user->isDM() ? " [".$r->getID()."]" : "")."\r\n".$r->getLong()."\r\n";
 
 			$doors = $r->getDoors();
 			foreach($doors as $i => $door) {
-				Server::out($user, ucfirst($door).' is here.'.($i == sizeof($doors)-1 ? "\n" : ""));
+				$message .= ucfirst($door)." is here.".($i == sizeof($doors)-1 ? "\r\n" : "");
 			}
 
 			$dir_str = '';
@@ -40,10 +42,10 @@ class Look extends User
 				}
 			}
 
-			Server::out($user, 'Exits ['.$dir_str.']');
+			$message .= "Exits [".$dir_str."]\r\n";
 
 			foreach($user->getRoom()->getItems() as $key => $item) {
-				Server::out($user, ucfirst($item) . ' is here.');
+				$message .= ucfirst($item)." is here.\r\n";
 			}
 			
 			foreach($user->getRoom()->getActors() as $a) {
@@ -53,9 +55,10 @@ class Look extends User
 					if($a instanceof lUser) {
 						$post = 'is '.$disposition.' here';
 					}
-					Server::out($user, ucfirst($a->getShort()).$post.'.');
+					$message .= ucfirst($a->getShort()).$post.".\r\n";
 				}
 			}
+			$client->write($message);
 			return;
 		}
 		
@@ -70,24 +73,23 @@ class Look extends User
 			$target = $user->getItemByInput($looking);
 		
 		if(!empty($target) && method_exists($target, 'getLong'))
-			return Server::out($user, $target->getLong());
+			return $client->write($target->getLong()."\r\n");
 		
 		// Direction
 		foreach(Direction::getDirections() as $dir) {
 			if(strpos($dir, $args[1]) === 0) {
-				return self::lookDirection($user, $user->getRoom()->getDirection($dir), $dir);
+				return self::lookDirection($client, $user->getRoom()->getDirection($dir), $dir);
 			}
 		}
-		Server::out($user, 'Nothing is there.');
+		$client->write("Nothing is there.\r\n");
 	}
 	
-	public static function lookDirection(&$user, $room, $direction)
+	protected static function lookDirection($client, $room, $direction)
 	{
 		if(!($room instanceof mRoom))
-			return Server::out($user, 'You see nothing ' . $direction . '.');
+			return $client->write("You see nothing ".$direction.".\r\n");
 		else
-			return Server::out($user, 'To the ' . $direction . ', you see: ' .
-				$room->getShort() . '.');
+			return $client->write("To the ".$direction.", you see: ".$room->getShort().".\r\n");
 	}
 }
 ?>

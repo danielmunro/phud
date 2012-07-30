@@ -3,24 +3,64 @@ namespace Phud;
 use Phud\Actors\User,
 	Phud\Commands\Command;
 
-class Client
+class Client implements \Beehive\Client
 {
 	use Listener;
 
-	private $user = null;
-	private $unverified_user = null;
-	private $socket = null;
-	private $command_buffer = array();
+	protected $user = null;
+	protected $unverified_user = null;
+	protected $command_buffer = array();
 	protected $last_input = '';
+	protected $server = null;
+	protected $id = '';
+	protected $connection = null;
+	protected $buffer = null;
 	
-	public function __construct($socket)
+	public function __construct(\Beehive\Server $server, $id, $connection)
 	{
-		$this->socket = $socket;
+		$this->server = $server;
+		$this->id = $id;
+		$this->connection = $connection;
+	}
+
+	public function getID()
+	{
+		return $this->id;
 	}
 	
 	public function getUser()
 	{
 		return $this->user;
+	}
+
+	public function getServer()
+	{
+		return $this->server;
+	}
+
+	public function getConnection()
+	{
+		return $this->connection;
+	}
+
+	public function setBuffer($buffer)
+	{
+		$this->buffer = $buffer;
+	}
+
+	public function getBuffer()
+	{
+		return $this->buffer;
+	}
+
+	public function wrote($message)
+	{
+		return $message;
+	}
+
+	public function write($message)
+	{
+		event_buffer_write($this->buffer, $message, strlen($message));
 	}
 
 	public function setUser(User $user)
@@ -45,30 +85,14 @@ class Client
 		});
 	}
 
-	public function getSocket()
-	{
-		return $this->socket;
-	}
-
 	public function getLastInput()
 	{
 		return $this->last_input;
 	}
 
-	public function checkCommandBuffer()
+	public function appendCommandBuffer($input)
 	{
-		$n = null;
-		
-		// Check for input from the socket
-		$s = [$this->socket];
-		socket_select($s, $n, $n, 0, 0);
-		if($s) {
-			$input = socket_read($s[0], 5120);
-			if($input === '~')
-				$this->command_buffer = [];
-			else
-				$this->command_buffer[] = trim($input);
-		}
+		$input === '~' ? $this->command_buffer = [] : $this->command_buffer[] = trim($input);
 
 		// Cases where we don't want to check the buffer, the client has a delay or the command buffer is empty
 		if(($this->user && $this->user->getDelay()) || empty($this->command_buffer)) {
@@ -89,10 +113,10 @@ class Client
 			$fire_from = empty($this->user) ? $this : $this->user;
 			$satisfied = $fire_from->fire('input', $args);
 			if(!$satisfied) {
-				Server::out($this, "\nHuh?"); // No listener could make sense of input
+				$this->write("\nHuh?"); // No listener could make sense of input
 			}
 			if($this->user) {
-				Server::out($this, "\n".$this->user->prompt(), false);
+				$this->write("\n".$this->user->prompt());
 			}
 		}
 	}

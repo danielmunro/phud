@@ -15,6 +15,8 @@ spl_autoload_register(function($class) use ($global_path) {
 	}
 });
 
+require_once(__DIR__.'/vendor/beehive/autoloader.php');
+
 // Set default arguments for starting phud, then parse
 // through any command line args that were passed
 // when starting the game.

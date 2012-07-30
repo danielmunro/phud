@@ -15,11 +15,13 @@ class Quit extends User
 	
 	public function perform(lUser $user, $args = [])
 	{
-		if(array_key_exists('sleep', $user->getAffects()))
-			return Server::out($user, "You need to be able to wake up first.");
+		$client = $user->getClient();
+		if(array_key_exists('sleep', $user->getAffects())) {
+			return $client->write("You need to be able to wake up first.\r\n");
+		}
 		
+		$client->write("Good bye!\r\n");
 		$user->save();
-		Server::out($user, "Good bye!\r\n");
-		$user->getClient()->fire('quit');
+		$client->getServer()->removeClient($client);
 	}
 }

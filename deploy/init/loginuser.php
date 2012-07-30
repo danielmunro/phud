@@ -9,35 +9,35 @@ use Phud\Actors\User,
 	Phud\Commands\Command;
 
 $server->on('connect', function($event, $server, $client) {
-	Server::out($client, 'By what name do you wish to be known? ', false);
+	$client->write("By what name do you wish to be known? ");
 	$progress = ['alias' => false];
 	$unverified_user = null;
 	$user_properties = [];
-	$client->on('input', function($event, $client, $args) use (&$progress, &$unverified_user, &$user_properties) {
+	$client->on('input', function($event, $client, $args) use ($server, &$progress, &$unverified_user, &$user_properties) {
 		$event->satisfy();
 		$racesAvailable = function($client) {
 			$races = Race::getAliases();
-			Server::out($client, 'The following races are available: ');
+			$client->write("The following races are available: \r\n");
 			$race_list = '[';
 			foreach($races as $alias => $r) {
 				$race_list .= $r['lookup']->isPlayable() ? $alias.' ' : '';
 			}
-			Server::out($client, trim($race_list).']');
-			Server::out($client, 'What is your race (help for more information)? ', false);
+			$client->write(trim($race_list)."]\r\n");
+			$client->write("What is your race (help for more information)? ");
 		};
 
 		$input = array_shift($args);
 		if($progress['alias'] === false) {
 			if(!User::validateAlias($input)) {
-				return Server::out($client, "That is not a valid name. What IS your name?");
+				return $client->write("That is not a valid name. What IS your name?\r\n");
 			}
 			$progress['alias'] = $input;
 			$unverified_user = unserialize(Dbr::instance()->get($input));
 			if(!empty($unverified_user)) {
-				Server::out($client, 'Password: ', false);
+				$client->write("Password: ");
 				$progress['pass'] = false;
 			} else {
-				Server::out($client, 'Did I get that right, ' . $progress['alias'] . '? (y/n) ', false);
+				$client->write("Did I get that right, ".$progress['alias']."? (y/n) ");
 				$progress['confirm_new'] = false;
 			}
 			return;
@@ -53,7 +53,7 @@ $server->on('connect', function($event, $server, $client) {
 				Command::lookup('look')->perform($unverified_user);
 				Debug::log("User logged in: ".$unverified_user);
 			} else {
-				Server::out($client, 'Wrong password.');
+				$client->write("Wrong password.");
 				$client->fire('quit');
 			}
 			$event->kill();
@@ -67,16 +67,16 @@ $server->on('connect', function($event, $server, $client) {
 				case 'yes':
 					$user_properties['alias'] = $progress['alias'];
 					$progress['new_pass'] = false;
-					Server::out($client, "New character.");
-					Server::out($client, "Give me a password for ".$user_properties['alias'].": ", false);
+					$client->write("New character.\r\n");
+					$client->write("Give me a password for ".$user_properties['alias'].": ");
 					break;
 				case 'n':
 				case 'no':
 					$progress = ['alias' => false];
-					Server::out($client, "Ok, what IS it then? ", false);
+					$client->write("Ok, what IS it then? ");
 					break;
 				default:
-					Server::out($client, 'Please type Yes or No: ', false);
+					$client->write("Please type Yes or No: ");
 			}
 			return;
 		}
@@ -84,7 +84,7 @@ $server->on('connect', function($event, $server, $client) {
 		if(isset($progress['new_pass']) && $progress['new_pass'] === false) {
 			$progress['new_pass'] = $input;
 			$progress['new_pass_2'] = false;
-			return Server::out($client, 'Please retype password: ', false);
+			return $client->write("Please retype password: ");
 		}
 		
 		if(isset($progress['new_pass_2']) && $progress['new_pass_2'] === false) {
@@ -96,8 +96,7 @@ $server->on('connect', function($event, $server, $client) {
 			} else {
 				unset($progress['new_pass_2']);
 				$progress['new_pass'] = false;
-				Server::out($client, "Passwords don't match.");
-				Server::out($client, "Retype password: ", false);
+				$client->write("Passwords don't match.\r\nRetype password: ");
 			}
 			return;
 		}
@@ -108,12 +107,12 @@ $server->on('connect', function($event, $server, $client) {
 			if($race && $race['lookup']->isPlayable()) {
 				$user_properties['race'] = $race['alias'];
 			} else {
-				Server::out($client, "That's not a valid race.");
+				$client->write("That's not a valid race.\r\n");
 				$racesAvailable($client);
 				$progress['race'] = false;
 				return;
 			}
-			Server::out($client, "What is your sex (m/f)? ", false);
+			$client->write("What is your sex (m/f)? ");
 			$progress['sex'] = '';
 			return;
 		}
@@ -124,12 +123,12 @@ $server->on('connect', function($event, $server, $client) {
 			else if($input == 'f' || $input == 'female')
 				$progress['sex'] = Actor::SEX_FEMALE;
 			else
-				return Server::out($client, "That's not a sex.\nWhat IS your sex? ", false);
+				return $client->write("That's not a sex.\nWhat IS your sex? ");
 			
 			if($progress['sex']) {
 				$user_properties['sex'] = $progress['sex'];
 				$progress['align'] = false;
-				return Server::out($client, "What is your alignment (good/neutral/evil)? ", false);
+				return $client->write("What is your alignment (good/neutral/evil)? ");
 			}
 		}
 		
@@ -141,7 +140,7 @@ $server->on('connect', function($event, $server, $client) {
 			else if($input == 'e' || $input == 'evil')
 				$user_properties['alignment'] = -500;
 			else
-				return Server::out($client, "That's not a valid alignment.\nWhich alignment (g/n/e)? ", false);
+				return $client->write("That's not a valid alignment.\nWhich alignment (g/n/e)? ");
 			$progress['finish'] = false;
 		}
 

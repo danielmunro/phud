@@ -1,0 +1,3 @@
+[submodule "vendor/beehive"]
+	path = vendor/beehive
+	url = git@github.com:danielmunro/beehive
