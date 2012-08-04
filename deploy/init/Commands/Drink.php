@@ -1,14 +1,11 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
-	Phud\Debug,
 	Phud\Items\Item as mItem,
 	Phud\Items\Drink as iDrink;
 
 class Drink extends User
 {
-
 	protected $alias = 'drink';
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
@@ -35,15 +32,20 @@ class Drink extends User
 			}
 		}
 		
-		if(!($item instanceof mItem))
-			return Server::out($actor, "Nothing like that is here.");
-		
-		if(!($item instanceof iDrink))
-			return Server::out($actor, "You can't drink that!");
-		
-		if($item->drink($actor)) {
-			Server::out($actor, "You drink ".$item->getContents()." from ".$item.".");
+		$out = '';
+
+		if(!($item instanceof mItem)) {
+			$out = "Nothing like that is here.";
+		} else if(!($item instanceof iDrink)) {
+			$out = "You can't drink that!";
+		} else if($item->drink($actor)) {
+			$out = "You drink ".$item->getContents()." from ".$item.".";
+		} else {
+			$out = "There's no ".$item->getContents()." left.";
+		}
+
+		if($actor instanceof aUser) {
+			$actor->getClient()->writeLine($out);
 		}
 	}
 }
-?>
