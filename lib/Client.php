@@ -79,6 +79,11 @@ class Client implements \Beehive\Client
 		event_buffer_write($this->buffer, $message, strlen($message));
 	}
 
+	public function writeLine($message)
+	{
+		$this->write($message."\r\n");
+	}
+
 	public function setUser(User $user)
 	{
 		$this->user = $user;
