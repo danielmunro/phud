@@ -15,12 +15,28 @@ class Client implements \Beehive\Client
 	protected $id = '';
 	protected $connection = null;
 	protected $buffer = null;
+	protected $handshake = false;
 	
 	public function __construct(\Beehive\Server $server, $id, $connection)
 	{
 		$this->server = $server;
 		$this->id = $id;
 		$this->connection = $connection;
+	}
+
+	public function getHandshake()
+	{
+		return $this->handshake;
+	}
+
+	public function decodeIncoming($message)
+	{
+		return $message;
+	}
+
+	public function handshake($headers)
+	{
+		return $this->handshake = true;
 	}
 
 	public function getID()
@@ -74,13 +90,13 @@ class Client implements \Beehive\Client
 			}
 		});
 		$this->on('pulse', function() {
-			$this->user->fire('pulse');
-			if($this->user->getDelay()) {
-				$this->user->decrementDelay();
+			$user->fire('pulse');
+			if($user->getDelay()) {
+				$user->decrementDelay();
 			}
-			$t = $this->user->getTarget();
+			$t = $user->getTarget();
 			if($t) {
-				Server::out($this, ucfirst($t).' '.$t->getStatus().".\r\n\r\n".$this->user->prompt(), false);
+				$this->write(ucfirst($t).' '.$t->getStatus().".\r\n\r\n".$user->prompt(), false);
 			}
 		});
 	}
@@ -121,4 +137,3 @@ class Client implements \Beehive\Client
 		}
 	}
 }
-?>
