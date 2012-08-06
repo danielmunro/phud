@@ -285,19 +285,20 @@ abstract class Actor
 
 		$specified_target = is_array($args) ? $this->getRoom()->getActorByInput(array_slice($args, -1)[0]) : $args;
 
+		$c = $this instanceof User ? $this->getClient() : null;
 		if(empty($this->target)) {
 			if(empty($specified_target)) {
-				return $this->getClient()->writeLine("No one is there.");
+				return $c ? $c->writeLine("No one is there.") : null;
 			}
 			if(!($specified_target instanceof self)) {
-				return $this->getClient()->writeLine("I don't think they would like that very much.");
+				return $c ? $c->writeLine("I don't think they would like that very much.") : null;
 			}
 			if($this === $specified_target) {
-				return $this->getClient()->writeLine("You can't target yourself!");
+				return $c ? $c->writeLine("You can't target yourself!") : null;
 			}
 			$this->setTarget($specified_target);
 		} else if(!empty($specified_target) && $this->target !== $specified_target) {
-			return $this->getClient()->writeLine("Whoa there sparky, don't you think one is enough?");
+			return $c ? $c->writeLine("Whoa there sparky, don't you think one is enough?") : null;
 		}
 		return $this->target;
 	}
