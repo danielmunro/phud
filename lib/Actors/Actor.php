@@ -4,7 +4,6 @@ use Phud\Abilities\Ability,
 	Phud\Abilities\Skill,
 	Phud\Affects\Affectable,
 	Phud\Inventory,
-	Phud\Server,
 	Phud\Interactive,
 	Phud\Races\Race,
 	Phud\Room\Room,
@@ -288,17 +287,17 @@ abstract class Actor
 
 		if(empty($this->target)) {
 			if(empty($specified_target)) {
-				return Server::out($this, "No one is there.");
+				return $this->getClient()->writeLine("No one is there.");
 			}
 			if(!($specified_target instanceof self)) {
-				return Server::out($this, "I don't think they would like that very much.");
+				return $this->getClient()->writeLine("I don't think they would like that very much.");
 			}
 			if($this === $specified_target) {
-				return Server::out($this, "You can't target yourself!");
+				return $this->getClient()->writeLine("You can't target yourself!");
 			}
 			$this->setTarget($specified_target);
 		} else if(!empty($specified_target) && $this->target !== $specified_target) {
-			return Server::out($this, "Whoa there sparky, don't you think one is enough?");
+			return $this->getClient()->writeLine("Whoa there sparky, don't you think one is enough?");
 		}
 		return $this->target;
 	}
@@ -367,7 +366,9 @@ abstract class Actor
 
 		$actors = $this->getRoom()->getActors();
 		foreach($actors as $a) {
-			Server::out($a, ($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
+			if($a instanceof User) {
+				$a->getClient()->writeLine(($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
+			}
 		}
 
 		// Lost the hit roll -- miss
@@ -389,8 +390,9 @@ abstract class Actor
 			$victim->setTarget(null);
 			$this->setTarget(null);
 
-			Debug::log(ucfirst($this).' killed '.$victim.".");
-			Server::out($this, 'You have KILLED '.$victim.'.');
+			if($this instanceof User) {
+				$this->getClient()->writeLine('You have KILLED '.$victim.'.');
+			}
 
 			$gold = round($victim->getCurrency('gold') / 2);
 			$silver = round($victim->getCurrency('silver') / 2);
@@ -433,7 +435,7 @@ abstract class Actor
 			}
 			
 			if($this instanceof User) {
-				Server::out($this, "\n".$this->prompt(), false);
+				$this->getClient()->write("\r\n".$this->prompt());
 			}
 
 		}
@@ -441,8 +443,9 @@ abstract class Actor
 	
 	public function death()
 	{
-		Debug::log(ucfirst($this).' died.');
-		Server::out($this, 'You have been KILLED!');
+		if($this instanceof User) {
+			$this->getClient()->writeLine('You have been KILLED!');
+		}
 		$corpse = new Corpse([
 			'short' => 'the corpse of '.$this,
 			'long' => 'The corpse of '.$this.' lies here.',
@@ -616,9 +619,8 @@ abstract class Actor
 		$this->trains++;
 		$this->practices += ceil($this->getWis() / 5);
 
-		if($display) {
-			Server::out($this, 'You LEVELED UP!');
-			Server::out($this, 'Congratulations, you are now level ' . $this->level . '!');
+		if($this instanceof User) {
+			$this->writeLine("You LEVELED UP!\r\nCongratulations, you are now level ".$this->level."!");
 		}
 	}
 
@@ -629,8 +631,7 @@ abstract class Actor
 
 	public function getStatus()
 	{
-		$statuses = array
-			(
+		$statuses = [
 			 '100' => 'is in excellent condition',
 			 '99' => 'has a few scratches',
 			 '75' => 'has some small wounds and bruises',
@@ -638,7 +639,7 @@ abstract class Actor
 			 '30' => 'has some big nasty wounds and scratches',
 			 '15' => 'looks pretty hurt',
 			 '0' => 'is in awful condition'
-			);
+		];
 
 		$hp_percent = ($this->getAttribute('hp') / $this->getMaxAttribute('hp')) * 100;
 		$descriptor = '';
@@ -669,7 +670,9 @@ abstract class Actor
 	{
 		Debug::log("Applying experience from ".$victim." to ".$this.".");
 		$experience = $victim->getKillExperience($this);
-		Server::out($this, "You get ".$experience." experience for your kill.");
+		if($this instanceof User) {
+			$this->getClient()->writeLine("You get ".$experience." experience for your kill.");
+		}
 		if($this->experience < $this->experience_per_level) {
 			$this->experience += $experience;
 		}

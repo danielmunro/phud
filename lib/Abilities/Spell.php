@@ -1,8 +1,8 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Instantiate,
-	Phud\Server;
+	Phud\Actors\User,
+	Phud\Instantiate;
 
 abstract class Spell extends Ability
 {
@@ -21,7 +21,9 @@ abstract class Spell extends Ability
 	{
 		$mana_cost = $this->getManaCost($actor->getProficiencyScore($this->proficiency));
 		if($actor->getAttribute('mana') < $mana_cost) {
-			Server::out($actor, "You lack the mana to do that.");
+			if($actor instanceof User) {
+				$actor->getClient()->writeLine("You lack the mana to do that.");
+			}
 			return false;
 		}
 		$actor->modifyAttribute('mana', -($mana_cost));
@@ -29,7 +31,9 @@ abstract class Spell extends Ability
 
 	protected function fail(Actor $actor)
 	{
-		Server::out($actor, "You lost your concentration.");
+		if($actor instanceof User) {
+			$actor->getClient()->writeLine("You lost your concentration.");
+		}
 	}
 
 	protected function determineTarget(Actor $actor, $args)

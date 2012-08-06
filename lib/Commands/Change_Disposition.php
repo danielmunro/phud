@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
+	Phud\Actors\User as aUser,
 	Phud\Items\Furniture;
 
 abstract class Change_Disposition extends Command
@@ -16,22 +16,28 @@ abstract class Change_Disposition extends Command
 	{
 		$disposition = $actor->getDisposition();
 		$actor->setDisposition($verb);
+		$out = '';
+
 		if(sizeof($args) > 1) {
 			$furniture = $actor->getRoom()->getItemByInput($args[1]);
 			if($furniture instanceof Furniture) {
 				if($furniture->hasCapacity($actor)) {
 					$furniture->addActor($actor);
-					return Server::out($actor, "You ".$this->leaveDisposition($disposition)."begin ".$verb." on ".$furniture.".");
+					$out = "You ".$this->leaveDisposition($disposition)."begin ".$verb." on ".$furniture.".";
 				} else {
-					return Server::out($actor, ucfirst($furniture)." is full right now.");
+					$out = ucfirst($furniture)." is full right now.";
 				}
 			} else if($furniture) {
-				return Server::out($actor, "You can't ".$this->alias." on that!");
+				$out = "You can't ".$this->alias." on that!";
 			} else {
-				return Server::out($actor, "You can't find it.");
+				$out = "You can't find it.";
 			}
 		} else {
-			Server::out($actor, "You ".$this->leaveDisposition($disposition)."begin ".$verb.".");
+			$out = "You ".$this->leaveDisposition($disposition)."begin ".$verb.".";
+		}
+
+		if($actor instanceof aUser) {
+			$actor->getClient()->writeLine($out);
 		}
 	}
 	
@@ -47,5 +53,3 @@ abstract class Change_Disposition extends Command
 		}
 	}
 }
-
-?>

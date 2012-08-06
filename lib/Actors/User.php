@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Actors;
-use Phud\Server,
-	Phud\Dbr,
+use Phud\Dbr,
 	Phud\Client,
 	Phud\Room\Room,
 	Phud\Room\Dungeon\Dungeon,
@@ -122,14 +121,15 @@ class User extends Actor
 		if($this->full < 0) {
 			$this->full = 0;
 		}
+		$msg = '';
 		if($this->hunger === 0) {
-			Server::out($this, "You are hungry.");
+			$msg = "You are hungry.\r\n";
 		}
 		if($this->thirst === 0) {
-			Server::out($this, "You are thirsty.");
+			$msg = "You are thirsty.\r\n";
 		}
 		$this->save();
-		Server::out($this, "\n" . $this->prompt(), false);
+		$this->getClient()->write($msg."\r\n".$this->prompt());
 	}
 	
 	// Food and nourishment
@@ -147,7 +147,7 @@ class User extends Actor
 	public function increaseHunger($hunger)
 	{
 		if($this->full + 1 > $this->race->getFull()) {
-			return Server::out($this, "You are too full.");
+			return $this->getClient()->writeLine("You are too full.");
 		}
 		$this->full++;
 		$this->hunger += $hunger;
@@ -161,7 +161,7 @@ class User extends Actor
 	public function increaseThirst($thirst)
 	{
 		if($this->full + 1 > $this->race->getFull() || $this->thirst > $this->race->getThirst()) {
-			return Server::out($this, "You are too full.");
+			return $this->getClient()->writeLine("You are too full.");
 		}
 		if($this->thirst < 0) {
 			$this->thirst = 0;

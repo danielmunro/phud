@@ -1,7 +1,7 @@
 <?php
 namespace Phud\Proficiencies;
 use Phud\Actors\Actor,
-	Phud\Server;
+	Phud\Actors\User;
 
 abstract class Proficiency
 {
@@ -31,7 +31,9 @@ abstract class Proficiency
 	{
 		if(chance() <= static::$base_improvement_chance && chance() < ($this->score / 100)) {
 			$this->score++;
-			Server::out($actor, "Your abilities in ".static::$name." have improved!");
+			if($actor instanceof User) {
+				$actor->getClient()->writeLine("Your abilities in ".static::$name." have improved!");
+			}
 		}
 	}
 

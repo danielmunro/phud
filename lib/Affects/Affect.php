@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Affects;
 use Phud\EasyInit,
-	Phud\Debug,
-	Phud\Server,
+	Phud\Actors\User,
 	Phud\Attributes;
 
 class Affect
@@ -88,9 +87,8 @@ class Affect
 	
 	public function apply($affectable)
 	{
-		Debug::log("[Affect] Adding ".$this." to ".$affectable.", ".$this->timeout." tick timeout.");
-		if($this->getMessageStart()) {
-			Server::out($affectable, $this->getMessageStart());
+		if($affectable instanceof User && $this->getMessageStart()) {
+			$affectable->getClient()->writeLine($this->getMessageStart());
 		}
 		$affectable->fire('affecting', $this);
 		$affectable->addAffect($this);
@@ -108,8 +106,8 @@ class Affect
 			function($event, $affectable) use ($affect) {
 				if($affect->decreaseTimeout()) {
 					$affectable->removeAffect($affect);
-					if($affect->getMessageEnd()) {
-						Server::out($affectable, $affect->getMessageEnd());
+					if($affectable instanceof User && $affect->getMessageEnd()) {
+						$affectable->getClient()->writeLine($affect->getMessageEnd());
 					}
 					foreach($affect->getListeners() as $listener) {
 						$affectable->unlisten($listener[0], $listener[1]);
@@ -143,4 +141,3 @@ class Affect
 		$this->initListeners();
 	}
 }
-?>

@@ -25,9 +25,7 @@ class Drink extends Item
 	
 	public function drink(Actor $actor)
 	{
-		if($this->uses === 0)
-		{
-			Server::out($actor, "There's no ".$contents." left.");
+		if($this->uses === 0) {
 			return false;
 		}
 		
@@ -63,4 +61,3 @@ class Drink extends Item
 		return $this->thirst;
 	}
 }
-?>

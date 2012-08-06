@@ -1,11 +1,11 @@
 <?php
 namespace Phud\Room;
 use Phud\Actors\Actor,
+	Phud\Actors\User,
 	Phud\Inventory,
 	Phud\EasyInit,
 	Phud\Identity,
 	Phud\Interactive,
-	Phud\Server,
 	Phud\Debug,
 	\Exception;
 
@@ -31,21 +31,21 @@ class Room
 			unset($properties[$d]);
 		}
 		$this->initializeProperties($properties, [
-			'actors' => function($room, $property, $value) {
+				'actors' => function($room, $property, $value) {
 				foreach($value as $actor) {
-					$actor->setRoom($room);
+				$actor->setRoom($room);
 				}
-			},
-			'door' => function($room, $property, $value) {
+				},
+				'door' => function($room, $property, $value) {
 				list($direction, $door_id) = explode(' ', $value);
 				$room->setDoor(Direction::getFullAlias($direction), Door::getByID($door_id));
-			}
-		]);
+				}
+				]);
 		if(isset(self::$identities[$this->id])) {
 			throw new Exception("Room already exists for ID: ".$this->id);
 		}
 		self::$identities[$this->id] = $this;
-		Debug::log("Creating room: ".$this->short." [".$this->id."]");
+		Debug::log("[info] creating room: ".$this->short." [".$this->id."]");
 	}
 
 	public static function setStartRoom($room_id)
@@ -65,10 +65,10 @@ class Room
 
 	public function setDirection($direction, self $value)
 	{
-		if(array_key_exists($direction, $this->directions)) {
+		if(isset($this->directions[$direction])) {
 			$this->directions[$direction] = $value;
 		} else {
-			Debug::log($direction.' is not a valid direction.');
+			Debug::log('[error] '.$direction.' is not a valid direction.');
 		}
 	}
 
@@ -77,7 +77,7 @@ class Room
 		if(isset($this->directions[$direction])) {
 			return $this->directions[$direction] instanceof Room ? $this->directions[$direction] : $this->directions[$direction] = self::getByID($this->directions[$direction]);
 		} else {
-			Debug::log($direction.' is not a valid direction.');
+			Debug::log('[error] '.$direction.' is not a valid direction.');
 		}
 	}
 
@@ -95,7 +95,7 @@ class Room
 	{
 		return $this->visibility;
 	}
-	
+
 	public function getMovementCost()
 	{
 		return $this->movement_cost;
@@ -115,11 +115,11 @@ class Room
 	{
 		$this->actors[] = $actor;
 		$actor->on(
-			'moved',
-			function($event, $actor, &$mvcost, $room) {
+				'moved',
+				function($event, $actor, &$mvcost, $room) {
 				$mvcost += $room->getMovementCost();
-			}
-		);
+				}
+				);
 	}
 
 	public function actorRemove(Actor $actor)
@@ -136,7 +136,7 @@ class Room
 	{
 		return $this->actors;
 	}
-	
+
 	public function announce($announcements)
 	{
 		$actors_announced = [];
@@ -147,14 +147,18 @@ class Room
 					$general_announcement = $announcement['message'];
 				} else {
 					$actors_announced[] = $announcement['actor'];
-					Server::out($announcement['actor'], $announcement['message']);
+					if($announcement['actor'] instanceof User) {
+						$announcement['actor']->getClient()->writeLine($announcement['message']);
+					} else {
+						Debug::log('[warn] Trying to announce to nonuser: '.$announcement['actor']);
+					}
 				}
 			}
 		}
 		if($general_announcement) {
 			foreach($this->actors as $actor) {
-				if(!in_array($actor, $actors_announced)) {
-					Server::out($actor, $general_announcement);
+				if(!in_array($actor, $actors_announced) && $actor instanceof User) {
+					$actor->getClient()->writeLine($general_announcement);
 				}
 			}
 		}

@@ -50,20 +50,19 @@ class Equipped
 		$this->actor = $actor;
 	}
 	
-	public function equip(Equipment $item, $display_message = true)
+	public function equip(Equipment $item)
 	{
 		
 		if($item->getPosition() === Equipment::POSITION_GENERIC) {
-			if($display_message) {
-				Server::out($this->actor, "You can't wear that.");
+			if($this->actor instanceof User) {
+				$this->actor->getClient()->writeLine("You can't wear that.");
 			}
 			return false;
 		}
 		
-		$positions = array_filter(
-							$this->equipment,
-							function($e) use ($item) { return $e['position'] === $item->getPosition(); }
-						);
+		$positions = array_filter($this->equipment, function($e) use ($item) {
+			return $e['position'] === $item->getPosition();
+		});
 		
 		$equipped = $dequipped = null;
 		$i = 0;
@@ -94,7 +93,7 @@ class Equipped
 				break;
 			}
 		}
-		
+
 		if($equipped)
 		{
 			foreach($this->equipment as &$e)
@@ -106,9 +105,6 @@ class Equipped
 				}
 			}
 		}
-		
-		if(!$display_message)
-			return;
 		
 		if($dequipped)
 		{
@@ -203,7 +199,9 @@ class Equipped
 				break;
 		}
 		
-		Server::out($this->actor, $msg_you);
+		if($this->actor instanceof User) {
+			$this->actor->getClient()->writeLine($msg_you);
+		}
 		$this->actor->getRoom()->announce($this->actor, $msg_others);
 	}
 
@@ -218,9 +216,9 @@ class Equipped
 			$this->actor->addItem($item);
 			$this->equipment[$position] = null;
 		}
-		else
-			Server::out($this->actor, 'Nothing is there.');
-		
+		else if($this->actor instanceof User) {
+			$this->actor->getClient()->writeLine("Nothing is there.");
+		}
 	}
 	
 	public function remove(Equipment $item)
