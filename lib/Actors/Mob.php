@@ -2,7 +2,7 @@
 namespace Phud\Actors;
 use Phud\Dbr,
 	Phud\Room\Room,
-	Phud\Direction,
+	Phud\Room\Direction,
 	Phud\Debug,
 	Phud\Server,
 	Phud\Commands\Command,
