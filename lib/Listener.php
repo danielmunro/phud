@@ -7,7 +7,7 @@ trait Listener
 
 	public function on($event, $callback, $inserted_to = 'front')
 	{
-		if(!isset($this->listeners[$event])) {
+		if(!array_key_exists($event, $this->listeners)) {
 			$this->listeners[$event] = [];
 		}
 		if($inserted_to === 'front') {
