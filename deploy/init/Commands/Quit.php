@@ -22,6 +22,6 @@ class Quit extends User
 		
 		$client->write("Good bye!\r\n");
 		$user->save();
-		$client->getServer()->removeClient($client);
+		$client->disconnect();
 	}
 }

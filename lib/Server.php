@@ -22,7 +22,7 @@ class Server
 		$this->server = new \Beehive\Server($this->host, $this->port);
 		$this->server->setClientType('\Phud\Client');
 		$this->server->setConnectCallback([$this, 'connect']);
-		$this->server->setReadCallback([$this, 'read']);
+		$this->server->setupListener();
 
 		// set up server events
 		$this->on('tick', function() { $this->logStatus(); });
@@ -33,45 +33,49 @@ class Server
 
 	public function run()
 	{
-		// fork it, we'll do it live
-		$pid = pcntl_fork();
-		if($pid) {
+		$this->on('cycle', function() {
 			$this->server->listen();
-		} else {
-			$pulse = intval(date('U'));
-			$next_tick = $pulse + intval(round(rand(30, 40)));
-			while(1) {
-				$new_pulse = intval(date('U'));
-				if($pulse + 1 === $new_pulse) {
-					$this->fire('pulse');
-					$pulse = $new_pulse;
-				}
-				if($pulse === $next_tick) {
-					$this->fire('tick');
-					$next_tick = $pulse + intval(round(rand(30, 40)));
-				}
-				$this->fire('cycle');
+		});
+		$pulse = intval(date('U'));
+		$next_tick = $pulse + intval(round(rand(30, 40)));
+		while(1) {
+			$new_pulse = intval(date('U'));
+			if($pulse + 1 === $new_pulse) {
+				$this->fire('pulse');
+				$pulse = $new_pulse;
 			}
+			if($pulse === $next_tick) {
+				$this->fire('tick');
+				$next_tick = $pulse + intval(round(rand(30, 40)));
+			}
+			$this->fire('cycle');
 		}
-	}
-
-	public function __toString()
-	{
-		return $this->server->__toString();
 	}
 
 	public function connect(Client $client)
 	{
 		$this->fire('connect', $client);
-	}
-
-	public function read(Client $client, $message)
-	{
-		$client->appendCommandBuffer($message);
+		$this->on('pulse', function() use ($client) {
+			$client->fire('pulse');
+		});
+		$this->on('tick', function() use ($client) {
+			$client->fire('tick');
+		});
+		$this->on('cycle', function($event) use ($client) {
+			$client->checkCommandBuffer();
+			if(!is_resource($client->getConnection())) {
+				$event->kill();
+			}
+		});
 	}
 	
+	public function __toString()
+	{
+		return $this->server->__toString();
+	}
+
 	protected function logStatus()
 	{
-		Debug::log("[info] memory ".memory_get_peak_usage().", allocated ".memory_get_usage()." kb");
+		Debug::log("[info] tick - memory ".memory_get_peak_usage().", allocated ".memory_get_usage()." kb");
 	}
 }
