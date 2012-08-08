@@ -1,3 +1,6 @@
 [submodule "vendor/beehive"]
 	path = vendor/beehive
 	url = git@github.com:danielmunro/beehive
+[submodule "vendor/onit"]
+	path = vendor/onit
+	url = git@github.com:danielmunro/onit.git

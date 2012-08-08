@@ -10,7 +10,6 @@ use Phud\Abilities\Ability,
 	Phud\Equipped,
 	Phud\Attributes,
 	Phud\EasyInit,
-	Phud\Listener,
 	Phud\Identity,
 	Phud\Damage,
 	Phud\Debug,
@@ -18,7 +17,8 @@ use Phud\Abilities\Ability,
 	Phud\Items\Corpse,
 	Phud\Items\Food,
 	Phud\Items\Furniture,
-	Phud\Items\Equipment;
+	Phud\Items\Equipment,
+	Onit\Listener;
 
 abstract class Actor
 {

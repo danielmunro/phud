@@ -1,6 +1,7 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
+	Onit\Listener,
 	\Exception;
 
 class Server

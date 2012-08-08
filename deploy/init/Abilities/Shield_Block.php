@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Shield_Block extends Skill
 {
@@ -32,4 +31,3 @@ class Shield_Block extends Skill
 		]);
 	}
 }
-?>

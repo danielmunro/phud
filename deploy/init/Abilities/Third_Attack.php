@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Actors\Actor,
-	Phud\Event;
+use Phud\Actors\Actor;
 
 class Third_Attack extends Skill
 {
@@ -27,4 +26,3 @@ class Third_Attack extends Skill
 		}
 	}
 }
-?>

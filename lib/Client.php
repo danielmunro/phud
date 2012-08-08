@@ -1,7 +1,8 @@
 <?php
 namespace Phud;
 use Phud\Actors\User,
-	Phud\Commands\Command;
+	Phud\Commands\Command,
+	Onit\Listener;
 
 class Client implements \Beehive\Client
 {

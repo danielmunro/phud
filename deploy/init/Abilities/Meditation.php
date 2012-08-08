@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Event,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Meditation extends Skill
 {
@@ -32,4 +31,3 @@ class Meditation extends Skill
 	{
 	}
 }
-?>
