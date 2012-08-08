@@ -231,6 +231,11 @@ class User extends Actor
 		return isset($this->quests_completed[$quest->getID()]);
 	}
 
+	public function notify($message)
+	{
+		$this->getClient()->writeLine($message);
+	}
+
 	public function __sleep()
 	{
 		return [
@@ -294,4 +299,3 @@ class User extends Actor
 		$this->applyListeners();
 	}
 }
-?>

@@ -21,9 +21,7 @@ abstract class Spell extends Ability
 	{
 		$mana_cost = $this->getManaCost($actor->getProficiencyScore($this->proficiency));
 		if($actor->getAttribute('mana') < $mana_cost) {
-			if($actor instanceof User) {
-				$actor->getClient()->writeLine("You lack the mana to do that.");
-			}
+			$actor->notify("You lack the mana to do that.");
 			return false;
 		}
 		$actor->modifyAttribute('mana', -($mana_cost));
@@ -31,9 +29,7 @@ abstract class Spell extends Ability
 
 	protected function fail(Actor $actor)
 	{
-		if($actor instanceof User) {
-			$actor->getClient()->writeLine("You lost your concentration.");
-		}
+		$actor->notify("You lost your concentration.");
 	}
 
 	protected function determineTarget(Actor $actor, $args)

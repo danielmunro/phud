@@ -262,6 +262,10 @@ class Mob extends Actor
 	{
 		$this->area = $area;
 	}
+
+	public function notify($message)
+	{
+	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Money stuff

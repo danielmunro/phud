@@ -54,9 +54,7 @@ class Equipped
 	{
 		
 		if($item->getPosition() === Equipment::POSITION_GENERIC) {
-			if($this->actor instanceof User) {
-				$this->actor->getClient()->writeLine("You can't wear that.");
-			}
+			$this->actor->notify("You can't wear that.");
 			return false;
 		}
 		
@@ -199,9 +197,7 @@ class Equipped
 				break;
 		}
 		
-		if($this->actor instanceof User) {
-			$this->actor->getClient()->writeLine($msg_you);
-		}
+		$this->actor->notify($msg_you);
 		$this->actor->getRoom()->announce($this->actor, $msg_others);
 	}
 
@@ -216,8 +212,8 @@ class Equipped
 			$this->actor->addItem($item);
 			$this->equipment[$position] = null;
 		}
-		else if($this->actor instanceof User) {
-			$this->actor->getClient()->writeLine("Nothing is there.");
+		else {
+			$this->actor->notify("Nothing is there.");
 		}
 	}
 	

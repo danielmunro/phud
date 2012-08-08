@@ -147,18 +147,14 @@ class Room
 					$general_announcement = $announcement['message'];
 				} else {
 					$actors_announced[] = $announcement['actor'];
-					if($announcement['actor'] instanceof User) {
-						$announcement['actor']->getClient()->writeLine($announcement['message']);
-					} else {
-						Debug::log('[warn] Trying to announce to nonuser: '.$announcement['actor']);
-					}
+					$announcement['actor']->notify($announcement['message']);
 				}
 			}
 		}
 		if($general_announcement) {
 			foreach($this->actors as $actor) {
-				if(!in_array($actor, $actors_announced) && $actor instanceof User) {
-					$actor->getClient()->writeLine($general_announcement);
+				if(!in_array($actor, $actors_announced)) {
+					$actor->notify($general_announcement);
 				}
 			}
 		}

@@ -285,20 +285,19 @@ abstract class Actor
 
 		$specified_target = is_array($args) ? $this->getRoom()->getActorByInput(array_slice($args, -1)[0]) : $args;
 
-		$c = $this instanceof User ? $this->getClient() : null;
 		if(empty($this->target)) {
 			if(empty($specified_target)) {
-				return $c ? $c->writeLine("No one is there.") : null;
+				return $this->notify("No one is there.");
 			}
 			if(!($specified_target instanceof self)) {
-				return $c ? $c->writeLine("I don't think they would like that very much.") : null;
+				return $this->notify("I don't think they would like that very much.");
 			}
 			if($this === $specified_target) {
-				return $c ? $c->writeLine("You can't target yourself!") : null;
+				return $this->notify("You can't target yourself!");
 			}
 			$this->setTarget($specified_target);
 		} else if(!empty($specified_target) && $this->target !== $specified_target) {
-			return $c ? $c->writeLine("Whoa there sparky, don't you think one is enough?") : null;
+			return $this->notify("Whoa there sparky, don't you think one is enough?");
 		}
 		return $this->target;
 	}
@@ -367,9 +366,7 @@ abstract class Actor
 
 		$actors = $this->getRoom()->getActors();
 		foreach($actors as $a) {
-			if($a instanceof User) {
-				$a->getClient()->writeLine(($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
-			}
+			$a->notify(($a === $this ? '('.$attack_name.') Your' : ucfirst($this)."'s").' '.$descriptor.' '.$verb.' '.($dam_roll > 0 ? 'hits ' : 'misses ').($victim === $a ? 'you' : $victim) . '.');
 		}
 
 		// Lost the hit roll -- miss
@@ -391,9 +388,7 @@ abstract class Actor
 			$victim->setTarget(null);
 			$this->setTarget(null);
 
-			if($this instanceof User) {
-				$this->getClient()->writeLine('You have KILLED '.$victim.'.');
-			}
+			$this->notify('You have KILLED '.$victim.'.');
 
 			$gold = round($victim->getCurrency('gold') / 2);
 			$silver = round($victim->getCurrency('silver') / 2);
@@ -435,18 +430,13 @@ abstract class Actor
 				]));
 			}
 			
-			if($this instanceof User) {
-				$this->getClient()->write("\r\n".$this->prompt());
-			}
-
+			$this->notify("\r\n".$this->prompt());
 		}
 	}
 	
 	public function death()
 	{
-		if($this instanceof User) {
-			$this->getClient()->writeLine('You have been KILLED!');
-		}
+		$this->notify('You have been KILLED!');
 		$corpse = new Corpse([
 			'short' => 'the corpse of '.$this,
 			'long' => 'The corpse of '.$this.' lies here.',
@@ -620,9 +610,7 @@ abstract class Actor
 		$this->trains++;
 		$this->practices += ceil($this->getWis() / 5);
 
-		if($this instanceof User) {
-			$this->writeLine("You LEVELED UP!\r\nCongratulations, you are now level ".$this->level."!");
-		}
+		$this->notify("You LEVELED UP!\r\nCongratulations, you are now level ".$this->level."!");
 	}
 
 	public function getLevel()
@@ -671,9 +659,7 @@ abstract class Actor
 	{
 		Debug::log("Applying experience from ".$victim." to ".$this.".");
 		$experience = $victim->getKillExperience($this);
-		if($this instanceof User) {
-			$this->getClient()->writeLine("You get ".$experience." experience for your kill.");
-		}
+		$this->notify("You get ".$experience." experience for your kill.");
 		if($this->experience < $this->experience_per_level) {
 			$this->experience += $experience;
 		}
@@ -796,4 +782,6 @@ abstract class Actor
 	{
 		return $this->alias;
 	}
+
+	abstract public function notify($message);
 }
