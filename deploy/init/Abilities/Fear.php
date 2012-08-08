@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Affect;
 
 class Fear extends Skill
@@ -23,7 +22,7 @@ class Fear extends Skill
 	{
 		$cost = 75 - $actor->getLevel();
 		if($actor->getAttribute('movement') < $cost) {
-			Server::out($actor, "You don't have enough energy to instill fear.");
+			$actor->notify("You don't have enough energy to instill fear.");
 			return false;
 		}
 		$actor->modifyAttribute('movement', -($cost));
@@ -59,4 +58,3 @@ class Fear extends Skill
 		]);
 	}
 }
-?>

@@ -1,6 +1,6 @@
 <?php
 namespace Phud\Affects;
-use Phud\Server;
+use Phud\Actors\User;
 
 class Poison extends Affect
 {
@@ -16,7 +16,9 @@ class Poison extends Affect
 			['tick',
 			function($event, $poisoned, &$amount, &$modifier) use ($affect) {
 				$amount = -($affect->getLevel() * 2);
-				Server::out($poisoned, "You feel poison coursing through your blood.");
+				if($poisoned instanceof User) {
+					$poisoned->notify("You feel poison coursing through your blood.");
+				}
 				$event->satisfy();
 			}]
 		];

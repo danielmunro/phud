@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Affect;
 
 class Sneak extends Skill
@@ -42,7 +41,6 @@ class Sneak extends Skill
 	
 	protected function fail(Actor $actor)
 	{
-		Server::out($actor, "Your attempt to move undetected fails.");
+		$actor->notify("Your attempt to move undetected fails.");
 	}
 }
-?>

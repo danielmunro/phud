@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Affects\Affect;
 
 class Bash extends Skill
@@ -24,7 +23,7 @@ class Bash extends Skill
 	{
 		$amount = min(20, 51 - $actor->getLevel());
 		if($actor->getAttribute('movement') < $amount) {
-			Server::out($actor, "You don't have the energy to bash them.");
+			$actor->notify("You don't have the energy to bash them.");
 			return false;
 		}
 		$actor->modifyAttribute('movement', -($amount));
@@ -66,4 +65,3 @@ class Bash extends Skill
 		]);
 	}
 }
-?>

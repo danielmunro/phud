@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Affect;
 
 class Berserk extends Skill
@@ -21,7 +20,7 @@ class Berserk extends Skill
 	protected function applyCost(Actor $actor)
 	{
 		if($actor->getAttribute('movement') < 75) {
-			Server::out($actor, "You do not have the energy to do that.");
+			$actor->notify("You do not have the energy to do that.");
 			return false;
 		}
 		$actor->modifyAttribute('movement', -($actor->getAttribute('movement') / 2));
@@ -61,5 +60,3 @@ class Berserk extends Skill
 		]);
 	}
 }
-
-?>

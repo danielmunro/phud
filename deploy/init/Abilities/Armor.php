@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Affect,
-	Phud\Actors\Actor,
-	Phud\Server;
+	Phud\Actors\Actor;
 
 class Armor extends Spell
 {
@@ -29,7 +28,6 @@ class Armor extends Spell
 			'apply' => $target
 		]);
 
-		Server::out($target, "You feel more protected!");
+		$target->notify("You feel more protected!");
 	}
 }
-?>

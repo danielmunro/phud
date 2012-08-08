@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Actors\Actor,
-	Phud\Affect,
-	Phud\Server;
+	Phud\Affect;
 
 class Shield extends Spell
 {
@@ -29,7 +28,6 @@ class Shield extends Spell
 				'ac_magic' => $mod_ac
 			]
 		]);
-		Server::out($target, "You feel more protected!");
+		$target->notify("You feel more protected!");
 	}
 }
-?>

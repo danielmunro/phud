@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
 use Phud\Affect,
-	Phud\Server,
 	Phud\Actors\Actor;
 
 class Trip extends Skill
@@ -19,7 +18,7 @@ class Trip extends Skill
 	{
 		$cost = 50 - $this->level;
 		if($actor->getAttribute('movement') < $cost) {
-			Server::out($actor, "You don't have enough energy to trip.");
+			$actor->notify("You don't have enough energy to trip.");
 			return false;
 		}
 		$actor->modifyAttribute('movement', -($cost));
@@ -48,4 +47,3 @@ class Trip extends Skill
 		]);
 	}
 }
-?>

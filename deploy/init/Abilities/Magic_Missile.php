@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Actors\Actor,
-	Phud\Server;
+use Phud\Actors\Actor;
 
 class Magic_Missile extends Spell
 {
@@ -15,8 +14,7 @@ class Magic_Missile extends Spell
 	{
 		$proficiency = $actor->getProficiencyScore($this->proficiency);
 		$damage = -(round(rand($proficiency / 10, $proficiency / 5))); 
-		Server::out($actor, "Your magic missile hits ".$target.'!');
+		$actor->notify("Your magic missile hits ".$target.'!');
 		$target->modifyAttribute('hp', $damage);
 	}
 }
-?>

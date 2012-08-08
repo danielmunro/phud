@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Server,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Cure_Serious extends Spell
 {
@@ -15,7 +14,6 @@ class Cure_Serious extends Spell
 		$prof_rand = rand(9, 11);
 		$amount = round(rand(5, ($proficiency / $prof_rand) + 4));
 		$target->modifyAttribute('hp', $amount);
-		Server::out($target, "You feel better!");
+		$target->notify("You feel better!");
 	}
 }
-?>
