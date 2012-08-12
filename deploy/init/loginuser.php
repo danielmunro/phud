@@ -51,7 +51,6 @@ $server->on('connect', function($event, $server, $client) {
 				$client->setUser($unverified_user);
 				$unverified_user->getRoom()->actorAdd($unverified_user);
 				Command::lookup('look')->perform($unverified_user);
-				Debug::log("User logged in: ".$unverified_user);
 			} else {
 				$client->write("Wrong password.");
 				$client->fire('quit');
