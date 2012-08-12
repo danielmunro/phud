@@ -13,6 +13,7 @@ class Server
 	protected $connection = null;
 	protected $server = null;
 	protected $deploy = null;
+	protected $clients = [];
 	
 	public function __construct($config)
 	{
@@ -55,12 +56,19 @@ class Server
 
 	public function connect(Client $client)
 	{
+		Debug::log("[info] client ".$client->getID(). " connected");
 		$this->fire('connect', $client);
-		$this->on('pulse', function() use ($client) {
+		$this->on('pulse', function($event) use ($client) {
 			$client->fire('pulse');
+			if(!is_resource($client->getConnection())) {
+				$event->kill();
+			}
 		});
-		$this->on('tick', function() use ($client) {
+		$this->on('tick', function($event) use ($client) {
 			$client->fire('tick');
+			if(!is_resource($client->getConnection())) {
+				$event->kill();
+			}
 		});
 		$this->on('cycle', function($event) use ($client) {
 			$client->checkCommandBuffer();
@@ -68,6 +76,29 @@ class Server
 				$event->kill();
 			}
 		});
+		$client->on('broadcast', function($event, $client_sender, $message) {
+			foreach($this->clients as $client) {
+				if($client_sender != $client) {
+					$client->writeLine($message);
+				}
+			}
+		});
+		$client->on('disconnect', function($event, $client) {
+			$this->removeClient($client);
+			$event->kill();
+		});
+		$this->clients[] = $client;
+	}
+
+	public function removeClient(Client $client)
+	{
+		$i = array_search($client, $this->clients);
+		if($i === false) {
+			Debug::log('[error] disconnectClient did not find client in client array');
+		} else {
+			unset($this->clients[$i]);
+			Debug::log('[info] client '.$client->getID().' disconnected');
+		}
 	}
 	
 	public function __toString()

@@ -25,6 +25,7 @@ class Client implements \Beehive\Client
 	public function disconnect()
 	{
 		fclose($this->connection);
+		$this->fire('disconnect');
 	}
 
 	public function getHandshake()
