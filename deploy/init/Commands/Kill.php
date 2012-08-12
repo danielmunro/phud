@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Actors\Actor,
-	Phud\Server;
+use Phud\Actors\Actor;
 
 class Kill extends Command
 {
@@ -16,8 +15,7 @@ class Kill extends Command
 
 		$event = $actor->getTarget()->fire('attacked', $actor);
 		if($event && $event->getStatus() === 'on') {
-			Server::out($actor, "You scream and attack!");
+			$actor->notify("You scream and attack!");
 		}
 	}
 }
-?>

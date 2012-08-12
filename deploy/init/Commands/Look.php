@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Affect,
+use Phud\Affect,
 	Phud\Actors\Actor,
 	Phud\Actors\User as lUser,
 	Phud\Room\Room,
@@ -50,12 +49,12 @@ class Look extends User
 			
 			foreach($user->getRoom()->getActors() as $a) {
 				if($a !== $user) {
-					$disposition = $a->getDisposition() === Actor::DISPOSITION_STANDING ? '' : ' '.$a->getDisposition();
+					$disposition = $a->getDisposition();// === Actor::DISPOSITION_STANDING ? '' : ' '.$a->getDisposition();
 					$post = '';
 					if($a instanceof lUser) {
-						$post = 'is '.$disposition.' here';
+						$post = ' is '.$disposition.' here';
 					}
-					$message .= ucfirst($a->getShort()).$post.".\r\n";
+					$message .= ucfirst($a).$post.".\r\n";
 				}
 			}
 			$client->write($message);

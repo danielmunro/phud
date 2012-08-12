@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Abilities\Ability,
 	Phud\Abilities\Spell as aSpell;
 
@@ -21,12 +20,12 @@ class Cast extends Command
 
 		// Check if the spell exists
 		if(!($spell instanceof aSpell)) {
-			return Server::out($actor, "That spell does not exist in this realm.");
+			return $actor->notify("That spell does not exist in this realm.");
 		}
 
 		// Does the caster actually know the spell?
 		if(!in_array($spell->getAlias(), $actor->getAbilities())) {
-			return Server::out($actor, "You do not know that spell.");
+			return $actor->notify("You do not know that spell.");
 		}
 
 		$actor->fire('casting', $spell);
@@ -34,4 +33,3 @@ class Cast extends Command
 		$spell->perform($actor, $args);
 	}
 }
-?>

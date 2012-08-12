@@ -2,8 +2,7 @@
 namespace Phud\Commands;
 use Phud\Items\Item as mItem,
 	Phud\Actors\Actor,
-	Phud\Actors\Shopkeeper as lShopkeeper,
-	Phud\Server;
+	Phud\Actors\Shopkeeper as lShopkeeper;
 
 class Buy extends Command
 {
@@ -15,7 +14,6 @@ class Buy extends Command
 
 	public function perform(Actor $actor, $args = [])
 	{
-	
 		if(sizeof($args) == 3)
 			$target = $actor->getRoom()->getActorByInput();
 		else
@@ -27,10 +25,10 @@ class Buy extends Command
 		}
 		
 		if(!($target instanceof Actor))
-			return Server::out($actor, "They are not here.");
+			return $actor->notify("They are not here.");
 		
 		if(!($target instanceof lShopkeeper))
-			return Server::out($actor, $target->getAlias(true) . " is not a shop keeper.");
+			return $actor->notify(ucfirst($target->getAlias())." is not a shop keeper.");
 		
 		$item = $target->getItemByInput($args[1]);
 		
@@ -44,7 +42,7 @@ class Buy extends Command
 		
 		$new_item = clone $item;
 		$actor->addItem($new_item);
-		return Server::out($actor, "You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
+		return $actor->notify("You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 	}
 }
 ?>

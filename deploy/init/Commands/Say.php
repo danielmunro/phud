@@ -1,13 +1,12 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Say extends Command
 {
 	protected $alias = 'say';
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
 		
 		$actors = $actor->getRoom()->getActors();
@@ -22,9 +21,8 @@ class Say extends Command
 		
 		foreach($actors as $a)
 			if($a->getAlias() == $actor->getAlias())
-				Server::out($a, "You say, \"" . $message ."\"");
+				$a->notify("You say, \"" . $message ."\"");
 			else
-				Server::out($a, ucfirst($actor) . " says, \"" . $message . "\"");
+				$a->notify(ucfirst($actor) . " says, \"" . $message . "\"");
 	}
 }
-?>

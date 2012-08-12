@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\User as lUser;
+use Phud\Actors\User as lUser;
 
 class AttSet extends DM
 {
@@ -17,17 +16,16 @@ class AttSet extends DM
 			$object = $user->getItemByInput($args[1]);
 		}
 		if(!$object) {
-			return Server::out($user, "That doesn't seem to exist.");
+			return $user->notify("That doesn't seem to exist.");
 		}
 
 		if($object->setAttribute($args[2], $args[3])) {
-			Server::out($user, "You set ".$object."'s ".$args[2]." to ".$args[3].".");
+			$user->notify("You set ".$object."'s ".$args[2]." to ".$args[3].".");
 			if(method_exists($object, 'save')) {
 				$object->save();
 			}
 		} else {
-			Server::out($user, "They don't have that attribute.");
+			$user->notify("They don't have that attribute.");
 		}
 	}
 }
-?>

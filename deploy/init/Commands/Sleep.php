@@ -12,4 +12,3 @@ class Sleep extends Change_Disposition
 	}
 
 }
-?>

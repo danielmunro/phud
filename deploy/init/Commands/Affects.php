@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\Actor,
+use Phud\Actors\Actor,
 	Phud\Actors\User as lUser;
 
 class Affects extends User
@@ -13,15 +12,15 @@ class Affects extends User
 		Actor::DISPOSITION_SLEEPING
 	];
 
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
-		Server::out($user, 'You are affected by: ');
+		$message = "You are affected by:\r\n";
 		$affects = $user->getAffects();
 		foreach($affects as $affect) {
 			if($affect->getMessageAffect()) {
-				Server::out($user, $affect->getMessageAffect() . '. ' . $affect->getTimeout() . ' ticks.');
+				$message .= $affect->getMessageAffect().". ".$affect->getTimeout()." ticks.\r\n";
 			}
 		}
+		$user->getClient()->write($message);
 	}
 }
-?>

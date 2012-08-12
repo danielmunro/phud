@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Items\Equipment as iEquipment;
 
 class Wear extends Command
@@ -14,14 +13,13 @@ class Wear extends Command
 		$item = $actor->getItemByInput($args[1]);
 		
 		if(!$item) {
-			return Server::out($actor, 'You have nothing like that in your inventory.');
+			return $actor->notify('You have nothing like that in your inventory.');
 		}
 		
 		if(!($item instanceof iEquipment)) {
-			return Server::out($actor, "You cannot equip ".$item.".");
+			return $actor->notify("You cannot equip ".$item.".");
 		}
 		
 		return $actor->getEquipped()->equip($item);
 	}
 }
-?>

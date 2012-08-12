@@ -11,4 +11,3 @@ class Sit extends Change_Disposition
 		$this->changeDisposition($actor, $args, 'sitting');
 	}
 }
-?>

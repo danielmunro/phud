@@ -2,7 +2,6 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Actors\User as aUser,
-	Phud\Server,
 	Phud\Room\Room,
 	Phud\Room\Door,
 	Phud\Room\Direction;
@@ -22,7 +21,7 @@ class Move_Direction extends Command
 	public function perform(Actor $actor, $args = [])
 	{
 		if($actor->getTarget()) {
-			return Server::out($actor, 'You cannot leave a fight!');
+			return $actor->notify('You cannot leave a fight!');
 		}
 
 		$direction = '';
@@ -37,13 +36,13 @@ class Move_Direction extends Command
 		if($room instanceof Room) {
 			$doors = $actor->getRoom()->getDoors();
 			if(isset($doors[$direction]) && $doors[$direction]->getDisposition() !== Door::DISPOSITION_OPEN) {
-				return Server::out($actor, ucfirst($doors[$direction]).' is not open.');
+				return $actor->notify(ucfirst($doors[$direction]).' is not open.');
 			}
 			$movement_cost = 1;
 			$actor->fire('moved', $movement_cost, $room);
 			if($actor->getAttribute('movement') >= $movement_cost) {
 				$actor->modifyAttribute('movement', -($movement_cost));
-				$actor->getRoom()->announce($actor, [
+				$actor->getRoom()->announce([
 					['actor' => $actor, 'message' => ''],
 					['actor' => '*', 'message' => ucfirst($actor).' '.$actor->getRace()->getMoveVerb().' '.$direction.'.']
 				]);
@@ -51,16 +50,15 @@ class Move_Direction extends Command
 				if($actor instanceof aUser) {
 					Command::lookup('look')->perform($actor);
 				}
-				$actor->getRoom()->announce($actor, [
+				$actor->getRoom()->announce([
 					['actor' => $actor, 'message' => ''],
 					['actor' => '*', 'message' => ucfirst($actor).' has arrived.']
 				]);
 				return;
 			}
-			Server::out($actor, 'You are too exhausted.');
+			$actor->notify('You are too exhausted.');
 		} else {
-			Server::out($actor, 'Alas, you cannot go that way.');
+			$actor->notify('Alas, you cannot go that way.');
 		}
 	}
 }
-?>

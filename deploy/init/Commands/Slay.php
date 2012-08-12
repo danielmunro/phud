@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\User as lUser;
+use Phud\Actors\User as lUser;
 
 class Slay extends DM
 {
@@ -18,4 +17,3 @@ class Slay extends DM
 		]);
 	}
 }
-?>

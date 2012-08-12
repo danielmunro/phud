@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Door as mDoor,
 	Phud\Commands\Command;
 
@@ -13,7 +12,7 @@ class Open extends Command
 	public function perform(Actor $actor, $args = [])
 	{
 		if(sizeof($args) < 2) {
-			return Server::out($actor, 'Open what?');
+			return $actor->notify('Open what?');
 		}
 		
 		$door = $actor->getRoom()->getDoorByInput($args[1]);
@@ -22,14 +21,13 @@ class Open extends Command
 			switch($door->getDisposition()) {
 				case mDoor::DISPOSITION_CLOSED:
 					$door->setDisposition(mDoor::DISPOSITION_OPEN);
-					return Server::out($actor, 'You open '.$door.'.');
+					return $actor->notify('You open '.$door.'.');
 				case mDoor::DISPOSITION_OPEN:
-					return Server::out($actor, ucfirst($door).' is already open.');
+					return $actor->notify(ucfirst($door).' is already open.');
 				case mDoor::DISPOSITION_LOCKED:
-					return Server::out($actor, ucfirst($door).' is locked.');
+					return $actor->notify(ucfirst($door).' is locked.');
 			}					
 		}
-		return Server::out($actor, "You can't open anything like that.");
+		return $actor->notify("You can't open anything like that.");
 	}
 }
-?>

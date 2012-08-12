@@ -83,6 +83,15 @@ class Server
 				}
 			}
 		});
+		$client->on('who', function($event, $client_sender, &$out, &$n) {
+			foreach($this->clients as $client) {
+				$u = $client->getUser();
+				if($u) {
+					$n++;
+					$out .= "[".$u->getLevel()." ".$u->getRace()->getAlias()."] ".$u."\n";
+				}
+			}
+		});
 		$client->on('disconnect', function($event, $client) {
 			$this->removeClient($client);
 			$event->kill();

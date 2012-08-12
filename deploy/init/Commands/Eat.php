@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\Actor,
+use Phud\Actors\Actor,
 	Phud\Items\Item,
 	Phud\Items\Food;
 
@@ -13,19 +12,20 @@ class Eat extends User
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
 		
 		$item = $actor->getItemByInput(implode(' ', array_slice($args, 1)));
 		
-		if(!($item instanceof Item))
-			return Server::out($actor, "Nothing like that is here.");
+		if(!($item instanceof Item)) {
+			return $actor->notify("Nothing like that is here.");
+		}
 		
-		if(!($item instanceof Food))
-			return Server::out($actor, "You can't eat that!");
+		if(!($item instanceof Food)) {
+			return $actor->notify("You can't eat that!");
+		}
 		
-		Server::out($actor, "You eat ".$item.".");
+		$actor->notify("You eat ".$item.".");
 		$actor->consume($item);
 	}
 }
-?>

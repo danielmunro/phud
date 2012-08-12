@@ -2,14 +2,13 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Items\Item as mItem,
-	Phud\Items\Corpse,
-	Phud\Server;
+	Phud\Items\Corpse;
 
 class Sacrifice extends Command
 {
 	protected $alias = 'sacrifice';
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
 		$item = $actor->getRoom()->getItemByInput($args[1]);
 		
@@ -19,12 +18,11 @@ class Sacrifice extends Command
 			$copper = max(1, $item->getLevel()*3);
 			if(!($item instanceof Corpse))
 				$copper = min($copper, $item->getValue());
-			Server::out($actor, "Mojo finds ".$item." pleasing and rewards you.");
+			$actor->notify("Mojo finds ".$item." pleasing and rewards you.");
 			$actor->getRoom()->announce($actor, $actor." sacrifices ".$item." to Mojo.");
 			$actor->modifyCurrency('copper', $copper);
 			return;
 		}
-		Server::out($actor, "You can't find that.");
+		$actor->notify("You can't find that.");
 	}
 }
-?>

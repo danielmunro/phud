@@ -44,8 +44,6 @@ class Drink extends User
 			$out = "There's no ".$item->getContents()." left.";
 		}
 
-		if($actor instanceof aUser) {
-			$actor->getClient()->writeLine($out);
-		}
+		$actor->notify($out);
 	}
 }

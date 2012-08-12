@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\User as aUser;
+use Phud\Actors\User as aUser;
 
 class Save extends User
 {
@@ -11,11 +10,9 @@ class Save extends User
 	{
 		if(method_exists($user, 'save')) {
 			$user->save();
-			Server::out($user, 'Done.');
-		}
-		else {
-			return Server::out($user, 'Cannot do that.');
+			$user->notify('Done.');
+		} else {
+			return $user->notify('Cannot do that.');
 		}
 	}
 }
-?>

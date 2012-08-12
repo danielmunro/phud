@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\User as aUser,
-	Phud\Actors\Acolyte,
-	Phud\Server;
+	Phud\Actors\Acolyte;
 
 class Practice extends User
 {
@@ -18,7 +17,7 @@ class Practice extends User
 				$spacer = str_pad('', 30 - strlen($proficiency));
 				$out .= $proficiency.$spacer.$proficiency->getScore()."\n";
 			}
-			return Server::out($user, "Practice list:\n".$out);
+			return $user->notify("Practice list:\n".$out);
 		}
 
 		// practice a proficiency
@@ -31,4 +30,3 @@ class Practice extends User
 		}
 	}
 }
-?>

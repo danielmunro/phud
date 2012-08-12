@@ -1,16 +1,13 @@
 <?php
 namespace Phud\Commands;
-use Phud\Actors\Actor,
-	Phud\Server;
+use Phud\Actors\Actor;
 
 class Equipment extends Command
 {
 	protected $alias = 'equipment';
 
-	public function perform(Actor $actor, $args = array())
+	public function perform(Actor $actor, $args = [])
 	{
-		Server::out($actor, 'Your equipment:');
-		Server::out($actor, $actor->getEquipped()->displayContents());		
+		$actor->notify("Your equipment:\r\n".$actor->getEquipped()->displayContents());		
 	}
 }
-?>

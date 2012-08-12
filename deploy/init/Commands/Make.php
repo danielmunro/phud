@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\User as lUser;
+use Phud\Actors\User as lUser;
 
 class Make extends DM
 {
@@ -13,10 +12,9 @@ class Make extends DM
 		$command = Command::lookup($args[2]);
 		if($target && $command) {
 			$command->perform($target, $args);
-			Server::out($user, "Done.");
+			$user->notify("Done.");
 		} else {
-			Server::out($user, "Cannot be done.");
+			$user->notify("Cannot be done.");
 		}
 	}
 }
-?>

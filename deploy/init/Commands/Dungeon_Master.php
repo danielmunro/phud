@@ -7,10 +7,9 @@ class Dungeon_Master extends User
 {
 	protected $alias = 'dungeon master';
 
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
 		$user->setDM(true);
-		Server::out($user, "You are now the dungeon master.");
+		$user->notify("You are now the dungeon master.");
 	}
 }
-?>

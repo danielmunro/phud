@@ -2,7 +2,6 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Room,
-	Phud\Server,
 	Phud\Direction;
 
 class Flee extends Command
@@ -16,7 +15,7 @@ class Flee extends Command
 		
 		// sanity check
 		if(!$target) {
-			return Server::out($fighter, "Flee from who?");
+			return $fighter->notify("Flee from who?");
 		}
 
 		// remove targets
@@ -35,13 +34,12 @@ class Flee extends Command
 		foreach($directions as $direction) {
 			if($direction[1]) {
 				Command::lookup($direction[0])->perform($fighter);
-				Server::out($fighter, "You run scared!");
+				$fighter->notify("You run scared!");
 				return;
 			}
 		}
 
 		// an exitless room
-		Server::out($fighter, "You don't see anywhere to flee!");
+		$fighter->notify("You don't see anywhere to flee!");
 	}
 }
-?>

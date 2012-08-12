@@ -15,4 +15,3 @@ class Recall extends Command
 		Command::lookup('look')->perform($actor);
 	}
 }
-?>

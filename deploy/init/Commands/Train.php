@@ -1,8 +1,7 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Trainer,
-	Phud\Actors\Actor,
-	Phud\Server;
+	Phud\Actors\Actor;
 
 class Train extends User
 {
@@ -21,7 +20,7 @@ class Train extends User
 			case 'cha':
 				break;
 			default:
-				return Server::out($actor, "What stat would you like to train (str, int, wis, dex, con, cha)?");
+				return $actor->notify("What stat would you like to train (str, int, wis, dex, con, cha)?");
 		}
 
 		$actors = $actor->getRoom()->getActors();
@@ -31,7 +30,6 @@ class Train extends User
 				return;
 			}
 		}
-		Server::out($actor, "A trainer is not here to help you.");
+		$actor->notify("A trainer is not here to help you.");
 	}
 }
-?>

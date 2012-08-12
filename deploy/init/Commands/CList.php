@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\Actor,
+use Phud\Actors\Actor,
 	Phud\Actors\User as lUser,
 	Phud\Actors\Shopkeeper as lShopkeeper;
 
@@ -28,15 +27,15 @@ class CList extends User
 		}
 		
 		if(!isset($target)) {
-			return Server::out($user, "They are not here.");
+			return $user->notify("They are not here.");
 		}
 		
 		if(!($target instanceof lShopkeeper)) {
-			return Server::out($user, "They are not selling anything.");
+			return $user->notify("They are not selling anything.");
 		}
 		
 		Say::perform($target, $target->getListItemMessage());
-		Server::out($user, $target->displayContents(true));
+		$user->notify($target->displayContents(true));
 	}
 }
 ?>

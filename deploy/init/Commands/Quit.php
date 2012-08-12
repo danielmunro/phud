@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Actors\User as lUser;
 
 class Quit extends User
@@ -15,13 +14,12 @@ class Quit extends User
 	
 	public function perform(lUser $user, $args = [])
 	{
-		$client = $user->getClient();
 		if(array_key_exists('sleep', $user->getAffects())) {
-			return $client->write("You need to be able to wake up first.\r\n");
+			return $user->notify("You need to be able to wake up first.");
 		}
 		
-		$client->write("Good bye!\r\n");
+		$user->notify("Good bye!");
 		$user->save();
-		$client->disconnect();
+		$user->getClient()->disconnect();
 	}
 }

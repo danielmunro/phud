@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\Actor;
+use Phud\Actors\Actor;
 
 class Give extends Command
 {
@@ -22,7 +21,7 @@ class Give extends Command
 			$arg_item = $args[2];
 			$amount = abs($args[1]);
 		} else {
-			return Server::out($actor, "What did you want to give?");
+			return $actor->notify("What did you want to give?");
 		}
 
 		// Item quantity not figured out yet
@@ -30,7 +29,7 @@ class Give extends Command
 		$item = $actor->getItemByInput($arg_item, $amount);
 
 		if(!$target) {
-			return Server::out($actor, "They are not there.");
+			return $actor->notify("They are not there.");
 		}
 		
 		if($item) {
@@ -60,7 +59,7 @@ class Give extends Command
 
 		if($currency) {
 			if($amount > $actor->getCurrency($currency)) {
-				return Server::out($actor, "You do not have enough ".$currency.".");
+				return $actor->notify("You do not have enough ".$currency.".");
 			}
 			$actor->modifyCurrency(-($currency), $amount);
 			$target->modifyCurrency($currency, $amount);
@@ -75,7 +74,6 @@ class Give extends Command
 			return;
 		}
 
-		return Server::out($actor, "What are you trying to give?");
+		return $actor->notify("What are you trying to give?");
 	}
 }
-?>

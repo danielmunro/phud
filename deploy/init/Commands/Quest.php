@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Server,
 	Phud\Actors\Questmaster,
 	Phud\Actors\User as lUser;
 
@@ -33,7 +32,7 @@ class Quest extends User
 			$msg[$quest->getStatus()] .= '['.$quest->getStatus().'] '.$quest."\n";
 		}
 
-		Server::out($user, "Active Quests:\n\n".$msg['initialized'].
+		$user->notify("Active Quests:\n\n".$msg['initialized'].
 			"\nCompleted Quests:\n\n".$msg['completed']);
 	}
 
@@ -47,22 +46,20 @@ class Quest extends User
 				foreach($quest->getListeners() as $listener) {
 					$user->unlisten($listener[0], $listener[1]);
 				}
-				return Server::out($user, "You have finished the quest ".$quest.".");
+				return $user->notify("You have finished the quest ".$quest.".");
 			}
 		}
-		return Server::out($user, "Which quest would you like to finish?");
+		return $user->notify("Which quest would you like to finish?");
 	}
 	
 	private function doList(lUser $user, $args = [])
 	{
 		$questmaster = $this->findQuestmaster($user, $args);
 		if($questmaster) {
-			Server::out($user, $questmaster->getListMessage());
+			$user->notify($questmaster->getListMessage());
 			foreach($questmaster->getQuests() as $quest) {
 				if(!$user->hasCompletedQuest($quest)) {
-					Server::out($user, 
-						'['.$quest.']'.($quest->canAccept($user) ? '' : ' (unavailable)')."\n".
-						$quest->getLong());
+					$user->notify('['.$quest.']'.($quest->canAccept($user) ? '' : ' (unavailable)')."\n".$quest->getLong());
 				}
 			}
 		} else {
@@ -80,10 +77,10 @@ class Quest extends User
 				foreach($quest->getListeners() as $listener) {
 					$user->on($listener[0], $listener[1]);
 				}
-				return Server::out($user, "You accept the quest ".$quest.".");
+				return $user->notify("You accept the quest ".$quest.".");
 			}
 		}
-		return Server($user, "There is no quest to accept.");
+		return $user->notify("There is no quest to accept.");
 	}
 
 	private function findQuestmaster(lUser $user, $args = [])
@@ -103,4 +100,3 @@ class Quest extends User
 		return $questmaster;
 	}
 }
-?>

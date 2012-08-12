@@ -1,7 +1,6 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Actors\User as lUser;
+use Phud\Actors\User as lUser;
 
 class Score extends User
 {
@@ -9,7 +8,7 @@ class Score extends User
 
 	public function perform(lUser $user, $args = [])
 	{
-		Server::out($user, "You are ".$user.", a ".$user->getRace()."\n".
+		$user->notify("You are ".$user.", a ".$user->getRace()."\n".
 			"Attributes:\n".
 			implode(' ', array_map(function($v) use ($user) {
 				return ucfirst($v)." ".$user->getAttribute($v)." (".$user->getUnmodifiedAttribute($v).")";
@@ -53,4 +52,3 @@ class Score extends User
 		return "divinely armored against";
 	}
 }
-?>

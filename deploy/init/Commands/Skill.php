@@ -1,26 +1,23 @@
 <?php
 namespace Phud\Commands;
-use Phud\Server,
-	Phud\Abilities\Ability,
+use Phud\Abilities\Ability,
 	Phud\Actors\User as lUser;
 
 class Skill extends User
 {
 	protected $alias = 'skill';
 
-	public function perform(lUser $user, $args = array())
+	public function perform(lUser $user, $args = [])
 	{
-		Server::out($user, "Skills: ");
+		$user->notify("Skills: ");
 		$aliases = $user->getAbilities();
-		foreach($aliases as $s)
-		{
+		foreach($aliases as $s) {
 			$ability = Ability::lookup($s);
 			$pad = 20 - strlen($s);
 			$label = $s;
 			for($i = 0; $i < $pad; $i++)
 				$label .= ' ';
-			Server::out($user, $label.' '.$ability->getProficiency());
+			$user->notify($label.' '.$ability->getProficiency());
 		}
 	}
 }
-?>
