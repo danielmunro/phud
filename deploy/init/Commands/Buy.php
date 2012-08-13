@@ -12,12 +12,18 @@ class Buy extends Command
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, $args, $hints)
 	{
-		if(sizeof($args) == 3)
-			$target = $actor->getRoom()->getActorByInput();
-		else
-		{
+		$target = null;
+		if(sizeof($args) == 3) {
+			$target = $hints[2]->parse($actor, $args[2]);
+		}
+
+		$item = $hints[1]->parse($actor, $args[1]);
+		
+		
+		
+		else {
 			$targets = $actor->getRoom()->getActors();
 			foreach($targets as $potential_target)
 				if($potential_target instanceof lShopkeeper)
@@ -44,5 +50,12 @@ class Buy extends Command
 		$actor->addItem($new_item);
 		return $actor->notify("You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
 	}
+
+	protected function getArgumentHints()
+	{
+		return [
+			new Arguments\Item(),
+			(new Arguments\Actor())->setNotRequired()
+		];
+	}
 }
-?>

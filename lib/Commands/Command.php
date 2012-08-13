@@ -3,6 +3,7 @@ namespace Phud\Commands;
 use Phud\Actors\User,
 	Phud\Instantiate,
 	\Exception,
+	\InvalidArgumentException,
 	Phud\Alias,
 	Phud\Actors\Actor;
 
@@ -17,6 +18,8 @@ abstract class Command
 	{
 		$this->setupAliases($this->alias);
 	}
+
+	//abstract protected function getArgumentHints();
 
 	protected function setupAliases($alias)
 	{
@@ -41,20 +44,48 @@ abstract class Command
 		return $this->dispositions;
 	}
 
-	public function tryPerform(User $user, $args = [])
+	public function tryPerform(Actor $actor, $args = [])
 	{
 		$fail = false;
 
-		if($this instanceof DM && !$user->isDM()) {
+		if($this instanceof DM && !$actor->isDM()) {
 			$fail = "You cannot do that.";
-		} else if(!in_array($user->getDisposition(), $this->dispositions)) {
-			if($user->getDisposition() === Actor::DISPOSITION_SITTING) {
+		} else if(!in_array($actor->getDisposition(), $this->dispositions)) {
+			if($actor->getDisposition() === Actor::DISPOSITION_SITTING) {
 				$fail = "You need to stand up.";
-			} else if($user->getDisposition() === Actor::DISPOSITION_SLEEPING) {
+			} else if($actor->getDisposition() === Actor::DISPOSITION_SLEEPING) {
 				$fail = "You are asleep!";
 			}
 		}
 		
-		$fail ? $user->getClient()->write($fail) : $this->perform($user, $args);
+		if($fail) {
+			return $actor->notify($fail);
+		}
+		/**
+		try {
+			$args = $this->getArgumentsFromHints($actor, $args);
+		} catch (InvalidArgumentException $e) {
+			return;
+		}
+		*/
+		$args = array_merge($args, $this->getArgumentHints());
+		//call_user_func_array([$this, 'perform'], $args);
+		$this->perform($actor, $args, $this->getArgumentHints());
 	}
+
+/**
+	public function getArgumentsFromHints(Actor $actor, $args)
+	{
+		$argument_hints = $this->getArgumentHints();
+		$command_args = [];
+		while($arg = array_pop($args)) {
+			$hint = array_pop($argument_hints);
+			$command_args[] = $hint->parse($actor, $arg);
+		}
+		foreach($command_args as $a) {
+			echo $a."\n";
+		}
+		return $command_args;
+	}
+	*/
 }

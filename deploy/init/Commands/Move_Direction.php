@@ -18,19 +18,13 @@ class Move_Direction extends Command
 		['down', 11]
 	];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, $args, $hints)
 	{
 		if($actor->getTarget()) {
 			return $actor->notify('You cannot leave a fight!');
 		}
 
-		$direction = '';
-		foreach(Direction::getDirections() as $dir) {
-			if(strpos($dir, $args[0]) === 0) {
-				$direction = $dir;
-				break;
-			}
-		}
+		$direction = $hints[0]->parse($actor, $args[0]);
 
 		$room = $actor->getRoom()->getDirection($direction);
 		if($room instanceof Room) {
@@ -60,5 +54,12 @@ class Move_Direction extends Command
 		} else {
 			$actor->notify('Alas, you cannot go that way.');
 		}
+	}
+
+	public function getArgumentHints()
+	{
+		return [
+			new Arguments\Direction()
+		];
 	}
 }
