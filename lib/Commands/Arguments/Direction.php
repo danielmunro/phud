@@ -12,7 +12,6 @@ class Direction extends Argument
 				return $dir;
 			}
 		}
-		$this->status = self::STATUS_INVALID;
-		$actor->notify("Not a valid direction: ".$arg);
+		$this->fail($actor, "Not a valid direction: ".$arg);
 	}
 }

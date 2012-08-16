@@ -10,7 +10,6 @@ class Actor extends Argument
 		if($target) {
 			return $target;
 		}
-		$this->status = self::STATUS_INVALID;
-		$actor->notify("No one is there.");
+		$this->fail($actor, "No one is there.");
 	}
 }
