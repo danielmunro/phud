@@ -25,5 +25,19 @@ abstract class Argument
 	public function setNotRequired()
 	{
 		$this->required = false;
+		return $this;
+	}
+
+	public function fail(aActor $actor, $message)
+	{
+		$this->status = self::STATUS_INVALID;
+		if($this->required) {
+			$actor->notify($message);
+		}
+	}
+
+	public function __toString()
+	{
+		return get_class();
 	}
 }
