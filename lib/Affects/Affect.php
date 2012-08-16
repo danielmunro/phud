@@ -25,9 +25,9 @@ class Affect
 	{
 		$this->attributes = new Attributes();
 		$this->initializeProperties($properties, [
-			'attributes' => function($actor, $property, $value) {
+			'attributes' => function($affect, $property, $value) {
 				foreach($value as $attr => $attr_value) {
-					$actor->setAttribute($attr, $attr_value);
+					$this->attributes->setAttribute($attr, $attr_value);
 				}
 			},
 			'apply' => function($affect, $property, $value) {
