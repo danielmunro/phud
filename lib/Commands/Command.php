@@ -19,7 +19,10 @@ abstract class Command
 		$this->setupAliases($this->alias);
 	}
 
-	//abstract protected function getArgumentHints();
+	protected function getArgumentsFromHints()
+	{
+		return [];
+	}
 
 	protected function setupAliases($alias)
 	{
@@ -61,31 +64,16 @@ abstract class Command
 		if($fail) {
 			return $actor->notify($fail);
 		}
-		/**
+
 		try {
-			$args = $this->getArgumentsFromHints($actor, $args);
-		} catch (InvalidArgumentException $e) {
+			$found_args = $this->getArgumentsFromHints($actor, $args);
+			if(!is_array($found_args)) {
+				throw new Exception($this.' command misconfigured. getArgumentsFromHints() does not return an array.');
+			}
+			array_unshift($found_args, $actor);
+			call_user_func_array([$this, 'perform'], $found_args);
+		} catch(InvalidArgumentException $e) {
 			return;
 		}
-		*/
-		$args = array_merge($args, $this->getArgumentHints());
-		//call_user_func_array([$this, 'perform'], $args);
-		$this->perform($actor, $args, $this->getArgumentHints());
 	}
-
-/**
-	public function getArgumentsFromHints(Actor $actor, $args)
-	{
-		$argument_hints = $this->getArgumentHints();
-		$command_args = [];
-		while($arg = array_pop($args)) {
-			$hint = array_pop($argument_hints);
-			$command_args[] = $hint->parse($actor, $arg);
-		}
-		foreach($command_args as $a) {
-			echo $a."\n";
-		}
-		return $command_args;
-	}
-	*/
 }

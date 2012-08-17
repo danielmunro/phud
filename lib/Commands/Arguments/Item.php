@@ -15,16 +15,18 @@ class Item extends Argument
 	{
 		if($this->search_in && $item = $this->search_in->getItemByInput($arg)) {
 			return $item;
+		}
+		$this->failItem($actor);
+	}
+
+	protected function failItem($actor)
+	{
+		if($this->search_in instanceof aActor) {
+			$this->fail($actor, ($actor === $this->search_in ? "You do" : ucfirst($this->search_in)." does")." not have that.");
+		} else if($this->search_in instanceof Room) {
+			$this->fail($actor, "You can't find that anywhere.");
 		} else {
-			$this->status = self::STATUS_INVALID;
-			if($this->search_in instanceof aActor) {
-				return $actor->notify(ucfirst($this->search_in)." does not have that.");
-			}
-			if($this->search_in instanceof Room) {
-				return $actor->notify("You can't find that anywhere.");
-			} else {
-				return $actor->notify("You can't buy that here.");
-			}
+			$this->fail($actor, "Nothing is there.");
 		}
 	}
 }

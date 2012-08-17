@@ -57,9 +57,10 @@ abstract class Ability
 		return $this->is_offensive;
 	}
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, Actor $target)
 	{
 		// check for a target if necessary
+		/**
 		$target = $this->determineTarget($actor, $args);
 		if($this->needs_target && !$target) {
 			return false;
@@ -67,6 +68,7 @@ abstract class Ability
 		if(!$target) {
 			$target = $actor;
 		}
+		*/
 		if($this->is_offensive && !$actor->getTarget() && $actor != $target) {
 			$actor->setTarget($target);
 		}
@@ -93,7 +95,7 @@ abstract class Ability
 		}
 		$roll += $this->modifyRoll($actor);
 		if($roll > chance()) {
-			$this->success($actor, $target, $args);
+			$this->success($actor, $target);
 			return true;
 		} else {
 			$this->fail($actor, $target);
@@ -176,5 +178,10 @@ abstract class Ability
 			default:
 				return rand(0, 5);
 		}
+	}
+
+	public function __toString()
+	{
+		return $this->alias;
 	}
 }
