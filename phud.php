@@ -45,3 +45,7 @@ function chance() {
 function _range($min, $max, $n) {
 	return $min > $n ? $min : ($max < $n ? $max : $n);
 }
+
+function recombine($arr, $start, $end) {
+	return implode(' ', array_slice($arr, $start, $end));
+}
