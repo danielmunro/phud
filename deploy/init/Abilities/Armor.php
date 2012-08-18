@@ -1,6 +1,6 @@
 <?php
 namespace Phud\Abilities;
-use Phud\Affect,
+use Phud\Affects\Affect,
 	Phud\Actors\Actor;
 
 class Armor extends Spell
