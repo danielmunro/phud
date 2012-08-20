@@ -5,13 +5,31 @@ use Phud\Actors\Actor as aActor,
 
 class Drink extends Item
 {
-	protected function parseArg(aActor $actor, $arg)
+	protected function parseArg(aActor $actor, $arg = null)
 	{
+		if($arg === null) {
+			$drink = $this->checkInv($actor);
+			if(!$drink) {
+				$drink = $this->checkInv($actor->getRoom());
+			}
+			if(!$drink) {
+				$this->fail($actor, "Nothing is there to drink.");
+			}
+		}
 		foreach($this->search_in->getManyUsablesByInput($this->search_in->getItems(), $arg) as $item) {
 			if($item instanceof iDrink) {
 				return $item;
 			}
 		}
 		$this->failItem($actor);
+	}
+
+	private function checkInv($thingWithInventory)
+	{
+		foreach($thingWithInventory->getItems() as $item) {
+			if($item instanceof iDrink) {
+				return $item;
+			}
+		}
 	}
 }
