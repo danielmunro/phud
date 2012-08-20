@@ -24,6 +24,6 @@ class Drink extends User
 
 	protected function getArgumentsFromHints($actor, $args)
 	{
-		return [(new Arguments\Drink($actor))->parse($actor, sizeof($args) > 1 $args[1] : null)];
+		return [(new Arguments\Drink($actor))->parse($actor, sizeof($args) === 2 ? $args[1] : null)];
 	}
 }

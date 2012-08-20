@@ -13,6 +13,8 @@ abstract class Command
 
 	protected $alias = null;
 	protected $dispositions = [];
+	protected $min_argument_count = 0;
+	protected $min_argument_fail = "What were you trying to do?";
 	
 	protected function __construct()
 	{
@@ -49,6 +51,10 @@ abstract class Command
 
 	public function tryPerform(Actor $actor, $args = [])
 	{
+		if($this->min_argument_count && sizeof($args) - 2 <= $this->min_argument_count) {
+			return $actor->notify($this->min_argument_fail);
+		}
+
 		$fail = false;
 
 		if($this instanceof DM && !$actor->isDM()) {

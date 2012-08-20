@@ -15,6 +15,7 @@ class Drink extends Item
 			if(!$drink) {
 				$this->fail($actor, "Nothing is there to drink.");
 			}
+			return $drink;
 		}
 		foreach($this->search_in->getManyUsablesByInput($this->search_in->getItems(), $arg) as $item) {
 			if($item instanceof iDrink) {

@@ -22,7 +22,7 @@ class Cast extends Command
 	{
 		return [
 			(new Arguments\Spell($caster))->parse($caster, $args[1]),
-			sizeof($args) === 3 ? (new Arguments\Actor())->parse($caster, $args) : $caster;
+			sizeof($args) === 3 ? (new Arguments\Actor())->parse($caster, $args) : $caster
 		];
 	}
 }
