@@ -2,7 +2,8 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Items\Item as mItem,
-	Phud\Items\Drink as iDrink;
+	Phud\Items\Drink as iDrink,
+	\InvalidArgumentException;
 
 class Drink extends User
 {
@@ -12,38 +13,17 @@ class Drink extends User
 		Actor::DISPOSITION_SITTING
 	];
 	
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, iDrink $drink)
 	{
-		$drinkable = implode(' ', array_slice($args, 1));
-		$item = null;
-		if($drinkable) {
-			$item = $actor->getItemByInput($drinkable);
-			if(!$item) {
-				$item = $actor->getRoom()->getItemByInput($drinkable);
-			}
-		}
-		if(!$item) {
-			$items = array_merge($actor->getItems(), $actor->getRoom()->getItems());
-			foreach($items as $i) {
-				if($i instanceof iDrink) {
-					$item = $i;
-					break;
-				}
-			}
-		}
-		
-		$out = '';
-
-		if(!($item instanceof mItem)) {
-			$out = "Nothing like that is here.";
-		} else if(!($item instanceof iDrink)) {
-			$out = "You can't drink that!";
-		} else if($item->drink($actor)) {
-			$out = "You drink ".$item->getContents()." from ".$item.".";
+		if($drink->drink($actor)) {
+			$actor->notify("You drink ".$drink->getContents()." from ".$drink.".");
 		} else {
-			$out = "There's no ".$item->getContents()." left.";
+			$actor->notify("There's no ".$drink->getContents()." left.");
 		}
+	}
 
-		$actor->notify($out);
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [(new Arguments\Drink($actor))->parse($actor, sizeof($args) > 1 $args[1] : null)];
 	}
 }

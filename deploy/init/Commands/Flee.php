@@ -9,7 +9,7 @@ class Flee extends Command
 	protected $alias = 'flee';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $fighter, $args = [])
+	public function perform(Actor $fighter)
 	{
 		$target = $fighter->getTarget();
 		

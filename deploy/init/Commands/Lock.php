@@ -6,31 +6,31 @@ use Phud\Actors\Actor,
 class Lock extends Command
 {
 	protected $alias = 'lock';
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Lock what?";
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, Door $door)
 	{
-		if(sizeof($args) < 2) {
-			return $actor->notify('Lock what?');
-		}
-		$door = $actor->getRoom()->getDoorByInput($args[1]);
-		if($door) {
-			$d = $door->getDisposition();
-			if($d === 'open') {
-				return $actor->notify(ucfirst($door).' is open.');
-			} else if($d === 'locked') {
-				return $actor->notify(ucfirst($door).' is already locked.');
-			} else if($d === 'closed') {
-				$keys = $actor->getManyItemsByInput('key');
-				foreach($keys as $key) {
-					if($key instanceof Key && $key->getDoorID() == $door->getID()) {
-						$door->setDisposition('locked');
-						return $actor->notify("You lock ".$door.".");
-					}
+		$d = $door->getDisposition();
+		if($d === 'open') {
+			return $actor->notify(ucfirst($door).' is open.');
+		} else if($d === 'locked') {
+			return $actor->notify(ucfirst($door).' is already locked.');
+		} else if($d === 'closed') {
+			$keys = $actor->getManyItemsByInput('key');
+			foreach($keys as $key) {
+				if($key instanceof Key && $key->getDoorID() == $door->getID()) {
+					$door->setDisposition('locked');
+					return $actor->notify("You lock ".$door.".");
 				}
 			}
-			return $actor->notify("You don't have the key!");
 		}
-		$actor->notify("You don't see a door like that anywhere.");
+		return $actor->notify("You don't have the key!");
+	}
+
+	protected function getArgumentsFromHints(Actor $actor, $args)
+	{
+		return [(new Arguments\Door())->parse($actor, $args[1])];
 	}
 }

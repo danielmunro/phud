@@ -9,7 +9,7 @@ class Recall extends Command
 
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor)
 	{
 		$actor->setRoom(Room::getByID(1));
 		Command::lookup('look')->perform($actor);

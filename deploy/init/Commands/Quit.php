@@ -1,7 +1,8 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Actors\User as lUser;
+	Phud\Actors\User as aUser,
+	InvalidArgumentException;
 
 class Quit extends User
 {
@@ -12,12 +13,13 @@ class Quit extends User
 		Actor::DISPOSITION_SLEEPING
 	];
 	
-	public function perform(lUser $user, $args = [])
+	public function perform(aUser $user)
 	{
 		if(array_key_exists('sleep', $user->getAffects())) {
-			return $user->notify("You need to be able to wake up first.");
+			$user->notify("You need to be able to wake up first.");
+			throw new InvalidArgumentException();
 		}
-		
+
 		$user->notify("Good bye!");
 		$user->save();
 		$user->getClient()->disconnect();

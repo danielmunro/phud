@@ -1,61 +1,38 @@
 <?php
 namespace Phud\Commands;
-use Phud\Items\Item as mItem,
+use Phud\Items\Item as iItem,
 	Phud\Actors\Actor,
-	Phud\Actors\Shopkeeper as lShopkeeper;
+	Phud\Actors\Shopkeeper as aShopkeeper;
 
 class Buy extends Command
 {
 	protected $alias = 'buy';
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Buy what?";
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args, $hints)
+	public function perform(Actor $buyer, iItem $item, aShopkeeper $shopkeeper)
 	{
-		$target = null;
-		if(sizeof($args) == 3) {
-			$target = $hints[2]->parse($actor, $args[2]);
+		if($buyer->decreaseFunds($item->getValue()) === false) {
+			return Say::perform($shopkeeper, $shopkeeper->getNotEnoughMoneyMessage());
 		}
 
-		$item = $hints[1]->parse($actor, $args[1]);
-		
-		
-		
-		else {
-			$targets = $actor->getRoom()->getActors();
-			foreach($targets as $potential_target)
-				if($potential_target instanceof lShopkeeper)
-					$target = $potential_target;
-		}
-		
-		if(!($target instanceof Actor))
-			return $actor->notify("They are not here.");
-		
-		if(!($target instanceof lShopkeeper))
-			return $actor->notify(ucfirst($target->getAlias())." is not a shop keeper.");
-		
-		$item = $target->getItemByInput($args[1]);
-		
-		if(!($item instanceof mItem))
-			return Say::perform($target, $target->getNoItemMessage());
-		
-		$value = 1;
-
-		if($actor->decreaseFunds($value) === false)
-			return Say::perform($target, $target->getNotEnoughMoneyMessage());
+		$shopkeeper->modifyCurrency('copper', $item->getValue());
 		
 		$new_item = clone $item;
-		$actor->addItem($new_item);
-		return $actor->notify("You buy " . $item->getShort() . " for " . $item->getValue() . " copper.");
+		$buyer->addItem($new_item);
+		return $buyer->notify("You buy ".$item." from ".$shopkeeper." for ".$item->getValue()." copper.");
 	}
 
-	protected function getArgumentHints()
+	protected function getArgumentsFromHints(Actor $buyer, $args)
 	{
+		$shopkeeper = (new Arguments\Shopkeeper())->parse($buyer, sizeof($args) === 3 ? $args[2] : null);
 		return [
-			new Arguments\Item(),
-			(new Arguments\Actor())->setNotRequired()
+			(new Arguments\Item($shopkeeper))->parse($buyer, $args[1]),
+			$shopkeeper
 		];
 	}
 }

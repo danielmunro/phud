@@ -5,6 +5,8 @@ use Phud\Actors\Actor;
 class Give extends Command
 {
 	protected $alias = 'give';
+	protected $min_argument_count = 2;
+	protected $min_argument_fail = "Give what? To whom?";
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
@@ -75,5 +77,10 @@ class Give extends Command
 		}
 
 		return $actor->notify("What are you trying to give?");
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$args];
 	}
 }

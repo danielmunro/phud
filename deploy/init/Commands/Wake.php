@@ -10,7 +10,7 @@ class Wake extends Command
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor)
 	{
 		if($actor->getDisposition() === Actor::DISPOSITION_STANDING) {
 			return $actor->notify("You are already awake.");
@@ -25,5 +25,4 @@ class Wake extends Command
 		$actor->setFurniture(null);
 		$actor->setDisposition(Actor::DISPOSITION_STANDING);
 	}
-
 }

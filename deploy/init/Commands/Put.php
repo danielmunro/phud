@@ -2,35 +2,30 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Items\Container,
-	Phud\Items\Item as mItem;
+	Phud\Items\Item as iItem;
 
 class Put extends Command
 {
 	protected $alias = 'put';
+	protected $min_argument_count = 2;
+	protected $min_argument_fail = "Put what, where?";
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, iItem $item, Container $container)
+	{
+		$item->transferOwnership($actor, $container);
+		$actor->notify("You put ".$item." in ".$container.".");
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
 	{
 		$s = sizeof($args);
-		$item = $actor->getItemByInput(implode(' ', array_slice($args, 1, $s-2)));
-		
-		if(!($item instanceof mItem)) {
-			return $actor->notify("You don't appear to have that.");
-		}
-		
-		$target = $actor->getContainerByInput($args[$s-1]);
-		if(!($target instanceof Container)) {
-			$target = $actor->getRoom()->getContainerByInput($args[$s-1]);
-		}
-		if(!($target instanceof Container)) {
-			return $actor->notify("You don't have anything to put that in.");
-		}
-		
-		$item->transferOwnership($actor, $target);
-		
-		$actor->notify("You put ".$item." in ".$target.".");
+		return [
+			(new Arguments\Item($actor))->parse($actor, recombine($args, 1, $s-2)),
+			(new Arguments\Container($actor))->parse($actor, $args[$s-1])
+		];
 	}
 }

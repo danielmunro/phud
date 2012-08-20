@@ -7,7 +7,7 @@ class Skill extends User
 {
 	protected $alias = 'skill';
 
-	public function perform(lUser $user, $args = [])
+	public function perform(lUser $user)
 	{
 		$user->notify("Skills: ");
 		$aliases = $user->getAbilities();

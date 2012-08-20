@@ -6,6 +6,8 @@ use Phud\Actors\Actor,
 class Get extends Command
 {
 	protected $alias = 'get';
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Get what?";
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
@@ -47,6 +49,10 @@ class Get extends Command
 			}
 			return;
 		}
-		return $actor->notify("You see nothing like that.");
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$args];
 	}
 }

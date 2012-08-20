@@ -7,25 +7,23 @@ class Close extends Command
 {
 	protected $alias = 'close';
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Close what?";
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, Door $door)
 	{
-		if(sizeof($args) < 2) {
-			return $actor->notify('Close what?');
-		}
-		
-		$door = $actor->getRoom()->getDoorByInput($args[1]);
-		
-		if($door) {
-			switch($door->getDisposition()) {
-				case Door::DISPOSITION_OPEN:
-					$door->setDisposition(Door::DISPOSITION_CLOSED);
-					return $actor->notify('You close '.$door.'.');
-				case Door::DISPOSITION_CLOSED:
-				case Door::DISPOSITION_LOCKED:
-					return $actor->notify(ucfirst($door).' is already closed.');
-			}					
-		}
-		return $actor->notify("You can't close anything like that.");
+		switch($door->getDisposition()) {
+			case Door::DISPOSITION_OPEN:
+				$door->setDisposition(Door::DISPOSITION_CLOSED);
+				return $actor->notify('You close '.$door.'.');
+			case Door::DISPOSITION_CLOSED:
+			case Door::DISPOSITION_LOCKED:
+				return $actor->notify(ucfirst($door).' is already closed.');
+		}					
+	}
+
+	protected function getArgumentsFromHints(Actor $actor, $args)
+	{
+		return [(new Arguments\Door())->parse($actor, $args[1])];
 	}
 }

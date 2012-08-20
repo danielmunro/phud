@@ -8,7 +8,7 @@ class Spell extends User
 {
 	protected $alias = 'spell';
 
-	public function perform(lUser $user, $args = [])
+	public function perform(lUser $user)
 	{
 		$user->notify("Spells: ");
 		$abilities = $user->getAbilities();

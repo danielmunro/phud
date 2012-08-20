@@ -6,7 +6,7 @@ class Inventory extends User
 {
 	protected $alias = 'inventory';
 
-	public function perform(lUser $user, $args = [])
+	public function perform(lUser $user)
 	{
 		$user->notify("Your inventory:\r\n".$user->displayContents());
 	}

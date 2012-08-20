@@ -8,28 +8,21 @@ class Cast extends Command
 {
 	protected $alias = ['cast', 11];
 	protected $dispositions = [Actor::DISPOSITION_STANDING];
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Cast what?";
 	
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, Ability $spell, Actor $target)
 	{
-		$s = sizeof($args);
-		if($s === 2) {
-			$spell = Ability::lookup(implode(' ', array_slice($args, 1)));
-		} else if($s > 2) {
-			$spell = Ability::lookup(implode(' ', array_slice($args, 1, $s-2)));
-		}
-
-		// Check if the spell exists
-		if(!($spell instanceof aSpell)) {
-			return $actor->notify("That spell does not exist in this realm.");
-		}
-
-		// Does the caster actually know the spell?
-		if(!in_array($spell->getAlias(), $actor->getAbilities())) {
-			return $actor->notify("You do not know that spell.");
-		}
-
 		$actor->fire('casting', $spell);
+		$actor->notify("You utter the words, \"".$spell."\"");
+		$spell->perform($actor, $target);
+	}
 
-		$spell->perform($actor, $args);
+	protected function getArgumentsFromHints(Actor $caster, $args)
+	{
+		return [
+			(new Arguments\Spell($caster))->parse($caster, $args[1]),
+			sizeof($args) === 3 ? (new Arguments\Actor())->parse($caster, $args) : $caster;
+		];
 	}
 }

@@ -1,12 +1,12 @@
 <?php
 namespace Phud\Commands;
-use Phud\Actors\User as lUser;
+use Phud\Actors\User as aUser;
 
 class Score extends User
 {
 	protected $alias = 'score';
 
-	public function perform(lUser $user, $args = [])
+	public function perform(aUser $user)
 	{
 		$user->notify("You are ".$user.", a ".$user->getRace()."\n".
 			"Attributes:\n".

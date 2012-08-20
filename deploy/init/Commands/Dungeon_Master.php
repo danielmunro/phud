@@ -7,9 +7,14 @@ class Dungeon_Master extends User
 {
 	protected $alias = 'dungeon master';
 
-	public function perform(lUser $user, $args = [])
+	public function perform(lUser $user, $target)
 	{
-		$user->setDM(true);
-		$user->notify("You are now the dungeon master.");
+		$target->setDM(true);
+		$target->notify("You are now the dungeon master.");
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$actor];
 	}
 }

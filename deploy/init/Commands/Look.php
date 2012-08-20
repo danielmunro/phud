@@ -90,5 +90,9 @@ class Look extends User
 		else
 			return $client->write("To the ".$direction.", you see: ".$room->getShort().".\r\n");
 	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$args];
+	}
 }
-?>

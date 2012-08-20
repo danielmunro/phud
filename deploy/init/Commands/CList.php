@@ -1,8 +1,9 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Actors\User as lUser,
-	Phud\Actors\Shopkeeper as lShopkeeper;
+	Phud\Actors\User as aUser,
+	Phud\Actors\Shopkeeper as aShopkeeper,
+	\InvalidArgumentException;
 
 class CList extends User
 {
@@ -12,30 +13,13 @@ class CList extends User
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(lUser $user, $args = [])
+	public function perform(aUser $user, aShopkeeper $shopkeeper)
 	{
-		if(sizeof($args) == 3) {
-			$target = $user->getRoom()->getActorByInput($args);
-		}
-		else {
-			foreach($user->getRoom()->getActors() as $potential_target) {
-				if($potential_target instanceof lShopkeeper) {
-					$target = $potential_target;
-					break;
-				}
-			}
-		}
-		
-		if(!isset($target)) {
-			return $user->notify("They are not here.");
-		}
-		
-		if(!($target instanceof lShopkeeper)) {
-			return $user->notify("They are not selling anything.");
-		}
-		
-		Say::perform($target, $target->getListItemMessage());
-		$user->notify($target->displayContents(true));
+		$user->notify($shopkeeper->getListItemMessage()."\r\n".$shopkeeper->displayContents(true));
+	}
+
+	protected function getArgumentsFromHints(Actor $actor, $args)
+	{
+		return [(new Arguments\Shopkeeper())->parse($actor, sizeof($args) === 3 ? $args[2] : null)];
 	}
 }
-?>

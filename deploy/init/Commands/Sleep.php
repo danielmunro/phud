@@ -11,4 +11,8 @@ class Sleep extends Change_Disposition
 		$this->changeDisposition($actor, $args, 'sleeping');
 	}
 
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$args];
+	}
 }

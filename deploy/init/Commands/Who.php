@@ -7,7 +7,7 @@ class Who extends cUser
 {
 	protected $alias = 'who';
 
-	public function perform(aUser $user, $args = [])
+	public function perform(aUser $user)
 	{
 		$out = "Who list:\n";
 		$n = 0;

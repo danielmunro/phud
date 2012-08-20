@@ -6,8 +6,13 @@ class Sit extends Change_Disposition
 {
 	protected $alias = 'sit';
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, $args)
 	{
 		$this->changeDisposition($actor, $args, 'sitting');
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [$args];
 	}
 }

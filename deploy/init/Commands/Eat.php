@@ -2,30 +2,27 @@
 namespace Phud\Commands;
 use Phud\Actors\Actor,
 	Phud\Items\Item,
-	Phud\Items\Food;
+	Phud\Items\Food,
+	\InvalidArgumentException;
 
 class Eat extends User
 {
 	protected $alias = 'eat';
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Eat what?";
 	protected $dispositions = [
 		Actor::DISPOSITION_STANDING,
 		Actor::DISPOSITION_SITTING
 	];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, Food $food)
 	{
-		
-		$item = $actor->getItemByInput(implode(' ', array_slice($args, 1)));
-		
-		if(!($item instanceof Item)) {
-			return $actor->notify("Nothing like that is here.");
-		}
-		
-		if(!($item instanceof Food)) {
-			return $actor->notify("You can't eat that!");
-		}
-		
-		$actor->notify("You eat ".$item.".");
-		$actor->consume($item);
+		$actor->notify("You eat ".$food.".");
+		$actor->consume($food);
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [(new Arguments\Food($actor))->parse($actor, $args[1])];
 	}
 }

@@ -1,31 +1,30 @@
 <?php
 namespace Phud\Commands;
-use Phud\Actors\User as lUser;
+use Phud\Actors\User as aUser;
 
 class AttSet extends DM
 {
 	protected $alias = 'attset';
+	protected $min_argument_count = 3;
 	
-	public function perform(lUser $user, $args = [])
+	public function perform(aUser $user, $primary, $attribute, $amount)
 	{
-		$object = $user->getRoom()->getActorByInput($args[1]);
-		if(!$object) {
-			$object = $user->getRoom()->getItemByInput($args[1]);
-		}
-		if(!$object) {
-			$object = $user->getItemByInput($args[1]);
-		}
-		if(!$object) {
-			return $user->notify("That doesn't seem to exist.");
-		}
-
-		if($object->setAttribute($args[2], $args[3])) {
-			$user->notify("You set ".$object."'s ".$args[2]." to ".$args[3].".");
-			if(method_exists($object, 'save')) {
-				$object->save();
+		if($primary->setAttribute($attribute, $amount)) {
+			$user->notify("You set ".$primary."'s ".$attribute." to ".$amount.".");
+			if(method_exists($primary, 'save')) {
+				$primary->save();
 			}
 		} else {
 			$user->notify("They don't have that attribute.");
 		}
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [
+			(new Arguments\Primary())->parse($actor, $args[1]),
+			(new Arguments\Attribute())->parse($actor, $args[2]),
+			(new Arguments\Number())->parse($actor, $args[3])
+		];
 	}
 }

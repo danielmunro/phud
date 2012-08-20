@@ -1,27 +1,23 @@
 <?php
 namespace Phud\Commands;
 use Phud\Actors\Actor,
-	Phud\Items\Equipment,
-	Phud\Commands\Command;
+	Phud\Items\Equipment as iEquipment;
 
 class Remove extends Command
 {
 	protected $alias = 'remove';
-	protected $dispositions = [
-		Actor::DISPOSITION_STANDING,
-		Actor::DISPOSITION_SITTING
-	];
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Remove what?";
+	protected $dispositions = [Actor::DISPOSITION_STANDING];
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, iEquipment $equipment)
 	{
-		$equipment = $actor->getEquipped()->getItemByInput($args);
-		
-		if($equipment instanceof Equipment)
-		{
-			$actor->getEquipped()->remove($equipment);
-			$actor->notify('You remove ' . $equipment->getShort() . '.');
-		}
-		else
-			return $actor->notify('You are not wearing anything like that.');
+		$actor->getEquipped()->remove($equipment);
+		$actor->notify('You remove ' . $equipment->getShort() . '.');
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [(new Arguments\Equipment($actor))->parse($actor, $args[1])];
 	}
 }

@@ -6,13 +6,9 @@ class Save extends User
 {
 	protected $alias = 'save';
 	
-	public function perform(aUser $user, $args = [])
+	public function perform(aUser $user)
 	{
-		if(method_exists($user, 'save')) {
-			$user->save();
-			$user->notify('Done.');
-		} else {
-			return $user->notify('Cannot do that.');
-		}
+		$user->save();
+		$user->notify("Saved.");
 	}
 }

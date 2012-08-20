@@ -5,24 +5,18 @@ use Phud\Actors\Actor;
 class Say extends Command
 {
 	protected $alias = 'say';
+	protected $min_argument_count = 1;
+	protected $min_argument_fail = "Say what?";
 
-	public function perform(Actor $actor, $args = [])
+	public function perform(Actor $actor, $message)
 	{
-		
-		$actors = $actor->getRoom()->getActors();
-		
-		if(is_array($args))
-		{
-			array_shift($args);
-			$message = implode(' ', $args);
+		foreach($actor->getRoom()->getActors() as $a) {
+			$a->notify(($a === $actor ? "You say" : ucfirst($actor)." says").", \"".$message."\"");
 		}
-		else if(is_string($args))
-			$message = $args;
-		
-		foreach($actors as $a)
-			if($a->getAlias() == $actor->getAlias())
-				$a->notify("You say, \"" . $message ."\"");
-			else
-				$a->notify(ucfirst($actor) . " says, \"" . $message . "\"");
+	}
+
+	protected function getArgumentsFromHints($actor, $args)
+	{
+		return [recombine($args, 1)];
 	}
 }
