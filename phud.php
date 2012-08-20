@@ -46,6 +46,6 @@ function _range($min, $max, $n) {
 	return $min > $n ? $min : ($max < $n ? $max : $n);
 }
 
-function recombine($arr, $start, $end) {
-	return implode(' ', array_slice($arr, $start, $end));
+function recombine($arr, $start, $end = null) {
+	return implode(' ', $end === null ? array_slice($arr, $start) : array_slice($arr, $start, $end));
 }
