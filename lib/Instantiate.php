@@ -5,9 +5,8 @@ trait Instantiate
 {
 	public static function init()
 	{
-		global $global_path;
 		list($phud, $namespace, $class) = explode('\\', get_called_class());
-		$d = dir($global_path.'/deploy/init/'.$namespace);
+		$d = dir(__DIR__.'/../deploy/init/'.$namespace);
 		Debug::log("init ".$namespace);
 		while($class = $d->read()) {
 			if(substr($class, -4) === ".php") {

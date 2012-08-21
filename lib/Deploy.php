@@ -38,8 +38,7 @@ class Deploy
 	
 	protected function readDeploy(Server $server, $start)
 	{
-		global $global_path;
-		$path = $global_path.'/'.$start;
+		$path = __DIR__.'/../'.$start;
 		if(file_exists($path)) {
 			$d = dir($path);
 			$deferred = [];
@@ -62,7 +61,7 @@ class Deploy
 				});
 			}
 		} else {
-			throw new Exception('Invalid deploy directory defined: '.$start);
+			throw new \Exception('Invalid deploy directory defined: '.$start);
 		}
 	}
 }
