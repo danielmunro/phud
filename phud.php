@@ -10,8 +10,6 @@ require_once(__DIR__.'/helpers.php');
 // through any command line args that were passed
 // when starting the game.
 $config = [
-	'deploy' => 'deploy',
-	'lib' => 'lib',
 	'host' => '127.0.0.1',
 	'port' => '9000'
 ];
@@ -24,4 +22,11 @@ for($i = 1; $i < $arg_count; $i++) {
 	}
 }
 
-(new Phud\Server($config))->run();
+$server = new Phud\Server($config);
+
+// deploy the game environment
+$phud_library = 'lib';
+$deploy_scripts = 'deploy';
+(new Deploy($phud_library, $deploy_scripts))->deployEnvironment($server);
+
+$server->run();
