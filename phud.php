@@ -27,6 +27,6 @@ $server = new Phud\Server($config);
 // deploy the game environment
 $phud_library = 'lib';
 $deploy_scripts = 'deploy';
-(new Deploy($phud_library, $deploy_scripts))->deployEnvironment($server);
+(new Phud\Deploy($phud_library, $deploy_scripts))->deployEnvironment($server);
 
 $server->run();
