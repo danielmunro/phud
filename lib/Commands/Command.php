@@ -11,14 +11,15 @@ abstract class Command
 {
 	use Alias, Instantiate;
 
+	protected $fail_message = '';
 	protected $alias = null;
 	protected $dispositions = [];
 	protected $min_argument_count = 0;
 	protected $min_argument_fail = "What were you trying to do?";
-	
-	protected function __construct()
+
+	public function getFailMessage()
 	{
-		$this->setupAliases($this->alias);
+		return $this->fail_message;
 	}
 
 	protected function getArgumentsFromHints()
@@ -26,8 +27,11 @@ abstract class Command
 		return [];
 	}
 
-	protected function setupAliases($alias)
+	public function setupAliases($alias = '')
 	{
+		if(empty($alias)) {
+			$alias = $this->alias;
+		}
 		if(is_array($alias)) {
 			if(is_numeric($alias[1])) {
 				list($alias, $priority) = $alias;
@@ -49,9 +53,10 @@ abstract class Command
 		return $this->dispositions;
 	}
 
-	public function tryPerform(Actor $actor, $args = [])
+	public function tryPerform(Actor $actor, $args = '')
 	{
-		if($this->min_argument_count && sizeof($args) - 2 <= $this->min_argument_count) {
+		$args = explode(' ', $args);
+		if($this->min_argument_count && sizeof($args) - 1 < $this->min_argument_count) {
 			return $actor->notify($this->min_argument_fail);
 		}
 
@@ -79,7 +84,8 @@ abstract class Command
 			array_unshift($found_args, $actor);
 			call_user_func_array([$this, 'perform'], $found_args);
 		} catch(InvalidArgumentException $e) {
-			return;
+			$this->fail_message = $e->getMessage();
+			return $actor->notify($this->fail_message);
 		}
 	}
 }

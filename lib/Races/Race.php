@@ -39,8 +39,12 @@ abstract class Race
 		if(!$this->alias) {
 			throw new Exception("Need to set an alias for racial class: ".get_class($this));
 		}
-		self::addAlias($this->alias, $this);
 		$this->setPartsFromForm();
+	}
+
+	public function setupAliases()
+	{
+		self::addAlias($this->alias, $this);
 	}
 
 	public function getAttribute($key)

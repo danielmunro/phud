@@ -1,24 +1,30 @@
 <?php
 namespace Phud\Commands\Arguments;
-use Phud\Actors\Actor as aActor,
-	Phud\Actors\Shopkeeper as aShopkeeper;
+use Phud\Actors\Shopkeeper as aShopkeeper;
 
 class Shopkeeper extends Argument
 {
-	protected function parseArg(aActor $actor, $arg = null)
+	protected $search_in = null;
+
+	public function __construct($search_in)
+	{
+		$this->search_in = $search_in;
+	}
+
+	public function parse($arg = null)
 	{
 		if($arg === null) {
-			foreach($actor->getRoom()->getActors() as $_actor) {
+			foreach($this->search_in->getRoom()->getActors() as $_actor) {
 				if($_actor instanceof aShopkeeper) {
 					return $_actor;
 				}
 			}
 		} else {
-			$target = $actor->getRoom()->getActorByInput($arg);
+			$target = $this->search_in->getRoom()->getActorByInput($arg);
 			if($target instanceof aShopkeeper) {
 				return $target;
 			}
 		}
-		$this->fail($actor, "No one is there.");
+		$this->fail("No one is there.");
 	}
 }

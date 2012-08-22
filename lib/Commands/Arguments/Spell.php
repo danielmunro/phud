@@ -1,17 +1,15 @@
 <?php
 namespace Phud\Commands\Arguments;
-use Phud\Actors\Actor as aActor,
-	Phud\Abilities\Spell as aSpell;
+use Phud\Abilities\Spell as aSpell;
 
 class Spell extends Ability
 {
-	protected function parseArg(aActor $actor, $arg)
+	public function parse($arg)
 	{
-		$ability = parent::parseArg($actor, $arg);
+		$ability = parent::parse($arg);
 		if($ability instanceof aSpell) {
 			return $ability;
-		} else {
-			$this->fail($actor, "That is not a spell.");
 		}
+		$this->fail("That is not a spell.");
 	}
 }

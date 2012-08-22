@@ -12,7 +12,8 @@ trait Instantiate
 			if(substr($class, -4) === ".php") {
 				$class = substr($class, 0, strpos($class, '.'));
 				$called_class = 'Phud\\'.$namespace.'\\'.$class;
-				new $called_class();
+				Debug::log("init class ".$called_class);
+				(new $called_class())->setupAliases();
 			}
 		}
 	}
@@ -28,4 +29,6 @@ trait Instantiate
 			}
 		}
 	}
+
+	abstract public function setupAliases();
 }

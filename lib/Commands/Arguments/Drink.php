@@ -1,19 +1,18 @@
 <?php
 namespace Phud\Commands\Arguments;
-use Phud\Actors\Actor as aActor,
-	Phud\Items\Drink as iDrink;
+use Phud\Items\Drink as iDrink;
 
 class Drink extends Item
 {
-	protected function parseArg(aActor $actor, $arg = null)
+	public function parse($arg = null)
 	{
 		if($arg === null) {
-			$drink = $this->checkInv($actor);
+			$drink = $this->checkInv($this->search_in);
 			if(!$drink) {
-				$drink = $this->checkInv($actor->getRoom());
+				$drink = $this->checkInv($this->search_in->getRoom());
 			}
 			if(!$drink) {
-				$this->fail($actor, "Nothing is there to drink.");
+				$this->fail("Nothing is there to drink.");
 			}
 			return $drink;
 		}
@@ -22,7 +21,7 @@ class Drink extends Item
 				return $item;
 			}
 		}
-		$this->failItem($actor);
+		$this->failItem();
 	}
 
 	private function checkInv($thingWithInventory)

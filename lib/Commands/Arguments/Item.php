@@ -11,22 +11,16 @@ class Item extends Argument
 		$this->search_in = $search_in;
 	}
 
-	protected function parseArg(aActor $actor, $arg)
+	public function parse($arg)
 	{
 		if($this->search_in && $item = $this->search_in->getItemByInput($arg)) {
 			return $item;
 		}
-		$this->failItem($actor);
+		$this->failItem();
 	}
 
-	protected function failItem($actor)
+	protected function failItem()
 	{
-		if($this->search_in instanceof aActor) {
-			$this->fail($actor, ($actor === $this->search_in ? "You do" : ucfirst($this->search_in)." does")." not have that.");
-		} else if($this->search_in instanceof Room) {
-			$this->fail($actor, "You can't find that anywhere.");
-		} else {
-			$this->fail($actor, "Nothing is there.");
-		}
+		$this->fail("Nothing is there.");
 	}
 }

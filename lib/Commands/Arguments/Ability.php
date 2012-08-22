@@ -12,18 +12,18 @@ class Ability extends Argument
 		$this->search_in = $search_in;
 	}
 
-	protected function parseArg(aActor $actor, $arg)
+	public function parse($arg)
 	{
 		$ability = aAbility::lookup($arg);
 
 		if($this->search_in) {
-			return in_array($ability->getAlias(), $this->search_in->getAbilities()) ? $ability : $this->fail($actor, "You don't know that ability.");
+			return in_array($ability->getAlias(), $this->search_in->getAbilities()) ? $ability : $this->fail("You don't know that ability.");
 		}
 
 		if($ability) {
 			return $ability;
 		}
 
-		$this->fail($actor, "That ability does not exist.");
+		$this->fail("That ability does not exist.");
 	}
 }

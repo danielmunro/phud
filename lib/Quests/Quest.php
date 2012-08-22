@@ -25,6 +25,10 @@ abstract class Quest
 		if(!isset($this->id)) {
 			throw new Exception('Quest error: '.$this.' needs an identifier');
 		}
+	}
+
+	public function setupAliases()
+	{
 		self::$identities[$this->id] = $this;
 	}
 

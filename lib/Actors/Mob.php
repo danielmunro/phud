@@ -25,6 +25,7 @@ class Mob extends Actor
 	protected $path_index = -1;
 	protected $last_path_index = -2;
 	protected $repop_item_properties = [];
+	protected $notifications = [];
 	protected static $counter = 0;
 	
 	const FLEE_PERCENT = 10;
@@ -74,7 +75,7 @@ class Mob extends Actor
 
 	public function addItem(Item $item)
 	{
-		if($this->area->getStatus() === 'new') {
+		if($this->area && $this->area->getStatus() === 'new') {
 			$this->repop_item_properties[] = [get_class($item), $item->getInitializingProperties()];
 			if($item->getRepop() > chance()) {
 				parent::addItem($item);
@@ -265,6 +266,14 @@ class Mob extends Actor
 
 	public function notify($message)
 	{
+		if(defined('UNIT_TESTING')) {
+			array_push($this->notifications, $message);
+		}
+	}
+
+	public function getNotification()
+	{
+		return array_pop($this->notifications);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

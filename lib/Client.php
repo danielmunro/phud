@@ -112,7 +112,7 @@ class Client implements \Beehive\Client
 		$input === '!' ? $input = $this->last_input : $this->last_input = $input;
 		
 		// Break down client input into separate arguments and evaluate
-		$args = explode(' ', trim($input));
+		$args = trim($input);
 		$fire_from = empty($this->user) ? $this : $this->user;
 		$satisfied = $fire_from->fire('input', $args);
 		if($this->user) {

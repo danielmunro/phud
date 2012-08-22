@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./tests/bootstrap.php"
+         colors="true"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         strict="true"
+         verbose="true">
+
+    <testsuites>
+        <testsuite name="Commands">
+            <directory suffix=".php">./tests/lib/Commands</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+    </filter>
+
+    <groups>
+        <exclude>
+        </exclude>
+    </groups>
+
+    <logging>
+    </logging>
+
+</phpunit>

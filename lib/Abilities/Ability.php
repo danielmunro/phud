@@ -34,6 +34,10 @@ abstract class Ability
 		if(empty($this->alias)) {
 			throw new Exception(get_class($this).' is not fully configured, missing: alias');
 		}
+	}
+
+	public function setupAliases()
+	{
 		self::addAlias($this->alias, $this);
 	}
 

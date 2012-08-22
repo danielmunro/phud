@@ -37,7 +37,7 @@ trait Alias
 	{
 		return self::record($alias)['lookup'];
 	}
-	
+
 	public static function getAliases()
 	{
 		return self::$aliases;

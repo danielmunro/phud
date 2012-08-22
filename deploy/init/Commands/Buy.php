@@ -17,7 +17,7 @@ class Buy extends Command
 	public function perform(Actor $buyer, iItem $item, aShopkeeper $shopkeeper)
 	{
 		if($buyer->decreaseFunds($item->getValue()) === false) {
-			return Say::perform($shopkeeper, $shopkeeper->getNotEnoughMoneyMessage());
+			throw new \InvalidArgumentException('You do not have enough money for that.');
 		}
 
 		$shopkeeper->modifyCurrency('copper', $item->getValue());
@@ -29,9 +29,9 @@ class Buy extends Command
 
 	protected function getArgumentsFromHints(Actor $buyer, $args)
 	{
-		$shopkeeper = (new Arguments\Shopkeeper())->parse($buyer, sizeof($args) === 3 ? $args[2] : null);
+		$shopkeeper = (new Arguments\Shopkeeper($buyer))->parse(sizeof($args) === 3 ? $args[2] : null);
 		return [
-			(new Arguments\Item($shopkeeper))->parse($buyer, $args[1]),
+			(new Arguments\Item($shopkeeper))->parse($args[1]),
 			$shopkeeper
 		];
 	}
