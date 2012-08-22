@@ -14,15 +14,17 @@ class Parser
 	protected $break = false;
 	protected $buffer = [];
 	protected $area = null;
+	protected $server = null;
 	protected static $mappings = [];
 	protected static $defs = [];
 
 	public function __construct($server, $area_file)
 	{
+		$this->server = $server;
 		$this->fp = fopen($area_file, 'r');
 		while($calling = $this->readLine()) {
 			if($calling && method_exists($this, $calling)) {
-				$this->$calling($server);
+				$this->$calling($this->server);
 				continue;
 			}
 			if(array_key_exists($calling, self::$defs)) {
@@ -77,10 +79,14 @@ class Parser
 	{
 		$this->last_room = $this->last_first_class = $this->last_added = $last_room;
 		$last_room->setArea($this->area);
+		$this->server->on('deployed', function() use ($last_room) {
+			$last_room->buildDirections();
+		});
 	}
 
-	protected function def(Server $server)
+	protected function def()
 	{
+		$server = $this->server;
 		$mappings = [];
 		while($line = $this->readLine()) {
 			$mappings[] = $line;

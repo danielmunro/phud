@@ -12,7 +12,7 @@ abstract class Command
 	use Alias, Instantiate;
 
 	protected $fail_message = '';
-	protected $alias = null;
+	protected $alias = '';
 	protected $dispositions = [];
 	protected $min_argument_count = 0;
 	protected $min_argument_fail = "What were you trying to do?";
@@ -32,19 +32,20 @@ abstract class Command
 		if(empty($alias)) {
 			$alias = $this->alias;
 		}
+		$class_name = get_class($this);
 		if(is_array($alias)) {
 			if(is_numeric($alias[1])) {
 				list($alias, $priority) = $alias;
-				self::addAlias($alias, $this, $priority);
+				self::addAlias($alias, $class_name, $priority);
 			} else {
 				foreach($alias as $a) {
 					$this->setupAliases($a);
 				}
 			}
 		} else if(is_string($alias)) {
-			self::addAlias($alias, $this);
+			self::addAlias($alias, $class_name);
 		} else {
-			throw new Exception(get_class($this).' is not fully configured.');
+			throw new Exception($class_name.' is not fully configured.');
 		}
 	}
 

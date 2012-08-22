@@ -6,7 +6,7 @@ class Command extends Argument
 {
 	public function parse($arg)
 	{
-		$command = cCommand::lookup($arg);
+		$command = cCommand::create($arg);
 		if($command) {
 			return $command;
 		}

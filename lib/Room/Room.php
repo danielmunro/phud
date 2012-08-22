@@ -63,6 +63,15 @@ class Room
 		$this->doors[$direction] = $door;
 	}
 
+	public function buildDirections()
+	{
+		foreach($this->directions as $direction => $id) {
+			if(is_numeric($id)) {
+				$this->directions[$direction] = self::getByID($id);
+			}
+		}
+	}
+
 	public function setDirection($direction, self $value)
 	{
 		if(array_key_exists($direction, $this->directions)) {
@@ -75,10 +84,15 @@ class Room
 	public function getDirection($direction)
 	{
 		if(array_key_exists($direction, $this->directions)) {
-			return $this->directions[$direction] instanceof Room ? $this->directions[$direction] : $this->directions[$direction] = self::getByID($this->directions[$direction]);
+			return $this->directions[$direction];
 		} else {
 			Debug::log('[error] '.$direction.' is not a valid direction.');
 		}
+	}
+
+	public function getDirections()
+	{
+		return $this->directions;
 	}
 
 	public function getDoors()

@@ -40,7 +40,7 @@ class Move_Direction extends Command
 				]);
 				$actor->setRoom($room);
 				if($actor instanceof aUser) {
-					Command::lookup('look')->perform($actor);
+					Command::create('look')->perform($actor);
 				}
 				$actor->getRoom()->announce([
 					['actor' => $actor, 'message' => ''],
@@ -56,6 +56,6 @@ class Move_Direction extends Command
 
 	public function getArgumentsFromHints(Actor $actor, $args)
 	{
-		return [(new Arguments\Direction())->parse($actor, $args[0])];
+		return [(new Arguments\Direction())->parse($args[0])];
 	}
 }

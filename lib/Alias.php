@@ -38,6 +38,16 @@ trait Alias
 		return self::record($alias)['lookup'];
 	}
 
+	public static function create($alias)
+	{
+		$lookup = self::record($alias)['lookup'];
+		if($lookup) {
+			return new $lookup();
+		} else {
+			throw new \Exception($alias.' alias misconfigured');
+		}
+	}
+
 	public static function getAliases()
 	{
 		return self::$aliases;

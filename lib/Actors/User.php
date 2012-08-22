@@ -39,7 +39,7 @@ class User extends Actor
 		$this->on('died', function($event, $user) {
 			$user->setAttribute('hp', 1);
 			$user->respawn();
-			Command::lookup('look')->perform($user);
+			Command::create('look')->perform($user);
 		});
 	}
 

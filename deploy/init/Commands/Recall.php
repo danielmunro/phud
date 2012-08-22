@@ -12,6 +12,6 @@ class Recall extends Command
 	public function perform(Actor $actor)
 	{
 		$actor->setRoom(Room::getByID(1));
-		Command::lookup('look')->perform($actor);
+		Command::create('look')->perform($actor);
 	}
 }

@@ -33,7 +33,7 @@ class Flee extends Command
 		// attempt to flee in a direction at random
 		foreach($directions as $direction) {
 			if($direction[1]) {
-				Command::lookup($direction[0])->perform($fighter);
+				Command::create($direction[0])->perform($fighter);
 				$fighter->notify("You run scared!");
 				return;
 			}

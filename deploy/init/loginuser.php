@@ -13,7 +13,7 @@ $server->on('connect', function($event, $server, $client) {
 	$progress = ['alias' => false];
 	$unverified_user = null;
 	$user_properties = [];
-	$client->on('input', function($event, $client, $args) use ($server, &$progress, &$unverified_user, &$user_properties) {
+	$client->on('input', function($event, $client, $input) use ($server, &$progress, &$unverified_user, &$user_properties) {
 		$event->satisfy();
 		$racesAvailable = function($client) {
 			$races = Race::getAliases();
@@ -26,7 +26,6 @@ $server->on('connect', function($event, $server, $client) {
 			$client->write("What is your race (help for more information)? ");
 		};
 
-		$input = array_shift($args);
 		if($progress['alias'] === false) {
 			if(!User::validateAlias($input)) {
 				return $client->write("That is not a valid name. What IS your name?\r\n");
@@ -50,7 +49,7 @@ $server->on('connect', function($event, $server, $client) {
 				$unverified_user->setClient($client);
 				$client->setUser($unverified_user);
 				$unverified_user->getRoom()->actorAdd($unverified_user);
-				Command::lookup('look')->perform($unverified_user);
+				Command::create('look')->perform($unverified_user);
 			} else {
 				$client->write("Wrong password.");
 				$client->fire('quit');
@@ -151,7 +150,7 @@ $server->on('connect', function($event, $server, $client) {
 			$user->setClient($client);
 			$client->setUser($user);
 			$user->save();
-			Command::lookup('look')->perform($user);
+			Command::create('look')->perform($user);
 			Debug::log("New user account for ".$user);
 			$event->kill();
 		}

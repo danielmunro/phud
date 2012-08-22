@@ -16,12 +16,11 @@ class Look extends User
 	
 	public function perform(lUser $user, $args = [])
 	{
-		$client = $user->getClient();
 		if(!$args || sizeof($args) == 1) // The user is looking
 		{
 			$r = $user->getRoom();
 			if(!$r->getVisibility() && !Affect::isAffecting($user, Affect::GLOW)) {
-				return $client->write("You can't see anything, it's so dark!\r\n");
+				return $user->notify("You can't see anything, it's so dark!\r\n");
 			}
 
 			$message =  $r->getShort().($user->isDM() ? " [".$r->getID()."]" : "")."\r\n".$r->getLong()."\r\n";
@@ -57,7 +56,7 @@ class Look extends User
 					$message .= ucfirst($a).$post.".\r\n";
 				}
 			}
-			$client->write($message);
+			$user->notify($message);
 			return;
 		}
 		
@@ -72,23 +71,23 @@ class Look extends User
 			$target = $user->getItemByInput($looking);
 		
 		if(!empty($target) && method_exists($target, 'getLong'))
-			return $client->write($target->getLong()."\r\n");
+			return $user->notify($target->getLong()."\r\n");
 		
 		// Direction
 		foreach(Direction::getDirections() as $dir) {
 			if(strpos($dir, $args[1]) === 0) {
-				return self::lookDirection($client, $user->getRoom()->getDirection($dir), $dir);
+				return self::lookDirection($user, $user->getRoom()->getDirection($dir), $dir);
 			}
 		}
-		$client->write("Nothing is there.\r\n");
+		$user->notify("Nothing is there.\r\n");
 	}
 	
-	protected static function lookDirection($client, $room, $direction)
+	protected static function lookDirection($user, $room, $direction)
 	{
 		if(!($room instanceof mRoom))
-			return $client->write("You see nothing ".$direction.".\r\n");
+			return $user->notify("You see nothing ".$direction.".\r\n");
 		else
-			return $client->write("To the ".$direction.", you see: ".$room->getShort().".\r\n");
+			return $user->notify("To the ".$direction.", you see: ".$room->getShort().".\r\n");
 	}
 
 	protected function getArgumentsFromHints($actor, $args)

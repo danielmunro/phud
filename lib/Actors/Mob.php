@@ -182,7 +182,7 @@ class Mob extends Actor
 			$intersection = array_intersect($areas, $other_areas);
 			if($intersection)
 			{
-				Command::lookup($dir)->perform($this, $dir);
+				Command::create($dir)->perform($this, $dir);
 				return;
 			}
 		}
