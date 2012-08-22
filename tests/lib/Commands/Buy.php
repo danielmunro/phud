@@ -8,7 +8,6 @@ class Buy extends \PHPUnit_Framework_TestCase
 	protected $mob = null;
 	protected $room_id_with_shop = 10;
 	protected $room_id_no_shop = 1;
-	protected $server = null;
 
 	public function setup()
 	{
