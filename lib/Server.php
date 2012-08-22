@@ -20,24 +20,18 @@ class Server
 		$this->host = $config['host'];
 		$this->port = $config['port'];
 
-		// create an instance of the beehive server to listen on the host/port
-		$this->server = new \Beehive\Server($this->host, $this->port);
-		$this->server->setClientType('\Phud\Client');
-		$this->server->setConnectCallback([$this, 'connect']);
-		$this->server->setupListener();
-
-		// set up server events
-		$this->on('tick', function() { $this->logStatus(); });
-
-		// deploy the game environment
-		(new Deploy($config['lib'], $config['deploy']))->deployEnvironment($this);
 	}
 
 	public function run()
 	{
-		$this->on('cycle', function() {
-			$this->server->listen();
-		});
+		// start the beehive listener
+		$this->start();
+
+		// set up server events
+		$this->on('cycle', function() { $this->server->listen(); });
+		$this->on('tick', function() { $this->logStatus(); });
+
+		// start looping
 		$pulse = intval(date('U'));
 		$next_tick = $pulse + intval(round(rand(30, 40)));
 		while(1) {
@@ -113,6 +107,15 @@ class Server
 	public function __toString()
 	{
 		return $this->server->__toString();
+	}
+
+	protected function start()
+	{
+		// create an instance of the beehive server to listen on the host/port
+		$this->server = new \Beehive\Server($this->host, $this->port);
+		$this->server->setClientType('\Phud\Client');
+		$this->server->setConnectCallback([$this, 'connect']);
+		$this->server->setupListener();
 	}
 
 	protected function logStatus()
