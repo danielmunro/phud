@@ -3,13 +3,8 @@
 namespace Phud\Tests\Commands\Arguments;
 use Phud\Commands\Arguments as Args;
 
-class Arguments extends \PHPUnit_Framework_TestCase
+class Number extends \PHPUnit_Framework_TestCase
 {
-	
-	public function setup()
-	{
-	}
-
 	/**
 	 *	@expectedException InvalidArgumentException
 	 */
