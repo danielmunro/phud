@@ -12,9 +12,8 @@ class Meditation extends Skill
 
 	protected function initializeListener()
 	{
-		$skill = $this;
-		$this->listener = function($event, $actor, &$amount, &$modifier) use ($skill) {
-			$skill->perform($actor, [$amount, $modifier]);
+		$this->listener = function($event, $actor, &$amount, &$modifier) {
+			$this->perform($actor, $actor);
 		};
 	}
 
