@@ -40,11 +40,9 @@ trait Alias
 
 	public static function create($alias)
 	{
-		$lookup = self::record($alias)['lookup'];
-		if($lookup) {
+		$result = self::record($alias);
+		if($result && $lookup = $result['lookup']) {
 			return new $lookup();
-		} else {
-			throw new \Exception($alias.' alias misconfigured');
 		}
 	}
 
@@ -53,4 +51,3 @@ trait Alias
 		return self::$aliases;
 	}
 }
-?>
