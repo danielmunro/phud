@@ -53,7 +53,7 @@ trait EasyInit
 			$value = floatval($value);
 			return;
 		}
-		Debug::log('Property ('.$property.') of '.$this.' has a type mismatch, expecting ('.$t2.'), got ('.$t1.')');
+		Debug::warn('property ('.$property.') of '.$this.' has a type mismatch, expecting ('.$t2.'), got ('.$t1.')');
 	}
 
 	public function getInitializingProperties()

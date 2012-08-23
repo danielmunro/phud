@@ -152,7 +152,6 @@ class Mob extends Actor
 					$direction = Direction::getReverse($this->path[$this->path_index]);
 				}
 			}
-			Debug::log($this.' is moving, path index: '.$this->path_index.', direction: '.$direction);
 			foreach($directions as $alias => $d) {
 				if(strpos($alias, $direction) === 0) {
 					$directions = [$direction => $d];

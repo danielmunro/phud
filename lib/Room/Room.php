@@ -45,7 +45,7 @@ class Room
 			throw new Exception("Room already exists for ID: ".$this->id);
 		}
 		self::$identities[$this->id] = $this;
-		Debug::log("[info] creating room: ".$this->short." [".$this->id."]");
+		Debug::log("creating room: ".$this->short." [".$this->id."]");
 	}
 
 	public static function setStartRoom($room_id)
@@ -77,7 +77,7 @@ class Room
 		if(array_key_exists($direction, $this->directions)) {
 			$this->directions[$direction] = $value;
 		} else {
-			Debug::log('[error] '.$direction.' is not a valid direction.');
+			Debug::error($direction.' is not a valid direction.');
 		}
 	}
 
@@ -86,7 +86,7 @@ class Room
 		if(array_key_exists($direction, $this->directions)) {
 			return $this->directions[$direction];
 		} else {
-			Debug::log('[error] '.$direction.' is not a valid direction.');
+			Debug::error($direction.' is not a valid direction.');
 		}
 	}
 

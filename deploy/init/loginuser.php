@@ -151,7 +151,7 @@ $server->on('connect', function($event, $server, $client) {
 			$client->setUser($user);
 			$user->save();
 			Command::create('look')->perform($user);
-			Debug::log("New user account for ".$user);
+			Debug::log("new user account for ".$user);
 			$event->kill();
 		}
 	});

@@ -15,11 +15,11 @@ class Deploy
 	public function deployEnvironment(Server $server)
 	{
 		// phud framework classes
-		Debug::log("[init] including libs");
+		Debug::log("including libs");
 		$this->readDeploy($server, $this->dir_lib.'/');
 
 		// all the game classes
-		Debug::log("[init] including deploy scripts");
+		Debug::log("including deploy scripts");
 		$this->readDeploy($server, $this->dir_deploy.'/init/');
 
 		// instantiate any classes that are traits of Instantiate
@@ -29,7 +29,7 @@ class Deploy
 		$server->fire('initialized');
 
 		// area scripts
-		Debug::log("[init] including area scripts");
+		Debug::log("including area scripts");
 		$this->readDeploy($server, $this->dir_deploy.'/areas/');
 
 		// finished deployment
@@ -51,7 +51,7 @@ class Deploy
 				if($ext === 'php') {
 					$deferred[] = $class;
 				} else if($ext === 'area') {
-					Debug::log("[init] deploy area ".$path.$cd);
+					Debug::log("deploy area ".$path.$cd);
 					new Parser($server, $path.$cd);
 				}
 			}

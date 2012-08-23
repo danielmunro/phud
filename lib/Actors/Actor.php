@@ -209,7 +209,7 @@ abstract class Actor
 		if($this->isCurrency($currency)) {
 			return $this->$currency;
 		} else {
-			Debug::log("[".$currency."] is not a valid currency type.");
+			Debug::error("\"".$currency."\" is not a valid currency type.");
 		}
 	}
 
@@ -471,7 +471,7 @@ abstract class Actor
 	public function getProficiencyScore($proficiency)
 	{
 		if(!isset($this->proficiencies[$proficiency])) {
-			Debug::log("Error, proficiency not defined: ".$proficiency);
+			Debug::error("proficiency not defined: ".$proficiency);
 			return -1;
 		}
 		return $this->proficiencies[$proficiency]->getScore();
@@ -480,7 +480,7 @@ abstract class Actor
 	public function improveProficiency($proficiency)
 	{
 		if(!isset($this->proficiencies[$proficiency])) {
-			Debug::log("Error, proficiency not defined: ".$proficiency);
+			Debug::error("proficiency not defined: ".$proficiency);
 			$this->proficiencies[$proficiency] = 15;
 		}
 		$this->proficiencies[$proficiency]++;
@@ -657,7 +657,7 @@ abstract class Actor
 
 	public function applyExperienceFrom(Actor $victim)
 	{
-		Debug::log("Applying experience from ".$victim." to ".$this.".");
+		Debug::log("applying experience from ".$victim." to ".$this.".");
 		$experience = $victim->getKillExperience($this);
 		$this->notify("You get ".$experience." experience for your kill.");
 		if($this->experience < $this->experience_per_level) {

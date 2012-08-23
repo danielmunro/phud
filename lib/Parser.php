@@ -123,7 +123,7 @@ class Parser
 				$type = 'line';
 			}
 			if(!isset($types[$type])) {
-				Debug::log('Error in area parser: '.$type.' is not a defined type');
+				Debug::error('error in area parser: '.$type.' is not a defined type');
 				continue;
 			}
 			$value = $this->$types[$type](['comma' => 'accept']);
@@ -181,7 +181,7 @@ class Parser
 			if($ability) {
 				$p['abilities'][] = $ability;
 			} else {
-				Debug::log('Ability does not exist: '.$line);
+				Debug::error('ability does not exist: '.$line);
 			}
 		}
 	}
@@ -190,7 +190,7 @@ class Parser
 	{
 		$x = preg_split('/\s/', trim($line), 2);
 		if(!isset($x[1])) {
-			Debug::log('Error in parser. Expecting key-value pair, got: '.print_r($x, true));
+			Debug::error('error in parser. Expecting key-value pair, got: '.print_r($x, true));
 			echo "\n\nError in parser. Expecting key-value pair, got: \n\n";
 			var_dump($x);
 			echo "\n\n";

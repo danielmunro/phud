@@ -23,7 +23,7 @@ abstract class Proficiency
 		if(is_numeric($score)) {
 			$this->score += $score;
 		} else {
-			Debug::log('[error] Proficiency::modifyScore() expects a numeric score, got: '.$score);
+			Debug::error('Proficiency::modifyScore() expects a numeric score, got: '.$score);
 		}
 	}
 

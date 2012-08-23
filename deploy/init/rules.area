@@ -106,7 +106,7 @@ return function($parser, $quest) {
 		if($quest) {
 			$parser->getLastAdded()->addQuest($quest);
 		} else {
-			Phud\Debug::log('Quest not found: '.$id);
+			Phud\Debug::error('quest not found: '.$id);
 		}
 	}
 };
@@ -140,7 +140,7 @@ return function($parser, $mob) use ($server) {
 		$mob = new $mob($p);
 		$room = $parser->getLastRoom();
 		$parser->setLastFirstClass($mob);
-		Phud\Debug::log("Adding ".$mob." to ".$room->getShort());
+		Phud\Debug::log("adding ".$mob." to ".$room->getShort());
 		if($room instanceof Phud\Room\Dungeon\Dungeon) {
 			$server->on('deployed', function() use ($room, $mob) {
 				$room = Phud\Room\Dungeon\Dungeon::getRandom($room->getShort());
@@ -167,6 +167,6 @@ return function($parser, $actor) {
 	$a = new $actor($parser->loadRequired(['short', 'long' => 'block'], ['properties']));
 	$a->setRoom($parser->getLastRoom());
 	$parser->setLastFirstClass($a);
-	Phud\Debug::log("Adding ".$a." to ".$parser->getLastRoom());
+	Phud\Debug::log("adding ".$a." to ".$parser->getLastRoom());
 };
 ?>~

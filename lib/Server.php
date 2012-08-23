@@ -50,7 +50,7 @@ class Server
 
 	public function connect(Client $client)
 	{
-		Debug::log("[info] client ".$client->getID(). " connected");
+		Debug::log("client ".$client->getID(). " connected");
 		$this->fire('connect', $client);
 		$this->on('pulse', function($event) use ($client) {
 			$client->fire('pulse');
@@ -97,10 +97,10 @@ class Server
 	{
 		$i = array_search($client, $this->clients);
 		if($i === false) {
-			Debug::log('[error] disconnectClient did not find client in client array');
+			Debug::error('disconnectClient did not find client in client array');
 		} else {
 			unset($this->clients[$i]);
-			Debug::log('[info] client '.$client->getID().' disconnected');
+			Debug::log('client '.$client->getID().' disconnected');
 		}
 	}
 	
@@ -120,6 +120,6 @@ class Server
 
 	protected function logStatus()
 	{
-		Debug::log("[info] tick - memory ".memory_get_peak_usage().", allocated ".memory_get_usage()." kb");
+		Debug::log("tick - memory ".memory_get_peak_usage().", allocated ".memory_get_usage()." kb");
 	}
 }
