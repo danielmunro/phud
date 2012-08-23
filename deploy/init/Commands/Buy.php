@@ -29,7 +29,7 @@ class Buy extends Command
 
 	protected function getArgumentsFromHints(Actor $buyer, $args)
 	{
-		$shopkeeper = (new Arguments\Shopkeeper($buyer))->parse(sizeof($args) === 3 ? $args[2] : null);
+		$shopkeeper = (new Arguments\Shopkeeper($buyer->getRoom()))->parse(sizeof($args) === 3 ? $args[2] : null);
 		return [
 			(new Arguments\Item($shopkeeper))->parse($args[1]),
 			$shopkeeper

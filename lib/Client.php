@@ -72,7 +72,7 @@ class Client implements \Beehive\Client
 	{
 		$this->user = $user;
 		$user->on('input', function($event, $user, $args) {
-			$command = Command::create($args[0]);
+			$command = Command::create($args);
 			if($command) {
 				$command->tryPerform($user, $args);
 				$event->satisfy();

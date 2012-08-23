@@ -20,6 +20,6 @@ class CList extends User
 
 	protected function getArgumentsFromHints(Actor $actor, $args)
 	{
-		return [(new Arguments\Shopkeeper())->parse($actor, sizeof($args) === 3 ? $args[2] : null)];
+		return [(new Arguments\Shopkeeper($actor->getRoom()))->parse(sizeof($args) === 3 ? $args[2] : null)];
 	}
 }
