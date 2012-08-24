@@ -24,14 +24,14 @@ id 201, n 200, rooms 6, n_prob 0, u_prob 0, s_prob .75, exit 203~
 mob
 a small green goblin
 A little green goblin is here, probably looking to cause trouble.~
-movement 1, race critter, count 2~
+movement 1, race critter, count 2, alias a small green goblin~
 hp 10, level 5~
 ~
 
 mob
 a small yellow goblin
 A little yellow goblin is here, probably looking to cause trouble.~
-movement 1, race critter, count 2~
+movement 1, race critter, count 2, alias a small yellow goblin~
 hp 12, level 5~
 ~
 
