@@ -120,6 +120,6 @@ class Server
 
 	protected function logStatus()
 	{
-		Debug::log("tick - memory ".memory_get_peak_usage().", allocated ".memory_get_usage()." kb");
+		Debug::log("tick - peak memory ".memory_get_peak_usage().", allocated ".memory_get_usage());
 	}
 }
