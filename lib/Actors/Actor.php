@@ -116,6 +116,8 @@ abstract class Actor
 		// initialized identity
 		if($this->id) {
 			self::$identities[$this->id] = $this;
+		} else {
+			$this->id = sha1(rand().microtime());
 		}
 
 		$this->applyListeners();

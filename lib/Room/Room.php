@@ -160,14 +160,14 @@ class Room
 				if($announcement['actor'] === '*') {
 					$general_announcement = $announcement['message'];
 				} else {
-					$actors_announced[] = $announcement['actor'];
+					$actors_announced[] = $announcement['actor']->getID();
 					$announcement['actor']->notify($announcement['message']);
 				}
 			}
 		}
 		if($general_announcement) {
 			foreach($this->actors as $actor) {
-				if(!in_array($actor, $actors_announced)) {
+				if(!in_array($actor->getID(), $actors_announced)) {
 					$actor->notify($general_announcement);
 				}
 			}
