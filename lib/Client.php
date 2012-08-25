@@ -25,6 +25,9 @@ class Client implements \Beehive\Client
 	public function disconnect()
 	{
 		fclose($this->connection);
+		if($this->user) {
+			$this->user->getRoom()->actorRemove($this->user);
+		}
 		$this->fire('disconnect');
 	}
 

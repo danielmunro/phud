@@ -55,19 +55,19 @@ class Server
 		$this->on('pulse', function($event) use ($client) {
 			$client->fire('pulse');
 			if(!is_resource($client->getConnection())) {
-				$event->kill();
+				$event->unlisten();
 			}
 		});
 		$this->on('tick', function($event) use ($client) {
 			$client->fire('tick');
 			if(!is_resource($client->getConnection())) {
-				$event->kill();
+				$event->unlisten();
 			}
 		});
 		$this->on('cycle', function($event) use ($client) {
 			$client->checkCommandBuffer();
 			if(!is_resource($client->getConnection())) {
-				$event->kill();
+				$event->unlisten();
 			}
 		});
 		$client->on('broadcast', function($event, $client_sender, $message) {
@@ -88,7 +88,7 @@ class Server
 		});
 		$client->on('disconnect', function($event, $client) {
 			$this->removeClient($client);
-			$event->kill();
+			$event->unlisten();
 		});
 		$this->clients[] = $client;
 	}
