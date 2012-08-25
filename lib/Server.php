@@ -52,44 +52,48 @@ class Server
 	{
 		Debug::log("client ".$client->getID(). " connected");
 		$this->fire('connect', $client);
-		$this->on('pulse', function($event) use ($client) {
-			$client->fire('pulse');
-			if(!is_resource($client->getConnection())) {
-				$event->unlisten();
-			}
-		});
-		$this->on('tick', function($event) use ($client) {
-			$client->fire('tick');
-			if(!is_resource($client->getConnection())) {
-				$event->unlisten();
-			}
-		});
-		$this->on('cycle', function($event) use ($client) {
-			$client->checkCommandBuffer();
-			if(!is_resource($client->getConnection())) {
-				$event->unlisten();
-			}
-		});
-		$client->on('broadcast', function($event, $client_sender, $message) {
-			foreach($this->clients as $client) {
-				if($client_sender != $client) {
-					$client->writeLine($message);
+		$this->onMany([
+			['pulse', function($event) use ($client) {
+				$client->fire('pulse');
+				if(!is_resource($client->getConnection())) {
+					$event->unlisten();
 				}
-			}
-		});
-		$client->on('who', function($event, $client_sender, &$out, &$n) {
-			foreach($this->clients as $client) {
-				$u = $client->getUser();
-				if($u) {
-					$n++;
-					$out .= "[".$u->getLevel()." ".$u->getRace()->getAlias()."] ".$u."\n";
+			}],
+			['tick', function($event) use ($client) {
+				$client->fire('tick');
+				if(!is_resource($client->getConnection())) {
+					$event->unlisten();
 				}
-			}
-		});
-		$client->on('disconnect', function($event, $client) {
-			$this->removeClient($client);
-			$event->unlisten();
-		});
+			}],
+			['cycle', function($event) use ($client) {
+				$client->checkCommandBuffer();
+				if(!is_resource($client->getConnection())) {
+					$event->unlisten();
+				}
+			}]
+		]);
+		$client->onMany([
+			['broadcast', function($event, $client_sender, $message) {
+				foreach($this->clients as $client) {
+					if($client_sender != $client) {
+						$client->writeLine($message);
+					}
+				}
+			}],
+			['who', function($event, $client_sender, &$out, &$n) {
+				foreach($this->clients as $client) {
+					$u = $client->getUser();
+					if($u) {
+						$n++;
+						$out .= "[".$u->getLevel()." ".$u->getRace()->getAlias()."] ".$u."\n";
+					}
+				}
+			}],
+			['disconnect', function($event, $client) {
+				$this->removeClient($client);
+				$event->unlisten();
+			}]
+		]);
 		$this->clients[] = $client;
 	}
 
