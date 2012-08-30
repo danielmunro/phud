@@ -23,7 +23,7 @@ class Look extends User
 				return $user->notify("You can't see anything, it's so dark!\r\n");
 			}
 
-			$message =  $r->getShort().($user->isDM() ? " [".$r->getID()."]" : "")."\r\n".$r->getLong()."\r\n";
+			$message =  $r->getShort()."\r\n".$r->getLong()."\r\n";
 
 			$doors = $r->getDoors();
 			foreach($doors as $i => $door) {
@@ -40,7 +40,7 @@ class Look extends User
 				}
 			}
 
-			$message .= "Exits [".$dir_str."]\r\n";
+			$message .= "\r\nExits [".$dir_str."]\r\n";
 
 			foreach($user->getRoom()->getItems() as $key => $item) {
 				$message .= ucfirst($item)." is here.\r\n";
@@ -53,10 +53,10 @@ class Look extends User
 					if($a instanceof lUser) {
 						$post = ' is '.$disposition.' here';
 					}
-					$message .= ucfirst($a).$post.".\r\n";
+					$message .= ucfirst($a->getShort()).$post.".\r\n";
 				}
 			}
-			$user->notify($message);
+			$user->getClient()->write(rtrim($message));
 			return;
 		}
 		

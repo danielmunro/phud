@@ -24,14 +24,14 @@ id 201, n 200, rooms 6, n_prob 0, u_prob 0, s_prob .75, exit 203~
 mob
 a small green goblin
 A little green goblin is here, probably looking to cause trouble.~
-movement 1, race critter, count 2, alias a small green goblin~
+movement 1, race critter, count 2, alias a green goblin~
 hp 10, level 5~
 ~
 
 mob
 a small yellow goblin
 A little yellow goblin is here, probably looking to cause trouble.~
-movement 1, race critter, count 2, alias a small yellow goblin~
+movement 1, race critter, count 2, alias a yellow goblin~
 hp 12, level 5~
 ~
 
@@ -41,9 +41,10 @@ You are following a dirt road through the goblin forest. Trees line the narrow a
 id 202, e 200, exit 204, rooms 8, e_prob .25, u_prob 0, w_prob .85~
 
 room
-A large tree filled with cobwebs
-The trail winds to a halt right below an enormous tree that has been covered in thick spider webs.~
-id 203, u 300~
+A large tree breaks the path
+The trail winds to a halt right below an enormous tree, with massive branches shooting out in every
+direction. It looks sturdy enough to climb.~
+id 203, u 210~
 
 room
 A trail in the goblin forest

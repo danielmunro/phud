@@ -1,0 +1,66 @@
+area
+alias goblin forest tree, terrain forest, location outside~
+
+room
+At the base of the massive oak tree
+You are standing on some of the largest branches at the base of a massive
+oak tree. Looking up, you see tell-tale signs that this tree is climbed often.~
+id 210, d 203, u 211~
+
+room
+Climbing the trunk of a massive oak tree
+Clinging to giant branches protruding from the trunk of the massive oak, you
+make your way up the tree.~
+id 211, d 210, u 212~
+
+mob
+a juvenile garden spider
+A juvenile garden spider is here, trying to build its first web.~
+movement 2, race critter, count 2, alias a garden spider~
+hp 20, level 7~
+~
+
+room
+Climbing the trunk of a massive oak tree
+Clinging to giant branches protruding from the trunk of the massive oak, you
+make your way up the tree.~
+id 212, d 211, e 213, n 214, u 215~
+
+room
+Hanging on to a branch
+You inch out onto a sturdy looking branch from the trunk of the tree. From here
+you can see how expansive the woods are around you.~
+id 213, w 212~
+
+mob
+a juvenile garden spider
+A juvenile garden spider is here, trying to build its first web.~
+movement 2, race critter, alias a garden spider~
+hp 20, level 7~
+~
+
+room
+Hanging on to a branch
+You inch out onto a sturdy looking branch from the trunk of the tree. From here
+you can see how expansive the woods are around you.~
+id 214, s 212~
+
+mob
+a juvenile garden spider
+A juvenile garden spider is here, trying to build its first web.~
+movement 2, race critter, alias a garden spider~
+hp 20, level 7~
+~
+
+room
+A hole in the massive oak tree~
+Climbing up the trunk of the oak tree, you find a large hole which would be easy
+to fit into, however, it is too dark to see where it leads.~
+id 215, d 212~
+
+mob
+a tangleweb spider
+A bigger variety of tangleweb spider hovers near you, waiting for prey.~
+movement 2, race critter, alias a tangleweb spider~
+hp 30, level 10~
+~
